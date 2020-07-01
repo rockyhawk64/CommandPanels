@@ -1,0 +1,63 @@
+name: CommandPanels
+main: me.rockyhawk.commandPanels.commandpanels
+author: RockyHawk
+version: 3.2.0-pre3
+api-version: 1.13
+description: Fully Custom GUIs. Make your Server Professional.
+softdepend: [PlaceholderAPI, Vault, HeadDatabase, TokenManager, VotingPlugin]
+commands:
+   commandpanel:
+      description: Open a command panel.
+      usage: /commandpanel <panel> [player:item] [player]
+      aliases: [cp, cpanel]
+   commandpanelreload:
+      description: Reloads plugin config.
+      usage: /commandpanelsreload
+      aliases: [cpr, cpanelr]
+   commandpaneldebug:
+      description: Enable and Disable debug mode globally
+      usage: /commandpanelsdebug
+      aliases: [cpd, cpaneld]
+   commandpanelclose:
+      description: Close current GUI.
+      usage: /commandpanelclose
+      aliases: [cpc, cpanelc]
+   commandpanelgenerate:
+      description: Generate GUI.
+      usage: /commandpanelgenerate
+      aliases: [cpg, cpanelg]
+   commandpanelversion:
+      description: Display the current version.
+      usage: /commandpanelversion
+      aliases: [cpv, cpanelv]
+   commandpaneledit:
+      description: Edit panels ingame.
+      usage: /commandpaneledit [panel]
+      aliases: [cpe, cpanele]
+   commandpanellist:
+      description: Lists the currently loaded panels.
+      usage: /commandpanellist
+      aliases: [cpl, cpanell]
+permissions:
+   commandpanel.panel.default:
+      default: true
+   commandpanel.other:
+      default: op
+   commandpanel.panel.*:
+      default: op
+   commandpanel.item.*:
+      default: op
+   commandpanel.reload:
+      default: op
+   commandpanel.debug:
+      default: op
+   commandpanel.generate:
+      default: op
+   commandpanel.version:
+      default: true
+   commandpanel.editor:
+      default: true
+   commandpanel.edit:
+      default: op
+   commandpanel.list:
+      default: op
