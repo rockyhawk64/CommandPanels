@@ -6,11 +6,11 @@ import com.google.common.io.ByteStreams;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
+
+import java.io.*;
 import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.*;
 
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
@@ -140,7 +140,8 @@ public class commandpanels extends JavaPlugin {
             Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not find config version! Your config may be missing some information!");
         }
 
-        try {
+        githubNewUpdate();
+        /*try {
             if (this.config.getString("config.update-notifications").trim().equalsIgnoreCase("true")) {
                 if(!this.getDescription().getVersion().contains("-")) {
                     Updater check = new Updater(this, 325941, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, true);
@@ -157,7 +158,7 @@ public class commandpanels extends JavaPlugin {
             }
         } catch (Exception var9) {
             Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Could not check for update online.");
-        }
+        }*/
 
         //load panelFiles
         reloadPanelFiles();
@@ -1553,5 +1554,19 @@ public class commandpanels extends JavaPlugin {
         byte[] buffer = IOUtils.toByteArray(initialStream);
         Reader targetReader = new CharSequenceReader(new String(buffer));
         return targetReader;
+    }
+
+    public void githubNewUpdate(){
+        HttpURLConnection connection;
+        String WRITE;
+        String gitVersion;
+        try{
+            connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/rockyhawk64/CommandPanels/master/resource/plugin.yml").openConnection();
+            connection.connect();
+            gitVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine().split("\\s")[1];
+            getServer().getConsoleSender().sendMessage(ChatColor.GREEN + gitVersion);
+        }catch(IOException e){
+            debug(e);
+        }
     }
 }
