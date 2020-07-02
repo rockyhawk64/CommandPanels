@@ -1556,10 +1556,13 @@ public class commandpanels extends JavaPlugin {
                 return;
             }
             if(this.getDescription().getVersion().equals(gitVersion)){
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Up to date.");
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Running the latest version.");
             }else{
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Outdated version.");
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Your version " + this.getDescription().getVersion() + " Current version " + gitVersion);
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " ================================================");
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " An update for CommandPanels is available.");
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " Download version " + gitVersion + " here:");
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " https://www.spigotmc.org/resources/command-panels-custom-guis.67788/");
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " ================================================");
             }
         }catch(IOException e){
             Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error checking for updates online.");
