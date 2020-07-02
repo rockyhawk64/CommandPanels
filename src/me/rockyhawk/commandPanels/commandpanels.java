@@ -140,25 +140,9 @@ public class commandpanels extends JavaPlugin {
             Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not find config version! Your config may be missing some information!");
         }
 
-        githubNewUpdate();
-        /*try {
-            if (this.config.getString("config.update-notifications").trim().equalsIgnoreCase("true")) {
-                if(!this.getDescription().getVersion().contains("-")) {
-                    Updater check = new Updater(this, 325941, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, true);
-                    if (!check.getLatestName().toLowerCase().trim().equals("commandpanels v" + this.getDescription().getVersion())) {
-                        Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: CommandPanels is not running the latest version (" + check.getLatestName().trim() + ") Download a new version at");
-                        Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " https://www.spigotmc.org/resources/command-panels-custom-guis.67788/");
-                        this.update = true;
-                    } else {
-                        Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " CommandPanels is up to date.");
-                    }
-                }else{
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " CommandPanels is running a custom version.");
-                }
-            }
-        } catch (Exception var9) {
-            Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Could not check for update online.");
-        }*/
+        if (this.config.getString("config.update-notifications").equalsIgnoreCase("true")) {
+            githubNewUpdate();
+        }
 
         //load panelFiles
         reloadPanelFiles();
@@ -1558,14 +1542,27 @@ public class commandpanels extends JavaPlugin {
 
     public void githubNewUpdate(){
         HttpURLConnection connection;
-        String WRITE;
         String gitVersion;
+        if(this.getDescription().getVersion().contains("-")){
+            Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Running a custom version.");
+            return;
+        }
         try{
             connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/rockyhawk64/CommandPanels/master/resource/plugin.yml").openConnection();
             connection.connect();
             gitVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine().split("\\s")[1];
-            getServer().getConsoleSender().sendMessage(ChatColor.GREEN + gitVersion);
+            if(gitVersion.contains("-")){
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Cannot check for update.");
+                return;
+            }
+            if(this.getDescription().getVersion().equals(gitVersion)){
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Up to date.");
+            }else{
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Outdated version.");
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Your version " + this.getDescription().getVersion() + " Current version " + gitVersion);
+            }
         }catch(IOException e){
+            Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error checking for updates online.");
             debug(e);
         }
     }

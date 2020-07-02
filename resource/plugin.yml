@@ -1,8 +1,8 @@
-version: 3.2.0-pre3
-name: CommandPanels
+version: 3.2.0
 main: me.rockyhawk.commandPanels.commandpanels
+name: CommandPanels
 author: RockyHawk
-api-version: 1.13
+api-version: '1.13'
 description: Fully Custom GUIs. Make your Server Professional.
 softdepend: [PlaceholderAPI, Vault, HeadDatabase, TokenManager, VotingPlugin]
 commands:

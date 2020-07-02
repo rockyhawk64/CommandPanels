@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="HeadDatabaseAPI1">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/Tools/Build Tools/Jar Libraries/HeadDatabaseAPI.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
