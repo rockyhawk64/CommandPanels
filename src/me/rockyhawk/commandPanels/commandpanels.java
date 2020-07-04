@@ -98,6 +98,7 @@ public class commandpanels extends JavaPlugin {
         this.config.addDefault("config.input-cancel", "cancel");
         this.config.addDefault("config.input-cancelled", "&cCancelled!");
         List<String> inputMessage = new ArrayList();
+        //webhook test #1
         inputMessage.add("%cp-tag%&aEnter Input for Command");
         inputMessage.add("&cType &4%cp-args% &cto Cancel the command");
         this.config.addDefault("config.input-message", inputMessage);
