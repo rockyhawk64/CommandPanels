@@ -1,7 +1,6 @@
 package me.rockyhawk.commandPanels;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -36,13 +35,14 @@ public class utils implements Listener {
         for(String[] panelName  : plugin.panelNames){
             YamlConfiguration tempFile = plugin.panelFiles.get(Integer.parseInt(panelName[1]));
             String tempName = panelName[0];
-            if(tempFile.contains("panels." + tempName + ".open-with-item") && e.getClickedInventory().getType() == InventoryType.PLAYER) {
+            if(tempFile.contains("panels." + tempName + ".open-with-item") && Objects.requireNonNull(e.getClickedInventory()).getType() == InventoryType.PLAYER) {
                 try{
-                    if (clicked.getType() == new ItemStack(Material.matchMaterial(tempFile.getString("panels." + tempName + ".open-with-item.material")), 1).getType()) {
-                        if ((ChatColor.translateAlternateColorCodes('&', clicked.getItemMeta().getDisplayName()).equals(ChatColor.translateAlternateColorCodes('&', tempFile.getString("panels." + tempName + ".open-with-item.name"))))) {
+                    assert clicked != null;
+                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.material")))), 1).getType()) {
+                        if ((ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.name")))))) {
                             //cancel the click item event
                             if (tempFile.contains("panels." + tempName + ".open-with-item.stationary")) {
-                                if (e.getSlot() == Integer.parseInt(tempFile.getString("panels." + tempName + ".open-with-item.stationary"))) {
+                                if (e.getSlot() == Integer.parseInt(Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.stationary")))) {
                                     e.setCancelled(true);
                                     p.updateInventory();
                                     Bukkit.dispatchCommand(p, "commandpanels:commandpanel " + tempName);
@@ -73,35 +73,35 @@ public class utils implements Listener {
                 //if the inventory is just a chest that has no panel
                 return;
             }
-            if (plugin.panelsf.list() == null || plugin.panelsf.list().length == 0) {
+            if (plugin.panelsf.list() == null || Objects.requireNonNull(plugin.panelsf.list()).length == 0) {
                 //if no panels are present
                 return;
             }
         }catch(Exception b){
             return;
         }
-        ArrayList<String> filenames = new ArrayList<String>(Arrays.asList(plugin.panelsf.list()));
+        ArrayList<String> filenames = new ArrayList<String>(Arrays.asList(Objects.requireNonNull(plugin.panelsf.list())));
         YamlConfiguration cf = null; //this is the file to use for any panel.* requests
         String panel = null;
         boolean foundPanel = false;
-        for (int f = 0; filenames.size() > f; f++) { //will loop through all the files in folder
+        for (String filename : filenames) { //will loop through all the files in folder
             String key;
             YamlConfiguration temp;
-            temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filenames.get(f)));
-            if(!plugin.checkPanels(temp)){
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + ": Syntax error Found or Missing certain element!")));
+            temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filename));
+            if (!plugin.checkPanels(temp)) {
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + plugin.papi(p, plugin.config.getString("config.format.error") + ": Syntax error Found or Missing certain element!")));
                 return;
             }
-            for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext();) {
-                key = (String) var10.next();
-                if(ChatColor.translateAlternateColorCodes('&',temp.getString("panels." + key + ".title")).equals(e.getView().getTitle())){
+            for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
+                key = s;
+                if (ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))).equals(e.getView().getTitle())) {
                     panel = key;
-                    cf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filenames.get(f)));
-                    foundPanel= true;
+                    cf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filename));
+                    foundPanel = true;
                     break;
                 }
             }
-            if(foundPanel){
+            if (foundPanel) {
                 //this is to avoid the plugin to continue looking when it was already found
                 break;
             }
@@ -109,16 +109,16 @@ public class utils implements Listener {
         if(panel == null){
             return;
         }
-        if(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&',cf.getString("panels." + panel + ".title"))).equals("Command Panels Editor")){
+        if(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(cf.getString("panels." + panel + ".title")))).equals("Command Panels Editor")){
             //cancel if it is the editor (this should never happen unless the user made a panel called Command Panels Editor for some reason)
             return;
         }
-        if(e.getSlotType().equals(InventoryType.SlotType.CONTAINER) && e.getRawSlot() <= Integer.parseInt(cf.getString("panels." + panel + ".rows"))*9-1){
+        if(e.getSlotType().equals(InventoryType.SlotType.CONTAINER) && e.getRawSlot() <= Integer.parseInt(Objects.requireNonNull(cf.getString("panels." + panel + ".rows")))*9-1){
             e.setCancelled(true);
             p.updateInventory();
             //this loops through all the items in the panel
             boolean foundSlot = false;
-            for(String slot : cf.getConfigurationSection("panels."+panel+".item").getKeys(false)){
+            for(String slot : Objects.requireNonNull(cf.getConfigurationSection("panels." + panel + ".item")).getKeys(false)){
                 if(slot.equals(Integer.toString(e.getSlot()))){
                     foundSlot = true;
                 }
@@ -131,7 +131,7 @@ public class utils implements Listener {
             //loop through possible noperm/hasperm 1,2,3,etc
             if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasvalue")) {
                 //loop through possible hasvalue 1,2,3,etc
-                for (int count = 0; cf.getConfigurationSection("panels." + panel + ".item." + e.getSlot()).getKeys(false).size() > count; count++) {
+                for (int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panel + ".item." + e.getSlot())).getKeys(false).size() > count; count++) {
                     if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasvalue" + count)) {
                         boolean outputValue = true;
                         //outputValue will default to true
@@ -163,7 +163,7 @@ public class utils implements Listener {
                 }
             }
             if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm") && cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm.perm")) {
-                for(int count = 0; cf.getConfigurationSection("panels." + panel + ".item." + e.getSlot()).getKeys(false).size() > count; count++){
+                for(int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panel + ".item." + e.getSlot())).getKeys(false).size() > count; count++){
                     if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm" + count) && cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm"  + count + ".perm")) {
                         boolean outputValue = true;
                         //outputValue will default to true
@@ -171,7 +171,7 @@ public class utils implements Listener {
                             //if output is true, and values match it will be this item, vice versa
                             outputValue = cf.getBoolean("panels." + panel + ".item." + e.getSlot() + ".hasperm" + count + ".output");
                         }
-                        if (p.hasPermission(cf.getString("panels." + panel + ".item." + e.getSlot() + ".hasperm"  + count + ".perm")) == outputValue) {
+                        if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panel + ".item." + e.getSlot() + ".hasperm" + count + ".perm"))) == outputValue) {
                             if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm"  + count + ".commands") && !(clicked == null)) {
                                 section = ".hasperm" + count;
                                 break;
@@ -188,7 +188,7 @@ public class utils implements Listener {
                     //if output is true, and values match it will be this item, vice versa
                     outputValue = cf.getBoolean("panels." + panel + ".item." + e.getSlot() + ".hasperm" + ".output");
                 }
-                if (p.hasPermission(cf.getString("panels." + panel + ".item." + e.getSlot() + ".hasperm.perm")) == outputValue) {
+                if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panel + ".item." + e.getSlot() + ".hasperm.perm"))) == outputValue) {
                     if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm.commands") && !(clicked == null)) {
                         section = ".hasperm";
                     } else if (clicked != null) {
@@ -205,6 +205,7 @@ public class utils implements Listener {
             }
             if(cf.contains("panels." + panel + ".item." + e.getSlot() + section + ".commands")) {
                 List<String> commands = (List<String>) cf.getList("panels." + panel + ".item." + e.getSlot() + section + ".commands");
+                assert commands != null;
                 if (commands.size() != 0) {
                     //this will replace a sequence tag command with the commands from the sequence
                     List<String> commandsAfterSequence = commands;
@@ -213,11 +214,11 @@ public class utils implements Listener {
                             String locationOfSequence = commands.get(i).split("\\s")[1];
                             List<String> commandsSequence = (List<String>) cf.getList(locationOfSequence);
                             commandsAfterSequence.remove(i);
+                            assert commandsSequence != null;
                             commandsAfterSequence.addAll(i,commandsSequence);
                         }
                     }
                     commands = commandsAfterSequence;
-
                     for (int i = 0; commands.size() - 1 >= i; i++) {
                         try {
                             if (commands.get(i).split("\\s")[0].equalsIgnoreCase("right=")) {
@@ -260,6 +261,7 @@ public class utils implements Listener {
                             //skip if you can't do this
                         }
                         try {
+                            assert clicked != null;
                             commands.set(i, commands.get(i).replaceAll("%cp-clicked%", clicked.getType().toString()));
                         } catch (Exception mate) {
                             commands.set(i, commands.get(i).replaceAll("%cp-clicked%", "Air"));
@@ -283,10 +285,10 @@ public class utils implements Listener {
     public void onPlayerUse(PlayerInteractEvent e){
         //item right or left clicked
         try {
-            if(e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getItem().getType() == Material.AIR){
+            if(e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK && Objects.requireNonNull(e.getItem()).getType() == Material.AIR){
                 return;
             }
-            if (plugin.panelsf.list() == null || plugin.panelsf.list().length == 0) {
+            if (plugin.panelsf.list() == null || Objects.requireNonNull(plugin.panelsf.list()).length == 0) {
                 return;
             }
         }catch(Exception b){
@@ -299,11 +301,12 @@ public class utils implements Listener {
             String tempName = panelName[0];
             if(tempFile.contains("panels." + tempName + ".open-with-item")) {
                 try{
-                    if (clicked.getType() == new ItemStack(Material.matchMaterial(tempFile.getString("panels." + tempName + ".open-with-item.material")), 1).getType()) {
-                        if ((ChatColor.translateAlternateColorCodes('&', clicked.getItemMeta().getDisplayName()).equals(ChatColor.translateAlternateColorCodes('&', tempFile.getString("panels." + tempName + ".open-with-item.name"))))) {
+                    assert clicked != null;
+                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.material")))), 1).getType()) {
+                        if ((ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.name")))))) {
                             //cancel the click item event
                             if (tempFile.contains("panels." + tempName + ".open-with-item.stationary")) {
-                                if (p.getInventory().getHeldItemSlot() != Integer.parseInt(tempFile.getString("panels." + tempName + ".open-with-item.stationary"))) {
+                                if (p.getInventory().getHeldItemSlot() != Integer.parseInt(Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.stationary")))) {
                                     return;
                                 }
                             }
@@ -333,7 +336,7 @@ public class utils implements Listener {
          */
         Player p = e.getPlayer();
         try {
-            if (plugin.panelsf.list() == null || plugin.panelsf.list().length == 0) {
+            if (plugin.panelsf.list() == null || Objects.requireNonNull(plugin.panelsf.list()).length == 0) {
                 return;
             }
         }catch(Exception b){
@@ -347,10 +350,11 @@ public class utils implements Listener {
             if(!plugin.checkPanels(temp)){
                 return;
             }
-            for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
+            for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
                 if(temp.contains("panels." + key + ".disabled-worlds")){
                     List<String> disabledWorlds = (List<String>) temp.getList("panels." + key + ".disabled-worlds");
+                    assert disabledWorlds != null;
                     if(disabledWorlds.contains(p.getWorld().getName())){
                         continue;
                     }
@@ -358,14 +362,14 @@ public class utils implements Listener {
                 if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
                     ItemStack s;
                     try {
-                        s = new ItemStack(Material.matchMaterial(temp.getString("panels." + key + ".open-with-item.material")), 1);
+                        s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1);
                     }catch(Exception n){
                         return;
                     }
                     plugin.setName(s, temp.getString("panels." + key + ".open-with-item.name"), temp.getList("panels." + key + ".open-with-item.lore"),p,true);
                     if(temp.contains("panels." + key + ".open-with-item.stationary")) {
-                        if (0 <= Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary")) && 8 >= Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary"))) {
-                            p.getInventory().setItem(Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary")), s);
+                        if (0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 8 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))) {
+                            p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
                         }
                     }
                 }
@@ -376,7 +380,7 @@ public class utils implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent e){
         Player p = e.getPlayer();
         try {
-            if (plugin.panelsf.list() == null || plugin.panelsf.list().length == 0) {
+            if (plugin.panelsf.list() == null || Objects.requireNonNull(plugin.panelsf.list()).length == 0) {
                 return;
             }
         }catch(Exception b){
@@ -394,6 +398,7 @@ public class utils implements Listener {
                 key = (String) var10.next();
                 if(temp.contains("panels." + key + ".disabled-worlds")){
                     List<String> disabledWorlds = (List<String>) temp.getList("panels." + key + ".disabled-worlds");
+                    assert disabledWorlds != null;
                     if(disabledWorlds.contains(p.getWorld().getName())){
                         continue;
                     }
@@ -401,13 +406,13 @@ public class utils implements Listener {
                 if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
                     ItemStack s;
                     try {
-                        s = new ItemStack(Material.matchMaterial(temp.getString("panels." + key + ".open-with-item.material")), 1);
+                        s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1);
                     }catch(Exception n){
                         return;
                     }
                     plugin.setName(s, temp.getString("panels." + key + ".open-with-item.name"), temp.getList("panels." + key + ".open-with-item.lore"),p,true);
-                    if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary")) && 8 >= Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary"))){
-                        p.getInventory().setItem(Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary")), s);
+                    if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 8 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
+                        p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
                     }
                 }
             }
@@ -418,7 +423,7 @@ public class utils implements Listener {
         Player p = (Player)e.getEntity();
         File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
         try {
-            if (panelsf.list() == null || panelsf.list().length == 0) {
+            if (panelsf.list() == null || Objects.requireNonNull(panelsf.list()).length == 0) {
                 return;
             }
         }catch(Exception b){
@@ -432,13 +437,13 @@ public class utils implements Listener {
             if(!plugin.checkPanels(temp)){
                 return;
             }
-            for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
+            for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
                 if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
                     if(temp.contains("panels." + key + ".open-with-item.stationary")){
                         ItemStack s;
                         try {
-                            s = new ItemStack(Material.matchMaterial(temp.getString("panels." + key + ".open-with-item.material")), 1);
+                            s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1);
                         }catch(Exception n){
                             return;
                         }
@@ -461,7 +466,7 @@ public class utils implements Listener {
             }
         }
         try {
-            if (panelsf.list() == null || panelsf.list().length == 0) {
+            if (panelsf.list() == null || Objects.requireNonNull(panelsf.list()).length == 0) {
                 return;
             }
         }catch(Exception b){
@@ -475,38 +480,39 @@ public class utils implements Listener {
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + ": Missing required component in panel!")));
                 return;
             }
-            for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
+            for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
                 if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
                     if(temp.contains("panels." + key + ".disabled-worlds")){
                         List<String> disabledWorlds = (List<String>) temp.getList("panels." + key + ".disabled-worlds");
+                        assert disabledWorlds != null;
                         if(disabledWorlds.contains(p.getWorld().getName())){
                             continue;
                         }
                     }
                     ItemStack s;
                     try {
-                        s = new ItemStack(Material.matchMaterial(temp.getString("panels." + key + ".open-with-item.material")), 1);
+                        s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1);
                     }catch(Exception n){
                         continue;
                     }
                     plugin.setName(s, temp.getString("panels." + key + ".open-with-item.name"), temp.getList("panels." + key + ".open-with-item.lore"),p,true);
-                    if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary")) && 8 >= Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary"))){
-                        p.getInventory().setItem(Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary")), s);
+                    if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 8 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
+                        p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
                     }
                 }else{
                     //if the player has an item that they have no permission for, remove it
                     ItemStack s;
                     try {
-                        s = new ItemStack(Material.matchMaterial(temp.getString("panels." + key + ".open-with-item.material")), 1);
+                        s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1);
                     }catch(Exception n){
                         continue;
                     }
                     plugin.setName(s, temp.getString("panels." + key + ".open-with-item.name"), temp.getList("panels." + key + ".open-with-item.lore"),p,true);
-                    if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary")) && 8 >= Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary"))){
+                    if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 8 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
                         try {
-                            if (p.getInventory().getItem(Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary"))).isSimilar(s)) {
-                                p.getInventory().setItem(Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary")), null);
+                            if (Objects.requireNonNull(p.getInventory().getItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))))).isSimilar(s)) {
+                                p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), null);
                             }
                         }catch(NullPointerException nex){
                             //skip as player has no item in slot
@@ -522,7 +528,7 @@ public class utils implements Listener {
         Player p = e.getPlayer();
         File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
         try {
-            if (panelsf.list() == null || panelsf.list().length == 0) {
+            if (panelsf.list() == null || Objects.requireNonNull(panelsf.list()).length == 0) {
                 return;
             }
         }catch(Exception b){
@@ -537,19 +543,19 @@ public class utils implements Listener {
             if(!plugin.checkPanels(temp)){
                 return;
             }
-            for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
+            for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
-                for(String ekey : temp.getConfigurationSection("panels").getKeys(false)){
+                for(String ekey : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)){
                     if(temp.contains("panels." + key + ".open-with-item")){
                         if(clicked.getType() != Material.AIR) {
                             //if loop has material first to stop 1.12.2 from spitting errors
                             //try and catch loop to stop errors with the same material type but different name
                             try {
-                                if (clicked.getType() == new ItemStack(Material.matchMaterial(temp.getString("panels." + ekey + ".open-with-item.material")), 1).getType()) {
-                                    if ((ChatColor.translateAlternateColorCodes('&',clicked.getItemMeta().getDisplayName()).equals(ChatColor.translateAlternateColorCodes('&',temp.getString("panels." + ekey + ".open-with-item.name"))))) {
+                                if (clicked.getType() == new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + ekey + ".open-with-item.material")))), 1).getType()) {
+                                    if ((ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + ekey + ".open-with-item.name")))))) {
                                         //cancel the click item event
                                         if(temp.contains("panels." + key + ".open-with-item.stationary")){
-                                            if(p.getInventory().getHeldItemSlot() == Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary"))){
+                                            if(p.getInventory().getHeldItemSlot() == Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
                                                 e.setCancelled(true);
                                                 return;
                                             }
@@ -570,7 +576,7 @@ public class utils implements Listener {
         Player p = e.getPlayer();
         File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
         try {
-            if (panelsf.list() == null || panelsf.list().length == 0) {
+            if (panelsf.list() == null || Objects.requireNonNull(panelsf.list()).length == 0) {
                 return;
             }
         }catch(Exception b){
@@ -585,29 +591,27 @@ public class utils implements Listener {
             if(!plugin.checkPanels(temp)){
                 return;
             }
-            for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
+            for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
                 if(temp.contains("panels." + key + ".open-with-item")){
+                    assert clicked != null;
                     if(clicked.getType() != Material.AIR) {
-                        ItemStack s = clicked;
                         //if loop has material first to stop 1.12.2 from spitting errors
                         //try and catch loop to stop errors with the same material type but different name
                         try {
-                            if (s.getType() == new ItemStack(Material.matchMaterial(temp.getString("panels." + key + ".open-with-item.material")), 1).getType()) {
-                                if ((ChatColor.translateAlternateColorCodes('&',s.getItemMeta().getDisplayName()).equals(ChatColor.translateAlternateColorCodes('&',temp.getString("panels." + key + ".open-with-item.name"))))) {
+                            if (clicked.getType() == new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1).getType()) {
+                                if ((ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.name")))))) {
                                     //cancel the click item event
                                     if(temp.contains("panels." + key + ".open-with-item.stationary")){
-                                        if(p.getInventory().getHeldItemSlot() == Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary"))){
+                                        if(p.getInventory().getHeldItemSlot() == Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
                                             e.setCancelled(true);
                                         }
                                     }
                                     return;
                                 }
                             }
-                        }catch(NullPointerException n){
-                            //do nothing
-                        }catch(IllegalArgumentException i){
-                            //do nothing
+                        }catch(NullPointerException | IllegalArgumentException n){
+                            plugin.debug(n);
                         }
                     }
                 }
@@ -620,6 +624,7 @@ public class utils implements Listener {
         if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block block = e.getClickedBlock();
             Player p = e.getPlayer();
+            assert block != null;
             if (block.getType().toString().contains("SIGN")) {
                 Sign sign = (Sign) block.getState();
                 if (ChatColor.stripColor(sign.getLine(0).trim()).equalsIgnoreCase(ChatColor.stripColor(plugin.config.getString("config.format.signtag")))) {
@@ -642,7 +647,7 @@ public class utils implements Listener {
         Player p = (Player)e.getPlayer();
         File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
         try {
-            if (panelsf.list() == null || panelsf.list().length == 0) {
+            if (panelsf.list() == null || Objects.requireNonNull(panelsf.list()).length == 0) {
                 return;
             }
         }catch(Exception b){
@@ -657,29 +662,26 @@ public class utils implements Listener {
             if(!plugin.checkPanels(temp)){
                 return;
             }
-            for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
+            for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
                 if (temp.contains("panels." + key + ".open-with-item")) {
                     if (clicked.getType() != Material.AIR) {
-                        ItemStack s = clicked;
                         //if loop has material first to stop 1.12.2 from spitting errors
                         //try and catch loop to stop errors with the same material type but different name
                         try {
-                            if (s.getType() == new ItemStack(Material.matchMaterial(temp.getString("panels." + key + ".open-with-item.material")), 1).getType()) {
-                                if ((ChatColor.translateAlternateColorCodes('&', s.getItemMeta().getDisplayName()).equals(ChatColor.translateAlternateColorCodes('&', temp.getString("panels." + key + ".open-with-item.name"))))) {
+                            if (clicked.getType() == new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1).getType()) {
+                                if ((ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.name")))))) {
                                     //cancel the click item event
                                     if (temp.contains("panels." + key + ".open-with-item.stationary")) {
-                                        if (p.getInventory().getHeldItemSlot() == Integer.parseInt(temp.getString("panels." + key + ".open-with-item.stationary"))) {
+                                        if (p.getInventory().getHeldItemSlot() == Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))) {
                                             e.setCancelled(true);
                                         }
                                     }
                                     return;
                                 }
                             }
-                        } catch (NullPointerException n) {
-                            //do nothing
-                        } catch (IllegalArgumentException i) {
-                            //do nothing
+                        } catch (NullPointerException | IllegalArgumentException n) {
+                            plugin.debug(n);
                         }
                     }
                 }
