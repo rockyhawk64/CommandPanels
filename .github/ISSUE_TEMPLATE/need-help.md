@@ -2,7 +2,7 @@
 name: Need help
 about: Create an issue for a problem you are having.
 title: ''
-labels: ''
+labels: 'help wanted'
 assignees: ''
 
 ---
