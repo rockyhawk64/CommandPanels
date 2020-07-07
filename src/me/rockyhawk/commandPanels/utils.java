@@ -32,8 +32,8 @@ public class utils implements Listener {
         if(e.getAction() == InventoryAction.NOTHING){return;}
         if (e.getRawSlot() == -999) {return;}
         if (e.getSlotType() != InventoryType.SlotType.QUICKBAR) {return;}
-        for(String[] panelName  : plugin.panelNames){
-            YamlConfiguration tempFile = plugin.panelFiles.get(Integer.parseInt(panelName[1]));
+        for(String[] panelName : plugin.panelNames){
+            YamlConfiguration tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1]))));
             String tempName = panelName[0];
             if(tempFile.contains("panels." + tempName + ".open-with-item") && Objects.requireNonNull(e.getClickedInventory()).getType() == InventoryType.PLAYER) {
                 try{
@@ -73,7 +73,7 @@ public class utils implements Listener {
                 //if the inventory is just a chest that has no panel
                 return;
             }
-            if (plugin.panelsf.list() == null || Objects.requireNonNull(plugin.panelsf.list()).length == 0) {
+            if (plugin.panelFiles == null) {
                 //if no panels are present
                 return;
             }
@@ -288,7 +288,7 @@ public class utils implements Listener {
             if(e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK && Objects.requireNonNull(e.getItem()).getType() == Material.AIR){
                 return;
             }
-            if (plugin.panelsf.list() == null || Objects.requireNonNull(plugin.panelsf.list()).length == 0) {
+            if (plugin.panelFiles == null) {
                 return;
             }
         }catch(Exception b){
@@ -297,7 +297,7 @@ public class utils implements Listener {
         ItemStack clicked = e.getItem();
         Player p = e.getPlayer();
         for(String[] panelName  : plugin.panelNames){
-            YamlConfiguration tempFile = plugin.panelFiles.get(Integer.parseInt(panelName[1]));
+            YamlConfiguration tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1]))));
             String tempName = panelName[0];
             if(tempFile.contains("panels." + tempName + ".open-with-item")) {
                 try{
@@ -336,7 +336,7 @@ public class utils implements Listener {
          */
         Player p = e.getPlayer();
         try {
-            if (plugin.panelsf.list() == null || Objects.requireNonNull(plugin.panelsf.list()).length == 0) {
+            if (plugin.panelFiles == null) {
                 return;
             }
         }catch(Exception b){
@@ -344,7 +344,8 @@ public class utils implements Listener {
         }
         YamlConfiguration cf; //this is the file to use for any panel.* requests
         String tpanels; //tpanels is the temp to check through the files
-        for(YamlConfiguration temp : plugin.panelFiles) { //will loop through all the files in folder
+        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
@@ -380,7 +381,7 @@ public class utils implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent e){
         Player p = e.getPlayer();
         try {
-            if (plugin.panelsf.list() == null || Objects.requireNonNull(plugin.panelsf.list()).length == 0) {
+            if (plugin.panelFiles == null) {
                 return;
             }
         }catch(Exception b){
@@ -388,7 +389,8 @@ public class utils implements Listener {
         }
         YamlConfiguration cf; //this is the file to use for any panel.* requests
         String tpanels; //tpanels is the temp to check through the files
-        for(YamlConfiguration temp : plugin.panelFiles) { //will loop through all the files in folder
+        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
@@ -421,9 +423,8 @@ public class utils implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e){
         Player p = (Player)e.getEntity();
-        File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
         try {
-            if (panelsf.list() == null || Objects.requireNonNull(panelsf.list()).length == 0) {
+            if (plugin.panelFiles == null) {
                 return;
             }
         }catch(Exception b){
@@ -431,7 +432,8 @@ public class utils implements Listener {
         }
         YamlConfiguration cf; //this is the file to use for any panel.* requests
         String tpanels; //tpanels is the temp to check through the files
-        for(YamlConfiguration temp : plugin.panelFiles) { //will loop through all the files in folder
+        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
@@ -457,7 +459,6 @@ public class utils implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e){
         Player p = e.getPlayer();
-        File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
         String tag = plugin.config.getString("config.format.tag") + " ";
         if(p.isOp() || p.hasPermission("*.*")){
             if(plugin.update) {
@@ -466,14 +467,15 @@ public class utils implements Listener {
             }
         }
         try {
-            if (panelsf.list() == null || Objects.requireNonNull(panelsf.list()).length == 0) {
+            if (plugin.panelFiles == null) {
                 return;
             }
         }catch(Exception b){
             return;
         }
         String tpanels; //tpanels is the temp to check through the files
-        for(YamlConfiguration temp : plugin.panelFiles) { //will loop through all the files in folder
+        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
@@ -526,9 +528,8 @@ public class utils implements Listener {
     public void onPlayerDropItem(PlayerDropItemEvent e){
         //if item dropped
         Player p = e.getPlayer();
-        File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
         try {
-            if (panelsf.list() == null || Objects.requireNonNull(panelsf.list()).length == 0) {
+            if (plugin.panelFiles == null) {
                 return;
             }
         }catch(Exception b){
@@ -537,7 +538,8 @@ public class utils implements Listener {
         YamlConfiguration cf; //this is the file to use for any panel.* requests
         String tpanels; //tpanels is the temp to check through the files
         ItemStack clicked = e.getItemDrop().getItemStack();
-        for(YamlConfiguration temp : plugin.panelFiles) { //will loop through all the files in folder
+        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
@@ -574,9 +576,8 @@ public class utils implements Listener {
     @EventHandler
     public void onPlayerSwapHandItemsEvent​(PlayerSwapHandItemsEvent e){
         Player p = e.getPlayer();
-        File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
         try {
-            if (panelsf.list() == null || Objects.requireNonNull(panelsf.list()).length == 0) {
+            if (plugin.panelFiles == null) {
                 return;
             }
         }catch(Exception b){
@@ -585,7 +586,8 @@ public class utils implements Listener {
         YamlConfiguration cf; //this is the file to use for any panel.* requests
         String tpanels; //tpanels is the temp to check through the files
         ItemStack clicked = e.getOffHandItem();
-        for(YamlConfiguration temp : plugin.panelFiles) { //will loop through all the files in folder
+        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
@@ -645,9 +647,8 @@ public class utils implements Listener {
     public void onInteractEntity(PlayerInteractEntityEvent e){
         //cancel everything if holding item (item frames eg)
         Player p = (Player)e.getPlayer();
-        File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
         try {
-            if (panelsf.list() == null || Objects.requireNonNull(panelsf.list()).length == 0) {
+            if (plugin.panelFiles == null) {
                 return;
             }
         }catch(Exception b){
@@ -656,7 +657,8 @@ public class utils implements Listener {
         YamlConfiguration cf; //this is the file to use for any panel.* requests
         String tpanels; //tpanels is the temp to check through the files
         ItemStack clicked = e.getPlayer().getInventory().getItemInMainHand();
-        for(YamlConfiguration temp : plugin.panelFiles) { //will loop through all the files in folder
+        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){

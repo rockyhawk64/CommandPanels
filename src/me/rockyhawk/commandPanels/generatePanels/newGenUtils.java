@@ -39,7 +39,8 @@ public class newGenUtils implements Listener {
         YamlConfiguration cf;
         ArrayList<String> apanels = new ArrayList<String>(); //all panels from all files (panel names)
         try {
-            for(YamlConfiguration temp : plugin.panelFiles) { //will loop through all the files in folder
+            for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 if(!plugin.checkPanels(temp)){
                     continue;
                 }

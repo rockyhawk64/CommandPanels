@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.File;
 import java.util.*;
 
 public class commandpanel implements CommandExecutor {
@@ -32,7 +33,8 @@ public class commandpanel implements CommandExecutor {
         boolean found = false;
         //below is going to go through the files and find the right one
         if (args.length != 0) { //check to make sure the person hasn't just left it empty
-            for (YamlConfiguration temp : plugin.panelFiles) { //will loop through all the files in folder
+            for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 if(!plugin.checkPanels(temp)){
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + ": Panel with syntax error found!"));
                     return true;

@@ -24,10 +24,9 @@ public class commandpanelslist implements CommandExecutor {
         if (label.equalsIgnoreCase("cpl") || label.equalsIgnoreCase("commandpanellist") || label.equalsIgnoreCase("cpanell")) {
             if (sender.hasPermission("commandpanel.list")) {
                 //command /cpl
-                File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
-                //check to make sure the panels folder isn't empty
+                //check to make sure the panels isn't empty
                 try {
-                    if (panelsf.list() == null || panelsf.list().length == 0) {
+                    if (plugin.panelFiles == null) {
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "No panels found!"));
                         return true;
                     }
@@ -35,15 +34,14 @@ public class commandpanelslist implements CommandExecutor {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "No panels found!"));
                     return true;
                 }
-                ArrayList<String> filenames = new ArrayList<String>(Arrays.asList(panelsf.list()));
                 ArrayList<String> apanels = new ArrayList<String>(); //all panels from all files (panel names)
                 String tpanels; //tpanels is the temp to check through the files
-                for (int f = 0; filenames.size() > f; f++) { //will loop through all the files in folder
+                for (int f = 0; plugin.panelFiles.size() > f; f++) { //will loop through all the files in folder
                     String key;
                     YamlConfiguration temp;
                     tpanels = "";
-                    temp = YamlConfiguration.loadConfiguration(new File(panelsf + File.separator + filenames.get(f)));
-                    apanels.add("%file%" + filenames.get(f));
+                    temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(f)));
+                    apanels.add("%file%" + plugin.panelFiles.get(f));
                     if(!plugin.checkPanels(temp)){
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
                         return true;

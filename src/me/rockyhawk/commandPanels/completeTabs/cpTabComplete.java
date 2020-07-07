@@ -7,6 +7,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -23,7 +24,8 @@ public class cpTabComplete implements TabCompleter {
                 ArrayList<String> apanels = new ArrayList<String>(); //all panels
                 String tpanels; //tpanels is the temp to check through the files
                 try {
-                    for (YamlConfiguration temp : plugin.panelFiles) { //will loop through all the files in folder
+                    for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+                        YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                         String key;
                         tpanels = "";
                         if(!plugin.checkPanels(temp)){

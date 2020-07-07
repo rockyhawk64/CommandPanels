@@ -54,7 +54,7 @@ public class commandpanels extends JavaPlugin {
     public List<String> panelRunning = new ArrayList();
     public List<String[]> userInputStrings = new ArrayList();
     public List<String[]> editorInputStrings = new ArrayList();
-    public ArrayList<YamlConfiguration> panelFiles = new ArrayList<YamlConfiguration>();
+    public ArrayList<String> panelFiles = new ArrayList<String>(); //names of all the files in the panels folder including extension
     public ArrayList<String[]> panelNames = new ArrayList<String[]>(); //this will return something like {"mainMenuPanel","4"} which means the 4 is for panelFiles.get(4). So you know which file it is for
     public File panelsf;
 
@@ -1127,8 +1127,12 @@ public class commandpanels extends JavaPlugin {
             panelNames.clear();
             int count = 0;
             for (String fileName : Objects.requireNonNull(panelsf.list())) {
-                panelFiles.add(YamlConfiguration.loadConfiguration(new File(panelsf + File.separator + fileName)));
-                for (String tempName : Objects.requireNonNull(panelFiles.get(count).getConfigurationSection("panels")).getKeys(false)) {
+                int ind = fileName.lastIndexOf(".");
+                if(!fileName.substring(ind).equalsIgnoreCase(".yml") && !fileName.substring(ind).equalsIgnoreCase(".yaml")){
+                    continue;
+                }
+                panelFiles.add(fileName);
+                for (String tempName : Objects.requireNonNull(YamlConfiguration.loadConfiguration(new File(panelsf + File.separator + fileName)).getConfigurationSection("panels")).getKeys(false)) {
                     panelNames.add(new String[]{tempName, Integer.toString(count)});
                 }
                 count += 1;
@@ -1196,7 +1200,8 @@ public class commandpanels extends JavaPlugin {
         ArrayList<String> panelTitles = new ArrayList<String>(); //all panels from ALL files (panel titles)
         ArrayList<Material> panelItems = new ArrayList<Material>(); //all panels from ALL files (panel materials)
         try {
-            for (YamlConfiguration temp : panelFiles) { //will loop through all the files in folder
+            for(String fileName : panelFiles) { //will loop through all the files in folder
+                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(panelsf + File.separator + fileName));
                 String key;
                 if (!checkPanels(temp)) {
                     return;

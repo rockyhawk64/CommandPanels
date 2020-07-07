@@ -12,9 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Objects;
 
 public class commandpanelrefresher implements Listener {
     commandpanels plugin;
@@ -28,7 +26,7 @@ public class commandpanelrefresher implements Listener {
     public void onInventoryOpen(InventoryOpenEvent e){ //Handles when Players open inventory
         //I have to convert HumanEntity to a player
         if (plugin.config.contains("config.refresh-panels")) {
-            if (plugin.config.getString("config.refresh-panels").trim().equalsIgnoreCase("false")) {
+            if (Objects.requireNonNull(plugin.config.getString("config.refresh-panels")).trim().equalsIgnoreCase("false")) {
                 return;
             }
         }
@@ -44,28 +42,27 @@ public class commandpanelrefresher implements Listener {
         YamlConfiguration cf = null;
         String panel = null;
         String panelTitle = null;
-        ArrayList<String> filenames = new ArrayList<String>(Arrays.asList(plugin.panelsf.list()));
         try {
             boolean foundPanel = false;
-            for (int f = 0; filenames.size() > f; f++) { //will loop through all the files in folder
+            for (String fileName : plugin.panelFiles) { //will loop through all the files in folder
                 String key;
-                YamlConfiguration temp;
-                temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filenames.get(f)));
-                if(!plugin.checkPanels(temp)){
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + ": File with no Panels found or Panel with syntax error Found!")));
+                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
+                if (!plugin.checkPanels(temp)) {
+                    assert p != null;
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + plugin.papi(p, plugin.config.getString("config.format.error") + ": File with no Panels found or Panel with syntax error Found!")));
                     return;
                 }
-                for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext();) {
-                    key = (String) var10.next();
-                    if(ChatColor.translateAlternateColorCodes('&',temp.getString("panels." + key + ".title")).equals(e.getView().getTitle())){
+                for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
+                    key = s;
+                    if (ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))).equals(e.getView().getTitle())) {
                         panel = key;
-                        panelTitle = ChatColor.translateAlternateColorCodes('&',temp.getString("panels." + key + ".title"));
-                        cf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filenames.get(f)));
-                        foundPanel= true;
+                        panelTitle = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title")));
+                        cf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
+                        foundPanel = true;
                         break;
                     }
                 }
-                if(foundPanel){
+                if (foundPanel) {
                     //this is to avoid the plugin to continue looking when it was already found
                     break;
                 }
@@ -77,15 +74,17 @@ public class commandpanelrefresher implements Listener {
             return;
         }
         //there is already a runnable running for this player
+        assert p != null;
         if(plugin.panelRunning.contains(p.getName() + ";" +  panel)){
             return;
         }
         plugin.panelRunning.add(p.getName() + ";" +  panel);
         if (plugin.config.contains("config.panel-snooper")) {
-            if (plugin.config.getString("config.panel-snooper").trim().equalsIgnoreCase("true")) {
+            if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + p.getName() + " Opened " + panel);
             }
         }
+        assert cf != null;
         if(cf.contains("panels." + panel + ".animatevalue")){
             animatevalue = cf.getInt("panels." + panel + ".animatevalue");
         }
@@ -98,7 +97,7 @@ public class commandpanelrefresher implements Listener {
             @Override
             public void run() {
                 //counter counts to refresh delay (in seconds) then restarts
-                if(c < Double.parseDouble(plugin.config.getString("config.refresh-delay").trim())){
+                if(c < Double.parseDouble(Objects.requireNonNull(plugin.config.getString("config.refresh-delay")).trim())){
                     c+=1;
                 }else{
                     c=0;
@@ -121,9 +120,9 @@ public class commandpanelrefresher implements Listener {
                         }
                     }
                 }else{
-                    if(plugin.config.getString("config.stop-sound").trim().equalsIgnoreCase("true")){
+                    if(Objects.requireNonNull(plugin.config.getString("config.stop-sound")).trim().equalsIgnoreCase("true")){
                         try {
-                            p.stopSound(Sound.valueOf(cfFinal.getString("panels." + fpanel + ".sound-on-open").toUpperCase()));
+                            p.stopSound(Sound.valueOf(Objects.requireNonNull(cfFinal.getString("panels." + fpanel + ".sound-on-open")).toUpperCase()));
                         }catch(Exception sou){
                             //skip
                         }
@@ -162,7 +161,7 @@ public class commandpanelrefresher implements Listener {
                     }
                     plugin.panelRunning.remove(p.getName() + ";" +  fpanel);
                     if (plugin.config.contains("config.panel-snooper")) {
-                        if (plugin.config.getString("config.panel-snooper").trim().equalsIgnoreCase("true")) {
+                        if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {
                             Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + p.getName() + " Closed " + fpanel);
                         }
                     }

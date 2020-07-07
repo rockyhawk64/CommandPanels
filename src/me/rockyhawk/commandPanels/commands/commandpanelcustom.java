@@ -38,7 +38,8 @@ public class commandpanelcustom implements Listener {
         ArrayList<String> apanels = new ArrayList<String>(); //all panels from all files (panel names)
         String tpanels; //tpanels is the temp to check through the files
         String panel = null;
-        for (YamlConfiguration temp : plugin.panelFiles) { //will loop through all the files in folder
+        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){

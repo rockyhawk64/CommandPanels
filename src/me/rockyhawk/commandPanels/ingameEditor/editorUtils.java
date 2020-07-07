@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class editorUtils implements Listener {
     public YamlConfiguration tempEdit;
@@ -31,7 +32,7 @@ public class editorUtils implements Listener {
         Player p = (Player)e.getWhoClicked();
         //if the inventory isn't the editor main window
         try {
-            if (e.getClickedInventory().getType() != InventoryType.CHEST) {
+            if (Objects.requireNonNull(e.getClickedInventory()).getType() != InventoryType.CHEST) {
                 return;
             }
         }catch(NullPointerException nu){return;}
@@ -46,15 +47,16 @@ public class editorUtils implements Listener {
         ArrayList<String> panelTitles = new ArrayList<String>(); //all panels from ALL files (panel titles)
         ArrayList<YamlConfiguration> panelYaml = new ArrayList<YamlConfiguration>(); //all panels from ALL files (panel yaml files)
         try {
-            for (YamlConfiguration temp : plugin.panelFiles) { //will loop through all the files in folder
+            for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 String key;
                 if(!plugin.checkPanels(temp)){
                     return;
                 }
-                for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext();) {
-                    key = (String) var10.next();
+                for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
+                    key = s;
                     panelNames.add(ChatColor.translateAlternateColorCodes('&', key));
-                    panelTitles.add(ChatColor.translateAlternateColorCodes('&', temp.getString("panels." + key + ".title")));
+                    panelTitles.add(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))));
                     panelYaml.add(temp);
                 }
             }
@@ -66,16 +68,16 @@ public class editorUtils implements Listener {
         if(e.getSlot() == 48){
             //previous page button
             try {
-                if (e.getCurrentItem().getType() == Material.PAPER) {
+                if (Objects.requireNonNull(e.getCurrentItem()).getType() == Material.PAPER) {
                     plugin.openEditorGui(p, -1);
                     p.updateInventory();
                     return;
                 }
-            }catch(NullPointerException nu){}
+            }catch(NullPointerException ignored){}
         }
         if(e.getSlot() == 49){
             //sunflower page index
-            if(e.getCurrentItem().getType() == Material.SUNFLOWER){
+            if(Objects.requireNonNull(e.getCurrentItem()).getType() == Material.SUNFLOWER){
                 p.updateInventory();
                 return;
             }
@@ -83,12 +85,12 @@ public class editorUtils implements Listener {
         if(e.getSlot() == 50){
             //next page button
             try{
-                if(e.getCurrentItem().getType() == Material.PAPER){
+                if(Objects.requireNonNull(e.getCurrentItem()).getType() == Material.PAPER){
                     plugin.openEditorGui(p, 1);
                     p.updateInventory();
                     return;
                 }
-            }catch(NullPointerException nu){}
+            }catch(NullPointerException ignored){}
         }
         if(e.getSlot() == 45){
             //exit button
@@ -104,7 +106,7 @@ public class editorUtils implements Listener {
                         //if left click
                         int count = 0;
                         for(String panelName : panelNames){
-                            if(panelName.equals(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()))){
+                            if(panelName.equals(ChatColor.stripColor(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getDisplayName()))){
                                 plugin.openGui(panelName, p, panelYaml.get(count),3,0);
                                 return;
                             }
@@ -114,7 +116,7 @@ public class editorUtils implements Listener {
                         //if right click
                         int count = 0;
                         for(String panelName : panelNames){
-                            if(panelName.equals(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()))){
+                            if(panelName.equals(ChatColor.stripColor(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getDisplayName()))){
                                 plugin.openPanelSettings(p,panelName,panelYaml.get(count));
                                 return;
                             }
@@ -123,7 +125,7 @@ public class editorUtils implements Listener {
                         p.updateInventory();
                     }
                 }
-            }catch(NullPointerException nu){}
+            }catch(NullPointerException ignored){}
         }
         p.updateInventory();
     }
@@ -142,17 +144,17 @@ public class editorUtils implements Listener {
         boolean found = false;
         try {
             //neew to loop through files to get file names
-            for (File tempFile : plugin.panelsf.listFiles()) { //will loop through all the files in folder
+            for(String fileTempName : plugin.panelFiles) { //will loop through all the files in folder
+                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 String key;
-                YamlConfiguration temp = YamlConfiguration.loadConfiguration(tempFile);
                 if(!plugin.checkPanels(temp)){
                     return;
                 }
-                for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext();) {
-                    key = (String) var10.next();
-                    if(e.getView().getTitle().equals(ChatColor.GRAY + "Editing Panel: " + ChatColor.translateAlternateColorCodes('&', temp.getString("panels." + key + ".title")))){
+                for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
+                    key = s;
+                    if (e.getView().getTitle().equals(ChatColor.GRAY + "Editing Panel: " + ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
                         panelName = key;
-                        fileName = tempFile.getName();
+                        fileName = fileTempName;
                         file = temp;
                         found = true;
                         break;
@@ -328,7 +330,8 @@ public class editorUtils implements Listener {
         boolean found = false;
         try {
             //neew to loop through files to get file names
-            for (YamlConfiguration temp : plugin.panelFiles) { //will loop through all configs
+            for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 if(!plugin.checkPanels(temp)){
                     return;
                 }
@@ -425,7 +428,8 @@ public class editorUtils implements Listener {
         boolean found = false;
         try {
             //neew to loop through files to get file names
-            for (YamlConfiguration temp : plugin.panelFiles) { //will loop through all configs
+            for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 if(!plugin.checkPanels(temp)){
                     return;
                 }
