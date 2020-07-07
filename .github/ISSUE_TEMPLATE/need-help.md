@@ -2,13 +2,13 @@
 name: Need help
 about: Create an issue for a problem you are having.
 title: ''
-labels: ''
+labels: 'help wanted'
 assignees: ''
 
 ---
 
 **Describe the Issue**
-A clear and concise description of what the bug is.
+A clear and concise description of what the problem is.
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
