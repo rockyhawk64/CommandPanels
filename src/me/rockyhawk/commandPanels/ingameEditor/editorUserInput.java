@@ -13,6 +13,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class editorUserInput implements Listener {
     commandpanels plugin;
@@ -34,16 +35,16 @@ public class editorUserInput implements Listener {
             String section = temp[2];
             YamlConfiguration cf = null;
             try {
-                for (File tempFile : plugin.panelsf.listFiles()) { //will loop through all the files in folder
-                    YamlConfiguration tempConf = YamlConfiguration.loadConfiguration(tempFile);
+                for (String tempFile : plugin.panelFiles) { //will loop through all the files in folder
+                    YamlConfiguration tempConf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + tempFile));
                     if (!plugin.checkPanels(tempConf)) {
                         continue;
                     }
-                    for (String key : tempConf.getConfigurationSection("panels").getKeys(false)) {
+                    for (String key : Objects.requireNonNull(tempConf.getConfigurationSection("panels")).getKeys(false)) {
                         if (key.equals(panelName)) {
                             cf = tempConf;
-                            panelFile = tempFile;
-                            panelTitle = ChatColor.translateAlternateColorCodes('&',tempConf.getString("panels." + key + ".title"));
+                            panelFile = new File(plugin.panelsf + File.separator + tempFile);
+                            panelTitle = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(tempConf.getString("panels." + key + ".title")));
                             break;
                         }
                     }
@@ -55,7 +56,7 @@ public class editorUserInput implements Listener {
             if(e.getMessage().equalsIgnoreCase(plugin.config.getString("config.input-cancel"))){
                 plugin.editorInputStrings.remove(temp);
                 plugin.reloadPanelFiles();
-                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',plugin.config.getString("config.input-cancelled")));
+                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(plugin.config.getString("config.input-cancelled"))));
                 return;
             }
             if(section.startsWith("panel.")) {
@@ -96,7 +97,7 @@ public class editorUserInput implements Listener {
         switch (section) {
             case "panel.delete":
                 if (e.getMessage().contains("y")) {
-                    if(cf.getConfigurationSection("panels").getKeys(false).size() != 1){
+                    if(Objects.requireNonNull(cf.getConfigurationSection("panels")).getKeys(false).size() != 1){
                         //if the file has more than one panel in it
                         cf.set("panels." + panelName, null);
                         if(savePanelFile(cf, panelFile)){
@@ -170,7 +171,7 @@ public class editorUserInput implements Listener {
                 }
                 String materialTemp = null;
                 try {
-                    materialTemp = Material.matchMaterial(e.getMessage()).toString();
+                    materialTemp = Objects.requireNonNull(Material.matchMaterial(e.getMessage())).toString();
                 }catch(NullPointerException ex){
                     p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + e.getMessage() + " is not a valid Material!"));
                 }
@@ -218,7 +219,7 @@ public class editorUserInput implements Listener {
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Added new command: " + e.getMessage()));
                 break;
             case "panel.commands-on-open.remove":
-                List<String> commandsOnOpenRemove = new ArrayList<>();
+                List<String> commandsOnOpenRemove;
                 if(cf.contains("panels." + panelName + ".commands-on-open")){
                     commandsOnOpenRemove = cf.getStringList("panels." + panelName + ".commands-on-open");
                 }else{
@@ -344,7 +345,7 @@ public class editorUserInput implements Listener {
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Added new command: " + e.getMessage()));
                 break;
             case "commands.remove":
-                List<String> commandsOnOpenRemove = new ArrayList<>();
+                List<String> commandsOnOpenRemove;
                 if(cf.contains("panels." + panelName + ".item." + itemSlot + ".commands")){
                     commandsOnOpenRemove = cf.getStringList("panels." + panelName + ".item." + itemSlot + ".commands");
                 }else{
@@ -376,7 +377,7 @@ public class editorUserInput implements Listener {
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Added new lore: " + e.getMessage()));
                 break;
             case "lore.remove":
-                List<String> loreOnOpenRemove = new ArrayList<>();
+                List<String> loreOnOpenRemove;
                 if(cf.contains("panels." + panelName + ".item." + itemSlot + ".lore")){
                     loreOnOpenRemove = cf.getStringList("panels." + panelName + ".item." + itemSlot + ".lore");
                 }else{

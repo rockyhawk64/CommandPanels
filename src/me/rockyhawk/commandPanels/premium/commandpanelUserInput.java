@@ -6,6 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.util.Objects;
+
 public class commandpanelUserInput implements Listener {
     commandpanels plugin;
     public commandpanelUserInput(commandpanels pl) {
@@ -17,7 +19,7 @@ public class commandpanelUserInput implements Listener {
             if(plugin.userInputStrings.get(o)[0].equals(e.getPlayer().getName())){
                 if(e.getMessage().equalsIgnoreCase(plugin.config.getString("config.input-cancel"))){
                     e.setCancelled(true);
-                    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.config.getString("config.input-cancelled")));
+                    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(plugin.config.getString("config.input-cancelled"))));
                     for(int i = 0; plugin.userInputStrings.size() > i; i++){
                         if(plugin.userInputStrings.get(i)[0].equals(e.getPlayer().getName())){
                             plugin.userInputStrings.remove(i);

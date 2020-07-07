@@ -1,7 +1,6 @@
 package me.rockyhawk.commandPanels.ingameEditor;
 
 import me.rockyhawk.commandPanels.commandpanels;
-import net.milkbowl.vault.chat.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Objects;
 
 public class editorUtils implements Listener {
@@ -101,7 +99,7 @@ public class editorUtils implements Listener {
         if(e.getSlot() <= 44){
             //if panel slots are selected
             try{
-                if(e.getCurrentItem().getType() != Material.AIR){
+                if(Objects.requireNonNull(e.getCurrentItem()).getType() != Material.AIR){
                     if(e.getClick().isLeftClick() && !e.getClick().isShiftClick()){
                         //if left click
                         int count = 0;
@@ -172,7 +170,7 @@ public class editorUtils implements Listener {
         //this basically just determines if something is dragged.
         try {
             if (tempEdit.contains("panels." + panelName + ".temp." + p.getName() + ".material")) {
-                if (e.getOldCursor().getType() != Material.matchMaterial(tempEdit.getString("panels." + panelName + ".temp." + p.getName() + ".material"))) {
+                if (e.getOldCursor().getType() != Material.matchMaterial(Objects.requireNonNull(tempEdit.getString("panels." + panelName + ".temp." + p.getName() + ".material")))) {
                     clearTemp(p, panelName);
                     return;
                 }
@@ -211,17 +209,17 @@ public class editorUtils implements Listener {
         boolean found = false;
         try {
             //neew to loop through files to get file names
-            for (File tempFile : plugin.panelsf.listFiles()) { //will loop through all the files in folder
+            for(String tempName : plugin.panelFiles) { //will loop through all the files in folder
+                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + tempName));
                 String key;
-                YamlConfiguration temp = YamlConfiguration.loadConfiguration(tempFile);
                 if(!plugin.checkPanels(temp)){
                     return;
                 }
-                for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext();) {
-                    key = (String) var10.next();
-                    if(e.getView().getTitle().equals(ChatColor.GRAY + "Editing Panel: " + ChatColor.translateAlternateColorCodes('&', temp.getString("panels." + key + ".title")))){
+                for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
+                    key = s;
+                    if (e.getView().getTitle().equals(ChatColor.GRAY + "Editing Panel: " + ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
                         panelName = key;
-                        fileName = tempFile;
+                        fileName = new File(plugin.panelsf + File.separator + tempName);
                         file = temp;
                         found = true;
                         break;
@@ -257,9 +255,9 @@ public class editorUtils implements Listener {
             return;
         }
         if(tempEdit.contains("panels." + panelName + ".temp." + p.getName() + ".material")) {
-            if(e.getCursor().getType() != Material.PLAYER_HEAD) {
+            if(Objects.requireNonNull(e.getCursor()).getType() != Material.PLAYER_HEAD) {
                 //if the material doesn't match and also isn't a PLAYER_HEAD
-                if (e.getCursor().getType() != Material.matchMaterial(tempEdit.getString("panels." + panelName + ".temp." + p.getName() + ".material"))) {
+                if (e.getCursor().getType() != Material.matchMaterial(Objects.requireNonNull(tempEdit.getString("panels." + panelName + ".temp." + p.getName() + ".material")))) {
                     clearTemp(p, panelName);
                 }
             }
@@ -315,7 +313,7 @@ public class editorUtils implements Listener {
         Player p = (Player)e.getWhoClicked();
         String tag = plugin.config.getString("config.format.tag") + " ";
         try {
-            if (e.getClickedInventory().getType() != InventoryType.CHEST) {
+            if (Objects.requireNonNull(e.getClickedInventory()).getType() != InventoryType.CHEST) {
                 return;
             }
         }catch(Exception outOf){
@@ -335,7 +333,7 @@ public class editorUtils implements Listener {
                 if(!plugin.checkPanels(temp)){
                     return;
                 }
-                for (String key : temp.getConfigurationSection("panels").getKeys(false)){
+                for (String key : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)){
                     if(e.getView().getTitle().equals("Panel Settings: " + key)){
                         panelName = key;
                         found = true;
@@ -412,7 +410,7 @@ public class editorUtils implements Listener {
         Player p = (Player)e.getWhoClicked();
         String tag = plugin.config.getString("config.format.tag") + " ";
         try {
-            if (e.getClickedInventory().getType() != InventoryType.CHEST) {
+            if (Objects.requireNonNull(e.getClickedInventory()).getType() != InventoryType.CHEST) {
                 return;
             }
         }catch(Exception outOf){
@@ -433,7 +431,7 @@ public class editorUtils implements Listener {
                 if(!plugin.checkPanels(temp)){
                     return;
                 }
-                for (String key : temp.getConfigurationSection("panels").getKeys(false)){
+                for (String key : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)){
                     if(e.getView().getTitle().equals("Item Settings: " + key)){
                         panelName = key;
                         panelYaml = temp;
@@ -452,7 +450,7 @@ public class editorUtils implements Listener {
         }
         int itemSlot;
         try {
-            itemSlot = Integer.parseInt(e.getView().getTopInventory().getItem(35).getItemMeta().getDisplayName().split("\\s")[2]);
+            itemSlot = Integer.parseInt(Objects.requireNonNull(Objects.requireNonNull(e.getView().getTopInventory().getItem(35)).getItemMeta()).getDisplayName().split("\\s")[2]);
         }catch(Exception ex){
             plugin.getServer().getConsoleSender().sendMessage("[CommandPanels] Could not get item slot");
             plugin.debug(ex);
@@ -562,17 +560,17 @@ public class editorUtils implements Listener {
         boolean found = false;
         try {
             //neew to loop through files to get file names
-            for (File tempFile : plugin.panelsf.listFiles()) { //will loop through all the files in folder
+            for(String tempFile : plugin.panelFiles) { //will loop through all the files in folder
+                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + tempFile));
                 String key;
-                YamlConfiguration temp = YamlConfiguration.loadConfiguration(tempFile);
                 if(!plugin.checkPanels(temp)){
                     return;
                 }
-                for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext();) {
-                    key = (String) var10.next();
-                    if(invView.getTitle().equals(ChatColor.GRAY + "Editing Panel: " + ChatColor.translateAlternateColorCodes('&', temp.getString("panels." + key + ".title")))){
+                for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
+                    key = s;
+                    if (invView.getTitle().equals(ChatColor.GRAY + "Editing Panel: " + ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
                         panelName = key;
-                        fileName = tempFile.getName();
+                        fileName = tempFile;
                         file = temp;
                         found = true;
                         break;
@@ -602,7 +600,7 @@ public class editorUtils implements Listener {
                     }
                 }
                 if(file.contains("panels." + panelName + ".item." + i + ".material")){
-                    if(file.getString("panels." + panelName + ".item." + i + ".material").contains("%") || file.getString("panels." + panelName + ".item." + i + ".material").contains("=")){
+                    if(Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("%") || Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("=")){
                         if(cont.getType() != Material.PLAYER_HEAD){
                             file.set("panels." + panelName + ".item." + i + ".material", cont.getType().toString());
                         }
@@ -626,15 +624,15 @@ public class editorUtils implements Listener {
                 }
                 if(file.contains("panels." + panelName + ".item." + i + ".name")){
                     //these will ensure &f items (blank items) will be set to &f to stay blank
-                    if(file.getString("panels." + panelName + ".item." + i + ".name").equalsIgnoreCase("&f") || file.getString("panels." + panelName + ".item." + i + ".name").equalsIgnoreCase("§f")){
+                    if(Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".name")).equalsIgnoreCase("&f") || file.getString("panels." + panelName + ".item." + i + ".name").equalsIgnoreCase("§f")){
                         file.set("panels." + panelName + ".item." + i + ".name", "&f");
                     }else{
-                        file.set("panels." + panelName + ".item." + i + ".name", cont.getItemMeta().getDisplayName());
+                        file.set("panels." + panelName + ".item." + i + ".name", Objects.requireNonNull(cont.getItemMeta()).getDisplayName());
                     }
                 }else {
-                    file.set("panels." + panelName + ".item." + i + ".name", cont.getItemMeta().getDisplayName());
+                    file.set("panels." + panelName + ".item." + i + ".name", Objects.requireNonNull(cont.getItemMeta()).getDisplayName());
                 }
-                file.set("panels." + panelName + ".item." + i + ".lore", cont.getItemMeta().getLore());
+                file.set("panels." + panelName + ".item." + i + ".lore", Objects.requireNonNull(cont.getItemMeta()).getLore());
             }catch(Exception n){
                 //skip over an item that spits an error
             }

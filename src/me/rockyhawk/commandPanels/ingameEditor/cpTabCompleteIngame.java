@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 
 public class cpTabCompleteIngame implements TabCompleter {
@@ -31,7 +32,7 @@ public class cpTabCompleteIngame implements TabCompleter {
                         if(!plugin.checkPanels(temp)){
                             return null;
                         }
-                        for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
+                        for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                             key = (String) var10.next();
                             if(!key.startsWith(args[0])){
                                 //this will narrow down the panels to what the user types
@@ -40,6 +41,8 @@ public class cpTabCompleteIngame implements TabCompleter {
                             if(sender.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm"))) {
                                 if(temp.contains("panels." + key + ".disabled-worlds")){
                                     List<String> disabledWorlds = (List<String>) temp.getList("panels." + key + ".disabled-worlds");
+                                    assert p != null;
+                                    assert disabledWorlds != null;
                                     if(!disabledWorlds.contains(p.getWorld().getName())){
                                         apanels.add(key);
                                     }

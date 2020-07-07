@@ -12,8 +12,8 @@ import org.bukkit.event.player.*;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class commandpanelcustom implements Listener {
     commandpanels plugin;
@@ -27,13 +27,12 @@ public class commandpanelcustom implements Listener {
         Player p = (Player)e.getPlayer();
         File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
         try {
-            if (panelsf.list() == null || panelsf.list().length == 0) {
+            if (panelsf.list() == null || Objects.requireNonNull(panelsf.list()).length == 0) {
                 return;
             }
         }catch(Exception b){
             return;
         }
-        ArrayList<String> filenames = new ArrayList<String>(Arrays.asList(panelsf.list()));
         YamlConfiguration cf; //this is the file to use for any panel.* requests
         ArrayList<String> apanels = new ArrayList<String>(); //all panels from all files (panel names)
         String tpanels; //tpanels is the temp to check through the files
@@ -50,7 +49,7 @@ public class commandpanelcustom implements Listener {
                 }
                 return;
             }
-            for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
+            for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
                 apanels.add(key);
             }

@@ -27,7 +27,7 @@ public class cpIngameEditCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));
             return true;
         }
-        if(plugin.config.getString("config.ingame-editor").equalsIgnoreCase("false")){
+        if(Objects.requireNonNull(plugin.config.getString("config.ingame-editor")).equalsIgnoreCase("false")){
             //this will cancel every /cpe command if ingame-editor is set to false
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Editor disabled!"));
             return true;
@@ -36,8 +36,6 @@ public class cpIngameEditCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Please execute command as a Player!"));
             return true;
         }
-        File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
-        ArrayList<String> filenames = new ArrayList<String>(Arrays.asList(panelsf.list()));
         File panelscf = new File(plugin.getDataFolder() + File.separator + "panels" + File.separator + "example.yml"); //cf == correct file
         YamlConfiguration cf; //this is the file to use for any panel.* requests
         String panels = "";
@@ -46,13 +44,13 @@ public class cpIngameEditCommand implements CommandExecutor {
         String tpanels; //tpanels is the temp to check through the files
         //below is going to go through the files and find the right one
         if (args.length != 0) { //check to make sure the person hasn't just left it empty
-            for (int f = 0; filenames.size() > f; f++) { //will loop through all the files in folder
+            for (String filename : plugin.panelFiles) { //will loop through all the files in folder
                 String key;
                 YamlConfiguration temp;
                 tpanels = "";
-                temp = YamlConfiguration.loadConfiguration(new File(panelsf + File.separator + filenames.get(f)));
-                if(!plugin.checkPanels(temp)){
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
+                temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filename));
+                if (!plugin.checkPanels(temp)) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
                     return true;
                 }
                 for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
@@ -70,9 +68,9 @@ public class cpIngameEditCommand implements CommandExecutor {
                     }
                 }
                 //if nfound is true it was not found
-                if(!nfound){
+                if (!nfound) {
                     panels = tpanels;
-                    panelscf = new File(panelsf + File.separator + filenames.get(f));
+                    panelscf = new File(plugin.panelsf + File.separator + filename);
                 }
             }
             panels = panels.trim();

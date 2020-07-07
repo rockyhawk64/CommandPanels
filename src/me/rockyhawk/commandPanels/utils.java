@@ -80,14 +80,12 @@ public class utils implements Listener {
         }catch(Exception b){
             return;
         }
-        ArrayList<String> filenames = new ArrayList<String>(Arrays.asList(Objects.requireNonNull(plugin.panelsf.list())));
         YamlConfiguration cf = null; //this is the file to use for any panel.* requests
         String panel = null;
         boolean foundPanel = false;
-        for (String filename : filenames) { //will loop through all the files in folder
+        for (String filename : plugin.panelFiles) { //will loop through all the files in folder
             String key;
-            YamlConfiguration temp;
-            temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filename));
+            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filename));
             if (!plugin.checkPanels(temp)) {
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + plugin.papi(p, plugin.config.getString("config.format.error") + ": Syntax error Found or Missing certain element!")));
                 return;

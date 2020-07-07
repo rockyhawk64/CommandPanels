@@ -10,7 +10,6 @@ import org.bukkit.event.EventHandler;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 
 

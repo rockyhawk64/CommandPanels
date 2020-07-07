@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class newGenUtils implements Listener {
     public YamlConfiguration tempEdit;
@@ -32,11 +33,8 @@ public class newGenUtils implements Listener {
         }
         //reload panel files to avoid conflicts
         plugin.reloadPanelFiles();
-        //get all panel names (not titles)
-        File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
         Boolean pexist = true;
         //pexist is true if panels exist
-        YamlConfiguration cf;
         ArrayList<String> apanels = new ArrayList<String>(); //all panels from all files (panel names)
         try {
             for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
@@ -44,9 +42,7 @@ public class newGenUtils implements Listener {
                 if(!plugin.checkPanels(temp)){
                     continue;
                 }
-                for (String key : temp.getConfigurationSection("panels").getKeys(false)) {
-                    apanels.add(key);
-                }
+                apanels.addAll(Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false));
             }
         }catch(Exception fail){
             //could not fetch all panel names (probably no panels exist)
@@ -69,13 +65,13 @@ public class newGenUtils implements Listener {
         //String date: is what the panel and file name will be called
         String date = "panel-1";
         if(pexist){
-            for(int count = 1; (Arrays.asList(panelsf.list()).contains("panel-" + count + ".yml")) || (apanels.contains("panel-" + count)); count++){
+            for(int count = 1; (Arrays.asList(plugin.panelsf.list()).contains("panel-" + count + ".yml")) || (apanels.contains("panel-" + count)); count++){
                 date = "panel-" + (count+1);
             }
         }else{
             date = "panel-1";
         }
-        //String date = new SimpleDateFormat("dd-HH-mm-ss").format(new Date());
+        //String date = new SimpleDateFormat("dd-HH-mm-ss").format(new Date()); (OLD)
         File folder = new File(plugin.getDataFolder() + File.separator + "panels");
         file = YamlConfiguration.loadConfiguration(new File(folder + File.separator + date + ".yml"));
         file.addDefault("panels." + date + ".perm", "default");

@@ -1593,9 +1593,7 @@ public class commandpanels extends JavaPlugin {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Cannot check for update.");
                 return;
             }
-            if(this.getDescription().getVersion().equals(gitVersion)){
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Running the latest version.");
-            }else{
+            if(!this.getDescription().getVersion().equals(gitVersion)){
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " ================================================");
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " An update for CommandPanels is available.");
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " Download version " + gitVersion + " here:");
