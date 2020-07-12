@@ -619,29 +619,6 @@ public class utils implements Listener {
         }
     }
     @EventHandler
-    public void onInteract(PlayerInteractEvent e){
-        String tag = plugin.config.getString("config.format.tag") + " ";
-        if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            Block block = e.getClickedBlock();
-            Player p = e.getPlayer();
-            assert block != null;
-            if (block.getType().toString().contains("SIGN")) {
-                Sign sign = (Sign) block.getState();
-                if (ChatColor.stripColor(sign.getLine(0).trim()).equalsIgnoreCase(ChatColor.stripColor(plugin.config.getString("config.format.signtag")))) {
-                    try {
-                        Bukkit.dispatchCommand(p, "commandpanels:commandpanel " + ChatColor.stripColor(sign.getLine(1)).trim());
-                    } catch (Exception n) {
-                        if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.nopanel"))));
-                        } else {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + plugin.config.getString("config.format.nopanel")));
-                        }
-                    }
-                }
-            }
-        }
-    }
-    @EventHandler
     public void onInteractEntity(PlayerInteractEntityEvent e){
         //cancel everything if holding item (item frames eg)
         Player p = (Player)e.getPlayer();

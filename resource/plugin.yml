@@ -1,4 +1,4 @@
-version: 3.2.3
+version: 3.3.0
 main: me.rockyhawk.commandPanels.commandpanels
 name: CommandPanels
 author: RockyHawk
@@ -12,12 +12,16 @@ commands:
       aliases: [cp, cpanel]
    commandpanelreload:
       description: Reloads plugin config.
-      usage: /commandpanelsreload
+      usage: /commandpanelreload
       aliases: [cpr, cpanelr]
    commandpaneldebug:
       description: Enable and Disable debug mode globally
-      usage: /commandpanelsdebug
+      usage: /commandpaneldebug
       aliases: [cpd, cpaneld]
+   commandpanelblock:
+      description: Add or remove panels from blocks being looked at.
+      usage: /commandpanelblock
+      aliases: [cpb, cpanelb]
    commandpanelclose:
       description: Close current GUI.
       usage: /commandpanelclose
@@ -50,6 +54,12 @@ permissions:
    commandpanel.reload:
       default: op
    commandpanel.debug:
+      default: op
+   commandpanel.block.add:
+      default: op
+   commandpanel.block.remove:
+      default: op
+   commandpanel.block.list:
       default: op
    commandpanel.generate:
       default: op

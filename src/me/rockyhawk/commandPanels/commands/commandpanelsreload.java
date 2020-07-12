@@ -17,7 +17,7 @@ public class commandpanelsreload implements CommandExecutor {
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         String tag = plugin.config.getString("config.format.tag") + " ";
-        if (label.equalsIgnoreCase("cpr") || label.equalsIgnoreCase("commandpanelsreload") || label.equalsIgnoreCase("cpanelr")) {
+        if (label.equalsIgnoreCase("cpr") || label.equalsIgnoreCase("commandpanelreload") || label.equalsIgnoreCase("cpanelr")) {
             if (sender.hasPermission("commandpanel.reload")) {
                 plugin.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "config.yml"));
                 plugin.reloadPanelFiles();

@@ -14,7 +14,7 @@ public class commandpanelsdebug implements CommandExecutor {
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         String tag = plugin.config.getString("config.format.tag") + " ";
-        if (label.equalsIgnoreCase("cpd") || label.equalsIgnoreCase("commandpanelsdebug") || label.equalsIgnoreCase("cpaneld")) {
+        if (label.equalsIgnoreCase("cpd") || label.equalsIgnoreCase("commandpaneldebug") || label.equalsIgnoreCase("cpaneld")) {
             if (sender.hasPermission("commandpanel.debug")) {
                 if (args.length == 0) {
                     //command /cpd

@@ -312,7 +312,7 @@ public class editorUserInput implements Listener {
                 savePanelFile(cf, panelFile);
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Set new Potion to " + e.getMessage().toUpperCase()));
                 break;
-            case "panel.customdata":
+            case "customdata":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
                     cf.set("panels." + panelName + ".item." + itemSlot + ".customdata", null);
                     savePanelFile(cf, panelFile);

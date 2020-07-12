@@ -25,6 +25,9 @@ import me.rockyhawk.commandPanels.ingameEditor.cpIngameEditCommand;
 import me.rockyhawk.commandPanels.ingameEditor.cpTabCompleteIngame;
 import me.rockyhawk.commandPanels.ingameEditor.editorUserInput;
 import me.rockyhawk.commandPanels.ingameEditor.editorUtils;
+import me.rockyhawk.commandPanels.panelBlocks.blocksTabComplete;
+import me.rockyhawk.commandPanels.panelBlocks.commandpanelblocks;
+import me.rockyhawk.commandPanels.panelBlocks.panelBlockOnClick;
 import me.rockyhawk.commandPanels.premium.commandpanelUserInput;
 import me.rockyhawk.commandPanels.premium.commandpanelrefresher;
 import net.milkbowl.vault.economy.Economy;
@@ -57,9 +60,11 @@ public class commandpanels extends JavaPlugin {
     public ArrayList<String> panelFiles = new ArrayList<String>(); //names of all the files in the panels folder including extension
     public ArrayList<String[]> panelNames = new ArrayList<String[]>(); //this will return something like {"mainMenuPanel","4"} which means the 4 is for panelFiles.get(4). So you know which file it is for
     public File panelsf;
+    public YamlConfiguration blockConfig; //where panel block locations are stored
 
     public commandpanels() {
         this.panelsf = new File(this.getDataFolder() + File.separator + "panels");
+        this.blockConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "blocks.yml"));
     }
 
     public void onEnable() {
@@ -70,6 +75,7 @@ public class commandpanels extends JavaPlugin {
         new Metrics(this);
         Objects.requireNonNull(this.getCommand("commandpanel")).setExecutor(new commandpanel(this));
         Objects.requireNonNull(this.getCommand("commandpanel")).setTabCompleter(new cpTabComplete(this));
+        Objects.requireNonNull(this.getCommand("commandpanelblock")).setTabCompleter(new blocksTabComplete(this));
         Objects.requireNonNull(this.getCommand("commandpanelgenerate")).setTabCompleter(new tabCompleteGenerate(this));
         Objects.requireNonNull(this.getCommand("commandpaneledit")).setTabCompleter(new cpTabCompleteIngame(this));
         Objects.requireNonNull(this.getCommand("commandpanelgenerate")).setExecutor(new commandpanelsgenerate(this));
@@ -79,6 +85,7 @@ public class commandpanels extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("commandpanelversion")).setExecutor(new commandpanelversion(this));
         Objects.requireNonNull(this.getCommand("commandpanellist")).setExecutor(new commandpanelslist(this));
         Objects.requireNonNull(this.getCommand("commandpaneledit")).setExecutor(new cpIngameEditCommand(this));
+        Objects.requireNonNull(this.getCommand("commandpanelblock")).setExecutor(new commandpanelblocks(this));
         this.getServer().getPluginManager().registerEvents(new utils(this), this);
         this.getServer().getPluginManager().registerEvents(new editorUtils(this), this);
         this.getServer().getPluginManager().registerEvents(new newGenUtils(this), this);
@@ -86,8 +93,10 @@ public class commandpanels extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new commandpanelUserInput(this), this);
         this.getServer().getPluginManager().registerEvents(new editorUserInput(this), this);
         this.getServer().getPluginManager().registerEvents(new commandpanelrefresher(this), this);
+        this.getServer().getPluginManager().registerEvents(new panelBlockOnClick(this), this);
         this.config.addDefault("config.version", "3.0");
         this.config.addDefault("config.refresh-panels", "true");
+        this.config.addDefault("config.panel-blocks", "true");
         this.config.addDefault("config.refresh-delay", "4");
         this.config.addDefault("config.stop-sound", "true");
         this.config.addDefault("config.disabled-world-message", "true");
@@ -110,7 +119,6 @@ public class commandpanels extends JavaPlugin {
         this.config.addDefault("config.format.needitems", "&cInsufficient Items!");
         this.config.addDefault("config.format.bought", "&aSuccessfully Bought For $%cp-args%");
         this.config.addDefault("config.format.sold", "&aSuccessfully Sold For $%cp-args%");
-        this.config.addDefault("config.format.signtag", "[CommandPanel]");
         this.config.addDefault("config.format.tag", "&6[&bCommandPanels&6]");
         this.config.addDefault("config.format.offline", "Offline");
         this.config.addDefault("config.format.offlineHeadValue", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU1Mjg2YzQ3MGY2NmZmYTFhMTgzMzFjYmZmYjlhM2MyYTQ0MjRhOGM3MjU5YzQ0MzZmZDJlMzU1ODJhNTIyIn19fQ==");
@@ -1170,6 +1178,15 @@ public class commandpanels extends JavaPlugin {
         }
         if (p.hasPermission("commandpanel.debug")) {
             p.sendMessage(ChatColor.GOLD + "/cpd " + ChatColor.WHITE + "Enable and Disable debug mode globally.");
+        }
+        if (p.hasPermission("commandpanel.block.add")) {
+            p.sendMessage(ChatColor.GOLD + "/cpb add <panel> " + ChatColor.WHITE + "Add panel to a block being looked at.");
+        }
+        if (p.hasPermission("commandpanel.block.remove")) {
+            p.sendMessage(ChatColor.GOLD + "/cpb remove " + ChatColor.WHITE + "Removes any panel assigned to a block looked at.");
+        }
+        if (p.hasPermission("commandpanel.block.list")) {
+            p.sendMessage(ChatColor.GOLD + "/cpb list " + ChatColor.WHITE + "List blocks that will open panels.");
         }
     }
 
