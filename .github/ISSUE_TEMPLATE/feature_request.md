@@ -12,7 +12,7 @@ Yes/No
 **Have you checked the [issue tracker](https://github.com/rockyhawk64/CommandPanels/issues?q=is%3Aissue) to see if your suggestion was already submitted and denied?**
 Yes/No
 
-**Have you asked if the feature already exists in the [Discord Server](https://discord.com/invite/eUWBWh7)?**
+**Have you asked if the feature already exists in the [Discord Server](https://discord.com/invite/eUWBWh7)?** *(Or got redirected to a Github issue here)*
 Yes/No
 
 **Is your feature request related to a problem? Please describe.**
