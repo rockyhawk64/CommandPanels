@@ -12,7 +12,7 @@ Yes/No
 **Have you checked the [issue tracker](https://github.com/rockyhawk64/CommandPanels/issues?q=is%3Aissue) to see if your issue is a duplicate and your problem already has been solved?**
 Yes/No
 
-**Have you asked for help in the [Discord Server](https://discord.com/invite/eUWBWh7)?** *(Or be redirected to a Github issue here*
+**Have you asked for help in the [Discord Server](https://discord.com/invite/eUWBWh7)?** *(Or be redirected to a Github issue here)*
 Yes/No
 
 **Describe the Issue**
