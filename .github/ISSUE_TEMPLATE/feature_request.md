@@ -6,10 +6,10 @@ labels: 'enhancement'
 assignees: ''
 
 ---
-**Have you checked the [wiki](https://rockyhawk99.gitbook.io/rockyhawk-wiki/commandpanels/wiki) page if your suggestion is already added?**
+**Have you checked the [wiki](https://rockyhawk99.gitbook.io/rockyhawk-wiki/commandpanels/wiki) page to see if your suggestion is already added?**
 Yes/No
 
-**Have you checked the [issue tracker](https://github.com/rockyhawk64/CommandPanels/issues?q=is%3Aissue) if your suggestion was already submitted and denied?**
+**Have you checked the [issue tracker](https://github.com/rockyhawk64/CommandPanels/issues?q=is%3Aissue) to see if your suggestion was already submitted and denied?**
 Yes/No
 
 **Have you asked if the feature already exists in the [Discord Server](https://discord.com/invite/eUWBWh7)?**
