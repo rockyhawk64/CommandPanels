@@ -54,6 +54,7 @@ public class commandpanels extends JavaPlugin {
     public Economy econ = null;
     public boolean update = false;
     public boolean debug = false;
+    public boolean openWithItem = false; //this will be true if there is a panel with open-with-item
     public List<String> panelRunning = new ArrayList();
     public List<String[]> userInputStrings = new ArrayList();
     public List<String[]> editorInputStrings = new ArrayList();
@@ -415,8 +416,8 @@ public class commandpanels extends JavaPlugin {
                             }
                         }
                         if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + section + ".stack")) {
-                            //change the stack amount
-                            s.setAmount(Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".stack"))));
+                            //change the stack amount (placeholders accepted)
+                            s.setAmount(Integer.parseInt(Objects.requireNonNull(papi(p,pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".stack")))));
                         }
                     } catch (IllegalArgumentException | NullPointerException var33) {
                         debug(var33);
@@ -1144,6 +1145,17 @@ public class commandpanels extends JavaPlugin {
                     panelNames.add(new String[]{tempName, Integer.toString(count)});
                 }
                 count += 1;
+            }
+            //this bit will set openWithItem to false/true upson reload
+            YamlConfiguration tempFile;
+            String tempName;
+            openWithItem = false;
+            for(String[] panelName  : panelNames){
+                tempFile = YamlConfiguration.loadConfiguration(new File(panelsf + File.separator + panelFiles.get(Integer.parseInt(panelName[1]))));
+                tempName = panelName[0];
+                if(tempFile.contains("panels." + tempName + ".open-with-item")) {
+                    openWithItem = true;
+                }
             }
         } catch (NullPointerException noPanels) {
             this.getServer().getConsoleSender().sendMessage("[CommandPanels] No panels found to load!");

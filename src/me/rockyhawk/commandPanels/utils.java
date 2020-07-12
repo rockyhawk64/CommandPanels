@@ -26,6 +26,10 @@ public class utils implements Listener {
     @EventHandler
     public void onAnyClick(InventoryClickEvent e) {
         //on a click when in any inventory
+        if(!plugin.openWithItem){
+            //if none of the panels have open-with-item
+            return;
+        }
         ItemStack clicked = e.getCurrentItem();
         Player p = (Player)e.getWhoClicked();
         //get the item clicked, then loop through panel names after action isn't nothing
@@ -282,6 +286,10 @@ public class utils implements Listener {
     @EventHandler
     public void onPlayerUse(PlayerInteractEvent e){
         //item right or left clicked
+        if(!plugin.openWithItem){
+            //if none of the panels have open-with-item
+            return;
+        }
         try {
             if(e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK && Objects.requireNonNull(e.getItem()).getType() == Material.AIR){
                 return;
@@ -294,9 +302,11 @@ public class utils implements Listener {
         }
         ItemStack clicked = e.getItem();
         Player p = e.getPlayer();
+        YamlConfiguration tempFile;
+        String tempName;
         for(String[] panelName  : plugin.panelNames){
-            YamlConfiguration tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1]))));
-            String tempName = panelName[0];
+            tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1]))));
+            tempName = panelName[0];
             if(tempFile.contains("panels." + tempName + ".open-with-item")) {
                 try{
                     assert clicked != null;
@@ -332,6 +342,10 @@ public class utils implements Listener {
         for this to take effect. I don't want to delete the item on the wrong world
         because then it might overwrite one of their actual slots upon rejoining the enabled world.
          */
+        if(!plugin.openWithItem){
+            //if none of the panels have open-with-item
+            return;
+        }
         Player p = e.getPlayer();
         try {
             if (plugin.panelFiles == null) {
@@ -377,6 +391,10 @@ public class utils implements Listener {
     }
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e){
+        if(!plugin.openWithItem){
+            //if none of the panels have open-with-item
+            return;
+        }
         Player p = e.getPlayer();
         try {
             if (plugin.panelFiles == null) {
@@ -420,6 +438,10 @@ public class utils implements Listener {
     }
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e){
+        if(!plugin.openWithItem){
+            //if none of the panels have open-with-item
+            return;
+        }
         Player p = (Player)e.getEntity();
         try {
             if (plugin.panelFiles == null) {
@@ -463,6 +485,10 @@ public class utils implements Listener {
                 p.sendMessage(ChatColor.WHITE + "CommandPanels " + ChatColor.DARK_RED + "is not running the latest version! A new version is available at");
                 p.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/command-panels-custom-guis.67788/");
             }
+        }
+        if(!plugin.openWithItem){
+            //if none of the panels have open-with-item
+            return;
         }
         try {
             if (plugin.panelFiles == null) {
@@ -524,6 +550,10 @@ public class utils implements Listener {
     }
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent e){
+        if(!plugin.openWithItem){
+            //if none of the panels have open-with-item
+            return;
+        }
         //if item dropped
         Player p = e.getPlayer();
         try {
@@ -573,6 +603,10 @@ public class utils implements Listener {
     }
     @EventHandler
     public void onPlayerSwapHandItemsEvent​(PlayerSwapHandItemsEvent e){
+        if(!plugin.openWithItem){
+            //if none of the panels have open-with-item
+            return;
+        }
         Player p = e.getPlayer();
         try {
             if (plugin.panelFiles == null) {
@@ -620,6 +654,10 @@ public class utils implements Listener {
     }
     @EventHandler
     public void onInteractEntity(PlayerInteractEntityEvent e){
+        if(!plugin.openWithItem){
+            //if none of the panels have open-with-item
+            return;
+        }
         //cancel everything if holding item (item frames eg)
         Player p = (Player)e.getPlayer();
         try {
