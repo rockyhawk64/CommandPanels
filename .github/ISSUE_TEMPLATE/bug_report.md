@@ -12,7 +12,7 @@ Yes/No
 **Have you looked at the [Current bugs project](https://github.com/rockyhawk64/CommandPanels/projects/6) to see if your bug is listed there?**
 Yes/No
 
-**Have you asked for help in the [Discord Server](https://discord.com/invite/eUWBWh7)?** *(Or be redirected to a Github issue here)*
+**Have you asked for help in the [Discord Server](https://discord.com/invite/eUWBWh7)?** *(Or got redirected to a Github issue here)*
 Yes/No
 
 **Did you search the [issue tracker](https://github.com/rockyhawk64/CommandPanels/issues?q=is%3Aissue) for a similar problem?**
