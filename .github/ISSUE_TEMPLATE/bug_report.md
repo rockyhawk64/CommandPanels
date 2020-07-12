@@ -6,9 +6,17 @@ labels: 'bug'
 assignees: ''
 
 ---
+**Have you looked at the [wiki](https://rockyhawk99.gitbook.io/rockyhawk-wiki/commandpanels/wiki) for your bug?**
+Yes/No
+
+**Have you looked at the [Current bugs project](https://github.com/rockyhawk64/CommandPanels/projects/6) to see if your bug is listed there?**
+Yes/No
 
 **Describe the bug**
 A clear and concise description of what the bug is.
+
+**Did you search the [issue tracker](https://github.com/rockyhawk64/CommandPanels/issues?q=is%3Aissue) for a similar problem?**
+Yes/No
 
 **To Reproduce**
 Steps to reproduce the behavior:
@@ -20,12 +28,12 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Screenshots/videos**
+If applicable, add screenshots or videos to help explain your problem.
 
 **Versions:**
  - Minecraft: [e.g. 1.16]
  - CommandPanels: [e.g. 3.2.0]
 
-**Additional context**
-Add any other context about the problem here.
+**Additional context/Panel files**
+Add any other context or about the problem here. Please also send you're panel in question. We only accept [pastebin](https://pastebin.com/) links.
