@@ -55,6 +55,7 @@ public class commandpanels extends JavaPlugin {
     public boolean update = false;
     public boolean debug = false;
     public boolean openWithItem = false; //this will be true if there is a panel with open-with-item
+    public List<Player> generateMode = new ArrayList(); //players that are currently in generate mode
     public List<String> panelRunning = new ArrayList();
     public List<String[]> userInputStrings = new ArrayList();
     public List<String[]> editorInputStrings = new ArrayList();

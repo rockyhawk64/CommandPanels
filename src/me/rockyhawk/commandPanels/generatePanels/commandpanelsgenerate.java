@@ -38,9 +38,18 @@ public class commandpanelsgenerate implements CommandExecutor {
                     }catch(Exception exc){
                         p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Please use integer from 1-6."));
                     }
-                }else{
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Usage: /cpg [rows]"));
+                    return true;
+                }else if (args.length == 0) {
+                    if (this.plugin.generateMode.contains(p)) {
+                        this.plugin.generateMode.remove(p);
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Generate Mode Disabled!"));
+                    } else {
+                        this.plugin.generateMode.add(p);
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Generate Mode Enabled!"));
+                    }
+                    return true;
                 }
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Usage: /cpg [rows]"));
                 return true;
             }else{
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));
