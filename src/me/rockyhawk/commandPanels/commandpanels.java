@@ -25,6 +25,7 @@ import me.rockyhawk.commandPanels.ingameEditor.cpIngameEditCommand;
 import me.rockyhawk.commandPanels.ingameEditor.cpTabCompleteIngame;
 import me.rockyhawk.commandPanels.ingameEditor.editorUserInput;
 import me.rockyhawk.commandPanels.ingameEditor.editorUtils;
+import me.rockyhawk.commandPanels.openWithItem.utilsOpenWithItem;
 import me.rockyhawk.commandPanels.panelBlocks.blocksTabComplete;
 import me.rockyhawk.commandPanels.panelBlocks.commandpanelblocks;
 import me.rockyhawk.commandPanels.panelBlocks.panelBlockOnClick;
@@ -89,6 +90,7 @@ public class commandpanels extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("commandpaneledit")).setExecutor(new cpIngameEditCommand(this));
         Objects.requireNonNull(this.getCommand("commandpanelblock")).setExecutor(new commandpanelblocks(this));
         this.getServer().getPluginManager().registerEvents(new utils(this), this);
+        this.getServer().getPluginManager().registerEvents(new utilsOpenWithItem(this), this);
         this.getServer().getPluginManager().registerEvents(new editorUtils(this), this);
         this.getServer().getPluginManager().registerEvents(new newGenUtils(this), this);
         this.getServer().getPluginManager().registerEvents(new commandpanelcustom(this), this);
