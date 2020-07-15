@@ -25,7 +25,7 @@ public class panelBlockOnClick implements Listener {
     public void onInteract(PlayerInteractEvent e){
         String tag = plugin.config.getString("config.format.tag") + " ";
         //if panel blocks are disabled return
-        if(Objects.requireNonNull(plugin.config.getString("")).equalsIgnoreCase("false")){
+        if(Objects.requireNonNull(plugin.config.getString("config.panel-blocks")).equalsIgnoreCase("false")){
             return;
         }
         if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
