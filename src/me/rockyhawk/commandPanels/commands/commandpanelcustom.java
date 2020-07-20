@@ -73,7 +73,7 @@ public class commandpanelcustom implements Listener {
         }
         e.setCancelled(true);
         try {
-            Bukkit.dispatchCommand(p, ChatColor.translateAlternateColorCodes('&', "commandpanel " + panel));
+            Bukkit.dispatchCommand(p, ChatColor.translateAlternateColorCodes('&', "commandpanels:commandpanel " + panel));
         }catch(Exception er){
             //do nothing
             p.sendMessage(ChatColor.translateAlternateColorCodes('&',plugin.papi(p,tag + ChatColor.RED + "Error opening panel!")));

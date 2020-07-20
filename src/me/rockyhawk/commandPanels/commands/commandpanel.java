@@ -153,7 +153,7 @@ public class commandpanel implements CommandExecutor {
                             return true;
                         }
                     }else{
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Usage: /cp <panel> [item/edit] [player]"));
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Usage: /cp <panel> [item] [player]"));
                         return true;
                     }
                 }else if(args.length == 3){
@@ -167,7 +167,7 @@ public class commandpanel implements CommandExecutor {
                         }
                         Player sp;
                         try {
-                            sp = plugin.getServer().getPlayer(args[1]);
+                            sp = plugin.getServer().getPlayer(args[2]);
                         }catch(Exception e){
                             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.notitem")));
                             return true;
@@ -186,7 +186,7 @@ public class commandpanel implements CommandExecutor {
                                 List<String> disabledWorlds = (List<String>) cf.getList("panels." + panels + ".disabled-worlds");
                                 if(disabledWorlds.contains(sp.getWorld().getName())){
                                     //panel cannot be used in the players world!
-                                    if(plugin.config.getString("config.disabled-world-message").equalsIgnoreCase("true")){
+                                    if(Objects.requireNonNull(plugin.config.getString("config.disabled-world-message")).equalsIgnoreCase("true")){
                                         sp.sendMessage(ChatColor.RED + "Panel is disabled in this world!");
                                     }
                                     return true;
@@ -194,7 +194,7 @@ public class commandpanel implements CommandExecutor {
                             }
                             ItemStack s;
                             try {
-                                s = new ItemStack(Material.matchMaterial(cf.getString("panels." + panels + ".open-with-item.material")), 1);
+                                s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(cf.getString("panels." + panels + ".open-with-item.material")))), 1);
                             }catch(Exception n){
                                 if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
                                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(sp, plugin.config.getString("config.format.error") + " open-with-item: material")));
@@ -206,7 +206,11 @@ public class commandpanel implements CommandExecutor {
                             plugin.setName(s, cf.getString("panels." + panels + ".open-with-item.name"), cf.getList("panels." + panels + ".open-with-item.lore"),sp,true);
                             if(sender.hasPermission("commandpanel.other")) {
                                 try {
-                                    plugin.getServer().getPlayer(args[2]).getInventory().addItem(s);
+                                    if(cf.contains("panels." + panels + ".open-with-item.stationary")) {
+                                        sp.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(cf.getString("panels." + panels + ".open-with-item.stationary"))), s);
+                                    }else{
+                                        sp.getInventory().addItem(s);
+                                    }
                                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Item Given to " + plugin.getServer().getPlayer(args[2]).getDisplayName()));
                                 } catch (Exception r) {
                                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.notitem")));
@@ -393,7 +397,7 @@ public class commandpanel implements CommandExecutor {
                         }
                         plugin.setName(s, cf.getString("panels." + panels + ".open-with-item.name"), cf.getList("panels." + panels + ".open-with-item.lore"),p,true);
                         if(cf.contains("panels." + panels + ".open-with-item.stationary")) {
-                            p.getInventory().setItem(Integer.parseInt(cf.getString("panels." + panels + ".open-with-item.stationary")), s);
+                            p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(cf.getString("panels." + panels + ".open-with-item.stationary"))), s);
                         }else{
                             p.getInventory().addItem(s);
                         }

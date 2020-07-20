@@ -326,6 +326,7 @@ public class editorUtils implements Listener {
         e.setCancelled(true);
         String panelName = ""; //all panels from ALL files (panel names)
         boolean found = false;
+        boolean hotbarItems = false;
         try {
             //neew to loop through files to get file names
             for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
@@ -336,6 +337,9 @@ public class editorUtils implements Listener {
                 for (String key : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)){
                     if(e.getView().getTitle().equals("Panel Settings: " + key)){
                         panelName = key;
+                        if(temp.contains("panels." + panelName + ".open-with-item")){
+                            hotbarItems = true;
+                        }
                         found = true;
                         break;
                     }
@@ -403,6 +407,32 @@ public class editorUtils implements Listener {
         if(e.getSlot() == 18){
             plugin.openEditorGui(p,0);
             p.updateInventory();
+        }
+        if(e.getSlot() == 40){
+            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.material"});
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Material"));
+            p.closeInventory();
+        }
+        if(e.getSlot() == 38 && hotbarItems){
+            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.name"});
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Name"));
+            p.closeInventory();
+        }
+        if(e.getSlot() == 36 && hotbarItems){
+            //adds abilities to add and remove lines
+            if(e.getClick().isLeftClick()) {
+                plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.lore.add"});
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Item Lore"));
+            }else{
+                plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.lore.remove"});
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter lore line to remove (must be an integer)"));
+            }
+            p.closeInventory();
+        }
+        if(e.getSlot() == 42 && hotbarItems){
+            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.stationary"});
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter Location (1 to 9)"));
+            p.closeInventory();
         }
     }
     @EventHandler

@@ -1281,7 +1281,11 @@ public class commandpanels extends JavaPlugin {
         lore.add(ChatColor.GRAY + "- Right click on a panel to edit settings.");
         lore.add(ChatColor.GRAY + "- To edit an item in a panel, shift click");
         lore.add(ChatColor.GRAY + "  on the item of choice.");
-        setName(temp, ChatColor.WHITE + "Panel Editor", lore, p, true);
+        lore.add(ChatColor.GRAY + "- When entering a value,");
+        lore.add(ChatColor.GRAY + "  type 'remove' to set a");
+        lore.add(ChatColor.GRAY + "  value to default, and use");
+        lore.add(ChatColor.GRAY + "  " + config.getString("config.input-cancel") + " to cancel.");
+        setName(temp, ChatColor.WHITE + "Panel Editor Tips", lore, p, true);
         i.setItem(53, temp);
         if (pageNumber != 1) {
             //only show previous page button if number is not one
@@ -1312,7 +1316,7 @@ public class commandpanels extends JavaPlugin {
 
     public void openPanelSettings(Player p, String panelName, YamlConfiguration cf) {
         reloadPanelFiles();
-        Inventory i = Bukkit.createInventory((InventoryHolder) null, 27, "Panel Settings: " + panelName);
+        Inventory i = Bukkit.createInventory((InventoryHolder) null, 45, "Panel Settings: " + panelName);
         List<String> lore = new ArrayList();
         ItemStack temp;
         //remove if the player already had a string from previously
@@ -1414,6 +1418,83 @@ public class commandpanels extends JavaPlugin {
         temp = new ItemStack(Material.BARRIER, 1);
         setName(temp, ChatColor.RED + "Back", null, p,true);
         i.setItem(18, temp);
+
+        //This will create a wall of glass panes, separating panel settings with hotbar settings
+        temp = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1);
+        setName(temp, ChatColor.WHITE + "", null, p,false);
+        for(int d = 27; d < 36; d++){
+            i.setItem(d, temp);
+        }
+        //This is the items for hotbar items (open-with-item)
+        boolean hotbarItems = false;
+
+        if(cf.contains("panels." + panelName + ".open-with-item.material")){
+            hotbarItems = true;
+            temp = new ItemStack((Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(cf.getString("panels." + panelName + ".open-with-item.material"))))), 1);
+        }else{
+            temp = new ItemStack(Material.REDSTONE_BLOCK, 1);
+        }
+        lore.clear();
+        lore.add(ChatColor.GRAY + "Current Item");
+        if (cf.contains("panels." + panelName + ".open-with-item.material")) {
+            lore.add(ChatColor.WHITE + "-----------------------");
+            lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("panels." + panelName + ".open-with-item.material")).toUpperCase());
+        }else{
+            lore.add(ChatColor.WHITE + "-----------------------");
+            lore.add(ChatColor.RED + "DISABLED");
+        }
+        setName(temp, ChatColor.WHITE + "Panel Hotbar Item", lore, p,true);
+        i.setItem(40, temp);
+
+        if(hotbarItems) {
+            temp = new ItemStack(Material.NAME_TAG, 1);
+            lore.clear();
+            lore.add(ChatColor.GRAY + "Name for Hotbar item");
+            if (cf.contains("panels." + panelName + ".open-with-item.name")) {
+                lore.add(ChatColor.WHITE + "----------");
+                lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("panels." + panelName + ".open-with-item.name")));
+            }
+            setName(temp, ChatColor.WHITE + "Hotbar Item Name", lore, p, true);
+            i.setItem(38, temp);
+
+            temp = new ItemStack(Material.SPRUCE_SIGN, 1);
+            lore.clear();
+            lore.add(ChatColor.GRAY + "Display a lore under the Hotbar item");
+            lore.add(ChatColor.GRAY + "- Left click to add lore");
+            lore.add(ChatColor.GRAY + "- Right click to remove lore");
+            if (cf.contains("panels." + panelName + ".open-with-item.lore")) {
+                lore.add(ChatColor.WHITE + "-------------------------------");
+                int count = 1;
+                for (String tempLore : cf.getStringList("panels." + panelName + ".open-with-item.lore")) {
+                    lore.add(ChatColor.WHITE + Integer.toString(count) + ") " + tempLore);
+                    count += 1;
+                }
+            }
+            setName(temp, ChatColor.WHITE + "Hotbar Lore", lore, p,true);
+            i.setItem(36, temp);
+
+            temp = new ItemStack(Material.BEDROCK, 1);
+            lore.clear();
+            lore.add(ChatColor.GRAY + "Hotbar location for the item");
+            lore.add(ChatColor.GRAY + "choose a number from 1 to 9");
+            if (cf.contains("panels." + panelName + ".open-with-item.stationary")) {
+                lore.add(ChatColor.WHITE + "-------------------------");
+                //in the editor, change the value of 0-8 to 1-9 for simplicity
+                int location = cf.getInt("panels." + panelName + ".open-with-item.stationary") + 1;
+                lore.add(ChatColor.WHITE + String.valueOf(location));
+            }
+            setName(temp, ChatColor.WHITE + "Hotbar Item Location", lore, p, true);
+            i.setItem(42, temp);
+
+            temp = new ItemStack(Material.BOOK, 1);
+            lore.clear();
+            lore.add(ChatColor.GRAY + "- To refresh changes use");
+            lore.add(ChatColor.GRAY + "  /cp " + panelName + " item");
+            lore.add(ChatColor.GRAY + "- Hotbar items will need a");
+            lore.add(ChatColor.GRAY + "  name to work properly.");
+            setName(temp, ChatColor.WHITE + "Hotbar Item Tips", lore, p, true);
+            i.setItem(44, temp);
+        }
 
         p.openInventory(i);
     }

@@ -1,6 +1,7 @@
 package me.rockyhawk.commandPanels.ingameEditor;
 
 import me.rockyhawk.commandPanels.commandpanels;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -239,6 +240,85 @@ public class editorUserInput implements Listener {
                 }
                 savePanelFile(cf, panelFile);
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Removed command line " + e.getMessage()));
+                break;
+            case "panel.hotbar.material":
+                if(e.getMessage().trim().equalsIgnoreCase("remove")){
+                    cf.set("panels." + panelName + ".open-with-item", null);
+                    savePanelFile(cf, panelFile);
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Hotbar item have been removed."));
+                    //after an open-with-item has been altered, reload after changes
+                    plugin.reloadPanelFiles();
+                    break;
+                }
+                Material temp = Material.matchMaterial(e.getMessage());
+                cf.set("panels." + panelName + ".open-with-item.material", temp.toString());
+                if(!cf.contains("panels." + panelName + ".open-with-item.name")){
+                    cf.set("panels." + panelName + ".open-with-item.name", panelName + " Item");
+                }
+                savePanelFile(cf, panelFile);
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Set new Material to " + ChatColor.WHITE + temp.toString()));
+                //after an open-with-item has been altered, reload after changes
+                plugin.reloadPanelFiles();
+                break;
+            case "panel.hotbar.stationary":
+                if(e.getMessage().trim().equalsIgnoreCase("remove")){
+                    cf.set("panels." + panelName + ".open-with-item.stationary", null);
+                    savePanelFile(cf, panelFile);
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Hotbar item can now be moved."));
+                    break;
+                }
+                try {
+                    int loc = Integer.parseInt(e.getMessage());
+                    if (loc >= 10 || loc <= 0) {
+                        //if the number isn't between 1-9
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Choose an integer between 1 to 9!"));
+                        return;
+                    }
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Set Hotbar Location to " + loc + "!"));
+                    //because it needs to convert 1-9 to 0-8 for in the panel
+                    loc -= 1;
+                    cf.set("panels." + panelName + ".open-with-item.stationary", loc);
+                    cf.save(panelFile);
+                } catch (Exception io) {
+                    plugin.debug(io);
+                }
+                break;
+            case "panel.hotbar.name":
+                cf.set("panels." + panelName + ".open-with-item.name",e.getMessage());
+                savePanelFile(cf, panelFile);
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Set new Name to " + ChatColor.WHITE + e.getMessage()));
+                break;
+            case "panel.hotbar.lore.add":
+                List<String> loreAdd = new ArrayList<>();
+                if(cf.contains("panels." + panelName + ".open-with-item.lore")){
+                    loreAdd = cf.getStringList("panels." + panelName + ".open-with-item.lore");
+                }
+                loreAdd.add(e.getMessage());
+                cf.set("panels." + panelName + ".open-with-item.lore", loreAdd);
+                savePanelFile(cf, panelFile);
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Added new lore: " + e.getMessage()));
+                break;
+            case "panel.hotbar.lore.remove":
+                List<String> loreRemove;
+                if(cf.contains("panels." + panelName + ".open-with-item.lore")){
+                    loreRemove = cf.getStringList("panels." + panelName + ".open-with-item.lore");
+                }else{
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "No lore found to remove!"));
+                    break;
+                }
+                try {
+                    loreRemove.remove(Integer.parseInt(e.getMessage())-1);
+                }catch (Exception ex){
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Could not find lore!"));
+                    break;
+                }
+                if(loreRemove.size() == 0){
+                    cf.set("panels." + panelName + ".open-with-item.lore", null);
+                }else{
+                    cf.set("panels." + panelName + ".open-with-item.lore", loreRemove);
+                }
+                savePanelFile(cf, panelFile);
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Removed lore line " + e.getMessage()));
                 break;
         }
     }
