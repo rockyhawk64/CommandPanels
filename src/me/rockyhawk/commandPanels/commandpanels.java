@@ -98,34 +98,31 @@ public class commandpanels extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new editorUserInput(this), this);
         this.getServer().getPluginManager().registerEvents(new commandpanelrefresher(this), this);
         this.getServer().getPluginManager().registerEvents(new panelBlockOnClick(this), this);
-        this.config.addDefault("config.version", "3.0");
-        this.config.addDefault("config.refresh-panels", "true");
-        this.config.addDefault("config.panel-blocks", "true");
-        this.config.addDefault("config.refresh-delay", "4");
-        this.config.addDefault("config.stop-sound", "true");
-        this.config.addDefault("config.disabled-world-message", "true");
-        this.config.addDefault("config.update-notifications", "true");
-        this.config.addDefault("config.panel-snooper", "false");
-        this.config.addDefault("config.ingame-editor", "true");
-        this.config.addDefault("config.input-cancel", "cancel");
-        this.config.addDefault("config.input-cancelled", "&cCancelled!");
-        List<String> inputMessage = new ArrayList();
-        inputMessage.add("%cp-tag%&aEnter Input for Command");
-        inputMessage.add("&cType &4%cp-args% &cto Cancel the command");
-        this.config.addDefault("config.input-message", inputMessage);
-        this.config.addDefault("config.format.perms", "&cNo permission.");
-        this.config.addDefault("config.format.reload", "&aReloaded.");
-        this.config.addDefault("config.format.nopanel", "&cPanel not found.");
-        this.config.addDefault("config.format.noitem", "&cPanel doesn't have clickable item.");
-        this.config.addDefault("config.format.notitem", "&cPlayer not found.");
-        this.config.addDefault("config.format.error", "&cError found in config at");
-        this.config.addDefault("config.format.needmoney", "&cInsufficient Funds!");
-        this.config.addDefault("config.format.needitems", "&cInsufficient Items!");
-        this.config.addDefault("config.format.bought", "&aSuccessfully Bought For $%cp-args%");
-        this.config.addDefault("config.format.sold", "&aSuccessfully Sold For $%cp-args%");
-        this.config.addDefault("config.format.tag", "&6[&bCommandPanels&6]");
-        this.config.addDefault("config.format.offline", "Offline");
-        this.config.addDefault("config.format.offlineHeadValue", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU1Mjg2YzQ3MGY2NmZmYTFhMTgzMzFjYmZmYjlhM2MyYTQ0MjRhOGM3MjU5YzQ0MzZmZDJlMzU1ODJhNTIyIn19fQ==");
+
+        //save the config.yml file
+        File configFile = new File(this.getDataFolder() + File.separator + "config.yml");
+        if (!configFile.exists()) {
+            //generate a new config file from internal resources
+            try {
+                FileConfiguration configFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("config.yml")));
+                configFileConfiguration.save(configFile);
+                this.config = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + File.separator + "config.yml"));
+            } catch (IOException var11) {
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not save the config file!");
+            }
+        }else{
+            //check if the config file has any missing elements
+            try {
+                YamlConfiguration configFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("config.yml")));
+                this.config.addDefaults(configFileConfiguration);
+                this.config.options().copyDefaults(true);
+                this.config.save(new File(this.getDataFolder() + File.separator + "config.yml"));
+            } catch (IOException var10) {
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not save the config file!");
+            }
+        }
+
+        //save the example.yml file
         if (!this.panelsf.exists() || Objects.requireNonNull(this.panelsf.list()).length == 0) {
             try {
                 FileConfiguration exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example.yml")));
@@ -135,13 +132,6 @@ public class commandpanels extends JavaPlugin {
             }
         }
 
-        this.config.options().copyDefaults(true);
-
-        try {
-            this.config.save(new File(this.getDataFolder() + File.separator + "config.yml"));
-        } catch (IOException var10) {
-            Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not save the config file!");
-        }
         try {
             if (!Objects.equals(this.config.getString("config.version"), "3.0")) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Config version doesn't match the recommended version. You may run into issues.");

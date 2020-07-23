@@ -1,3 +1,6 @@
+#       CommandPanels       #
+#        Example File       #
+#        By RockyHawk       #
 panels:
   example:
     perm: default
@@ -6,6 +9,8 @@ panels:
     command: example
     sound-on-open: BLOCK_NOTE_BLOCK_CHIME
     empty: BLACK_STAINED_GLASS_PANE
+    disabled-worlds:
+    - 'world_nether'
     open-with-item:
       material: CLOCK
       name: '&6[&bExample Panel&6]'

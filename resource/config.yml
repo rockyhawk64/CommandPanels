@@ -1,0 +1,32 @@
+#       CommandPanels       #
+#        Config File        #
+#        By RockyHawk       #
+config:
+  version: '3.0'
+  refresh-panels: true
+  panel-blocks: true
+  refresh-delay: '4'
+  stop-sound: true
+  disabled-world-message: true
+  update-notifications: true
+  panel-snooper: false
+  ingame-editor: true
+  input-cancel: cancel
+  input-cancelled: '&cCancelled!'
+  input-message:
+  - '%cp-tag%&aEnter Input for Command'
+  - '&cType &4%cp-args% &cto Cancel the command'
+  format:
+    perms: '&cNo permission.'
+    reload: '&aReloaded.'
+    nopanel: '&cPanel not found.'
+    noitem: '&cPanel doesn''t have clickable item.'
+    notitem: '&cPlayer not found.'
+    error: '&cError found in config at'
+    needmoney: '&cInsufficient Funds!'
+    needitems: '&cInsufficient Items!'
+    bought: '&aSuccessfully Bought For $%cp-args%'
+    sold: '&aSuccessfully Sold For $%cp-args%'
+    tag: '&6[&bCommandPanels&6]'
+    offline: 'Offline'
+    offlineHeadValue: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU1Mjg2YzQ3MGY2NmZmYTFhMTgzMzFjYmZmYjlhM2MyYTQ0MjRhOGM3MjU5YzQ0MzZmZDJlMzU1ODJhNTIyIn19fQ=='
