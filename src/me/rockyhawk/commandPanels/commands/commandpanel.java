@@ -79,7 +79,7 @@ public class commandpanel implements CommandExecutor {
                         }
                         if (nfound) {
                             if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(sp, plugin.config.getString("config.format.nopanel"))));
+                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(sp, plugin.config.getString("config.format.nopanel"))));
                             } else {
                                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.nopanel")));
                             }
@@ -146,7 +146,7 @@ public class commandpanel implements CommandExecutor {
                         }
 
                         if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(sp, plugin.config.getString("config.format.perms"))));
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(sp, plugin.config.getString("config.format.perms"))));
                             return true;
                         } else {
                             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));
@@ -174,7 +174,7 @@ public class commandpanel implements CommandExecutor {
                         }
                         if (nfound) {
                             if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(sp, plugin.config.getString("config.format.nopanel"))));
+                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(sp, plugin.config.getString("config.format.nopanel"))));
                             } else {
                                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.nopanel")));
                             }
@@ -197,7 +197,7 @@ public class commandpanel implements CommandExecutor {
                                 s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(cf.getString("panels." + panels + ".open-with-item.material")))), 1);
                             }catch(Exception n){
                                 if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(sp, plugin.config.getString("config.format.error") + " open-with-item: material")));
+                                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(sp, plugin.config.getString("config.format.error") + " open-with-item: material")));
                                 } else {
                                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + " open-with-item: material"));
                                 }
@@ -222,7 +222,7 @@ public class commandpanel implements CommandExecutor {
                         }
                         if (!cf.contains("panels." + panels + ".open-with-item")) {
                             if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(sp, plugin.config.getString("config.format.noitem"))));
+                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(sp, plugin.config.getString("config.format.noitem"))));
                                 return true;
                             } else {
                                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.noitem")));
@@ -230,7 +230,7 @@ public class commandpanel implements CommandExecutor {
                             }
                         }
                         if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(sp, plugin.config.getString("config.format.perms"))));
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(sp, plugin.config.getString("config.format.perms"))));
                             return true;
                         } else {
                             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));
@@ -291,7 +291,7 @@ public class commandpanel implements CommandExecutor {
                 }
                 if (nfound) {
                     if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.nopanel"))));
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.nopanel"))));
                     } else {
                         p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.nopanel")));
                     }
@@ -345,7 +345,7 @@ public class commandpanel implements CommandExecutor {
                 }
 
                 if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.perms"))));
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.perms"))));
                     return true;
                 } else {
                     p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));
@@ -365,7 +365,7 @@ public class commandpanel implements CommandExecutor {
 
                     if (nfound) {
                         if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.nopanel"))));
+                            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.nopanel"))));
                         } else {
                             p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.nopanel")));
                         }
@@ -389,7 +389,7 @@ public class commandpanel implements CommandExecutor {
                         }catch(Exception n){
                             plugin.debug(n);
                             if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.error") + " open-with-item: material")));
+                                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + " open-with-item: material")));
                             } else {
                                 p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + " open-with-item: material"));
                             }
@@ -405,7 +405,7 @@ public class commandpanel implements CommandExecutor {
                     }
                     if (!cf.contains("panels." + panels + ".open-with-item")) {
                         if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.noitem"))));
+                            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.noitem"))));
                             return true;
                         } else {
                             p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.noitem")));
@@ -413,7 +413,7 @@ public class commandpanel implements CommandExecutor {
                         }
                     }
                     if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.perms"))));
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.perms"))));
                         return true;
                     } else {
                         p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));
@@ -430,7 +430,7 @@ public class commandpanel implements CommandExecutor {
                     }
                     if (nfound) {
                         if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.nopanel"))));
+                            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.nopanel"))));
                         } else {
                             p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.nopanel")));
                         }
@@ -464,7 +464,7 @@ public class commandpanel implements CommandExecutor {
                     }
 
                     if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.perms"))));
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.perms"))));
                         return true;
                     } else {
                         p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));
@@ -486,7 +486,7 @@ public class commandpanel implements CommandExecutor {
 
                     if (nfound) {
                         if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.nopanel"))));
+                            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.nopanel"))));
                         } else {
                             p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.nopanel")));
                         }
@@ -510,7 +510,7 @@ public class commandpanel implements CommandExecutor {
                         }catch(Exception n){
                             plugin.debug(n);
                             if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.error") + " open-with-item: material")));
+                                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + " open-with-item: material")));
                             } else {
                                 p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + " open-with-item: material"));
                             }
@@ -535,7 +535,7 @@ public class commandpanel implements CommandExecutor {
                     }
                     if (!cf.contains("panels." + panels + ".open-with-item")) {
                         if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.noitem"))));
+                            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.noitem"))));
                             return true;
                         } else {
                             p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.noitem")));
@@ -543,7 +543,7 @@ public class commandpanel implements CommandExecutor {
                         }
                     }
                     if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.perms"))));
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.perms"))));
                         return true;
                     } else {
                         p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));

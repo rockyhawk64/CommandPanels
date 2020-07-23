@@ -67,13 +67,13 @@ public class utilsOpenWithItem implements Listener {
     }
     @EventHandler
     public void onPlayerUse(PlayerInteractEvent e){
-        //item right or left clicked
+        //item right clicked only (not left because that causes issues when things are interacted with)
         if(!plugin.openWithItem){
             //if none of the panels have open-with-item
             return;
         }
         try {
-            if(e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK && Objects.requireNonNull(e.getItem()).getType() == Material.AIR){
+            if(e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK || Objects.requireNonNull(e.getItem()).getType() == Material.AIR){
                 return;
             }
             if (plugin.panelFiles == null) {

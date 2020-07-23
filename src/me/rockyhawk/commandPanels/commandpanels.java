@@ -428,11 +428,7 @@ public class commandpanels extends JavaPlugin {
                         return null;
                     }
                     if (onOpen != 3) {
-                        if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                            this.setName(s, PlaceholderAPI.setPlaceholders(p, pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".name")), PlaceholderAPI.setPlaceholders(p, (List<String>) pconfig.getList("panels." + panels + ".item." + item.split("\\s")[c] + section + ".lore")), p, true);
-                        } else {
-                            this.setName(s, pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".name"), pconfig.getList("panels." + panels + ".item." + item.split("\\s")[c] + section + ".lore"), p, true);
-                        }
+                        this.setName(s, papi(p, pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".name")), papi(p, pconfig.getStringList("panels." + panels + ".item." + item.split("\\s")[c] + section + ".lore")), p, true);
                     }else{
                         this.setName(s, pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".name"), pconfig.getList("panels." + panels + ".item." + item.split("\\s")[c] + section + ".lore"), p, false);
                     }
@@ -628,11 +624,31 @@ public class commandpanels extends JavaPlugin {
         }
     }
 
+    //regular string papi
     public String papi(Player p, String setpapi) {
         if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
         }
         return ChatColor.translateAlternateColorCodes('&',setpapi);
+    }
+
+    //papi except if it is a String List
+    public List<String> papi(Player p, List<String> setpapi) {
+        try {
+            if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
+            }
+        }catch(Exception ignore){
+            //this will be ignored as it is probably a null
+            return null;
+        }
+        int tempInt = 0;
+        //change colour
+        for(String temp : setpapi){
+            setpapi.set(tempInt,ChatColor.translateAlternateColorCodes('&',temp));
+            tempInt += 1;
+        }
+        return setpapi;
     }
 
     public void commandTags(Player p, String command) {
@@ -652,28 +668,16 @@ public class commandpanels extends JavaPlugin {
             boolean isop = p.isOp();
             try {
                 p.setOp(true);
-                if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    Bukkit.dispatchCommand(p, ChatColor.translateAlternateColorCodes('&', PlaceholderAPI.setPlaceholders(p, command.replace("op=", "").trim())));
-                } else {
-                    Bukkit.dispatchCommand(p, ChatColor.translateAlternateColorCodes('&', command.replace("op=", "").trim()));
-                }
+                Bukkit.dispatchCommand(p, ChatColor.translateAlternateColorCodes('&', papi(p, command.replace("op=", "").trim())));
                 p.setOp(isop);
             } catch (Exception exc) {
                 p.setOp(isop);
                 debug(exc);
-                if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + PlaceholderAPI.setPlaceholders(p, config.getString("config.format.error") + " op=: Error in op command!")));
-                } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.error") + " op=: Error in op command!"));
-                }
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " op=: Error in op command!")));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("console=")) {
             //if player uses console= it will perform command in the console
-            if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), ChatColor.translateAlternateColorCodes('&', PlaceholderAPI.setPlaceholders(p, command.replace("console=", "").trim())));
-            } else {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), ChatColor.translateAlternateColorCodes('&', command.replace("console=", "").trim()));
-            }
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), ChatColor.translateAlternateColorCodes('&', papi(p, command.replace("console=", "").trim())));
         } else if (command.split("\\s")[0].equalsIgnoreCase("buy=")) {
             //if player uses buy= it will be eg. buy= <price> <item> <amount of item> <ID>
             try {
@@ -697,11 +701,7 @@ public class commandpanels extends JavaPlugin {
                 }
             } catch (Exception buy) {
                 debug(buy);
-                if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + PlaceholderAPI.setPlaceholders(p, config.getString("config.format.error") + " " + "commands: " + command)));
-                } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.error") + " " + "commands: " + command));
-                }
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("tokenbuy=")) {
             //if player uses tokenbuy= it will be eg. tokenbuy= <price> <item> <amount of item> <ID>
@@ -729,11 +729,7 @@ public class commandpanels extends JavaPlugin {
                 }
             } catch (Exception buy) {
                 debug(buy);
-                if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + PlaceholderAPI.setPlaceholders(p, config.getString("config.format.error") + " " + "commands: " + command)));
-                } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.error") + " " + "commands: " + command));
-                }
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("sell=")) {
             //if player uses sell= it will be eg. sell= <cashback> <item> <amount of item> [enchanted:KNOCKBACK:1] [potion:JUMP]
@@ -808,11 +804,7 @@ public class commandpanels extends JavaPlugin {
                 }
             } catch (Exception sell) {
                 debug(sell);
-                if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + PlaceholderAPI.setPlaceholders(p, config.getString("config.format.error") + " " + "commands: " + command)));
-                } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.error") + " " + "commands: " + command));
-                }
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("tokensell=")) {
             //if player uses tokensell= it will be eg. tokensell= <cashback> <item> <amount of item> [enchanted:KNOCKBACK:1] [potion:JUMP]
@@ -870,19 +862,11 @@ public class commandpanels extends JavaPlugin {
                 }
             } catch (Exception sell) {
                 debug(sell);
-                if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + PlaceholderAPI.setPlaceholders(p, config.getString("config.format.error") + " " + "commands: " + command)));
-                } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.error") + " " + "commands: " + command));
-                }
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("msg=")) {
             //if player uses msg= it will send the player a message
-            if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', PlaceholderAPI.setPlaceholders(p, command.replace("msg=", "").trim())));
-            } else {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', command.replace("msg=", "").trim()));
-            }
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&', papi(p, command.replace("msg=", "").trim())));
         } else if (command.split("\\s")[0].equalsIgnoreCase("sound=")) {
             //if player uses sound= it will play a sound (sound= [sound])
             try {
@@ -918,11 +902,7 @@ public class commandpanels extends JavaPlugin {
                 }
             } catch (Exception buyc) {
                 debug(buyc);
-                if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + PlaceholderAPI.setPlaceholders(p, config.getString("config.format.error") + " " + "commands: " + command)));
-                } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.error") + " " + "commands: " + command));
-                }
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("buycommand=")) {
             //if player uses buycommand [price] [command]
@@ -948,11 +928,7 @@ public class commandpanels extends JavaPlugin {
                 }
             } catch (Exception buyc) {
                 debug(buyc);
-                if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + PlaceholderAPI.setPlaceholders(p, config.getString("config.format.error") + " " + "commands: " + command)));
-                } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.error") + " " + "commands: " + command));
-                }
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("teleport=")) {
             //if player uses teleport= x y z (optional other player)
@@ -1284,7 +1260,7 @@ public class commandpanels extends JavaPlugin {
         lore.add(ChatColor.GRAY + "- When entering a value,");
         lore.add(ChatColor.GRAY + "  type 'remove' to set a");
         lore.add(ChatColor.GRAY + "  value to default, and use");
-        lore.add(ChatColor.GRAY + "  " + config.getString("config.input-cancel") + " to cancel.");
+        lore.add(ChatColor.GRAY + "  '" + config.getString("config.input-cancel") + "' to cancel.");
         setName(temp, ChatColor.WHITE + "Panel Editor Tips", lore, p, true);
         i.setItem(53, temp);
         if (pageNumber != 1) {

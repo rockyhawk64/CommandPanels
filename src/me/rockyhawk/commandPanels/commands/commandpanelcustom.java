@@ -43,7 +43,7 @@ public class commandpanelcustom implements Listener {
             tpanels = "";
             if(!plugin.checkPanels(temp)){
                 if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + PlaceholderAPI.setPlaceholders(p, plugin.config.getString("config.format.error") + ": File with no Panels found!")));
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + ": File with no Panels found!")));
                 } else {
                     p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
                 }
