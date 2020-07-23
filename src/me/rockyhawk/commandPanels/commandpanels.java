@@ -132,15 +132,6 @@ public class commandpanels extends JavaPlugin {
             }
         }
 
-        try {
-            if (!Objects.equals(this.config.getString("config.version"), "3.0")) {
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Config version doesn't match the recommended version. You may run into issues.");
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Either remove the config and generate a new one, or restore the original version of the plugin initially being used.");
-            }
-        } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not find config version! Your config may be missing some information!");
-        }
-
         if (Objects.requireNonNull(this.config.getString("config.update-notifications")).equalsIgnoreCase("true")) {
             githubNewUpdate();
         }

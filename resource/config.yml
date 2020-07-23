@@ -1,8 +1,9 @@
-#       CommandPanels       #
-#        Config File        #
-#        By RockyHawk       #
+# |------------------------------------------------------------------------
+# |                       CommandPanels Config File
+# |                           By RockyHawk v3.0
+# | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
+# |------------------------------------------------------------------------
 config:
-  version: '3.0'
   refresh-panels: true
   panel-blocks: true
   refresh-delay: '4'
