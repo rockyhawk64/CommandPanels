@@ -148,7 +148,7 @@ public class utilsOpenWithItem implements Listener {
             for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
                 if(temp.contains("panels." + key + ".disabled-worlds")){
-                    List<String> disabledWorlds = (List<String>) temp.getList("panels." + key + ".disabled-worlds");
+                    List<String> disabledWorlds = temp.getStringList("panels." + key + ".disabled-worlds");
                     assert disabledWorlds != null;
                     if(disabledWorlds.contains(p.getWorld().getName())){
                         continue;
@@ -197,7 +197,7 @@ public class utilsOpenWithItem implements Listener {
             for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
                 if(temp.contains("panels." + key + ".disabled-worlds")){
-                    List<String> disabledWorlds = (List<String>) temp.getList("panels." + key + ".disabled-worlds");
+                    List<String> disabledWorlds = temp.getStringList("panels." + key + ".disabled-worlds");
                     assert disabledWorlds != null;
                     if(disabledWorlds.contains(p.getWorld().getName())){
                         continue;
@@ -286,7 +286,7 @@ public class utilsOpenWithItem implements Listener {
                 key = (String) var10.next();
                 if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
                     if(temp.contains("panels." + key + ".disabled-worlds")){
-                        List<String> disabledWorlds = (List<String>) temp.getList("panels." + key + ".disabled-worlds");
+                        List<String> disabledWorlds = temp.getStringList("panels." + key + ".disabled-worlds");
                         assert disabledWorlds != null;
                         if(disabledWorlds.contains(p.getWorld().getName())){
                             continue;

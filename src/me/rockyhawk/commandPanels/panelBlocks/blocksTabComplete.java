@@ -42,7 +42,7 @@ public class blocksTabComplete implements TabCompleter {
                                     }
                                     if (sender.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm"))) {
                                         if (temp.contains("panels." + key + ".disabled-worlds")) {
-                                            List<String> disabledWorlds = (List<String>) temp.getList("panels." + key + ".disabled-worlds");
+                                            List<String> disabledWorlds = temp.getStringList("panels." + key + ".disabled-worlds");
                                             if (!disabledWorlds.contains(p.getWorld().getName())) {
                                                 apanels.add(key);
                                             }

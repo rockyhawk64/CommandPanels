@@ -1,13 +1,9 @@
 package me.rockyhawk.commandPanels.panelBlocks;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.rockyhawk.commandPanels.commandpanels;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

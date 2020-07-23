@@ -1,6 +1,5 @@
 package me.rockyhawk.commandPanels.commands;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.rockyhawk.commandPanels.commandpanels;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

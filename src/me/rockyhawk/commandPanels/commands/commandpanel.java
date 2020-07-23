@@ -1,6 +1,5 @@
 package me.rockyhawk.commandPanels.commands;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.rockyhawk.commandPanels.commandpanels;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -92,10 +91,10 @@ public class commandpanel implements CommandExecutor {
                             if(sender.hasPermission("commandpanel.other")) {
                                 try {
                                     if (cf.contains("panels." + panels + ".disabled-worlds")) {
-                                        List<String> disabledWorlds = (List<String>) cf.getList("panels." + panels + ".disabled-worlds");
+                                        List<String> disabledWorlds = cf.getStringList("panels." + panels + ".disabled-worlds");
                                         if (disabledWorlds.contains(sp.getWorld().getName())) {
                                             //panel cannot be used in the players world!
-                                            if (plugin.config.getString("config.disabled-world-message").equalsIgnoreCase("true")) {
+                                            if (Objects.requireNonNull(plugin.config.getString("config.disabled-world-message")).equalsIgnoreCase("true")) {
                                                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Panel is disabled in players world!"));
                                             }
                                             return true;
@@ -109,9 +108,9 @@ public class commandpanel implements CommandExecutor {
                                 try {
                                     if (cf.contains("panels." + panels + ".sound-on-open")) {
                                         //play sound when panel is opened
-                                        if(!cf.getString("panels." + panels + ".sound-on-open").equalsIgnoreCase("off")) {
+                                        if(!Objects.requireNonNull(cf.getString("panels." + panels + ".sound-on-open")).equalsIgnoreCase("off")) {
                                             try {
-                                                sp.playSound(sp.getLocation(), Sound.valueOf(cf.getString("panels." + panels + ".sound-on-open").toUpperCase()), 1F, 1F);
+                                                sp.playSound(sp.getLocation(), Sound.valueOf(Objects.requireNonNull(cf.getString("panels." + panels + ".sound-on-open")).toUpperCase()), 1F, 1F);
                                             } catch (Exception s) {
                                                 sp.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + plugin.papi(sp, plugin.config.getString("config.format.error") + " " + "sound-on-open: " + cf.getString("panels." + panels + ".sound-on-open"))));
                                             }
@@ -120,7 +119,7 @@ public class commandpanel implements CommandExecutor {
                                     if (cf.contains("panels." + panels + ".commands-on-open")) {
                                         //execute commands on panel open
                                         try {
-                                            List<String> commands = (List<String>) cf.getList("panels." + panels + ".commands-on-open");
+                                            List<String> commands = cf.getStringList("panels." + panels + ".commands-on-open");
                                             for (int i = 0; commands.size() - 1 >= i; i++) {
                                                 int val = plugin.commandPayWall(sp,commands.get(i));
                                                 if(val == 0){
@@ -183,7 +182,7 @@ public class commandpanel implements CommandExecutor {
 
                         if (sender.hasPermission("commandpanel.item." + cf.getString("panels." + panels + ".perm")) && cf.contains("panels." + panels + ".open-with-item")) {
                             if(cf.contains("panels." + panels + ".disabled-worlds")){
-                                List<String> disabledWorlds = (List<String>) cf.getList("panels." + panels + ".disabled-worlds");
+                                List<String> disabledWorlds = cf.getStringList("panels." + panels + ".disabled-worlds");
                                 if(disabledWorlds.contains(sp.getWorld().getName())){
                                     //panel cannot be used in the players world!
                                     if(Objects.requireNonNull(plugin.config.getString("config.disabled-world-message")).equalsIgnoreCase("true")){
@@ -302,10 +301,10 @@ public class commandpanel implements CommandExecutor {
                 }
                 if (p.hasPermission("commandpanel.panel." + cf.getString("panels." + panels + ".perm"))) {
                     if(cf.contains("panels." + panels + ".disabled-worlds")){
-                        List<String> disabledWorlds = (List<String>) cf.getList("panels." + panels + ".disabled-worlds");
+                        List<String> disabledWorlds = cf.getStringList("panels." + panels + ".disabled-worlds");
                         if(disabledWorlds.contains(p.getWorld().getName())){
                             //panel cannot be used in the players world!
-                            if(plugin.config.getString("config.disabled-world-message").equalsIgnoreCase("true")){
+                            if(Objects.requireNonNull(plugin.config.getString("config.disabled-world-message")).equalsIgnoreCase("true")){
                                 p.sendMessage(ChatColor.RED + "Panel is disabled in this world!");
                             }
                             return true;
@@ -313,9 +312,9 @@ public class commandpanel implements CommandExecutor {
                     }
                     if (cf.contains("panels." + panels + ".sound-on-open")) {
                         //play sound when panel is opened
-                        if(!cf.getString("panels." + panels + ".sound-on-open").equalsIgnoreCase("off")) {
+                        if(!Objects.requireNonNull(cf.getString("panels." + panels + ".sound-on-open")).equalsIgnoreCase("off")) {
                             try {
-                                p.playSound(p.getLocation(), Sound.valueOf(cf.getString("panels." + panels + ".sound-on-open").toUpperCase()), 1F, 1F);
+                                p.playSound(p.getLocation(), Sound.valueOf(Objects.requireNonNull(cf.getString("panels." + panels + ".sound-on-open")).toUpperCase()), 1F, 1F);
                             } catch (Exception s) {
                                 plugin.debug(s);
                                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + plugin.papi(p, plugin.config.getString("config.format.error") + " " + "sound-on-open: " + cf.getString("panels." + panels + ".sound-on-open"))));
@@ -325,7 +324,7 @@ public class commandpanel implements CommandExecutor {
                     if (cf.contains("panels." + panels + ".commands-on-open")) {
                         //execute commands on panel open
                         try {
-                            List<String> commands = (List<String>) cf.getList("panels." + panels + ".commands-on-open");
+                            List<String> commands = cf.getStringList("panels." + panels + ".commands-on-open");
                             for (int i = 0; commands.size() - 1 >= i; i++) {
                                 int val = plugin.commandPayWall(p,commands.get(i));
                                 if(val == 0){
@@ -374,10 +373,10 @@ public class commandpanel implements CommandExecutor {
 
                     if (p.hasPermission("commandpanel.item." + cf.getString("panels." + panels + ".perm")) && cf.contains("panels." + panels + ".open-with-item")) {
                         if(cf.contains("panels." + panels + ".disabled-worlds")){
-                            List<String> disabledWorlds = (List<String>) cf.getList("panels." + panels + ".disabled-worlds");
+                            List<String> disabledWorlds = cf.getStringList("panels." + panels + ".disabled-worlds");
                             if(disabledWorlds.contains(p.getWorld().getName())){
                                 //panel cannot be used in the players world!
-                                if(plugin.config.getString("config.disabled-world-message").equalsIgnoreCase("true")){
+                                if(Objects.requireNonNull(plugin.config.getString("config.disabled-world-message")).equalsIgnoreCase("true")){
                                     p.sendMessage(ChatColor.RED + "Panel is disabled in this world!");
                                 }
                                 return true;
@@ -385,7 +384,7 @@ public class commandpanel implements CommandExecutor {
                         }
                         ItemStack s;
                         try {
-                            s = new ItemStack(Material.matchMaterial(cf.getString("panels." + panels + ".open-with-item.material")), 1);
+                            s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(cf.getString("panels." + panels + ".open-with-item.material"))), 1);
                         }catch(Exception n){
                             plugin.debug(n);
                             if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -426,6 +425,7 @@ public class commandpanel implements CommandExecutor {
                         if (args[0].equalsIgnoreCase(panels.split("\\s")[i])) {
                             panels = args[0];
                             nfound = false;
+                            break;
                         }
                     }
                     if (nfound) {
@@ -442,10 +442,10 @@ public class commandpanel implements CommandExecutor {
                     if (p.hasPermission("commandpanel.panel." + cf.getString("panels." + panels + ".perm"))) {
                         if(p.hasPermission("commandpanel.other")) {
                             if(cf.contains("panels." + panels + ".disabled-worlds")){
-                                List<String> disabledWorlds = (List<String>) cf.getList("panels." + panels + ".disabled-worlds");
+                                List<String> disabledWorlds = cf.getStringList("panels." + panels + ".disabled-worlds");
                                 if(disabledWorlds.contains(p.getWorld().getName())){
                                     //panel cannot be used in the players world!
-                                    if(plugin.config.getString("config.disabled-world-message").equalsIgnoreCase("true")){
+                                    if(Objects.requireNonNull(plugin.config.getString("config.disabled-world-message")).equalsIgnoreCase("true")){
                                         p.sendMessage(ChatColor.RED + "Panel is disabled in this world!");
                                     }
                                     return true;
@@ -495,10 +495,10 @@ public class commandpanel implements CommandExecutor {
 
                     if (p.hasPermission("commandpanel.item." + cf.getString("panels." + panels + ".perm")) && cf.contains("panels." + panels + ".open-with-item")) {
                         if(cf.contains("panels." + panels + ".disabled-worlds")){
-                            List<String> disabledWorlds = (List<String>) cf.getList("panels." + panels + ".disabled-worlds");
+                            List<String> disabledWorlds = cf.getStringList("panels." + panels + ".disabled-worlds");
                             if(disabledWorlds.contains(p.getWorld().getName())){
                                 //panel cannot be used in the players world!
-                                if(plugin.config.getString("config.disabled-world-message").equalsIgnoreCase("true")){
+                                if(Objects.requireNonNull(plugin.config.getString("config.disabled-world-message")).equalsIgnoreCase("true")){
                                     p.sendMessage(ChatColor.RED + "Panel is disabled in this world!");
                                 }
                                 return true;
@@ -506,7 +506,7 @@ public class commandpanel implements CommandExecutor {
                         }
                         ItemStack s;
                         try {
-                            s = new ItemStack(Material.matchMaterial(cf.getString("panels." + panels + ".open-with-item.material")), 1);
+                            s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(cf.getString("panels." + panels + ".open-with-item.material"))), 1);
                         }catch(Exception n){
                             plugin.debug(n);
                             if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -520,7 +520,7 @@ public class commandpanel implements CommandExecutor {
                         if(p.hasPermission("commandpanel.other")) {
                             try {
                                 if(cf.contains("panels." + panels + ".open-with-item.stationary")) {
-                                   p.getInventory().setItem(Integer.parseInt(cf.getString("panels." + panels + ".open-with-item.stationary")), s);
+                                   p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(cf.getString("panels." + panels + ".open-with-item.stationary"))), s);
                                 }else{
                                     p.getInventory().addItem(s);
                                 }

@@ -40,7 +40,7 @@ public class cpTabCompleteIngame implements TabCompleter {
                             }
                             if(sender.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm"))) {
                                 if(temp.contains("panels." + key + ".disabled-worlds")){
-                                    List<String> disabledWorlds = (List<String>) temp.getList("panels." + key + ".disabled-worlds");
+                                    List<String> disabledWorlds = temp.getStringList("panels." + key + ".disabled-worlds");
                                     assert p != null;
                                     assert disabledWorlds != null;
                                     if(!disabledWorlds.contains(p.getWorld().getName())){

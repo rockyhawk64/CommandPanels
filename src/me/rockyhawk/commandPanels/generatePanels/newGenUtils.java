@@ -34,7 +34,6 @@ public class newGenUtils implements Listener {
     public void onInventoryClose(InventoryCloseEvent e) {
         //reload panel files to avoid conflicts
         plugin.reloadPanelFiles();
-        String tag = plugin.config.getString("config.format.tag") + " ";
         Player p = (Player)e.getPlayer();
         if (!ChatColor.stripColor(e.getView().getTitle()).equals("Generate New Panel")){
             return;

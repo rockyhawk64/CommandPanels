@@ -626,10 +626,14 @@ public class commandpanels extends JavaPlugin {
 
     //regular string papi
     public String papi(Player p, String setpapi) {
-        if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
+        try {
+            if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
+            }
+            return ChatColor.translateAlternateColorCodes('&', setpapi);
+        }catch(NullPointerException e){
+            return setpapi;
         }
-        return ChatColor.translateAlternateColorCodes('&',setpapi);
     }
 
     //papi except if it is a String List
@@ -645,7 +649,11 @@ public class commandpanels extends JavaPlugin {
         int tempInt = 0;
         //change colour
         for(String temp : setpapi){
-            setpapi.set(tempInt,ChatColor.translateAlternateColorCodes('&',temp));
+            try {
+                setpapi.set(tempInt, ChatColor.translateAlternateColorCodes('&', temp));
+            }catch(NullPointerException ignore){
+
+            }
             tempInt += 1;
         }
         return setpapi;
