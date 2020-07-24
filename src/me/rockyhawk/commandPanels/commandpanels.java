@@ -34,6 +34,7 @@ import me.rockyhawk.commandPanels.premium.commandpanelrefresher;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.IOUtils;
@@ -45,10 +46,15 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
+import org.bukkit.map.MapCanvas;
+import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
+
+import javax.swing.*;
 
 public class commandpanels extends JavaPlugin {
     public YamlConfiguration config;
@@ -245,182 +251,13 @@ public class commandpanels extends JavaPlugin {
                         }
                     }
                 }
-                String material = pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".material");
-                if (!Objects.requireNonNull(pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".material")).equalsIgnoreCase("AIR")) {
-                    ItemStack s;
-                    String mat;
-                    String matskull;
-                    String skullname;
-                    //this will convert the %cp-player-online-1-find% into cps= NAME
-                    assert material != null;
-                    if (material.contains("%cp-player-online-")) {
-                        int start = material.indexOf("%cp-player-online-");
-                        int end = material.lastIndexOf("-find%");
-                        String playerLocation = material.substring(start, end).replace("%cp-player-online-", "");
-                        Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
-                        if (Integer.parseInt(playerLocation) > playerFind.length) {
-                            material = material.replace(material.substring(start, end) + "-find%", "cps= " + config.getString("config.format.offlineHeadValue"));
-                        } else {
-                            material = material.replace(material.substring(start, end) + "-find%", "cpo= " + playerFind[Integer.parseInt(playerLocation) - 1].getName());
-                            //cpo is to get the skull of the player online. It is fine since the plugin knows the player is online
-                        }
-                    }
-                    try {
-                        mat = material.toUpperCase();
-                        matskull = material;
-                        skullname = "no skull";
-                        if (matskull.split("\\s")[0].toLowerCase().equals("cps=") || matskull.split("\\s")[0].toLowerCase().equals("cpo=")) {
-                            skullname = p.getUniqueId().toString();
-                            mat = "PLAYER_HEAD";
-                        }
-
-                        if (matskull.split("\\s")[0].toLowerCase().equals("hdb=")) {
-                            skullname = "hdb";
-                            mat = "PLAYER_HEAD";
-                        }
-
-                        s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(mat)), 1);
-
-                        if (!skullname.equals("no skull") && !skullname.equals("hdb") && !matskull.split("\\s")[0].equalsIgnoreCase("cpo=")) {
-                            try {
-                                SkullMeta meta;
-                                if (matskull.split("\\s")[1].equalsIgnoreCase("self")) {
-                                    //if self/own
-                                    meta = (SkullMeta) s.getItemMeta();
-                                    try {
-                                        assert meta != null;
-                                        meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(skullname)));
-                                    } catch (Exception var23) {
-                                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + this.config.getString("config.format.error") + " material: cps= self"));
-                                        debug(var23);
-                                    }
-                                    s.setItemMeta(meta);
-                                } else {
-                                    //custom data
-                                    s = this.getItem(matskull.split("\\s")[1]);
-                                }
-                            } catch (Exception var32) {
-                                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + this.config.getString("config.format.error") + " head material: Could not load skull"));
-                                debug(var32);
-                            }
-                        }
-                        if (!skullname.equals("no skull") && matskull.split("\\s")[0].equalsIgnoreCase("cpo=")) {
-                            SkullMeta cpoMeta = (SkullMeta) s.getItemMeta();
-                            assert cpoMeta != null;
-                            cpoMeta.setOwningPlayer(Bukkit.getOfflinePlayer(Objects.requireNonNull(Bukkit.getPlayer(matskull.split("\\s")[1])).getUniqueId()));
-                            s.setItemMeta(cpoMeta);
-                        }
-
-                        if (skullname.equals("hdb")) {
-                            if (this.getServer().getPluginManager().isPluginEnabled("HeadDatabase")) {
-                                HeadDatabaseAPI api;
-                                api = new HeadDatabaseAPI();
-
-                                try {
-                                    s = api.getItemHead(matskull.split("\\s")[1].trim());
-                                } catch (Exception var22) {
-                                    p.sendMessage(this.papi(p, ChatColor.translateAlternateColorCodes('&', tag + this.config.getString("config.format.error") + " hdb: could not load skull!")));
-                                    debug(var22);
-                                }
-                            } else {
-                                p.sendMessage(this.papi(p, ChatColor.translateAlternateColorCodes('&', tag + "Download HeadDatabaseHook from Spigot to use this feature!")));
-                            }
-                        }
-
-                        if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + section + ".enchanted")) {
-                            try {
-                                ItemMeta EnchantMeta;
-                                if (Objects.requireNonNull(pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".enchanted")).trim().equalsIgnoreCase("true")) {
-                                    EnchantMeta = s.getItemMeta();
-                                    assert EnchantMeta != null;
-                                    EnchantMeta.addEnchant(Enchantment.KNOCKBACK, 1, false);
-                                    EnchantMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                                    s.setItemMeta(EnchantMeta);
-                                } else if (!Objects.requireNonNull(pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".enchanted")).trim().equalsIgnoreCase("false")) {
-                                    EnchantMeta = s.getItemMeta();
-                                    assert EnchantMeta != null;
-                                    EnchantMeta.addEnchant(Objects.requireNonNull(Enchantment.getByKey(NamespacedKey.minecraft(Objects.requireNonNull(pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".enchanted")).split("\\s")[0].toLowerCase()))), Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".enchanted")).split("\\s")[1]), true);
-                                    s.setItemMeta(EnchantMeta);
-                                }
-                            } catch (Exception ench) {
-                                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " enchanted: " + pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".enchanted"))));
-                                debug(ench);
-                            }
-                        }
-                        if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + section + ".customdata")) {
-                            ItemMeta customMeta = s.getItemMeta();
-                            assert customMeta != null;
-                            customMeta.setCustomModelData(Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".customdata"))));
-                            s.setItemMeta(customMeta);
-                        }
-                        if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + section + ".leatherarmor")) {
-                            //if the item is leather armor, change the colour to this
-                            try {
-                                if (s.getType() == Material.LEATHER_BOOTS || s.getType() == Material.LEATHER_LEGGINGS || s.getType() == Material.LEATHER_CHESTPLATE || s.getType() == Material.LEATHER_HELMET) {
-                                    LeatherArmorMeta leatherMeta = (LeatherArmorMeta) s.getItemMeta();
-                                    String colourCode = pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".leatherarmor");
-                                    assert colourCode != null;
-                                    if (!colourCode.contains(",")) {
-                                        //use a color name
-                                        assert leatherMeta != null;
-                                        leatherMeta.setColor(colourCodes.get(colourCode.toUpperCase()));
-                                    } else {
-                                        //use RGB sequence
-                                        int[] colorRGB = {255, 255, 255};
-                                        int count = 0;
-                                        for (String colourNum : colourCode.split(",")) {
-                                            colorRGB[count] = Integer.parseInt(colourNum);
-                                            count += 1;
-                                        }
-                                        assert leatherMeta != null;
-                                        leatherMeta.setColor(Color.fromRGB(colorRGB[0], colorRGB[1], colorRGB[2]));
-                                    }
-                                    s.setItemMeta(leatherMeta);
-                                }
-                            } catch (Exception er) {
-                                //don't colour the armor
-                                debug(er);
-                                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " leatherarmor: " + pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".leatherarmor"))));
-                            }
-                        }
-                        if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + section + ".potion")) {
-                            //if the item is a potion, give it an effect
-                            try {
-                                PotionMeta potionMeta = (PotionMeta)s.getItemMeta();
-                                String effectType = pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".potion");
-                                assert potionMeta != null;
-                                assert effectType != null;
-                                potionMeta.setBasePotionData(new PotionData(PotionType.valueOf(effectType.toUpperCase())));
-                                potionMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-                                s.setItemMeta(potionMeta);
-                            } catch (Exception er) {
-                                //don't add the effect
-                                debug(er);
-                                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + this.config.getString("config.format.error") + " potion: " + pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".potion")));
-                            }
-                        }
-                        if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + section + ".stack")) {
-                            //change the stack amount (placeholders accepted)
-                            s.setAmount(Integer.parseInt(Objects.requireNonNull(papi(p,pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".stack")))));
-                        }
-                    } catch (IllegalArgumentException | NullPointerException var33) {
-                        debug(var33);
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " material: " + pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".material"))));
-                        return null;
-                    }
-                    if (onOpen != 3) {
-                        this.setName(s, papi(p, pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".name")), papi(p, pconfig.getStringList("panels." + panels + ".item." + item.split("\\s")[c] + section + ".lore")), p, true);
-                    }else{
-                        this.setName(s, pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + section + ".name"), pconfig.getList("panels." + panels + ".item." + item.split("\\s")[c] + section + ".lore"), p, false);
-                    }
-
-                    try {
-                        i.setItem(Integer.parseInt(item.split("\\s")[c]), s);
-                    } catch (ArrayIndexOutOfBoundsException var24) {
-                        debug(var24);
-                        if (debug) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!")));
-                        }
+                ItemStack s = makeItemFromConfig(Objects.requireNonNull(pconfig.getConfigurationSection("panels." + panels + ".item." + item.split("\\s")[c] + section)), p, onOpen != 3);
+                try {
+                    i.setItem(Integer.parseInt(item.split("\\s")[c]), s);
+                } catch (ArrayIndexOutOfBoundsException var24) {
+                    debug(var24);
+                    if (debug) {
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!")));
                     }
                 }
             }
@@ -1682,5 +1519,214 @@ public class commandpanels extends JavaPlugin {
             Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error checking for updates online.");
             debug(e);
         }
+    }
+
+    public ItemStack makeItemFromConfig(ConfigurationSection itemSection, Player p, boolean placeholders){
+        String tag = this.config.getString("config.format.tag") + " ";
+        String material = itemSection.getString("material");
+        if (Objects.requireNonNull(itemSection.getString("material")).equalsIgnoreCase("AIR")) {
+            return null;
+        }
+        ItemStack s;
+        String mat;
+        String matskull;
+        String skullname;
+        //this will convert the %cp-player-online-1-find% into cps= NAME
+        assert material != null;
+        if (material.contains("%cp-player-online-")) {
+            int start = material.indexOf("%cp-player-online-");
+            int end = material.lastIndexOf("-find%");
+            String playerLocation = material.substring(start, end).replace("%cp-player-online-", "");
+            Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
+            if (Integer.parseInt(playerLocation) > playerFind.length) {
+                material = material.replace(material.substring(start, end) + "-find%", "cps= " + config.getString("config.format.offlineHeadValue"));
+            } else {
+                material = material.replace(material.substring(start, end) + "-find%", "cpo= " + playerFind[Integer.parseInt(playerLocation) - 1].getName());
+                //cpo is to get the skull of the player online. It is fine since the plugin knows the player is online
+            }
+        }
+        try {
+            mat = material.toUpperCase();
+            matskull = material;
+            skullname = "no skull";
+            if (matskull.split("\\s")[0].toLowerCase().equals("cps=") || matskull.split("\\s")[0].toLowerCase().equals("cpo=")) {
+                skullname = p.getUniqueId().toString();
+                mat = "PLAYER_HEAD";
+            }
+
+            if (matskull.split("\\s")[0].toLowerCase().equals("hdb=")) {
+                skullname = "hdb";
+                mat = "PLAYER_HEAD";
+            }
+
+            s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(mat)), 1);
+
+            if (!skullname.equals("no skull") && !skullname.equals("hdb") && !matskull.split("\\s")[0].equalsIgnoreCase("cpo=")) {
+                try {
+                    SkullMeta meta;
+                    if (matskull.split("\\s")[1].equalsIgnoreCase("self")) {
+                        //if self/own
+                        meta = (SkullMeta) s.getItemMeta();
+                        try {
+                            assert meta != null;
+                            meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(skullname)));
+                        } catch (Exception var23) {
+                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + this.config.getString("config.format.error") + " material: cps= self"));
+                            debug(var23);
+                        }
+                        s.setItemMeta(meta);
+                    } else {
+                        //custom data
+                        s = this.getItem(matskull.split("\\s")[1]);
+                    }
+                } catch (Exception var32) {
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + this.config.getString("config.format.error") + " head material: Could not load skull"));
+                    debug(var32);
+                }
+            }
+            if (!skullname.equals("no skull") && matskull.split("\\s")[0].equalsIgnoreCase("cpo=")) {
+                SkullMeta cpoMeta = (SkullMeta) s.getItemMeta();
+                assert cpoMeta != null;
+                cpoMeta.setOwningPlayer(Bukkit.getOfflinePlayer(Objects.requireNonNull(Bukkit.getPlayer(matskull.split("\\s")[1])).getUniqueId()));
+                s.setItemMeta(cpoMeta);
+            }
+
+            if (skullname.equals("hdb")) {
+                if (this.getServer().getPluginManager().isPluginEnabled("HeadDatabase")) {
+                    HeadDatabaseAPI api;
+                    api = new HeadDatabaseAPI();
+
+                    try {
+                        s = api.getItemHead(matskull.split("\\s")[1].trim());
+                    } catch (Exception var22) {
+                        p.sendMessage(this.papi(p, ChatColor.translateAlternateColorCodes('&', tag + this.config.getString("config.format.error") + " hdb: could not load skull!")));
+                        debug(var22);
+                    }
+                } else {
+                    p.sendMessage(this.papi(p, ChatColor.translateAlternateColorCodes('&', tag + "Download HeadDatabaseHook from Spigot to use this feature!")));
+                }
+            }
+            if (itemSection.contains("map")) {
+                /*
+                This will do maps from custom images
+                the maps will be in the 'maps' folder, so
+                CommandPanels/maps/image.png <-- here
+                Commandpanels/panels/example.yml
+                The images should be 128x128
+                 */
+                try{
+                    @SuppressWarnings("deprecation")
+                    MapView map = Bukkit.getServer().getMap(0);
+                    try {
+                        map.getRenderers().clear();
+                        map.setCenterX(30000000);
+                        map.setCenterZ(30000000);
+                    }catch(NullPointerException ignore){
+                        //ignore catch
+                    }
+                    if(new File(getDataFolder().getPath() + File.separator + "maps" + File.separator + itemSection.getString("map")).exists()) {
+                        map.addRenderer(new MapRenderer() {
+                            public void render(MapView view, MapCanvas canvas, Player player) {
+                                canvas.drawImage(0, 0, new ImageIcon(getDataFolder().getPath() + File.separator + "maps" + File.separator + itemSection.getString("map")).getImage());
+                            }
+                        });
+                        MapMeta meta = (MapMeta) s.getItemMeta();
+                        meta.setMapView(map);
+                        s.setItemMeta(meta);
+                    }else{
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " map: File not found.")));
+                    }
+                }catch(Exception map){
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " map: " + itemSection.getString("map"))));
+                    debug(map);
+                }
+            }
+            if (itemSection.contains("enchanted")) {
+                try {
+                    ItemMeta EnchantMeta;
+                    if (Objects.requireNonNull(itemSection.getString("enchanted")).trim().equalsIgnoreCase("true")) {
+                        EnchantMeta = s.getItemMeta();
+                        assert EnchantMeta != null;
+                        EnchantMeta.addEnchant(Enchantment.KNOCKBACK, 1, false);
+                        EnchantMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        s.setItemMeta(EnchantMeta);
+                    } else if (!Objects.requireNonNull(itemSection.getString("enchanted")).trim().equalsIgnoreCase("false")) {
+                        EnchantMeta = s.getItemMeta();
+                        assert EnchantMeta != null;
+                        EnchantMeta.addEnchant(Objects.requireNonNull(Enchantment.getByKey(NamespacedKey.minecraft(Objects.requireNonNull(itemSection.getString("enchanted")).split("\\s")[0].toLowerCase()))), Integer.parseInt(Objects.requireNonNull(itemSection.getString("enchanted")).split("\\s")[1]), true);
+                        s.setItemMeta(EnchantMeta);
+                    }
+                } catch (Exception ench) {
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " enchanted: " + itemSection.getString("enchanted"))));
+                    debug(ench);
+                }
+            }
+            if (itemSection.contains("customdata")) {
+                ItemMeta customMeta = s.getItemMeta();
+                assert customMeta != null;
+                customMeta.setCustomModelData(Integer.parseInt(Objects.requireNonNull(itemSection.getString("customdata"))));
+                s.setItemMeta(customMeta);
+            }
+            if (itemSection.contains("leatherarmor")) {
+                //if the item is leather armor, change the colour to this
+                try {
+                    if (s.getType() == Material.LEATHER_BOOTS || s.getType() == Material.LEATHER_LEGGINGS || s.getType() == Material.LEATHER_CHESTPLATE || s.getType() == Material.LEATHER_HELMET) {
+                        LeatherArmorMeta leatherMeta = (LeatherArmorMeta) s.getItemMeta();
+                        String colourCode = itemSection.getString("leatherarmor");
+                        assert colourCode != null;
+                        if (!colourCode.contains(",")) {
+                            //use a color name
+                            assert leatherMeta != null;
+                            leatherMeta.setColor(colourCodes.get(colourCode.toUpperCase()));
+                        } else {
+                            //use RGB sequence
+                            int[] colorRGB = {255, 255, 255};
+                            int count = 0;
+                            for (String colourNum : colourCode.split(",")) {
+                                colorRGB[count] = Integer.parseInt(colourNum);
+                                count += 1;
+                            }
+                            assert leatherMeta != null;
+                            leatherMeta.setColor(Color.fromRGB(colorRGB[0], colorRGB[1], colorRGB[2]));
+                        }
+                        s.setItemMeta(leatherMeta);
+                    }
+                } catch (Exception er) {
+                    //don't colour the armor
+                    debug(er);
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " leatherarmor: " + itemSection.getString("leatherarmor"))));
+                }
+            }
+            if (itemSection.contains("potion")) {
+                //if the item is a potion, give it an effect
+                try {
+                    PotionMeta potionMeta = (PotionMeta)s.getItemMeta();
+                    String effectType = itemSection.getString("potion");
+                    assert potionMeta != null;
+                    assert effectType != null;
+                    potionMeta.setBasePotionData(new PotionData(PotionType.valueOf(effectType.toUpperCase())));
+                    potionMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+                    s.setItemMeta(potionMeta);
+                } catch (Exception er) {
+                    //don't add the effect
+                    debug(er);
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + this.config.getString("config.format.error") + " potion: " + itemSection.getString("potion")));
+                }
+            }
+            if (itemSection.contains("stack")) {
+                //change the stack amount (placeholders accepted)
+                s.setAmount(Integer.parseInt(Objects.requireNonNull(papi(p,itemSection.getString("stack")))));
+            }
+        } catch (IllegalArgumentException | NullPointerException var33) {
+            debug(var33);
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " material: " + itemSection.getString("material"))));
+            return null;
+        }
+        if (placeholders) {
+            this.setName(s, papi(p, itemSection.getString("name")), papi(p, itemSection.getStringList("lore")), p, true);
+        }else{
+            this.setName(s, itemSection.getString("name"), itemSection.getList("lore"), p, false);
+        }
+        return s;
     }
 }

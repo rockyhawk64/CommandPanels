@@ -4,6 +4,7 @@ import me.rockyhawk.commandPanels.commandpanels;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,7 +46,7 @@ public class utilsOpenWithItem implements Listener {
             if(tempFile.contains("panels." + tempName + ".open-with-item") && Objects.requireNonNull(e.getClickedInventory()).getType() == InventoryType.PLAYER) {
                 try{
                     assert clicked != null;
-                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.material")))), 1).getType()) {
+                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(plugin.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("panels." + tempName + ".open-with-item")), p, false).getType()), 1).getType()) {
                         if ((ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.name")))))) {
                             //cancel the click item event
                             if (tempFile.contains("panels." + tempName + ".open-with-item.stationary")) {
@@ -92,7 +93,7 @@ public class utilsOpenWithItem implements Listener {
             if(tempFile.contains("panels." + tempName + ".open-with-item")) {
                 try{
                     assert clicked != null;
-                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.material")))), 1).getType()) {
+                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(plugin.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("panels." + tempName + ".open-with-item")), p, false).getType()), 1).getType()) {
                         if ((ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.name")))))) {
                             //cancel the click item event
                             if (tempFile.contains("panels." + tempName + ".open-with-item.stationary")) {
@@ -155,13 +156,7 @@ public class utilsOpenWithItem implements Listener {
                     }
                 }
                 if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
-                    ItemStack s;
-                    try {
-                        s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1);
-                    }catch(Exception n){
-                        return;
-                    }
-                    plugin.setName(s, temp.getString("panels." + key + ".open-with-item.name"), temp.getList("panels." + key + ".open-with-item.lore"),p,true);
+                    ItemStack s = plugin.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false);
                     if(temp.contains("panels." + key + ".open-with-item.stationary")) {
                         if (0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 8 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))) {
                             p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
@@ -204,13 +199,7 @@ public class utilsOpenWithItem implements Listener {
                     }
                 }
                 if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
-                    ItemStack s;
-                    try {
-                        s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1);
-                    }catch(Exception n){
-                        return;
-                    }
-                    plugin.setName(s, temp.getString("panels." + key + ".open-with-item.name"), temp.getList("panels." + key + ".open-with-item.lore"),p,true);
+                    ItemStack s = plugin.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false);
                     if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 8 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
                         p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
                     }
@@ -245,13 +234,7 @@ public class utilsOpenWithItem implements Listener {
                 key = (String) var10.next();
                 if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
                     if(temp.contains("panels." + key + ".open-with-item.stationary")){
-                        ItemStack s;
-                        try {
-                            s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1);
-                        }catch(Exception n){
-                            return;
-                        }
-                        plugin.setName(s, temp.getString("panels." + key + ".open-with-item.name"), temp.getList("panels." + key + ".open-with-item.lore"),p,true);
+                        ItemStack s = plugin.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false);
                         e.getDrops().remove(s);
                     }
                 }
@@ -292,13 +275,14 @@ public class utilsOpenWithItem implements Listener {
                             continue;
                         }
                     }
-                    ItemStack s;
+                    ItemStack s = plugin.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false);
+                    /*ItemStack s;
                     try {
                         s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1);
                     }catch(Exception n){
                         continue;
                     }
-                    plugin.setName(s, temp.getString("panels." + key + ".open-with-item.name"), temp.getList("panels." + key + ".open-with-item.lore"),p,true);
+                    plugin.setName(s, temp.getString("panels." + key + ".open-with-item.name"), temp.getList("panels." + key + ".open-with-item.lore"),p,true);*/
                     if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 8 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
                         p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
                     }
@@ -354,7 +338,6 @@ public class utilsOpenWithItem implements Listener {
                 for(String ekey : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)){
                     if(temp.contains("panels." + key + ".open-with-item")){
                         if(clicked.getType() != Material.AIR) {
-                            //if loop has material first to stop 1.12.2 from spitting errors
                             //try and catch loop to stop errors with the same material type but different name
                             try {
                                 if (clicked.getType() == new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + ekey + ".open-with-item.material")))), 1).getType()) {
