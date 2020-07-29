@@ -20,20 +20,20 @@ public class commandpanelsdebug implements CommandExecutor {
                     //command /cpd
                     plugin.debug = !plugin.debug;
                     if(plugin.debug){
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Debug Mode Enabled!"));
+                        sender.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Debug Mode Enabled!"));
                     }else{
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Debug Mode Disabled!"));
+                        sender.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Debug Mode Disabled!"));
                     }
                 }else{
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Usage: /cpd"));
+                    sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpd"));
                 }
                 return true;
             }else{
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
                 return true;
             }
         }
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Usage: /cpd"));
+        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpd"));
         return true;
     }
 }

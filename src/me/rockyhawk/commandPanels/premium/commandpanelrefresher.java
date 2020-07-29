@@ -49,14 +49,14 @@ public class commandpanelrefresher implements Listener {
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 if (!plugin.checkPanels(temp)) {
                     assert p != null;
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + plugin.papi(p, plugin.config.getString("config.format.error") + ": File with no Panels found or Panel with syntax error Found!")));
+                    p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + ": File with no Panels found or Panel with syntax error Found!"));
                     return;
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;
-                    if (ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))).equals(e.getView().getTitle())) {
+                    if (plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))).equals(e.getView().getTitle())) {
                         panel = key;
-                        panelTitle = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title")));
+                        panelTitle = plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title")));
                         cf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                         foundPanel = true;
                         break;

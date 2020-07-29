@@ -18,17 +18,17 @@ public class commandpanelversion implements CommandExecutor {
         if (label.equalsIgnoreCase("cpv") || label.equalsIgnoreCase("commandpanelversion") || label.equalsIgnoreCase("cpanelv")) {
             if (sender.hasPermission("commandpanel.version")) {
                 //version command
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag));
+                sender.sendMessage(plugin.papi(tag));
                 sender.sendMessage(ChatColor.GREEN + "Version " + ChatColor.GRAY + plugin.getDescription().getVersion());
                 sender.sendMessage(ChatColor.GREEN + "Developer " + ChatColor.GRAY + "RockyHawk");
                 sender.sendMessage(ChatColor.GREEN + "Command " + ChatColor.GRAY + "/cp");
                 return true;
             }else{
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
                 return true;
             }
         }
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Usage: /cpv"));
+        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpv"));
         return true;
     }
 }

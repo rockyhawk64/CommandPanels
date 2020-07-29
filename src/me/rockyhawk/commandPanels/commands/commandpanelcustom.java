@@ -1,7 +1,6 @@
 package me.rockyhawk.commandPanels.commands;
 
 import me.rockyhawk.commandPanels.commandpanels;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -23,7 +22,7 @@ public class commandpanelcustom implements Listener {
     public void PlayerCommand(PlayerCommandPreprocessEvent e) {
         String panels;
         String tag = plugin.config.getString("config.format.tag") + " ";
-        Player p = (Player)e.getPlayer();
+        Player p = e.getPlayer();
         File panelsf = new File(plugin.getDataFolder() + File.separator + "panels");
         try {
             if (panelsf.list() == null || Objects.requireNonNull(panelsf.list()).length == 0) {
@@ -32,7 +31,7 @@ public class commandpanelcustom implements Listener {
         }catch(Exception b){
             return;
         }
-        YamlConfiguration cf; //this is the file to use for any panel.* requests
+        YamlConfiguration cf = null; //this is the file to use for any panel.* requests
         ArrayList<String> apanels = new ArrayList<String>(); //all panels from all files (panel names)
         String tpanels; //tpanels is the temp to check through the files
         String panel = null;
@@ -41,11 +40,7 @@ public class commandpanelcustom implements Listener {
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
-                if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + ": File with no Panels found!")));
-                } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
-                }
+                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
                 return;
             }
             for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
@@ -58,6 +53,7 @@ public class commandpanelcustom implements Listener {
                 if(temp.contains("panels." + tpanels.split("\\s")[i] + ".command")) {
                     for(int c = 0; c < temp.getString("panels." + tpanels.split("\\s")[i] + ".command").split("\\s").length;c++) {
                         if (("/" + temp.getString("panels." + tpanels.split("\\s")[i] + ".command").split("\\s")[c]).equalsIgnoreCase(e.getMessage())) {
+                            cf = temp;
                             panels = tpanels;
                             panels = panels.trim();
                             panel = panels.split("\\s")[i];
@@ -72,10 +68,10 @@ public class commandpanelcustom implements Listener {
         }
         e.setCancelled(true);
         try {
-            Bukkit.dispatchCommand(p, ChatColor.translateAlternateColorCodes('&', "commandpanels:commandpanel " + panel));
+            plugin.openCommandPanel(p,p,panel,cf,false);
         }catch(Exception er){
             //do nothing
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',plugin.papi(p,tag + ChatColor.RED + "Error opening panel!")));
+            p.sendMessage(plugin.papi(tag + ChatColor.RED + "Error opening panel!"));
         }
     }
 }

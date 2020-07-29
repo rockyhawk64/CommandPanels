@@ -26,11 +26,11 @@ public class commandpanelslist implements CommandExecutor {
                 //check to make sure the panels isn't empty
                 try {
                     if (plugin.panelFiles == null) {
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "No panels found!"));
+                        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "No panels found!"));
                         return true;
                     }
                 }catch(Exception b){
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "No panels found!"));
+                    sender.sendMessage(plugin.papi(tag + ChatColor.RED + "No panels found!"));
                     return true;
                 }
                 ArrayList<String> apanels = new ArrayList<String>(); //all panels from all files (panel names)
@@ -42,7 +42,7 @@ public class commandpanelslist implements CommandExecutor {
                     temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(f)));
                     apanels.add("%file%" + plugin.panelFiles.get(f));
                     if(!plugin.checkPanels(temp)){
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
+                        sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
                         return true;
                     }
                     for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
@@ -57,7 +57,7 @@ public class commandpanelslist implements CommandExecutor {
                         page = Integer.parseInt(args[0]);
                         skip = page*9-9;
                     }catch (Exception e){
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Inaccessible Page"));
+                        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Inaccessible Page"));
                     }
                 }
                 for (int f = skip; apanels.size() > f; f++) {
@@ -67,7 +67,7 @@ public class commandpanelslist implements CommandExecutor {
                         break;
                     }
                 }
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.DARK_AQUA + "Panels: (Page " + page + ")"));
+                sender.sendMessage(plugin.papi(tag + ChatColor.DARK_AQUA + "Panels: (Page " + page + ")"));
                 for (int f = skip; apanels.size() > f; f++) {
                     if(apanels.get(f).contains("%file%")){
                         if(skip+9 <= f){
@@ -81,11 +81,11 @@ public class commandpanelslist implements CommandExecutor {
                 }
                 return true;
             }else{
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
                 return true;
             }
         }
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Usage: /cpl"));
+        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpl"));
         return true;
     }
 }

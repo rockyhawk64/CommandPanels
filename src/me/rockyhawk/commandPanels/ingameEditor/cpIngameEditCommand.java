@@ -23,16 +23,16 @@ public class cpIngameEditCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         String tag = plugin.config.getString("config.format.tag") + " ";
         if(!sender.hasPermission("commandpanel.edit")){
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));
+            sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
             return true;
         }
         if(Objects.requireNonNull(plugin.config.getString("config.ingame-editor")).equalsIgnoreCase("false")){
             //this will cancel every /cpe command if ingame-editor is set to false
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Editor disabled!"));
+            sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Editor disabled!"));
             return true;
         }
         if(!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Please execute command as a Player!"));
+            sender.sendMessage(plugin.papi( tag + ChatColor.RED + "Please execute command as a Player!"));
             return true;
         }
         File panelscf = new File(plugin.getDataFolder() + File.separator + "panels" + File.separator + "example.yml"); //cf == correct file
@@ -49,7 +49,7 @@ public class cpIngameEditCommand implements CommandExecutor {
                 tpanels = "";
                 temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filename));
                 if (!plugin.checkPanels(temp)) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
+                    sender.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
                     return true;
                 }
                 for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
@@ -82,16 +82,12 @@ public class cpIngameEditCommand implements CommandExecutor {
             Set<String> oset = new HashSet<String>(opanels);
             if (oset.size() < opanels.size()) {
                 //there are duplicate panel names
-                if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + " panels: You cannot have duplicate panel names!")));
-                } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + " panels: You cannot have duplicate panel names!"));
-                }
+                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " panels: You cannot have duplicate panel names!"));
                 if(plugin.debug){
                     ArrayList<String> opanelsTemp = new ArrayList<String>();
                     for(String tempName : opanels){
                         if(opanelsTemp.contains(tempName)){
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + " The duplicate panel is: " + tempName));
+                            p.sendMessage(plugin.papi(tag + ChatColor.RED + " The duplicate panel is: " + tempName));
                             return true;
                         }
                         opanelsTemp.add(tempName);
@@ -102,16 +98,12 @@ public class cpIngameEditCommand implements CommandExecutor {
             Set<String> set = new HashSet<String>(apanels);
             if (set.size() < apanels.size()) {
                 //there are duplicate panel names
-                if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + " title: You cannot have duplicate title names!")));
-                } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + " title: You cannot have duplicate title names!"));
-                }
+                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " title: You cannot have duplicate title names!"));
                 if(plugin.debug){
                     ArrayList<String> apanelsTemp = new ArrayList<String>();
                     for(String tempName : apanels){
                         if(apanelsTemp.contains(tempName)){
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + " The duplicate title is: " + tempName));
+                            p.sendMessage(plugin.papi(tag + ChatColor.RED + " The duplicate title is: " + tempName));
                             return true;
                         }
                         apanelsTemp.add(tempName);
@@ -134,7 +126,7 @@ public class cpIngameEditCommand implements CommandExecutor {
                 }
                 if (nfound) {
                     //if the panel was not found in the message
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.nopanel"))));
+                    p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.nopanel")));
                     return true;
                 }else if (!checkconfig(panels, p, cf)) {
                     //if the config is missing an element (message will be sent to user via the public boolean)
@@ -145,50 +137,30 @@ public class cpIngameEditCommand implements CommandExecutor {
                 return true;
             }
         }
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Usage: /cpe <panel>"));
+        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpe <panel>"));
         return true;
     }
     boolean checkconfig(String panels, Player p, YamlConfiguration pconfig) {
         //if it is missing a section specified it will return false
         String tag = plugin.config.getString("config.format.tag") + " ";
         if(!pconfig.contains("panels." + panels)) {
-            if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.nopanel"))));
-            } else {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.nopanel")));
-            }
+            p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.nopanel")));
             return false;
         }
         if(!pconfig.contains("panels." + panels + ".perm")) {
-            if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + " perm: Missing config section!")));
-            } else {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + " perm: Missing config section!"));
-            }
+            p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " perm: Missing config section!"));
             return false;
         }
         if(!pconfig.contains("panels." + panels + ".rows")) {
-            if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + " rows: Missing config section!")));
-            } else {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + " rows: Missing config section!"));
-            }
+            p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " perm: Missing config section!"));
             return false;
         }
         if(!pconfig.contains("panels." + panels + ".title")) {
-            if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + " title: Missing config section!")));
-            } else {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + " title: Missing config section!"));
-            }
+            p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " perm: Missing config section!"));
             return false;
         }
         if(!pconfig.contains("panels." + panels + ".item")) {
-            if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.papi(p, plugin.config.getString("config.format.error") + " item: Missing config section!")));
-            } else {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.error") + " item: Missing config section!"));
-            }
+            p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " perm: Missing config section!"));
             return false;
         }
         return true;

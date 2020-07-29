@@ -12,6 +12,8 @@ import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -40,6 +42,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.IOUtils;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.input.CharSequenceReader;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -62,12 +65,14 @@ public class commandpanels extends JavaPlugin {
     public boolean update = false;
     public boolean debug = false;
     public boolean openWithItem = false; //this will be true if there is a panel with open-with-item
-    public List<Player> generateMode = new ArrayList(); //players that are currently in generate mode
-    public List<String> panelRunning = new ArrayList();
-    public List<String[]> userInputStrings = new ArrayList();
-    public List<String[]> editorInputStrings = new ArrayList();
-    public ArrayList<String> panelFiles = new ArrayList<String>(); //names of all the files in the panels folder including extension
-    public ArrayList<String[]> panelNames = new ArrayList<String[]>(); //this will return something like {"mainMenuPanel","4"} which means the 4 is for panelFiles.get(4). So you know which file it is for
+
+    public List<Player> generateMode = new ArrayList<>(); //players that are currently in generate mode
+    public List<String> panelRunning = new ArrayList<>();
+    public List<String[]> userInputStrings = new ArrayList<>();
+    public List<String[]> editorInputStrings = new ArrayList<>();
+    public List<String> panelFiles = new ArrayList<>(); //names of all the files in the panels folder including extension
+    public List<String[]> panelNames = new ArrayList<>(); //this will return something like {"mainMenuPanel","4"} which means the 4 is for panelFiles.get(4). So you know which file it is for
+
     public File panelsf;
     public YamlConfiguration blockConfig; //where panel block locations are stored
 
@@ -139,7 +144,7 @@ public class commandpanels extends JavaPlugin {
         }
 
         if (Objects.requireNonNull(this.config.getString("config.update-notifications")).equalsIgnoreCase("true")) {
-            githubNewUpdate();
+            githubNewUpdate(true);
         }
 
         //load panelFiles
@@ -158,10 +163,10 @@ public class commandpanels extends JavaPlugin {
             Inventory i;
             if (onOpen != 3) {
                 //use the regular inventory
-                i = Bukkit.createInventory((InventoryHolder) null, Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) * 9, ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))));
+                i = Bukkit.createInventory(null, Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) * 9, papi( Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))));
             } else {
                 //this means it is the Editor window
-                i = Bukkit.createInventory((InventoryHolder) null, Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) * 9, ChatColor.translateAlternateColorCodes('&', ChatColor.GRAY + "Editing Panel: " + pconfig.getString("panels." + panels + ".title")));
+                i = Bukkit.createInventory(null, Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) * 9, papi( ChatColor.GRAY + "Editing Panel: " + pconfig.getString("panels." + panels + ".title")));
             }
             String item = "";
 
@@ -178,69 +183,9 @@ public class commandpanels extends JavaPlugin {
                     break;
                 }
                 String section = "";
-                //onOpen needs to not be 3 so the editor won't include hasperm and noperm items
+                //onOpen needs to not be 3 so the editor won't include hasperm and hasvalue, etc items
                 if (onOpen != 3) {
-                    if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + ".hasvalue")) {
-                        //loop through possible hasvalue 1,2,3,etc
-                        for (int count = 0; Objects.requireNonNull(pconfig.getConfigurationSection("panels." + panels + ".item." + item.split("\\s")[c])).getKeys(false).size() > count; count++) {
-                            if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + ".hasvalue" + count)) {
-                                boolean outputValue = true;
-                                //outputValue will default to true
-                                if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + ".hasvalue" + count + ".output")) {
-                                    //if output is true, and values match it will be this item, vice versa
-                                    outputValue = pconfig.getBoolean("panels." + panels + ".item." + item.split("\\s")[c] + ".hasvalue" + count + ".output");
-                                }
-                                String value = pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + ".hasvalue" + count + ".value");
-                                String compare = ChatColor.stripColor(papi(p,setCpPlaceholders(p,pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + ".hasvalue" + count + ".compare"))));
-                                if (compare.equals(value) == outputValue) {
-                                    //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
-                                    section = ".hasvalue" + count;
-                                    break;
-                                }
-                            }
-                        }
-                        //this will do the hasvalue without any numbers
-                        boolean outputValue = true;
-                        //outputValue will default to true
-                        if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + ".hasvalue.output")) {
-                            //if output is true, and values match it will be this item, vice versa
-                            outputValue = pconfig.getBoolean("panels." + panels + ".item." + item.split("\\s")[c] + ".hasvalue.output");
-                        }
-                        String value = pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + ".hasvalue.value");
-                        String compare = ChatColor.stripColor(papi(p,setCpPlaceholders(p,pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + ".hasvalue.compare"))));
-                        if (compare.equals(value) == outputValue) {
-                            //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
-                            section = ".hasvalue";
-                        }
-                    }
-                    if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + ".hasperm")) {
-                        //loop through possible noperm/hasperm 1,2,3,etc
-                        for (int count = 0; Objects.requireNonNull(pconfig.getConfigurationSection("panels." + panels + ".item." + item.split("\\s")[c])).getKeys(false).size() > count; count++) {
-                            if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + ".hasperm" + count)) {
-                                boolean outputValue = true;
-                                //outputValue will default to true
-                                if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + ".hasperm" + count + ".output")) {
-                                    //if output is true, and values match it will be this item, vice versa
-                                    outputValue = pconfig.getBoolean("panels." + panels + ".item." + item.split("\\s")[c] + ".hasperm" + count + ".output");
-                                }
-                                if (p.hasPermission(Objects.requireNonNull(pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + ".hasperm" + count + ".perm"))) == outputValue) {
-                                    //onOpen being 3 means it is the editor panel.. noPerm and hasPerm items cannot be included to avoid item breaking
-                                    section = ".hasperm" + count;
-                                    break;
-                                }
-                            }
-                        }
-                        //this will do the hasperm without any numbers
-                        boolean outputValue = true;
-                        //outputValue will default to true
-                        if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + ".hasperm" + ".output")) {
-                            //if output is true, and values match it will be this item, vice versa
-                            outputValue = pconfig.getBoolean("panels." + panels + ".item." + item.split("\\s")[c] + ".hasperm" + ".output");
-                        }
-                        if (p.hasPermission(Objects.requireNonNull(pconfig.getString("panels." + panels + ".item." + item.split("\\s")[c] + ".hasperm.perm"))) == outputValue) {
-                            section = ".hasperm";
-                        }
-                    }
+                    section = hasSection(panels, pconfig, Integer.parseInt(item.split("\\s")[c]), p);
                     //This section is for animations below here: VISUAL ONLY
 
                     //check for if there is animations inside the items section
@@ -251,13 +196,13 @@ public class commandpanels extends JavaPlugin {
                         }
                     }
                 }
-                ItemStack s = makeItemFromConfig(Objects.requireNonNull(pconfig.getConfigurationSection("panels." + panels + ".item." + item.split("\\s")[c] + section)), p, onOpen != 3);
+                ItemStack s = makeItemFromConfig(Objects.requireNonNull(pconfig.getConfigurationSection("panels." + panels + ".item." + item.split("\\s")[c] + section)), p, onOpen != 3, onOpen != 3);
                 try {
                     i.setItem(Integer.parseInt(item.split("\\s")[c]), s);
                 } catch (ArrayIndexOutOfBoundsException var24) {
                     debug(var24);
                     if (debug) {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!")));
+                        p.sendMessage(papi(tag + this.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!"));
                     }
                 }
             }
@@ -280,7 +225,7 @@ public class commandpanels extends JavaPlugin {
                             }
                         } catch (IllegalArgumentException | NullPointerException var26) {
                             debug(var26);
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " empty: " + pconfig.getString("panels." + panels + ".empty"))));
+                            p.sendMessage(papi(tag + this.config.getString("config.format.error") + " empty: " + pconfig.getString("panels." + panels + ".empty")));
                             return null;
                         }
 
@@ -295,24 +240,24 @@ public class commandpanels extends JavaPlugin {
                     }
                 }
             }
-            if (ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).equals("Chest")) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " Title: Cannot be named Chest")));
+            if (papi( Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).equals("Chest")) {
+                p.sendMessage(papi(tag + this.config.getString("config.format.error") + " Title: Cannot be named Chest"));
                 return null;
             }
-            if (ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).contains("Editing Panel:")) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " Title: Cannot contain Editing Panel:")));
+            if (papi( Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).contains("Editing Panel:")) {
+                p.sendMessage(papi(tag + this.config.getString("config.format.error") + " Title: Cannot contain Editing Panel:"));
                 return null;
             }
-            if (ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).contains("Panel Settings:")) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " Title: Cannot contain Panel Settings:")));
+            if (papi( Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).contains("Panel Settings:")) {
+                p.sendMessage(papi(tag + this.config.getString("config.format.error") + " Title: Cannot contain Panel Settings:"));
                 return null;
             }
-            if (ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).contains("Item Settings:")) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " Title: Cannot contain Item Settings:")));
+            if (papi( Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).contains("Item Settings:")) {
+                p.sendMessage(papi(tag + this.config.getString("config.format.error") + " Title: Cannot contain Item Settings:"));
                 return null;
             }
-            if (ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).equals("Command Panels Editor")) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " Title: Cannot be named Command Panels Editor")));
+            if (papi( Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).equals("Command Panels Editor")) {
+                p.sendMessage(papi(tag + this.config.getString("config.format.error") + " Title: Cannot be named Command Panels Editor"));
                 return null;
             }
             if (onOpen == 1 || onOpen == 3) {
@@ -327,32 +272,35 @@ public class commandpanels extends JavaPlugin {
             }
             return i;
         } else {
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " rows: " + pconfig.getString("panels." + panels + ".rows"))));
+            p.sendMessage(papi(tag + this.config.getString("config.format.error") + " rows: " + pconfig.getString("panels." + panels + ".rows")));
             return null;
         }
     }
 
-    public void setName(ItemStack renamed, String customName, List lore, Player p, Boolean usePlaceholders) {
+    public void setName(ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours) {
         try {
             ItemMeta renamedMeta = renamed.getItemMeta();
             //set cp placeholders
-            if(usePlaceholders) {
-                customName = papi(p, setCpPlaceholders(p, customName));
+            if(usePlaceholders && useColours){
+                customName = papi(p,customName);
+            }else if(useColours){
+                customName = papi(customName);
+            }else{
+                customName = setCpPlaceholders(p, customName);
             }
 
             assert renamedMeta != null;
             renamedMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             if (customName != null) {
-                renamedMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', customName));
+                renamedMeta.setDisplayName(customName);
             }
 
-            List<String> clore = new ArrayList();
+            List<String> clore = new ArrayList<>();
             if (lore != null) {
-                for (int i = 0; lore.size() > i; ++i) {
-                    clore.add(ChatColor.translateAlternateColorCodes('&', lore.get(i).toString()));
-                    if(usePlaceholders) {
-                        clore.set(i, papi(p, setCpPlaceholders(p, clore.get(i))));
-                    }
+                if(usePlaceholders && useColours){
+                    papi(p, clore, true);
+                }else if(useColours){
+                    papi(p, clore, false);
                 }
                 renamedMeta.setLore(clore);
             }
@@ -448,16 +396,28 @@ public class commandpanels extends JavaPlugin {
             if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
                 setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
             }
-            return ChatColor.translateAlternateColorCodes('&', setpapi);
+            setpapi = setCpPlaceholders(p,setpapi);
+            setpapi = translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
+            return setpapi;
+        }catch(NullPointerException e){
+            return setpapi;
+        }
+    }
+
+    //regular string papi, but only colours so Player doesn't need to be there
+    public String papi(String setpapi) {
+        try {
+            setpapi = translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
+            return setpapi;
         }catch(NullPointerException e){
             return setpapi;
         }
     }
 
     //papi except if it is a String List
-    public List<String> papi(Player p, List<String> setpapi) {
+    public List<String> papi(Player p, List<String> setpapi, boolean placeholders) {
         try {
-            if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && placeholders) {
                 setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
             }
         }catch(Exception ignore){
@@ -468,7 +428,7 @@ public class commandpanels extends JavaPlugin {
         //change colour
         for(String temp : setpapi){
             try {
-                setpapi.set(tempInt, ChatColor.translateAlternateColorCodes('&', temp));
+                setpapi.set(tempInt, translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', temp)));
             }catch(NullPointerException ignore){
 
             }
@@ -494,16 +454,16 @@ public class commandpanels extends JavaPlugin {
             boolean isop = p.isOp();
             try {
                 p.setOp(true);
-                Bukkit.dispatchCommand(p, ChatColor.translateAlternateColorCodes('&', papi(p, command.replace("op=", "").trim())));
+                Bukkit.dispatchCommand(p,papi(p, command.replace("op=", "").trim()));
                 p.setOp(isop);
             } catch (Exception exc) {
                 p.setOp(isop);
                 debug(exc);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " op=: Error in op command!")));
+                p.sendMessage(tag + papi( config.getString("config.format.error") + " op=: Error in op command!"));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("console=")) {
             //if player uses console= it will perform command in the console
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), ChatColor.translateAlternateColorCodes('&', papi(p, command.replace("console=", "").trim())));
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), papi(p, command.replace("console=", "").trim()));
         } else if (command.split("\\s")[0].equalsIgnoreCase("buy=")) {
             //if player uses buy= it will be eg. buy= <price> <item> <amount of item> <ID>
             try {
@@ -512,7 +472,7 @@ public class commandpanels extends JavaPlugin {
                         econ.withdrawPlayer(p, Double.parseDouble(command.split("\\s")[1]));
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(config.getString("config.format.bought")).isEmpty()){
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                            p.sendMessage(papi( tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                         if (p.getInventory().firstEmpty() >= 0) {
                             p.getInventory().addItem(new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3])));
@@ -520,14 +480,14 @@ public class commandpanels extends JavaPlugin {
                             Objects.requireNonNull(p.getLocation().getWorld()).dropItemNaturally(p.getLocation(), new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3])));
                         }
                     } else {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.needmoney")));
+                        p.sendMessage(papi( tag + config.getString("config.format.needmoney")));
                     }
                 } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
+                    p.sendMessage(papi( tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
                 }
             } catch (Exception buy) {
                 debug(buy);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
+                p.sendMessage(papi(tag + config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("tokenbuy=")) {
             //if player uses tokenbuy= it will be eg. tokenbuy= <price> <item> <amount of item> <ID>
@@ -540,7 +500,7 @@ public class commandpanels extends JavaPlugin {
                         api.removeTokens(p, Long.parseLong(command.split("\\s")[1]));
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(config.getString("config.format.bought")).isEmpty()) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                            p.sendMessage(papi( tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                         if (p.getInventory().firstEmpty() >= 0) {
                             p.getInventory().addItem(new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3])));
@@ -548,14 +508,14 @@ public class commandpanels extends JavaPlugin {
                             Objects.requireNonNull(p.getLocation().getWorld()).dropItemNaturally(p.getLocation(), new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3])));
                         }
                     } else {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.needmoney")));
+                        p.sendMessage(papi( tag + config.getString("config.format.needmoney")));
                     }
                 } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Buying Requires TokenManager to work!"));
+                    p.sendMessage(papi( tag + ChatColor.RED + "Buying Requires TokenManager to work!"));
                 }
             } catch (Exception buy) {
                 debug(buy);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
+                p.sendMessage(papi(tag + config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("sell=")) {
             //if player uses sell= it will be eg. sell= <cashback> <item> <amount of item> [enchanted:KNOCKBACK:1] [potion:JUMP]
@@ -598,7 +558,7 @@ public class commandpanels extends JavaPlugin {
                                     PotionMeta potionMeta = (PotionMeta) itm.getItemMeta();
                                     assert potionMeta != null;
                                     if (!potionMeta.getBasePotionData().getType().name().equalsIgnoreCase(potion)) {
-                                        p.sendMessage(papi(p, tag + ChatColor.RED + "Your item has the wrong potion effect"));
+                                        p.sendMessage(papi( tag + ChatColor.RED + "Your item has the wrong potion effect"));
                                         return;
                                     }
                                 }
@@ -618,19 +578,19 @@ public class commandpanels extends JavaPlugin {
                         }
                     }
                     if (!sold) {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.needitems")));
+                        p.sendMessage(papi( tag + config.getString("config.format.needitems")));
                     } else {
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(config.getString("config.format.sold")).isEmpty()) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + Objects.requireNonNull(config.getString("config.format.sold")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                            p.sendMessage(papi( tag + Objects.requireNonNull(config.getString("config.format.sold")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                     }
                 } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Selling Requires Vault and an Economy to work!"));
+                    p.sendMessage(papi( tag + ChatColor.RED + "Selling Requires Vault and an Economy to work!"));
                 }
             } catch (Exception sell) {
                 debug(sell);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
+                p.sendMessage(papi(tag + config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("tokensell=")) {
             //if player uses tokensell= it will be eg. tokensell= <cashback> <item> <amount of item> [enchanted:KNOCKBACK:1] [potion:JUMP]
@@ -654,7 +614,7 @@ public class commandpanels extends JavaPlugin {
                                     PotionMeta potionMeta = (PotionMeta) itm.getItemMeta();
                                     assert potionMeta != null;
                                     if (!potionMeta.getBasePotionData().getType().name().equalsIgnoreCase(potion)) {
-                                        p.sendMessage(papi(p, tag + ChatColor.RED + "Your item has the wrong potion effect"));
+                                        p.sendMessage(papi( tag + ChatColor.RED + "Your item has the wrong potion effect"));
                                         return;
                                     }
                                 }
@@ -676,30 +636,30 @@ public class commandpanels extends JavaPlugin {
                         }
                     }
                     if (!sold) {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.needitems")));
+                        p.sendMessage(papi( tag + config.getString("config.format.needitems")));
                     } else {
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(config.getString("config.format.sold")).isEmpty()) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + Objects.requireNonNull(config.getString("config.format.sold")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                            p.sendMessage(papi( tag + Objects.requireNonNull(config.getString("config.format.sold")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                     }
                 } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Selling Requires TokenManager to work!"));
+                    p.sendMessage(papi( tag + ChatColor.RED + "Selling Requires TokenManager to work!"));
                 }
             } catch (Exception sell) {
                 debug(sell);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
+                p.sendMessage(papi(tag + config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("msg=")) {
             //if player uses msg= it will send the player a message
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&', papi(p, command.replace("msg=", "").trim())));
+            p.sendMessage(papi(p, command.replace("msg=", "").trim()));
         } else if (command.split("\\s")[0].equalsIgnoreCase("sound=")) {
             //if player uses sound= it will play a sound (sound= [sound])
             try {
                 p.playSound(p.getLocation(), Sound.valueOf(command.split("\\s")[1]), 1F, 1F);
             } catch (Exception s) {
                 debug(s);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
+                p.sendMessage(papi(tag + config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("tokenbuycommand=")) {
             //if player uses tokenbuycommand [price] [command]
@@ -715,20 +675,20 @@ public class commandpanels extends JavaPlugin {
                         commandp = commandp.replace("tokenbuycommand=", "").trim();
                         String price = commandp.split(" ", 2)[0];
                         commandp = commandp.split(" ", 2)[1];
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), ChatColor.translateAlternateColorCodes('&', papi(p, commandp)));
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), papi(p, commandp));
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(config.getString("config.format.bought")).isEmpty()) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", price)));
+                            p.sendMessage(papi( tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", price)));
                         }
                     } else {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.needmoney")));
+                        p.sendMessage(papi( tag + config.getString("config.format.needmoney")));
                     }
                 } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
+                    p.sendMessage(papi( tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
                 }
             } catch (Exception buyc) {
                 debug(buyc);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
+                p.sendMessage(papi(tag + config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("buycommand=")) {
             //if player uses buycommand [price] [command]
@@ -741,20 +701,20 @@ public class commandpanels extends JavaPlugin {
                         commandp = commandp.replace("buycommand=", "").trim();
                         String price = commandp.split(" ", 2)[0];
                         commandp = commandp.split(" ", 2)[1];
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), ChatColor.translateAlternateColorCodes('&', papi(p, commandp)));
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), papi( papi(p, commandp)));
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(config.getString("config.format.bought")).isEmpty()) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", price)));
+                            p.sendMessage(papi( tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", price)));
                         }
                     } else {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.needmoney")));
+                        p.sendMessage(papi( tag + config.getString("config.format.needmoney")));
                     }
                 } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
+                    p.sendMessage(papi( tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
                 }
             } catch (Exception buyc) {
                 debug(buyc);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
+                p.sendMessage(papi(tag + config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("teleport=")) {
             //if player uses teleport= x y z (optional other player)
@@ -782,7 +742,7 @@ public class commandpanels extends JavaPlugin {
                     assert otherplayer != null;
                     otherplayer.teleport(new Location(otherplayer.getWorld(), x, y, z));
                 } catch (Exception tpe) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.notitem")));
+                    p.sendMessage(tag + config.getString("config.format.notitem"));
                 }
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("stopsound=")) {
@@ -791,13 +751,13 @@ public class commandpanels extends JavaPlugin {
                 p.stopSound(Sound.valueOf(command.split("\\s")[1]));
             } catch (Exception ss) {
                 debug(ss);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
+                p.sendMessage(papi(tag + config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("sudo=")) {
             //if player uses sudo= [command]
-            p.chat(ChatColor.translateAlternateColorCodes('&', papi(p, "/" + command.replaceAll("sudo=", "").trim())));
+            p.chat(papi(p, "/" + command.replaceAll("sudo=", "").trim()));
         } else {
-            Bukkit.dispatchCommand(p, ChatColor.translateAlternateColorCodes('&', papi(p, command)));
+            Bukkit.dispatchCommand(p, papi(p, command));
         }
     }
 
@@ -817,7 +777,7 @@ public class commandpanels extends JavaPlugin {
             String playerLocation = str.substring(start, end).replace("%cp-player-online-", "");
             Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
             if (Integer.parseInt(playerLocation) > playerFind.length) {
-                str = str.replace(str.substring(start, end) + "-find%", papi(p, ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("config.format.offline")))));
+                str = str.replace(str.substring(start, end) + "-find%", papi(p,Objects.requireNonNull(config.getString("config.format.offline"))));
             } else {
                 str = str.replace(str.substring(start, end) + "-find%", playerFind[Integer.parseInt(playerLocation) - 1].getName());
             }
@@ -849,7 +809,7 @@ public class commandpanels extends JavaPlugin {
             for (String temp : inputMessages) {
                 temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(config.getString("config.input-cancel")));
                 temp = temp.replaceAll("%cp-tag%", tag);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', papi(p, temp)));
+                p.sendMessage(papi(p, temp));
             }
             str = "commandpanels:commandpanelclose";
         }
@@ -867,20 +827,20 @@ public class commandpanels extends JavaPlugin {
                         econ.withdrawPlayer(p, Double.parseDouble(command.split("\\s")[1]));
                         //if the message is empty don't send
                         if(!config.getString("config.format.bought").isEmpty()) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                            p.sendMessage(papi( tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                         return 1;
                     } else {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.needmoney")));
+                        p.sendMessage(papi( tag + config.getString("config.format.needmoney")));
                         return 0;
                     }
                 } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Paying Requires Vault and an Economy to work!"));
+                    p.sendMessage(papi( tag + ChatColor.RED + "Paying Requires Vault and an Economy to work!"));
                     return 0;
                 }
             } catch (Exception buyc) {
                 debug(buyc);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
+                p.sendMessage(papi(p, tag + config.getString("config.format.error") + " " + "commands: " + command));
                 return 0;
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("tokenpaywall=")) {
@@ -894,20 +854,20 @@ public class commandpanels extends JavaPlugin {
                         api.removeTokens(p, Long.parseLong(command.split("\\s")[1]));
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(config.getString("config.format.bought")).isEmpty()) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                            p.sendMessage(papi( tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                         return 1;
                     } else {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.needmoney")));
+                        p.sendMessage(papi( tag + config.getString("config.format.needmoney")));
                         return 0;
                     }
                 } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Paying TokenManager to work!"));
+                    p.sendMessage(papi( tag + ChatColor.RED + "Paying TokenManager to work!"));
                     return 0;
                 }
             } catch (Exception buyc) {
                 debug(buyc);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
+                p.sendMessage(papi(p, tag + config.getString("config.format.error") + " " + "commands: " + command));
                 return 0;
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("xp-paywall=")) {
@@ -918,16 +878,16 @@ public class commandpanels extends JavaPlugin {
                     p.setLevel(p.getLevel() - Integer.parseInt(command.split("\\s")[1]));
                     //if the message is empty don't send
                     if(!Objects.requireNonNull(config.getString("config.format.bought")).isEmpty()) {
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                        p.sendMessage(papi( tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
                     }
                     return 1;
                 } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + config.getString("config.format.needmoney")));
+                    p.sendMessage(papi( tag + config.getString("config.format.needmoney")));
                     return 0;
                 }
             } catch (Exception buyc) {
                 debug(buyc);
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, config.getString("config.format.error") + " " + "commands: " + command)));
+                p.sendMessage(papi(p, tag + config.getString("config.format.error") + " " + "commands: " + command));
                 return 0;
             }
         } else {
@@ -975,7 +935,7 @@ public class commandpanels extends JavaPlugin {
 
     public void helpMessage(CommandSender p) {
         String tag = config.getString("config.format.tag") + " ";
-        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Commands:"));
+        p.sendMessage(papi( tag + ChatColor.GREEN + "Commands:"));
         p.sendMessage(ChatColor.GOLD + "/cp <panel> [player:item] [player] " + ChatColor.WHITE + "Open a command panel.");
         if (p.hasPermission("commandpanel.reload")) {
             p.sendMessage(ChatColor.GOLD + "/cpr " + ChatColor.WHITE + "Reloads plugin config.");
@@ -1042,8 +1002,8 @@ public class commandpanels extends JavaPlugin {
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;
-                    panelNames.add(ChatColor.translateAlternateColorCodes('&', key));
-                    panelTitles.add(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))));
+                    panelNames.add(papi( key));
+                    panelTitles.add(papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))));
                     if (temp.contains("panels." + key + ".open-with-item.material")) {
                         panelItems.add(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material"))));
                     } else {
@@ -1072,10 +1032,10 @@ public class commandpanels extends JavaPlugin {
         //make all the bottom bar items
         ItemStack temp;
         temp = new ItemStack(Material.SUNFLOWER, 1);
-        setName(temp, ChatColor.WHITE + "Page " + pageNumber, null, p, true);
+        setName(temp, ChatColor.WHITE + "Page " + pageNumber, null, p, true, true);
         i.setItem(49, temp);
         temp = new ItemStack(Material.BARRIER, 1);
-        setName(temp, ChatColor.RED + "Exit Menu", null, p, true);
+        setName(temp, ChatColor.RED + "Exit Menu", null, p, true, true);
         i.setItem(45, temp);
         temp = new ItemStack(Material.BOOK, 1);
         List<String> lore = new ArrayList();
@@ -1087,18 +1047,18 @@ public class commandpanels extends JavaPlugin {
         lore.add(ChatColor.GRAY + "  type 'remove' to set a");
         lore.add(ChatColor.GRAY + "  value to default, and use");
         lore.add(ChatColor.GRAY + "  '" + config.getString("config.input-cancel") + "' to cancel.");
-        setName(temp, ChatColor.WHITE + "Panel Editor Tips", lore, p, true);
+        setName(temp, ChatColor.WHITE + "Panel Editor Tips", lore, p, true, true);
         i.setItem(53, temp);
         if (pageNumber != 1) {
             //only show previous page button if number is not one
             temp = new ItemStack(Material.PAPER, 1);
-            setName(temp, ChatColor.WHITE + "Previous Page", null, p, true);
+            setName(temp, ChatColor.WHITE + "Previous Page", null, p, true, true);
             i.setItem(48, temp);
         }
         if (pageNumber < pagesAmount) {
             //if page number is under pages amount
             temp = new ItemStack(Material.PAPER, 1);
-            setName(temp, ChatColor.WHITE + "Next Page", null, p, true);
+            setName(temp, ChatColor.WHITE + "Next Page", null, p, true, true);
             i.setItem(50, temp);
         }
         int count = 0;
@@ -1107,7 +1067,7 @@ public class commandpanels extends JavaPlugin {
             //count is +1 because count starts at 0 not 1
             if ((pageNumber * 45 - 45) < (count + 1) && (pageNumber * 45) > (count)) {
                 temp = new ItemStack(panelItems.get(count), 1);
-                setName(temp, ChatColor.WHITE + panelName, null, p, true);
+                setName(temp, ChatColor.WHITE + panelName, null, p, true, true);
                 i.setItem(slot, temp);
                 slot += 1;
             }
@@ -1136,7 +1096,7 @@ public class commandpanels extends JavaPlugin {
             lore.add(ChatColor.WHITE + "--------------------------------");
             lore.add(ChatColor.WHITE + "commandpanel.panel." + cf.getString("panels." + panelName + ".perm"));
         }
-        setName(temp, ChatColor.WHITE + "Panel Permission", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Panel Permission", lore, p,true, true);
         i.setItem(1, temp);
 
         temp = new ItemStack(Material.NAME_TAG, 1);
@@ -1146,7 +1106,7 @@ public class commandpanels extends JavaPlugin {
             lore.add(ChatColor.WHITE + "------------------");
             lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".title"));
         }
-        setName(temp, ChatColor.WHITE + "Panel Title", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Panel Title", lore, p,true, true);
         i.setItem(3, temp);
 
         temp = new ItemStack(Material.JUKEBOX, 1);
@@ -1156,7 +1116,7 @@ public class commandpanels extends JavaPlugin {
             lore.add(ChatColor.WHITE + "------------------------");
             lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("panels." + panelName + ".sound-on-open")).toUpperCase());
         }
-        setName(temp, ChatColor.WHITE + "Panel Sound", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Panel Sound", lore, p,true, true);
         i.setItem(5, temp);
 
         temp = new ItemStack(Material.IRON_DOOR, 1);
@@ -1166,20 +1126,20 @@ public class commandpanels extends JavaPlugin {
             lore.add(ChatColor.WHITE + "----------------------------");
             lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".command"));
         }
-        setName(temp, ChatColor.WHITE + "Panel Command", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Panel Command", lore, p,true, true);
         i.setItem(7, temp);
 
         temp = new ItemStack(Material.LAVA_BUCKET, 1);
         lore.clear();
         lore.add(ChatColor.DARK_RED + "Permanently delete Panel");
-        setName(temp, ChatColor.RED + "Delete Panel", lore, p,true);
+        setName(temp, ChatColor.RED + "Delete Panel", lore, p,true, true);
         i.setItem(21, temp);
 
         temp = new ItemStack(Material.PISTON, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "How many rows the panel will be");
         lore.add(ChatColor.GRAY + "choose an integer from 1 to 6");
-        setName(temp, ChatColor.WHITE + "Panel Rows", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Panel Rows", lore, p,true, true);
         i.setItem(23, temp);
 
         temp = new ItemStack(Material.BLACK_STAINED_GLASS, 1);
@@ -1189,7 +1149,7 @@ public class commandpanels extends JavaPlugin {
             lore.add(ChatColor.WHITE + "-----------------------");
             lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("panels." + panelName + ".empty")).toUpperCase());
         }
-        setName(temp, ChatColor.WHITE + "Panel Empty Item", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Panel Empty Item", lore, p,true, true);
         i.setItem(13, temp);
 
         temp = new ItemStack(Material.COMMAND_BLOCK, 1);
@@ -1205,7 +1165,7 @@ public class commandpanels extends JavaPlugin {
                 count += 1;
             }
         }
-        setName(temp, ChatColor.WHITE + "Panel Commands", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Panel Commands", lore, p,true, true);
         i.setItem(15, temp);
 
         temp = new ItemStack(Material.ITEM_FRAME, 1);
@@ -1214,16 +1174,16 @@ public class commandpanels extends JavaPlugin {
         lore.add(ChatColor.GRAY + "/cp [name]");
         lore.add(ChatColor.WHITE + "-----------------------");
         lore.add(ChatColor.WHITE + panelName);
-        setName(temp, ChatColor.WHITE + "Panel Name", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Panel Name", lore, p,true, true);
         i.setItem(11, temp);
 
         temp = new ItemStack(Material.BARRIER, 1);
-        setName(temp, ChatColor.RED + "Back", null, p,true);
+        setName(temp, ChatColor.RED + "Back", null, p,true, true);
         i.setItem(18, temp);
 
         //This will create a wall of glass panes, separating panel settings with hotbar settings
         temp = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1);
-        setName(temp, ChatColor.WHITE + "", null, p,false);
+        setName(temp, ChatColor.WHITE + "", null, p,false, true);
         for(int d = 27; d < 36; d++){
             i.setItem(d, temp);
         }
@@ -1245,7 +1205,7 @@ public class commandpanels extends JavaPlugin {
             lore.add(ChatColor.WHITE + "-----------------------");
             lore.add(ChatColor.RED + "DISABLED");
         }
-        setName(temp, ChatColor.WHITE + "Panel Hotbar Item", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Panel Hotbar Item", lore, p,true, true);
         i.setItem(40, temp);
 
         if(hotbarItems) {
@@ -1256,7 +1216,7 @@ public class commandpanels extends JavaPlugin {
                 lore.add(ChatColor.WHITE + "----------");
                 lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("panels." + panelName + ".open-with-item.name")));
             }
-            setName(temp, ChatColor.WHITE + "Hotbar Item Name", lore, p, true);
+            setName(temp, ChatColor.WHITE + "Hotbar Item Name", lore, p, true, true);
             i.setItem(38, temp);
 
             temp = new ItemStack(Material.SPRUCE_SIGN, 1);
@@ -1272,7 +1232,7 @@ public class commandpanels extends JavaPlugin {
                     count += 1;
                 }
             }
-            setName(temp, ChatColor.WHITE + "Hotbar Lore", lore, p,true);
+            setName(temp, ChatColor.WHITE + "Hotbar Lore", lore, p,true, true);
             i.setItem(36, temp);
 
             temp = new ItemStack(Material.BEDROCK, 1);
@@ -1285,7 +1245,7 @@ public class commandpanels extends JavaPlugin {
                 int location = cf.getInt("panels." + panelName + ".open-with-item.stationary") + 1;
                 lore.add(ChatColor.WHITE + String.valueOf(location));
             }
-            setName(temp, ChatColor.WHITE + "Hotbar Item Location", lore, p, true);
+            setName(temp, ChatColor.WHITE + "Hotbar Item Location", lore, p, true, true);
             i.setItem(42, temp);
 
             temp = new ItemStack(Material.BOOK, 1);
@@ -1294,7 +1254,7 @@ public class commandpanels extends JavaPlugin {
             lore.add(ChatColor.GRAY + "  /cp " + panelName + " item");
             lore.add(ChatColor.GRAY + "- Hotbar items will need a");
             lore.add(ChatColor.GRAY + "  name to work properly.");
-            setName(temp, ChatColor.WHITE + "Hotbar Item Tips", lore, p, true);
+            setName(temp, ChatColor.WHITE + "Hotbar Item Tips", lore, p, true, true);
             i.setItem(44, temp);
         }
 
@@ -1322,7 +1282,7 @@ public class commandpanels extends JavaPlugin {
                 lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".name"));
             }
         }
-        setName(temp, ChatColor.WHITE + "Item Name", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Item Name", lore, p,true, true);
         i.setItem(1, temp);
 
         temp = new ItemStack(Material.COMMAND_BLOCK, 1);
@@ -1338,7 +1298,7 @@ public class commandpanels extends JavaPlugin {
                 count += 1;
             }
         }
-        setName(temp, ChatColor.WHITE + "Item Commands", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Item Commands", lore, p,true, true);
         i.setItem(3, temp);
 
         temp = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
@@ -1353,7 +1313,7 @@ public class commandpanels extends JavaPlugin {
             lore.add(ChatColor.WHITE + "--------------------------------");
             lore.add(ChatColor.WHITE + "false");
         }
-        setName(temp, ChatColor.WHITE + "Item Enchantment", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Item Enchantment", lore, p,true, true);
         i.setItem(5, temp);
 
         temp = new ItemStack(Material.POTION, 1);
@@ -1365,7 +1325,7 @@ public class commandpanels extends JavaPlugin {
                 lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".potion"));
             }
         }
-        setName(temp, ChatColor.WHITE + "Item Potion Effect", lore, p,true);
+        setName(temp, ChatColor.WHITE + "Item Potion Effect", lore, p,true, true);
         i.setItem(7, temp);
 
         temp = new ItemStack(Material.SPRUCE_SIGN, 1);
@@ -1381,7 +1341,7 @@ public class commandpanels extends JavaPlugin {
                 count += 1;
             }
         }
-        setName(temp, ChatColor.WHITE + "Item Lores", lore, p, true);
+        setName(temp, ChatColor.WHITE + "Item Lores", lore, p, true, true);
         i.setItem(19, temp);
 
         temp = new ItemStack(Material.ITEM_FRAME, 2);
@@ -1397,7 +1357,7 @@ public class commandpanels extends JavaPlugin {
                 lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".stack"));
             }
         }
-        setName(temp, ChatColor.WHITE + "Item Stack Size", lore, p, true);
+        setName(temp, ChatColor.WHITE + "Item Stack Size", lore, p, true, true);
         i.setItem(21, temp);
 
         temp = new ItemStack(Material.ANVIL, 1);
@@ -1409,7 +1369,7 @@ public class commandpanels extends JavaPlugin {
                 lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".customdata"));
             }
         }
-        setName(temp, ChatColor.WHITE + "Custom Model Data", lore, p, true);
+        setName(temp, ChatColor.WHITE + "Custom Model Data", lore, p, true, true);
         i.setItem(23, temp);
 
         temp = new ItemStack(Material.LEATHER_HELMET, 1);
@@ -1422,11 +1382,11 @@ public class commandpanels extends JavaPlugin {
                 lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".leatherarmor"));
             }
         }
-        setName(temp, ChatColor.WHITE + "Leather Armor Colour", lore, p, true);
+        setName(temp, ChatColor.WHITE + "Leather Armor Colour", lore, p, true, true);
         i.setItem(25, temp);
 
         temp = new ItemStack(Material.BARRIER, 1);
-        setName(temp, ChatColor.RED + "Back", null, p, true);
+        setName(temp, ChatColor.RED + "Back", null, p, true, true);
         i.setItem(27, temp);
 
         if(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".material")).startsWith("cps=")){
@@ -1481,7 +1441,7 @@ public class commandpanels extends JavaPlugin {
         lore.clear();
         lore.add(ChatColor.GRAY + "Click to set custom material");
         lore.add(ChatColor.GRAY + "typically for custom heads");
-        setName(temp, ChatColor.WHITE + "Item Slot " + itemNumber + " Preview", lore, p, true);
+        setName(temp, ChatColor.WHITE + "Item Slot " + itemNumber + " Preview", lore, p, true, true);
         i.setItem(35, temp);
 
         p.openInventory(i);
@@ -1493,38 +1453,54 @@ public class commandpanels extends JavaPlugin {
         return new CharSequenceReader(new String(buffer));
     }
 
-    public void githubNewUpdate(){
+    public String githubNewUpdate(boolean sendMessages){
         HttpURLConnection connection;
         String gitVersion;
         if(this.getDescription().getVersion().contains("-")){
-            Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Running a custom version.");
-            return;
+            if(sendMessages) {
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Running a custom version.");
+            }
+            return null;
         }
         try{
             connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/rockyhawk64/CommandPanels/master/resource/plugin.yml").openConnection();
             connection.connect();
             gitVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine().split("\\s")[1];
             if(gitVersion.contains("-")){
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Cannot check for update.");
-                return;
+                if(sendMessages) {
+                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Cannot check for update.");
+                }
+                return null;
             }
             if(!this.getDescription().getVersion().equals(gitVersion)){
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " ================================================");
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " An update for CommandPanels is available.");
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " Download version " + gitVersion + " here:");
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " https://www.spigotmc.org/resources/command-panels-custom-guis.67788/");
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " ================================================");
+                if(sendMessages) {
+                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " ================================================");
+                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " An update for CommandPanels is available.");
+                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " Download version " + gitVersion + " here:");
+                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " https://www.spigotmc.org/resources/command-panels-custom-guis.67788/");
+                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " ================================================");
+                }
+                return gitVersion;
             }
         }catch(IOException e){
-            Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error checking for updates online.");
+            if(sendMessages) {
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error checking for updates online.");
+            }
             debug(e);
         }
+        return null;
     }
 
-    public ItemStack makeItemFromConfig(ConfigurationSection itemSection, Player p, boolean placeholders){
+    public ItemStack makeItemFromConfig(ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours){
         String tag = this.config.getString("config.format.tag") + " ";
         String material = itemSection.getString("material");
-        if (Objects.requireNonNull(itemSection.getString("material")).equalsIgnoreCase("AIR")) {
+        try {
+            if (Objects.requireNonNull(itemSection.getString("material")).equalsIgnoreCase("AIR")) {
+                return null;
+            }
+        }catch(NullPointerException e){
+            debug(e);
+            p.sendMessage(papi(tag + this.config.getString("config.format.error") + " material: could not load material!"));
             return null;
         }
         ItemStack s;
@@ -1571,7 +1547,7 @@ public class commandpanels extends JavaPlugin {
                             assert meta != null;
                             meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(skullname)));
                         } catch (Exception var23) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + this.config.getString("config.format.error") + " material: cps= self"));
+                            p.sendMessage(papi( tag + this.config.getString("config.format.error") + " material: cps= self"));
                             debug(var23);
                         }
                         s.setItemMeta(meta);
@@ -1580,7 +1556,7 @@ public class commandpanels extends JavaPlugin {
                         s = this.getItem(matskull.split("\\s")[1]);
                     }
                 } catch (Exception var32) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + this.config.getString("config.format.error") + " head material: Could not load skull"));
+                    p.sendMessage(papi( tag + this.config.getString("config.format.error") + " head material: Could not load skull"));
                     debug(var32);
                 }
             }
@@ -1599,11 +1575,11 @@ public class commandpanels extends JavaPlugin {
                     try {
                         s = api.getItemHead(matskull.split("\\s")[1].trim());
                     } catch (Exception var22) {
-                        p.sendMessage(this.papi(p, ChatColor.translateAlternateColorCodes('&', tag + this.config.getString("config.format.error") + " hdb: could not load skull!")));
+                        p.sendMessage(papi(tag + this.config.getString("config.format.error") + " hdb: could not load skull!"));
                         debug(var22);
                     }
                 } else {
-                    p.sendMessage(this.papi(p, ChatColor.translateAlternateColorCodes('&', tag + "Download HeadDatabaseHook from Spigot to use this feature!")));
+                    p.sendMessage(papi(tag + "Download HeadDatabaseHook from Spigot to use this feature!"));
                 }
             }
             if (itemSection.contains("map")) {
@@ -1634,10 +1610,10 @@ public class commandpanels extends JavaPlugin {
                         meta.setMapView(map);
                         s.setItemMeta(meta);
                     }else{
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " map: File not found.")));
+                        p.sendMessage(papi(tag + this.config.getString("config.format.error") + " map: File not found."));
                     }
                 }catch(Exception map){
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " map: " + itemSection.getString("map"))));
+                    p.sendMessage(papi(tag + this.config.getString("config.format.error") + " map: " + itemSection.getString("map")));
                     debug(map);
                 }
             }
@@ -1657,7 +1633,7 @@ public class commandpanels extends JavaPlugin {
                         s.setItemMeta(EnchantMeta);
                     }
                 } catch (Exception ench) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " enchanted: " + itemSection.getString("enchanted"))));
+                    p.sendMessage(papi(tag + this.config.getString("config.format.error") + " enchanted: " + itemSection.getString("enchanted")));
                     debug(ench);
                 }
             }
@@ -1694,7 +1670,7 @@ public class commandpanels extends JavaPlugin {
                 } catch (Exception er) {
                     //don't colour the armor
                     debug(er);
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " leatherarmor: " + itemSection.getString("leatherarmor"))));
+                    p.sendMessage(papi(tag + this.config.getString("config.format.error") + " leatherarmor: " + itemSection.getString("leatherarmor")));
                 }
             }
             if (itemSection.contains("potion")) {
@@ -1710,7 +1686,18 @@ public class commandpanels extends JavaPlugin {
                 } catch (Exception er) {
                     //don't add the effect
                     debug(er);
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + this.config.getString("config.format.error") + " potion: " + itemSection.getString("potion")));
+                    p.sendMessage(papi(tag + ChatColor.RED + this.config.getString("config.format.error") + " potion: " + itemSection.getString("potion")));
+                }
+            }
+            if (itemSection.contains("damage")) {
+                //change the damage amount (placeholders accepted)
+                try {
+                    Damageable itemDamage = (Damageable) s.getItemMeta();
+                    itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(papi(p, itemSection.getString("damage")))));
+                    s.setItemMeta((ItemMeta) itemDamage);
+                }catch(Exception e){
+                    debug(e);
+                    p.sendMessage(papi(tag + this.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
                 }
             }
             if (itemSection.contains("stack")) {
@@ -1719,14 +1706,248 @@ public class commandpanels extends JavaPlugin {
             }
         } catch (IllegalArgumentException | NullPointerException var33) {
             debug(var33);
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + papi(p, this.config.getString("config.format.error") + " material: " + itemSection.getString("material"))));
+            p.sendMessage(papi(tag + this.config.getString("config.format.error") + " material: " + itemSection.getString("material")));
             return null;
         }
         if (placeholders) {
-            this.setName(s, papi(p, itemSection.getString("name")), papi(p, itemSection.getStringList("lore")), p, true);
+            this.setName(s, papi(p, itemSection.getString("name")), papi(p, itemSection.getStringList("lore"),true), p, true, colours);
         }else{
-            this.setName(s, itemSection.getString("name"), itemSection.getList("lore"), p, false);
+            this.setName(s, itemSection.getString("name"), itemSection.getStringList("lore"), p, false, colours);
         }
         return s;
+    }
+
+    //hasperm hasvalue, etc sections will be done here
+    public String hasSection(String panelName, YamlConfiguration cf, int slot, Player p){
+        if (cf.contains("panels." + panelName + ".item." + slot + ".hasvalue")) {
+            //loop through possible hasvalue 1,2,3,etc
+            for (int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panelName + ".item." + slot)).getKeys(false).size() > count; count++) {
+                if (cf.contains("panels." + panelName + ".item." + slot + ".hasvalue" + count)) {
+                    boolean outputValue = true;
+                    //outputValue will default to true
+                    if (cf.contains("panels." + panelName + ".item." + slot + ".hasvalue" + count + ".output")) {
+                        //if output is true, and values match it will be this item, vice versa
+                        outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasvalue" + count + ".output");
+                    }
+                    String value = cf.getString("panels." + panelName + ".item." + slot + ".hasvalue" + count + ".value");
+                    String compare = ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("panels." + panelName + ".item." + slot + ".hasvalue" + count + ".compare"))));
+                    if (compare.equals(value) == outputValue) {
+                        //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
+                        return ".hasvalue" + count;
+                    }
+                }
+            }
+            //this will do the hasvalue without any numbers
+            boolean outputValue = true;
+            //outputValue will default to true
+            if (cf.contains("panels." + panelName + ".item." + slot + ".hasvalue.output")) {
+                //if output is true, and values match it will be this item, vice versa
+                outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasvalue.output");
+            }
+            String value = cf.getString("panels." + panelName + ".item." + slot + ".hasvalue.value");
+            String compare = ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("panels." + panelName + ".item." + slot + ".hasvalue.compare"))));
+            if (compare.equals(value) == outputValue) {
+                //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
+                return ".hasvalue";
+            }
+        }
+        if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater")) {
+            //loop through possible hasgreater 1,2,3,etc
+            for (int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panelName + ".item." + slot)).getKeys(false).size() > count; count++) {
+                if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater" + count)) {
+                    boolean outputValue = true;
+                    //outputValue will default to true
+                    if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".output")) {
+                        //if output is true, and values match it will be this item, vice versa
+                        outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".output");
+                    }
+                    int value = cf.getInt("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".value");
+                    double compare = Double.parseDouble(ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".compare")))));
+                    if ((compare >= value) == outputValue) {
+                        //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
+                        return ".hasgreater" + count;
+                    }
+                }
+            }
+            //this will do the hasgreater without any numbers
+            boolean outputValue = true;
+            //outputValue will default to true
+            if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater.output")) {
+                //if output is true, and values match it will be this item, vice versa
+                outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasgreater.output");
+            }
+            int value = cf.getInt("panels." + panelName + ".item." + slot + ".hasgreater.value");
+            double compare = Double.parseDouble(ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("panels." + panelName + ".item." + slot + ".hasgreater.compare")))));
+            if ((compare >= value) == outputValue) {
+                //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
+                return ".hasgreater";
+            }
+        }
+        if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm")) {
+            for(int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panelName + ".item." + slot)).getKeys(false).size() > count; count++){
+                if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm" + count) && cf.contains("panels." + panelName + ".item." + slot + ".hasperm"  + count + ".perm")) {
+                    boolean outputValue = true;
+                    //outputValue will default to true
+                    if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm" + count + ".output")) {
+                        //if output is true, and values match it will be this item, vice versa
+                        outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasperm" + count + ".output");
+                    }
+                    if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + slot + ".hasperm" + count + ".perm"))) == outputValue) {
+                        if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm"  + count + ".commands")) {
+                            return ".hasperm" + count;
+                        }
+                    }
+                }
+            }
+            //this will do hasperm with no numbers
+            boolean outputValue = true;
+            //outputValue will default to true
+            if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm" + ".output")) {
+                //if output is true, and values match it will be this item, vice versa
+                outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasperm" + ".output");
+            }
+            if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + slot + ".hasperm.perm"))) == outputValue) {
+                if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm.commands")) {
+                    return ".hasperm";
+                }
+            }
+        }
+        return "";
+    }
+
+    //this is the main method to open a panel
+    public void openCommandPanel(CommandSender sender, Player p, String panels, YamlConfiguration cf, boolean sendOpenedMessage){
+        String tag = config.getString("config.format.tag") + " ";
+        if (sender.hasPermission("commandpanel.panel." + cf.getString("panels." + panels + ".perm"))) {
+            //if the sender has OTHER perms, or if sendOpenedMessage is false, implying it is not for another person
+            if(sender.hasPermission("commandpanel.other") || !sendOpenedMessage) {
+                try {
+                    if (cf.contains("panels." + panels + ".disabled-worlds")) {
+                        List<String> disabledWorlds = cf.getStringList("panels." + panels + ".disabled-worlds");
+                        if (disabledWorlds.contains(p.getWorld().getName())) {
+                            //panel cannot be used in the players world!
+                            if (Objects.requireNonNull(config.getString("config.disabled-world-message")).equalsIgnoreCase("true")) {
+                                sender.sendMessage(papi(tag + ChatColor.RED + "Panel is disabled in the world!"));
+                            }
+                            return;
+                        }
+                    }
+                }catch(NullPointerException offlinePlayer){
+                    //SKIP because player is offline
+                    sender.sendMessage(papi(tag + config.getString("config.format.notitem")));
+                    return;
+                }
+                try {
+                    if (cf.contains("panels." + panels + ".sound-on-open")) {
+                        //play sound when panel is opened
+                        if(!Objects.requireNonNull(cf.getString("panels." + panels + ".sound-on-open")).equalsIgnoreCase("off")) {
+                            try {
+                                p.playSound(p.getLocation(), Sound.valueOf(Objects.requireNonNull(cf.getString("panels." + panels + ".sound-on-open")).toUpperCase()), 1F, 1F);
+                            } catch (Exception s) {
+                                p.sendMessage(papi(tag + config.getString("config.format.error") + " " + "sound-on-open: " + cf.getString("panels." + panels + ".sound-on-open")));
+                            }
+                        }
+                    }
+                    if (cf.contains("panels." + panels + ".commands-on-open")) {
+                        //execute commands on panel open
+                        try {
+                            List<String> commands = cf.getStringList("panels." + panels + ".commands-on-open");
+                            for (int i = 0; commands.size() - 1 >= i; i++) {
+                                int val = commandPayWall(p,commands.get(i));
+                                if(val == 0){
+                                    break;
+                                }
+                                if(val == 2){
+                                    commandTags(p, commands.get(i));
+                                }
+                            }
+                        }catch(Exception s){
+                            p.sendMessage(papi(tag + config.getString("config.format.error") + " " + "commands-on-open: " + cf.getString("panels." + panels + ".commands-on-open")));
+                        }
+                    }
+                    openGui(panels, p, cf,1,0);
+                    if(sendOpenedMessage) {
+                        sender.sendMessage(papi( tag + ChatColor.GREEN + "Panel Opened for " + p.getDisplayName()));
+                    }
+                } catch (Exception r) {
+                    debug(r);
+                    sender.sendMessage(papi(tag + config.getString("config.format.notitem")));
+                }
+            }else{
+                sender.sendMessage(papi(tag + config.getString("config.format.perms")));
+            }
+            return;
+        }
+        sender.sendMessage(papi(tag + config.getString("config.format.perms")));
+    }
+
+    //this will give a hotbar item to a player
+    public void giveHotbarItem(CommandSender sender, Player p, String panels, YamlConfiguration cf, boolean sendGiveMessage){
+        String tag = config.getString("config.format.tag") + " ";
+        if (sender.hasPermission("commandpanel.item." + cf.getString("panels." + panels + ".perm")) && cf.contains("panels." + panels + ".open-with-item")) {
+            try {
+                if (cf.contains("panels." + panels + ".disabled-worlds")) {
+                    List<String> disabledWorlds = cf.getStringList("panels." + panels + ".disabled-worlds");
+                    if (disabledWorlds.contains(p.getWorld().getName())) {
+                        //panel cannot be used in the players world!
+                        if (Objects.requireNonNull(config.getString("config.disabled-world-message")).equalsIgnoreCase("true")) {
+                            sender.sendMessage(papi(tag + ChatColor.RED + "Panel is disabled in the world!"));
+                        }
+                        return;
+                    }
+                }
+            }catch(NullPointerException offlinePlayer){
+                //SKIP because player is offline
+                sender.sendMessage(papi(tag + config.getString("config.format.notitem")));
+                return;
+            }
+            ItemStack s;
+            try {
+                s = makeItemFromConfig(Objects.requireNonNull(cf.getConfigurationSection("panels." + panels + ".open-with-item")), p, false, true);
+            }catch(Exception n){
+                sender.sendMessage(papi(tag + config.getString("config.format.error") + " open-with-item: material"));
+                return;
+            }
+            setName(s, cf.getString("panels." + panels + ".open-with-item.name"), cf.getStringList("panels." + panels + ".open-with-item.lore"),p,true, false);
+            //if the sender has OTHER perms, or if sendGiveMessage is false, implying it is not for another person
+            if(sender.hasPermission("commandpanel.other") || !sendGiveMessage) {
+                try {
+                    if(cf.contains("panels." + panels + ".open-with-item.stationary")) {
+                        p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(cf.getString("panels." + panels + ".open-with-item.stationary"))), s);
+                    }else{
+                        p.getInventory().addItem(s);
+                    }
+                    if(sendGiveMessage) {
+                        sender.sendMessage(papi( tag + ChatColor.GREEN + "Item Given to " + p.getDisplayName()));
+                    }
+                } catch (Exception r) {
+                    sender.sendMessage(papi(tag + config.getString("config.format.notitem")));
+                }
+            }else{
+                sender.sendMessage(papi(tag + config.getString("config.format.perms")));
+            }
+            return;
+        }
+        if (!cf.contains("panels." + panels + ".open-with-item")) {
+            sender.sendMessage(papi(tag + config.getString("config.format.noitem")));
+            return;
+        }
+        sender.sendMessage(papi(tag + config.getString("config.format.perms")));
+    }
+
+    //used to translate hex colours into ChatColors
+    public String translateHexColorCodes(String message) {
+        final Pattern hexPattern = Pattern.compile("#" + "([A-Fa-f0-9]{6})");
+        Matcher matcher = hexPattern.matcher(message);
+        StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
+        while (matcher.find()) {
+            String group = matcher.group(1);
+            matcher.appendReplacement(buffer, ChatColor.COLOR_CHAR + "x"
+                    + ChatColor.COLOR_CHAR + group.charAt(0) + ChatColor.COLOR_CHAR + group.charAt(1)
+                    + ChatColor.COLOR_CHAR + group.charAt(2) + ChatColor.COLOR_CHAR + group.charAt(3)
+                    + ChatColor.COLOR_CHAR + group.charAt(4) + ChatColor.COLOR_CHAR + group.charAt(5)
+            );
+        }
+        return matcher.appendTail(buffer).toString();
     }
 }

@@ -8,7 +8,7 @@
     </content>
     <orderEntry type="jdk" jdkName="adopt-openjdk-1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="HeadDatabaseAPI1" level="project" />
+    <orderEntry type="library" name="HeadDatabaseAPI" level="project" />
     <orderEntry type="library" name="PlaceholderAPI-2.10.21" level="project" />
     <orderEntry type="library" name="TokenManager-3.2.4" level="project" />
     <orderEntry type="library" name="Vault" level="project" />

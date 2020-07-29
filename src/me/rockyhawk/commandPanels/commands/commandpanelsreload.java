@@ -22,14 +22,14 @@ public class commandpanelsreload implements CommandExecutor {
                 plugin.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "config.yml"));
                 plugin.reloadPanelFiles();
                 tag = plugin.config.getString("config.format.tag") + " ";
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.reload")));
+                sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.reload")));
                 return true;
             }else{
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
                 return true;
             }
         }
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Usage: /cpr"));
+        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpr"));
         return true;
     }
 }

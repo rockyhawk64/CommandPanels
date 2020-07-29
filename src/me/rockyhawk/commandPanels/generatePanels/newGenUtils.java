@@ -81,7 +81,7 @@ public class newGenUtils implements Listener {
         }
         if(!foundItem){
             //panels don't need items but I cancel on generate with no items because then players have the option to cancel if they need to
-            p.sendMessage(plugin.papi(p,tag + ChatColor.RED + "Cancelled Panel!"));
+            p.sendMessage(plugin.papi(tag + ChatColor.RED + "Cancelled Panel!"));
             return;
         }
         YamlConfiguration file;
@@ -132,9 +132,9 @@ public class newGenUtils implements Listener {
 
         try {
             file.save(new File(plugin.panelsf + File.separator + date + ".yml"));
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.GREEN + "Saved Generated File To: " + date + ".yml"));
+            p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Saved Generated File To: " + date + ".yml"));
         } catch (IOException var16) {
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + ChatColor.RED + "Could Not Save Generated Panel!"));
+            p.sendMessage(plugin.papi( tag + ChatColor.RED + "Could Not Save Generated Panel!"));
         }
         plugin.reloadPanelFiles();
     }

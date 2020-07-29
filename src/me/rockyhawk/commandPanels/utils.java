@@ -1,15 +1,10 @@
 package me.rockyhawk.commandPanels;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.*;
-import org.bukkit.block.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
@@ -42,6 +37,10 @@ public class utils implements Listener {
                 //if no panels are present
                 return;
             }
+            if(clicked == null){
+                //if itemstack is null
+                return;
+            }
         }catch(Exception b){
             return;
         }
@@ -52,7 +51,7 @@ public class utils implements Listener {
             String key;
             YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filename));
             if (!plugin.checkPanels(temp)) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', tag + plugin.papi(p, plugin.config.getString("config.format.error") + ": Syntax error Found or Missing certain element!")));
+                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + ": Syntax error Found or Missing certain element!"));
                 return;
             }
             for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
@@ -89,76 +88,8 @@ public class utils implements Listener {
             if(!foundSlot){
                 return;
             }
-            String section = "";
-            //this will do the noperm without any numbers
-            //loop through possible noperm/hasperm 1,2,3,etc
-            if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasvalue")) {
-                //loop through possible hasvalue 1,2,3,etc
-                for (int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panel + ".item." + e.getSlot())).getKeys(false).size() > count; count++) {
-                    if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasvalue" + count)) {
-                        boolean outputValue = true;
-                        //outputValue will default to true
-                        if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasvalue" + count + ".output")) {
-                            //if output is true, and values match it will be this item, vice versa
-                            outputValue = cf.getBoolean("panels." + panel + ".item." + e.getSlot() + ".hasvalue" + count + ".output");
-                        }
-                        String value = cf.getString("panels." + panel + ".item." + e.getSlot() + ".hasvalue" + count + ".value");
-                        String compare = ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("panels." + panel + ".item." + e.getSlot() + ".hasvalue" + count + ".compare"))));
-                        if (compare.equals(value) == outputValue) {
-                            //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
-                            section = ".hasvalue" + count;
-                            break;
-                        }
-                    }
-                }
-                //this will do the hasvalue without any numbers
-                boolean outputValue = true;
-                //outputValue will default to true
-                if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasvalue.output")) {
-                    //if output is true, and values match it will be this item, vice versa
-                    outputValue = cf.getBoolean("panels." + panel + ".item." + e.getSlot() + ".hasvalue.output");
-                }
-                String value = cf.getString("panels." + panel + ".item." + e.getSlot() + ".hasvalue.value");
-                String compare = ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("panels." + panel + ".item." + e.getSlot() + ".hasvalue.compare"))));
-                if (compare.equals(value) == outputValue) {
-                    //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
-                    section = ".hasvalue";
-                }
-            }
-            if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm") && cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm.perm")) {
-                for(int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panel + ".item." + e.getSlot())).getKeys(false).size() > count; count++){
-                    if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm" + count) && cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm"  + count + ".perm")) {
-                        boolean outputValue = true;
-                        //outputValue will default to true
-                        if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm" + count + ".output")) {
-                            //if output is true, and values match it will be this item, vice versa
-                            outputValue = cf.getBoolean("panels." + panel + ".item." + e.getSlot() + ".hasperm" + count + ".output");
-                        }
-                        if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panel + ".item." + e.getSlot() + ".hasperm" + count + ".perm"))) == outputValue) {
-                            if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm"  + count + ".commands") && !(clicked == null)) {
-                                section = ".hasperm" + count;
-                                break;
-                            } else if (clicked != null) {
-                                return;
-                            }
-                        }
-                    }
-                }
-                //this will do hasperm with no numbers
-                boolean outputValue = true;
-                //outputValue will default to true
-                if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm" + ".output")) {
-                    //if output is true, and values match it will be this item, vice versa
-                    outputValue = cf.getBoolean("panels." + panel + ".item." + e.getSlot() + ".hasperm" + ".output");
-                }
-                if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panel + ".item." + e.getSlot() + ".hasperm.perm"))) == outputValue) {
-                    if (cf.contains("panels." + panel + ".item." + e.getSlot() + ".hasperm.commands") && !(clicked == null)) {
-                        section = ".hasperm";
-                    } else if (clicked != null) {
-                        return;
-                    }
-                }
-            }
+            //loop through possible hasvalue/hasperm 1,2,3,etc
+            String section = plugin.hasSection(panel, cf, e.getSlot(),p);
             //this will remove any pending user inputs, if there is already something there from a previous item
             for(int o = 0; plugin.userInputStrings.size() > o; o++){
                 if(plugin.userInputStrings.get(o)[0].equals(p.getName())){
@@ -167,7 +98,7 @@ public class utils implements Listener {
                 }
             }
             if(cf.contains("panels." + panel + ".item." + e.getSlot() + section + ".commands")) {
-                List<String> commands = (List<String>) cf.getList("panels." + panel + ".item." + e.getSlot() + section + ".commands");
+                List<String> commands = cf.getStringList("panels." + panel + ".item." + e.getSlot() + section + ".commands");
                 assert commands != null;
                 if (commands.size() != 0) {
                     //this will replace a sequence tag command with the commands from the sequence
@@ -175,7 +106,7 @@ public class utils implements Listener {
                     for (int i = 0; commands.size() - 1 >= i; i++) {
                         if(commands.get(i).startsWith("sequence=")){
                             String locationOfSequence = commands.get(i).split("\\s")[1];
-                            List<String> commandsSequence = (List<String>) cf.getList(locationOfSequence);
+                            List<String> commandsSequence = cf.getStringList(locationOfSequence);
                             commandsAfterSequence.remove(i);
                             assert commandsSequence != null;
                             commandsAfterSequence.addAll(i,commandsSequence);

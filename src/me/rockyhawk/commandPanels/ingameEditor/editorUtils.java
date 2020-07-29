@@ -34,7 +34,7 @@ public class editorUtils implements Listener {
                 return;
             }
         }catch(NullPointerException nu){return;}
-        if(!p.getOpenInventory().getTitle().equals(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&',"Command Panels Editor")))){
+        if(!p.getOpenInventory().getTitle().equals(ChatColor.stripColor(plugin.papi("Command Panels Editor")))){
             return;
         }
         e.setCancelled(true);
@@ -53,8 +53,8 @@ public class editorUtils implements Listener {
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;
-                    panelNames.add(ChatColor.translateAlternateColorCodes('&', key));
-                    panelTitles.add(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))));
+                    panelNames.add(plugin.papi( key));
+                    panelTitles.add(plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))));
                     panelYaml.add(temp);
                 }
             }
@@ -150,7 +150,7 @@ public class editorUtils implements Listener {
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;
-                    if (e.getView().getTitle().equals(ChatColor.GRAY + "Editing Panel: " + ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
+                    if (e.getView().getTitle().equals(ChatColor.GRAY + "Editing Panel: " + plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
                         panelName = key;
                         fileName = fileTempName;
                         file = temp;
@@ -217,7 +217,7 @@ public class editorUtils implements Listener {
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;
-                    if (e.getView().getTitle().equals(ChatColor.GRAY + "Editing Panel: " + ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
+                    if (e.getView().getTitle().equals(ChatColor.GRAY + "Editing Panel: " + plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
                         panelName = key;
                         fileName = new File(plugin.panelsf + File.separator + tempName);
                         file = temp;
@@ -355,53 +355,53 @@ public class editorUtils implements Listener {
         }
         if(e.getSlot() == 1){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.perm"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Permission"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Permission"));
             p.closeInventory();
         }
         if(e.getSlot() == 3){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.title"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Title"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Title"));
             p.closeInventory();
         }
         if(e.getSlot() == 5){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.sound-on-open"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Sound ID"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Sound ID"));
             p.closeInventory();
         }
         if(e.getSlot() == 7){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.command"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Command"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Command"));
             p.closeInventory();
         }
         if(e.getSlot() == 21){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.delete"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Are you sure? (yes/no)"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Are you sure? (yes/no)"));
             p.closeInventory();
         }
         if(e.getSlot() == 23){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.rows"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter Row Amount (1 to 6)"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter Row Amount (1 to 6)"));
             p.closeInventory();
         }
         if(e.getSlot() == 13){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.empty"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Material ID"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Material ID"));
             p.closeInventory();
         }
         if(e.getSlot() == 15){
             //adds abilities to add and remove lines
             if(e.getClick().isLeftClick()) {
                 plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "panel.commands-on-open.add"});
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Command"));
+                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Command"));
             }else{
                 plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "panel.commands-on-open.remove"});
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter command line to remove (must be an integer)"));
+                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter command line to remove (must be an integer)"));
             }
             p.closeInventory();
         }
         if(e.getSlot() == 11){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.name"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Name"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Name"));
             p.closeInventory();
         }
         if(e.getSlot() == 18){
@@ -410,28 +410,28 @@ public class editorUtils implements Listener {
         }
         if(e.getSlot() == 40){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.material"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Material"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Material"));
             p.closeInventory();
         }
         if(e.getSlot() == 38 && hotbarItems){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.name"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Name"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Name"));
             p.closeInventory();
         }
         if(e.getSlot() == 36 && hotbarItems){
             //adds abilities to add and remove lines
             if(e.getClick().isLeftClick()) {
                 plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.lore.add"});
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Item Lore"));
+                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Lore"));
             }else{
                 plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.lore.remove"});
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter lore line to remove (must be an integer)"));
+                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter lore line to remove (must be an integer)"));
             }
             p.closeInventory();
         }
         if(e.getSlot() == 42 && hotbarItems){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.stationary"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter Location (1 to 9)"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter Location (1 to 9)"));
             p.closeInventory();
         }
     }
@@ -488,59 +488,59 @@ public class editorUtils implements Listener {
         }
         if(e.getSlot() == 1){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".name"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Item Name"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Name"));
             p.closeInventory();
         }
         if(e.getSlot() == 3){
             //adds abilities to add and remove lines
             if(e.getClick().isLeftClick()) {
                 plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item." + itemSlot + ".commands.add"});
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Item Command"));
+                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Command"));
             }else{
                 plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item." + itemSlot + ".commands.remove"});
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter command line to remove (must be an integer)"));
+                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter command line to remove (must be an integer)"));
             }
             p.closeInventory();
         }
         if(e.getSlot() == 5){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".enchanted"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Item Enchantment"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Enchantment"));
             p.closeInventory();
         }
         if(e.getSlot() == 7){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".potion"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Item Potion Effect"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Potion Effect"));
             p.closeInventory();
         }
         if(e.getSlot() == 19){
             //adds abilities to add and remove lines
             if(e.getClick().isLeftClick()) {
                 plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item." + itemSlot + ".lore.add"});
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Item Lore"));
+                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Lore"));
             }else{
                 plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item." + itemSlot + ".lore.remove"});
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter lore line to remove (must be an integer)"));
+                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter lore line to remove (must be an integer)"));
             }
             p.closeInventory();
         }
         if(e.getSlot() == 21){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".stack"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Item Stack (must be an integer)"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Stack (must be an integer)"));
             p.closeInventory();
         }
         if(e.getSlot() == 23){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".customdata"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Custom Model Data"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Custom Model Data"));
             p.closeInventory();
         }
         if(e.getSlot() == 25){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".leatherarmor"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Leather Armor Colour"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Leather Armor Colour"));
             p.closeInventory();
         }
         if(e.getSlot() == 35){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".head"});
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Enter New Custom Material (eg. cps= self)"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Custom Material (eg. cps= self)"));
             p.closeInventory();
         }
         if(e.getSlot() == 27){
@@ -598,7 +598,7 @@ public class editorUtils implements Listener {
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;
-                    if (invView.getTitle().equals(ChatColor.GRAY + "Editing Panel: " + ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
+                    if (invView.getTitle().equals(ChatColor.GRAY + "Editing Panel: " + plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
                         panelName = key;
                         fileName = tempFile;
                         file = temp;
@@ -670,9 +670,9 @@ public class editorUtils implements Listener {
         try {
             file.save(new File(plugin.panelsf + File.separator + fileName));
             tempEdit.save(new File(plugin.getDataFolder() + File.separator + "temp.yml"));
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.GREEN + "Saved Changes!"));
+            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Saved Changes!"));
         } catch (IOException s) {
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',tag + ChatColor.RED + "Could Not Save Changes!"));
+            p.sendMessage(plugin.papi(tag + ChatColor.RED + "Could Not Save Changes!"));
             plugin.debug(s);
         }
         plugin.reloadPanelFiles();
