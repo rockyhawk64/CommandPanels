@@ -298,9 +298,9 @@ public class commandpanels extends JavaPlugin {
             List<String> clore = new ArrayList<>();
             if (lore != null) {
                 if(usePlaceholders && useColours){
-                    papi(p, clore, true);
+                    clore = papi(p, lore, true);
                 }else if(useColours){
-                    papi(p, clore, false);
+                    clore = papi(p, lore, false);
                 }
                 renamedMeta.setLore(clore);
             }
