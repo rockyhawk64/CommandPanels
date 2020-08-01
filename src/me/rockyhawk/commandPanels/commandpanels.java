@@ -281,12 +281,11 @@ public class commandpanels extends JavaPlugin {
         try {
             ItemMeta renamedMeta = renamed.getItemMeta();
             //set cp placeholders
-            if(usePlaceholders && useColours){
-                customName = papi(p,customName);
-            }else if(useColours){
+            if(usePlaceholders){
+                customName = papiNoColour(p,customName);
+            }
+            if(useColours){
                 customName = papi(customName);
-            }else{
-                customName = setCpPlaceholders(p, customName);
             }
 
             assert renamedMeta != null;
@@ -295,12 +294,16 @@ public class commandpanels extends JavaPlugin {
                 renamedMeta.setDisplayName(customName);
             }
 
-            List<String> clore = new ArrayList<>();
+            List<String> clore;
             if (lore != null) {
                 if(usePlaceholders && useColours){
                     clore = papi(p, lore, true);
+                }else if(usePlaceholders){
+                    clore = papiNoColour(p, lore);
                 }else if(useColours){
                     clore = papi(p, lore, false);
+                }else{
+                    clore = lore;
                 }
                 renamedMeta.setLore(clore);
             }
@@ -393,11 +396,24 @@ public class commandpanels extends JavaPlugin {
     //regular string papi
     public String papi(Player p, String setpapi) {
         try {
+            setpapi = setCpPlaceholders(p,setpapi);
             if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
                 setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
             }
-            setpapi = setCpPlaceholders(p,setpapi);
             setpapi = translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
+            return setpapi;
+        }catch(NullPointerException e){
+            return setpapi;
+        }
+    }
+
+    //string papi with no colours
+    public String papiNoColour(Player p, String setpapi) {
+        try {
+            setpapi = setCpPlaceholders(p,setpapi);
+            if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
+            }
             return setpapi;
         }catch(NullPointerException e){
             return setpapi;
@@ -430,9 +446,21 @@ public class commandpanels extends JavaPlugin {
             try {
                 setpapi.set(tempInt, translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', temp)));
             }catch(NullPointerException ignore){
-
             }
             tempInt += 1;
+        }
+        return setpapi;
+    }
+
+    //papi except if it is a String List
+    public List<String> papiNoColour(Player p, List<String> setpapi) {
+        try {
+            if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
+            }
+        }catch(Exception ignore){
+            //this will be ignored as it is probably a null
+            return null;
         }
         return setpapi;
     }
@@ -1709,11 +1737,7 @@ public class commandpanels extends JavaPlugin {
             p.sendMessage(papi(tag + this.config.getString("config.format.error") + " material: " + itemSection.getString("material")));
             return null;
         }
-        if (placeholders) {
-            this.setName(s, papi(p, itemSection.getString("name")), papi(p, itemSection.getStringList("lore"),true), p, true, colours);
-        }else{
-            this.setName(s, itemSection.getString("name"), itemSection.getStringList("lore"), p, false, colours);
-        }
+        this.setName(s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours);
         return s;
     }
 
