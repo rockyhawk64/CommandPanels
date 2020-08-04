@@ -398,7 +398,8 @@ public class commandpanels extends JavaPlugin {
         try {
             setpapi = setCpPlaceholders(p,setpapi);
             if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
+                OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
+                setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
             }
             setpapi = translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
             return setpapi;
@@ -412,7 +413,8 @@ public class commandpanels extends JavaPlugin {
         try {
             setpapi = setCpPlaceholders(p,setpapi);
             if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
+                OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
+                setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
             }
             return setpapi;
         }catch(NullPointerException e){
@@ -434,7 +436,8 @@ public class commandpanels extends JavaPlugin {
     public List<String> papi(Player p, List<String> setpapi, boolean placeholders) {
         try {
             if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && placeholders) {
-                setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
+                OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
+                setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
             }
         }catch(Exception ignore){
             //this will be ignored as it is probably a null
@@ -456,7 +459,8 @@ public class commandpanels extends JavaPlugin {
     public List<String> papiNoColour(Player p, List<String> setpapi) {
         try {
             if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                setpapi = PlaceholderAPI.setPlaceholders(p, setpapi);
+                OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
+                setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
             }
         }catch(Exception ignore){
             //this will be ignored as it is probably a null
@@ -1817,9 +1821,7 @@ public class commandpanels extends JavaPlugin {
                         outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasperm" + count + ".output");
                     }
                     if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + slot + ".hasperm" + count + ".perm"))) == outputValue) {
-                        if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm"  + count + ".commands")) {
-                            return ".hasperm" + count;
-                        }
+                        return ".hasperm" + count;
                     }
                 }
             }
@@ -1831,9 +1833,7 @@ public class commandpanels extends JavaPlugin {
                 outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasperm" + ".output");
             }
             if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + slot + ".hasperm.perm"))) == outputValue) {
-                if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm.commands")) {
-                    return ".hasperm";
-                }
+                return ".hasperm";
             }
         }
         return "";
