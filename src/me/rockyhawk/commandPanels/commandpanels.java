@@ -1780,23 +1780,6 @@ public class commandpanels extends JavaPlugin {
             }
         }
         if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater")) {
-            //loop through possible hasgreater 1,2,3,etc
-            for (int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panelName + ".item." + slot)).getKeys(false).size() > count; count++) {
-                if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater" + count)) {
-                    boolean outputValue = true;
-                    //outputValue will default to true
-                    if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".output")) {
-                        //if output is true, and values match it will be this item, vice versa
-                        outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".output");
-                    }
-                    int value = cf.getInt("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".value");
-                    double compare = Double.parseDouble(ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".compare")))));
-                    if ((compare >= value) == outputValue) {
-                        //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
-                        return ".hasgreater" + count;
-                    }
-                }
-            }
             //this will do the hasgreater without any numbers
             boolean outputValue = true;
             //outputValue will default to true
@@ -1810,21 +1793,25 @@ public class commandpanels extends JavaPlugin {
                 //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
                 return ".hasgreater";
             }
-        }
-        if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm")) {
-            for(int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panelName + ".item." + slot)).getKeys(false).size() > count; count++){
-                if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm" + count) && cf.contains("panels." + panelName + ".item." + slot + ".hasperm"  + count + ".perm")) {
-                    boolean outputValue = true;
+            //loop through possible hasgreater 1,2,3,etc
+            for (int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panelName + ".item." + slot)).getKeys(false).size() > count; count++) {
+                if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater" + count)) {
+                    outputValue = true;
                     //outputValue will default to true
-                    if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm" + count + ".output")) {
+                    if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".output")) {
                         //if output is true, and values match it will be this item, vice versa
-                        outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasperm" + count + ".output");
+                        outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".output");
                     }
-                    if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + slot + ".hasperm" + count + ".perm"))) == outputValue) {
-                        return ".hasperm" + count;
+                    value = cf.getInt("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".value");
+                    compare = Double.parseDouble(ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".compare")))));
+                    if ((compare >= value) == outputValue) {
+                        //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
+                        return ".hasgreater" + count;
                     }
                 }
             }
+        }
+        if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm")) {
             //this will do hasperm with no numbers
             boolean outputValue = true;
             //outputValue will default to true
@@ -1834,6 +1821,19 @@ public class commandpanels extends JavaPlugin {
             }
             if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + slot + ".hasperm.perm"))) == outputValue) {
                 return ".hasperm";
+            }
+            for(int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panelName + ".item." + slot)).getKeys(false).size() > count; count++){
+                if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm" + count) && cf.contains("panels." + panelName + ".item." + slot + ".hasperm"  + count + ".perm")) {
+                    outputValue = true;
+                    //outputValue will default to true
+                    if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm" + count + ".output")) {
+                        //if output is true, and values match it will be this item, vice versa
+                        outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasperm" + count + ".output");
+                    }
+                    if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + slot + ".hasperm" + count + ".perm"))) == outputValue) {
+                        return ".hasperm" + count;
+                    }
+                }
             }
         }
         return "";
