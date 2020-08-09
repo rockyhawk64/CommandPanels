@@ -812,7 +812,7 @@ public class commandpanels extends JavaPlugin {
             String ip_port = str.substring(start, end).replace("%cp-server-", "").replace("%","");
             Socket s = new Socket();
             try {
-                s.connect(new InetSocketAddress(ip_port.split(":")[0], Integer.parseInt(ip_port.split(":")[1])), 10);
+                s.connect(new InetSocketAddress(ip_port.split(":")[0], Integer.parseInt(ip_port.split(":")[1])), config.getInt("config.server-ping-timeout"));
                 str = str.replace(str.substring(start, end) + "%", papi(p, "true"));
                 s.close();
             }catch (IOException ex){
