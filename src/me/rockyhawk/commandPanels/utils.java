@@ -97,9 +97,9 @@ public class utils implements Listener {
                     o=o-1;
                 }
             }
+            redirectPanel(p,cf,panel,section,e.getSlot());
             if(cf.contains("panels." + panel + ".item." + e.getSlot() + section + ".commands")) {
                 List<String> commands = cf.getStringList("panels." + panel + ".item." + e.getSlot() + section + ".commands");
-                assert commands != null;
                 if (commands.size() != 0) {
                     //this will replace a sequence tag command with the commands from the sequence
                     List<String> commandsAfterSequence = commands;
@@ -108,7 +108,6 @@ public class utils implements Listener {
                             String locationOfSequence = commands.get(i).split("\\s")[1];
                             List<String> commandsSequence = cf.getStringList(locationOfSequence);
                             commandsAfterSequence.remove(i);
-                            assert commandsSequence != null;
                             commandsAfterSequence.addAll(i,commandsSequence);
                         }
                     }
@@ -148,14 +147,10 @@ public class utils implements Listener {
                             if (!e.isLeftClick() && !e.isRightClick()) {
                                 continue;
                             }
-                            if (clicked == null) {
-                                continue;
-                            }
                         } catch (Exception click) {
                             //skip if you can't do this
                         }
                         try {
-                            assert clicked != null;
                             commands.set(i, commands.get(i).replaceAll("%cp-clicked%", clicked.getType().toString()));
                         } catch (Exception mate) {
                             commands.set(i, commands.get(i).replaceAll("%cp-clicked%", "Air"));
@@ -175,6 +170,7 @@ public class utils implements Listener {
         //stop duplicate
         p.updateInventory();
     }
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e){
         Player p = e.getPlayer();
@@ -184,5 +180,31 @@ public class utils implements Listener {
                 p.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/command-panels-custom-guis.67788/");
             }
         }
+    }
+
+    public void redirectPanel(Player p, YamlConfiguration cf, String panel, String section, int slot){
+        String tag = plugin.config.getString("config.format.tag") + " ";
+        if(!cf.contains("panels." + panel + ".item." + slot + section + ".redirect") || !cf.contains("panels." + panel + ".item." + slot + section + ".redirect.panel")) {
+            return;
+        }
+        String panelName = cf.getString("panels." + panel + ".item." + slot + section + ".redirect.panel");
+        YamlConfiguration panelConfig = null;
+        for(String[] tempName : plugin.panelNames){
+            if(tempName[0].equals(panelName)){
+                panelConfig = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(tempName[1]))));
+            }
+        }
+        if(panelConfig == null){
+            p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.nopanel")));
+            return;
+        }
+        if(cf.contains("panels." + panel + ".item." + slot + section + ".redirect.force")){
+            //this will force the panel open without consideration of permissions, world, etc
+            if(cf.getBoolean("panels." + panel + ".item." + slot + section + ".redirect.force")){
+                plugin.openGui(panelName, p, panelConfig, 1, 0);
+                return;
+            }
+        }
+        plugin.openCommandPanel(p, p, panelName, panelConfig, false);
     }
 }

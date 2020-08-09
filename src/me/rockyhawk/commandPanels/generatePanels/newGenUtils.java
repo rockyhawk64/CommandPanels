@@ -32,18 +32,16 @@ public class newGenUtils implements Listener {
     }
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
-        //reload panel files to avoid conflicts
-        plugin.reloadPanelFiles();
         Player p = (Player)e.getPlayer();
         if (!ChatColor.stripColor(e.getView().getTitle()).equals("Generate New Panel")){
             return;
         }
+        //reload panel files to avoid conflicts
+        plugin.reloadPanelFiles();
         generatePanel(p,e.getInventory());
     }
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        //reload panel files to avoid conflicts
-        plugin.reloadPanelFiles();
         Player p = e.getPlayer();
         //if the player is in generate mode, remove generate mode
         this.plugin.generateMode.remove(p);

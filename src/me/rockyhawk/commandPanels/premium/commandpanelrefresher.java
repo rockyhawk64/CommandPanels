@@ -91,8 +91,8 @@ public class commandpanelrefresher implements Listener {
         final YamlConfiguration cfFinal = cf;
         final String fpanel = panel;
         final String fpanelTitle = panelTitle;
-        ItemStack panelItemList[] = plugin.openGui(fpanel, p, cf,2, -1).getContents();
-        ItemStack playerItemList[] = p.getInventory().getStorageContents();
+        ItemStack[] panelItemList = plugin.openGui(fpanel, p, cf,2, -1).getContents();
+        ItemStack[] playerItemList = p.getInventory().getStorageContents();
         new BukkitRunnable(){
             @Override
             public void run() {

@@ -10,6 +10,8 @@ import com.mojang.authlib.properties.PropertyMap;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -803,9 +805,23 @@ public class commandpanels extends JavaPlugin {
         str = str.replaceAll("%cp-player-y%", String.valueOf(Math.round(p.getLocation().getY())));
         str = str.replaceAll("%cp-player-z%", String.valueOf(Math.round(p.getLocation().getZ())));
         str = str.replaceAll("%cp-online-players%", Integer.toString(Bukkit.getServer().getOnlinePlayers().size()));
-        if (str.contains("%cp-player-online-")) {
+        //placeholder to check for server availability
+        while (str.contains("%cp-server-")) {
+            int start = str.indexOf("%cp-server-");
+            int end = str.indexOf("%", str.indexOf("%cp-server-")+1);
+            String ip_port = str.substring(start, end).replace("%cp-server-", "").replace("%","");
+            Socket s = new Socket();
+            try {
+                s.connect(new InetSocketAddress(ip_port.split(":")[0], Integer.parseInt(ip_port.split(":")[1])), 10);
+                str = str.replace(str.substring(start, end) + "%", papi(p, "true"));
+                s.close();
+            }catch (IOException ex){
+                str = str.replace(str.substring(start, end) + "%", papi(p, "false"));
+            }
+        }
+        while (str.contains("%cp-player-online-")) {
             int start = str.indexOf("%cp-player-online-");
-            int end = str.lastIndexOf("-find%");
+            int end = str.indexOf("-find%",str.indexOf("%cp-player-online-")+1);
             String playerLocation = str.substring(start, end).replace("%cp-player-online-", "");
             Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
             if (Integer.parseInt(playerLocation) > playerFind.length) {
