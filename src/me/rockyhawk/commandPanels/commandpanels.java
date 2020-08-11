@@ -437,14 +437,16 @@ public class commandpanels extends JavaPlugin {
     //papi except if it is a String List
     public List<String> papi(Player p, List<String> setpapi, boolean placeholders) {
         try {
-            if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && placeholders) {
+            if(placeholders) {
                 int tempInt = 0;
-                for(String temp : setpapi){
-                    setpapi.set(tempInt,setCpPlaceholders(p,temp));
+                for (String temp : setpapi) {
+                    setpapi.set(tempInt, setCpPlaceholders(p, temp));
                     tempInt += 1;
                 }
-                OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
-                setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
+                if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                    OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
+                    setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
+                }
             }
         }catch(Exception ignore){
             //this will be ignored as it is probably a null
@@ -465,6 +467,11 @@ public class commandpanels extends JavaPlugin {
     //papi except if it is a String List
     public List<String> papiNoColour(Player p, List<String> setpapi) {
         try {
+            int tempInt = 0;
+            for (String temp : setpapi) {
+                setpapi.set(tempInt, setCpPlaceholders(p, temp));
+                tempInt += 1;
+            }
             if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
                 OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
                 setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
