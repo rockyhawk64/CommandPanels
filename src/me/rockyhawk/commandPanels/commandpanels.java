@@ -438,6 +438,11 @@ public class commandpanels extends JavaPlugin {
     public List<String> papi(Player p, List<String> setpapi, boolean placeholders) {
         try {
             if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && placeholders) {
+                int tempInt = 0;
+                for(String temp : setpapi){
+                    setpapi.set(tempInt,setCpPlaceholders(p,temp));
+                    tempInt += 1;
+                }
                 OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
                 setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
             }
