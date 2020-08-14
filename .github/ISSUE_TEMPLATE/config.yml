@@ -1,1 +1,5 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Creating issues
+    url: https://github.com/rockyhawk64/CommandPanels/issues/new/choose
+    about: When creating issues you must use the templates we made. Removing the template/creating a blank issues will not recieve help.
