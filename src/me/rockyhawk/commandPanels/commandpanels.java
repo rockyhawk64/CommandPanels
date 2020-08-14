@@ -47,7 +47,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
@@ -930,7 +929,46 @@ public class commandpanels extends JavaPlugin {
                 p.sendMessage(papi(p, tag + config.getString("config.format.error") + " " + "commands: " + command));
                 return 0;
             }
-        } else if (command.split("\\s")[0].equalsIgnoreCase("xp-paywall=")) {
+        }else if (command.split("\\s")[0].equalsIgnoreCase("item-paywall=")) {
+            //if player uses item-paywall= [Material] [Amount]
+            try {
+                ItemStack sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[1])),Integer.parseInt(command.split("\\s")[2]));
+                int sellItemAmount = sellItem.getAmount();
+                sellItem.setAmount(1);
+                int removedItem = 0;
+                for(ItemStack content : p.getInventory().getContents()){
+                    int contentAmount;
+                    try {
+                        contentAmount = content.getAmount();
+                    }catch(NullPointerException skip){
+                        //item is air
+                        continue;
+                    }
+                    content.setAmount(1);
+                    if(content.isSimilar(sellItem)){
+                        if(sellItemAmount <= contentAmount){
+                            content.setAmount(contentAmount-sellItemAmount);
+                            p.updateInventory();
+                            removedItem = 1;
+                            break;
+                        }
+                    }
+                    content.setAmount(contentAmount);
+                }
+                if(removedItem == 0){
+                    p.sendMessage(papi( tag + config.getString("config.format.needmoney")));
+                }else{
+                    if(!Objects.requireNonNull(config.getString("config.format.sold")).isEmpty()) {
+                        p.sendMessage(papi( tag + config.getString("config.format.sold")));
+                    }
+                }
+                return removedItem;
+            } catch (Exception buyc) {
+                debug(buyc);
+                p.sendMessage(papi(p, tag + config.getString("config.format.error") + " " + "commands: " + command));
+                return 0;
+            }
+        }else if (command.split("\\s")[0].equalsIgnoreCase("xp-paywall=")) {
             //if player uses xp-paywall= [price]
             try {
                 int balance = p.getLevel();
@@ -955,22 +993,32 @@ public class commandpanels extends JavaPlugin {
         }
     }
 
+    //look through all files in all folders
+    public void fileNamesFromDirectory(File directory) {
+        int count = 0;
+        for (String fileName : Objects.requireNonNull(directory.list())) {
+            if(new File(directory + File.separator + fileName).isDirectory()){
+                fileNamesFromDirectory(new File(directory + File.separator + fileName));
+                continue;
+            }
+            int ind = fileName.lastIndexOf(".");
+            if(!fileName.substring(ind).equalsIgnoreCase(".yml") && !fileName.substring(ind).equalsIgnoreCase(".yaml")){
+                continue;
+            }
+            panelFiles.add((directory + File.separator + fileName).replace(panelsf.toString() + File.separator,""));
+            for (String tempName : Objects.requireNonNull(YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)).getConfigurationSection("panels")).getKeys(false)) {
+                panelNames.add(new String[]{tempName, Integer.toString(count)});
+            }
+            count += 1;
+        }
+    }
+
     public void reloadPanelFiles() {
         try {
             panelFiles.clear();
             panelNames.clear();
-            int count = 0;
-            for (String fileName : Objects.requireNonNull(panelsf.list())) {
-                int ind = fileName.lastIndexOf(".");
-                if(!fileName.substring(ind).equalsIgnoreCase(".yml") && !fileName.substring(ind).equalsIgnoreCase(".yaml")){
-                    continue;
-                }
-                panelFiles.add(fileName);
-                for (String tempName : Objects.requireNonNull(YamlConfiguration.loadConfiguration(new File(panelsf + File.separator + fileName)).getConfigurationSection("panels")).getKeys(false)) {
-                    panelNames.add(new String[]{tempName, Integer.toString(count)});
-                }
-                count += 1;
-            }
+            //load panel files
+            fileNamesFromDirectory(panelsf);
             //this bit will set openWithItem to false/true upson reload
             YamlConfiguration tempFile;
             String tempName;
@@ -1049,7 +1097,7 @@ public class commandpanels extends JavaPlugin {
 
     public void openEditorGui(Player p, int pageChange) {
         reloadPanelFiles();
-        Inventory i = Bukkit.createInventory((InventoryHolder) null, 54, "Command Panels Editor");
+        Inventory i = Bukkit.createInventory(null, 54, "Command Panels Editor");
         ArrayList<String> panelNames = new ArrayList<String>(); //all panels from ALL files (panel names)
         ArrayList<String> panelTitles = new ArrayList<String>(); //all panels from ALL files (panel titles)
         ArrayList<Material> panelItems = new ArrayList<Material>(); //all panels from ALL files (panel materials)
@@ -1138,7 +1186,7 @@ public class commandpanels extends JavaPlugin {
 
     public void openPanelSettings(Player p, String panelName, YamlConfiguration cf) {
         reloadPanelFiles();
-        Inventory i = Bukkit.createInventory((InventoryHolder) null, 45, "Panel Settings: " + panelName);
+        Inventory i = Bukkit.createInventory(null, 45, "Panel Settings: " + panelName);
         List<String> lore = new ArrayList();
         ItemStack temp;
         //remove if the player already had a string from previously
@@ -1323,7 +1371,7 @@ public class commandpanels extends JavaPlugin {
 
     public void openItemSettings(Player p, String panelName, YamlConfiguration cf, int itemNumber) {
         reloadPanelFiles();
-        Inventory i = Bukkit.createInventory((InventoryHolder) null, 36, "Item Settings: " + panelName);
+        Inventory i = Bukkit.createInventory(null, 36, "Item Settings: " + panelName);
         List<String> lore = new ArrayList();
         ItemStack temp;
         //remove if the player already had a string from previously
@@ -1960,7 +2008,7 @@ public class commandpanels extends JavaPlugin {
                 sender.sendMessage(papi(tag + config.getString("config.format.error") + " open-with-item: material"));
                 return;
             }
-            setName(s, cf.getString("panels." + panels + ".open-with-item.name"), cf.getStringList("panels." + panels + ".open-with-item.lore"),p,true, false);
+            setName(s, cf.getString("panels." + panels + ".open-with-item.name"), cf.getStringList("panels." + panels + ".open-with-item.lore"),p,false, true);
             //if the sender has OTHER perms, or if sendGiveMessage is false, implying it is not for another person
             if(sender.hasPermission("commandpanel.other") || !sendGiveMessage) {
                 try {

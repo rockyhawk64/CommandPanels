@@ -267,19 +267,11 @@ public class utilsOpenWithItem implements Listener {
                 if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
                     if(temp.contains("panels." + key + ".disabled-worlds")){
                         List<String> disabledWorlds = temp.getStringList("panels." + key + ".disabled-worlds");
-                        assert disabledWorlds != null;
                         if(disabledWorlds.contains(p.getWorld().getName())){
                             continue;
                         }
                     }
                     ItemStack s = plugin.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true);
-                    /*ItemStack s;
-                    try {
-                        s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1);
-                    }catch(Exception n){
-                        continue;
-                    }
-                    plugin.setName(s, temp.getString("panels." + key + ".open-with-item.name"), temp.getList("panels." + key + ".open-with-item.lore"),p,true);*/
                     if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 8 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
                         p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
                     }
