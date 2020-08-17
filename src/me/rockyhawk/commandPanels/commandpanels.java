@@ -995,7 +995,6 @@ public class commandpanels extends JavaPlugin {
 
     //look through all files in all folders
     public void fileNamesFromDirectory(File directory) {
-        int count = 0;
         for (String fileName : Objects.requireNonNull(directory.list())) {
             if(new File(directory + File.separator + fileName).isDirectory()){
                 fileNamesFromDirectory(new File(directory + File.separator + fileName));
@@ -1012,33 +1011,20 @@ public class commandpanels extends JavaPlugin {
             }
             panelFiles.add((directory + File.separator + fileName).replace(panelsf.toString() + File.separator,""));
             for (String tempName : Objects.requireNonNull(YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)).getConfigurationSection("panels")).getKeys(false)) {
-                panelNames.add(new String[]{tempName, Integer.toString(count)});
+                panelNames.add(new String[]{tempName, Integer.toString(panelFiles.size()-1)});
+                if(YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)).contains("panels." + tempName + ".open-with-item")) {
+                    openWithItem = true;
+                }
             }
-            count += 1;
         }
     }
 
     public void reloadPanelFiles() {
         panelFiles.clear();
         panelNames.clear();
+        openWithItem = false;
         //load panel files
         fileNamesFromDirectory(panelsf);
-        //this bit will set openWithItem to false/true upson reload
-        YamlConfiguration tempFile;
-        String tempName;
-        openWithItem = false;
-        for(String[] panelName  : panelNames){
-            tempFile = YamlConfiguration.loadConfiguration(new File(panelsf + File.separator + panelFiles.get(Integer.parseInt(panelName[1]))));
-            if(!checkPanels(tempFile)){
-                this.getServer().getConsoleSender().sendMessage("[CommandPanels] Error in: " + panelFiles.get(Integer.parseInt(panelName[1])));
-                continue;
-            }
-            tempName = panelName[0];
-            if(tempFile.contains("panels." + tempName + ".open-with-item")) {
-                openWithItem = true;
-                break;
-            }
-        }
     }
 
     public void debug(Exception e) {

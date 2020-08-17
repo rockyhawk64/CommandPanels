@@ -1,7 +1,6 @@
 package me.rockyhawk.commandPanels.openWithItem;
 
 import me.rockyhawk.commandPanels.commandpanels;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -92,7 +91,7 @@ public class utilsOpenWithItem implements Listener {
                 try{
                     assert clicked != null;
                     if (clicked.getType() == new ItemStack(Objects.requireNonNull(plugin.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("panels." + tempName + ".open-with-item")), p, false, true).getType()), 1).getType()) {
-                        if ((plugin.papi( Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(plugin.papi( Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.name")))))) {
+                        if ((plugin.papi( Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(plugin.papi(Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.name")))))) {
                             //cancel the click item event
                             if (tempFile.contains("panels." + tempName + ".open-with-item.stationary")) {
                                 if (p.getInventory().getHeldItemSlot() != Integer.parseInt(Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.stationary")))) {
@@ -177,7 +176,6 @@ public class utilsOpenWithItem implements Listener {
         }catch(Exception b){
             return;
         }
-        YamlConfiguration cf; //this is the file to use for any panel.* requests
         String tpanels; //tpanels is the temp to check through the files
         for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
             YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
@@ -210,7 +208,7 @@ public class utilsOpenWithItem implements Listener {
             //if none of the panels have open-with-item
             return;
         }
-        Player p = (Player)e.getEntity();
+        Player p = e.getEntity();
         try {
             if (plugin.panelFiles == null) {
                 return;
@@ -218,7 +216,6 @@ public class utilsOpenWithItem implements Listener {
         }catch(Exception b){
             return;
         }
-        YamlConfiguration cf; //this is the file to use for any panel.* requests
         String tpanels; //tpanels is the temp to check through the files
         for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
             YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
@@ -245,7 +242,6 @@ public class utilsOpenWithItem implements Listener {
             return;
         }
         Player p = e.getPlayer();
-        String tag = plugin.config.getString("config.format.tag") + " ";
         try {
             if (plugin.panelFiles == null) {
                 return;
