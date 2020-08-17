@@ -48,9 +48,7 @@ public class commandpanelrefresher implements Listener {
                 String key;
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 if (!plugin.checkPanels(temp)) {
-                    assert p != null;
-                    p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + ": File with no Panels found or Panel with syntax error Found!"));
-                    return;
+                    continue;
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;

@@ -40,8 +40,7 @@ public class commandpanelcustom implements Listener {
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
-                return;
+                continue;
             }
             for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();

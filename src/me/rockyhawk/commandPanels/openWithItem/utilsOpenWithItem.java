@@ -141,7 +141,7 @@ public class utilsOpenWithItem implements Listener {
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
-                return;
+                continue;
             }
             for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
@@ -184,7 +184,7 @@ public class utilsOpenWithItem implements Listener {
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
-                return;
+                continue;
             }
             for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
@@ -225,7 +225,7 @@ public class utilsOpenWithItem implements Listener {
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
-                return;
+                continue;
             }
             for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
@@ -259,8 +259,7 @@ public class utilsOpenWithItem implements Listener {
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + ": Missing required component in panel!"));
-                return;
+                continue;
             }
             for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
@@ -312,7 +311,6 @@ public class utilsOpenWithItem implements Listener {
         }catch(Exception b){
             return;
         }
-        YamlConfiguration cf; //this is the file to use for any panel.* requests
         String tpanels; //tpanels is the temp to check through the files
         ItemStack clicked = e.getItemDrop().getItemStack();
         for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
@@ -320,7 +318,7 @@ public class utilsOpenWithItem implements Listener {
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
-                return;
+                continue;
             }
             for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
@@ -371,7 +369,7 @@ public class utilsOpenWithItem implements Listener {
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
-                return;
+                continue;
             }
             for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();
@@ -423,7 +421,7 @@ public class utilsOpenWithItem implements Listener {
             String key;
             tpanels = "";
             if(!plugin.checkPanels(temp)){
-                return;
+                continue;
             }
             for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                 key = (String) var10.next();

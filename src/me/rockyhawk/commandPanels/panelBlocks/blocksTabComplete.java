@@ -32,7 +32,7 @@ public class blocksTabComplete implements TabCompleter {
                                 String key;
                                 tpanels = "";
                                 if (!plugin.checkPanels(temp)) {
-                                    return null;
+                                    continue;
                                 }
                                 for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                                     key = (String) var10.next();

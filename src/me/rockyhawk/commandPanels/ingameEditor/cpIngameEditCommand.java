@@ -49,8 +49,7 @@ public class cpIngameEditCommand implements CommandExecutor {
                 tpanels = "";
                 temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filename));
                 if (!plugin.checkPanels(temp)) {
-                    sender.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
-                    return true;
+                    continue;
                 }
                 for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                     key = (String) var10.next();

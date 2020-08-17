@@ -33,8 +33,7 @@ public class commandpanel implements CommandExecutor {
             for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 if(!plugin.checkPanels(temp)){
-                    sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + ": Panel with syntax error found!"));
-                    return true;
+                    continue;
                 }
                 for (String key : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     apanels.add(temp.getString("panels." + key + ".title"));

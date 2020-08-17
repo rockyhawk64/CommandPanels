@@ -354,7 +354,8 @@ public class commandpanels extends JavaPlugin {
     }
 
     public ItemStack getItem(String b64stringtexture) {
-        GameProfile profile = new GameProfile(UUID.randomUUID(), (String) null);
+        //get head from base64
+        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
         PropertyMap propertyMap = profile.getProperties();
         if (propertyMap == null) {
             throw new IllegalStateException("Profile doesn't contain a property map");
@@ -378,7 +379,6 @@ public class commandpanels extends JavaPlugin {
 
     private <T> Field getField(Class<?> target, String name, Class<T> fieldType, int index) {
         Field[] var4 = target.getDeclaredFields();
-        int var5 = var4.length;
 
         for (Field field : var4) {
             if ((name == null || field.getName().equals(name)) && fieldType.isAssignableFrom(field.getType()) && index-- <= 0) {
@@ -1005,6 +1005,11 @@ public class commandpanels extends JavaPlugin {
             if(!fileName.substring(ind).equalsIgnoreCase(".yml") && !fileName.substring(ind).equalsIgnoreCase(".yaml")){
                 continue;
             }
+            //check before adding the file to commandpanels
+            if(!checkPanels(YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)))){
+                this.getServer().getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error in: " + fileName);
+                continue;
+            }
             panelFiles.add((directory + File.separator + fileName).replace(panelsf.toString() + File.separator,""));
             for (String tempName : Objects.requireNonNull(YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)).getConfigurationSection("panels")).getKeys(false)) {
                 panelNames.add(new String[]{tempName, Integer.toString(count)});
@@ -1014,24 +1019,25 @@ public class commandpanels extends JavaPlugin {
     }
 
     public void reloadPanelFiles() {
-        try {
-            panelFiles.clear();
-            panelNames.clear();
-            //load panel files
-            fileNamesFromDirectory(panelsf);
-            //this bit will set openWithItem to false/true upson reload
-            YamlConfiguration tempFile;
-            String tempName;
-            openWithItem = false;
-            for(String[] panelName  : panelNames){
-                tempFile = YamlConfiguration.loadConfiguration(new File(panelsf + File.separator + panelFiles.get(Integer.parseInt(panelName[1]))));
-                tempName = panelName[0];
-                if(tempFile.contains("panels." + tempName + ".open-with-item")) {
-                    openWithItem = true;
-                }
+        panelFiles.clear();
+        panelNames.clear();
+        //load panel files
+        fileNamesFromDirectory(panelsf);
+        //this bit will set openWithItem to false/true upson reload
+        YamlConfiguration tempFile;
+        String tempName;
+        openWithItem = false;
+        for(String[] panelName  : panelNames){
+            tempFile = YamlConfiguration.loadConfiguration(new File(panelsf + File.separator + panelFiles.get(Integer.parseInt(panelName[1]))));
+            if(!checkPanels(tempFile)){
+                this.getServer().getConsoleSender().sendMessage("[CommandPanels] Error in: " + panelFiles.get(Integer.parseInt(panelName[1])));
+                continue;
             }
-        } catch (NullPointerException noPanels) {
-            this.getServer().getConsoleSender().sendMessage("[CommandPanels] No panels found to load!");
+            tempName = panelName[0];
+            if(tempFile.contains("panels." + tempName + ".open-with-item")) {
+                openWithItem = true;
+                break;
+            }
         }
     }
 
@@ -1096,7 +1102,6 @@ public class commandpanels extends JavaPlugin {
     }};
 
     public void openEditorGui(Player p, int pageChange) {
-        reloadPanelFiles();
         Inventory i = Bukkit.createInventory(null, 54, "Command Panels Editor");
         ArrayList<String> panelNames = new ArrayList<String>(); //all panels from ALL files (panel names)
         ArrayList<String> panelTitles = new ArrayList<String>(); //all panels from ALL files (panel titles)
@@ -1106,7 +1111,7 @@ public class commandpanels extends JavaPlugin {
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(panelsf + File.separator + fileName));
                 String key;
                 if (!checkPanels(temp)) {
-                    return;
+                    continue;
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;
@@ -1185,7 +1190,6 @@ public class commandpanels extends JavaPlugin {
     }
 
     public void openPanelSettings(Player p, String panelName, YamlConfiguration cf) {
-        reloadPanelFiles();
         Inventory i = Bukkit.createInventory(null, 45, "Panel Settings: " + panelName);
         List<String> lore = new ArrayList();
         ItemStack temp;
@@ -1370,7 +1374,6 @@ public class commandpanels extends JavaPlugin {
     }
 
     public void openItemSettings(Player p, String panelName, YamlConfiguration cf, int itemNumber) {
-        reloadPanelFiles();
         Inventory i = Bukkit.createInventory(null, 36, "Item Settings: " + panelName);
         List<String> lore = new ArrayList();
         ItemStack temp;

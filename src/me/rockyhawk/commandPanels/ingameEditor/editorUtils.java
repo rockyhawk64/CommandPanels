@@ -49,7 +49,7 @@ public class editorUtils implements Listener {
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 String key;
                 if(!plugin.checkPanels(temp)){
-                    return;
+                    continue;
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;
@@ -146,7 +146,7 @@ public class editorUtils implements Listener {
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 String key;
                 if(!plugin.checkPanels(temp)){
-                    return;
+                    continue;
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;
@@ -213,7 +213,7 @@ public class editorUtils implements Listener {
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + tempName));
                 String key;
                 if(!plugin.checkPanels(temp)){
-                    return;
+                    continue;
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;
@@ -332,7 +332,7 @@ public class editorUtils implements Listener {
             for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 if(!plugin.checkPanels(temp)){
-                    return;
+                    continue;
                 }
                 for (String key : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)){
                     if(e.getView().getTitle().equals("Panel Settings: " + key)){
@@ -459,7 +459,7 @@ public class editorUtils implements Listener {
             for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 if(!plugin.checkPanels(temp)){
-                    return;
+                    continue;
                 }
                 for (String key : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)){
                     if(e.getView().getTitle().equals("Item Settings: " + key)){
@@ -594,7 +594,7 @@ public class editorUtils implements Listener {
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + tempFile));
                 String key;
                 if(!plugin.checkPanels(temp)){
-                    return;
+                    continue;
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;

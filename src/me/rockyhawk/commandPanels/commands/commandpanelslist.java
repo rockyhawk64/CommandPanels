@@ -42,8 +42,8 @@ public class commandpanelslist implements CommandExecutor {
                     temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(f)));
                     apanels.add("%file%" + plugin.panelFiles.get(f));
                     if(!plugin.checkPanels(temp)){
-                        sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + ": File with no Panels found!"));
-                        return true;
+                        apanels.add("Error Reading File!");
+                        continue;
                     }
                     for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
                         key = (String) var10.next();
@@ -74,7 +74,7 @@ public class commandpanelslist implements CommandExecutor {
                             sender.sendMessage(ChatColor.AQUA + "Type /cpl " + (page+1) + " to read next page");
                             break;
                         }
-                        sender.sendMessage(ChatColor.DARK_GREEN + apanels.get(f).replaceAll("%file%","").replaceAll(".yml",""));
+                        sender.sendMessage(ChatColor.DARK_GREEN + apanels.get(f).replaceAll("%file%",""));
                     }else{
                         sender.sendMessage(ChatColor.GREEN + "- " + apanels.get(f));
                     }
