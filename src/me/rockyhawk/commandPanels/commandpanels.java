@@ -98,6 +98,7 @@ public class commandpanels extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("commandpaneldebug")).setExecutor(new commandpanelsdebug(this));
         Objects.requireNonNull(this.getCommand("commandpanelclose")).setExecutor(new commandpanelclose(this));
         Objects.requireNonNull(this.getCommand("commandpanelversion")).setExecutor(new commandpanelversion(this));
+        Objects.requireNonNull(this.getCommand("commandpaneladdons")).setExecutor(new commandpanelresources(this));
         Objects.requireNonNull(this.getCommand("commandpanellist")).setExecutor(new commandpanelslist(this));
         Objects.requireNonNull(this.getCommand("commandpaneledit")).setExecutor(new cpIngameEditCommand(this));
         Objects.requireNonNull(this.getCommand("commandpanelblock")).setExecutor(new commandpanelblocks(this));
@@ -1039,6 +1040,9 @@ public class commandpanels extends JavaPlugin {
         p.sendMessage(ChatColor.GOLD + "/cp <panel> [player:item] [player] " + ChatColor.WHITE + "Open a command panel.");
         if (p.hasPermission("commandpanel.reload")) {
             p.sendMessage(ChatColor.GOLD + "/cpr " + ChatColor.WHITE + "Reloads plugin config.");
+        }
+        if (p.hasPermission("commandpanel.addons")) {
+            p.sendMessage(ChatColor.GOLD + "/cpa " + ChatColor.WHITE + "View downloadable addons for CommandPanels.");
         }
         p.sendMessage(ChatColor.GOLD + "/cpc " + ChatColor.WHITE + "Close current GUI.");
         if (p.hasPermission("commandpanel.generate")) {

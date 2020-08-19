@@ -1,4 +1,4 @@
-version: 3.9.2
+version: 3.9.3
 main: me.rockyhawk.commandPanels.commandpanels
 name: CommandPanels
 author: RockyHawk
@@ -34,6 +34,10 @@ commands:
       description: Display the current version.
       usage: /commandpanelversion
       aliases: [cpv, cpanelv]
+   commandpaneladdons:
+      description: Find downloadable panels online.
+      usage: /commandpaneladdons
+      aliases: [cpa, cpanela]
    commandpaneledit:
       description: Edit panels ingame.
       usage: /commandpaneledit [panel]
@@ -64,6 +68,8 @@ permissions:
    commandpanel.generate:
       default: op
    commandpanel.version:
+      default: true
+   commandpanel.addons:
       default: true
    commandpanel.editor:
       default: true
