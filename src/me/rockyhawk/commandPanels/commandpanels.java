@@ -29,6 +29,8 @@ import me.rockyhawk.commandPanels.ingameEditor.cpIngameEditCommand;
 import me.rockyhawk.commandPanels.ingameEditor.cpTabCompleteIngame;
 import me.rockyhawk.commandPanels.ingameEditor.editorUserInput;
 import me.rockyhawk.commandPanels.ingameEditor.editorUtils;
+import me.rockyhawk.commandPanels.ioClasses.sequence_1_13;
+import me.rockyhawk.commandPanels.ioClasses.sequence_1_14;
 import me.rockyhawk.commandPanels.openWithItem.utilsOpenWithItem;
 import me.rockyhawk.commandPanels.panelBlocks.blocksTabComplete;
 import me.rockyhawk.commandPanels.panelBlocks.commandpanelblocks;
@@ -41,8 +43,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.libs.org.apache.commons.io.IOUtils;
-import org.bukkit.craftbukkit.libs.org.apache.commons.io.input.CharSequenceReader;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.entity.Player;
@@ -1550,8 +1550,11 @@ public class commandpanels extends JavaPlugin {
 
     public Reader getReaderFromStream(InputStream initialStream) throws IOException {
         //this reads the encrypted resource files in the jar file
-        byte[] buffer = IOUtils.toByteArray(initialStream);
-        return new CharSequenceReader(new String(buffer));
+        if(Bukkit.getVersion().contains("1.13")){
+            return new sequence_1_13().getReaderFromStream(initialStream);
+        }else{
+            return new sequence_1_14().getReaderFromStream(initialStream);
+        }
     }
 
     public String githubNewUpdate(boolean sendMessages){

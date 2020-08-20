@@ -12,7 +12,8 @@
     <orderEntry type="library" name="TokenManager-3.2.4" level="project" />
     <orderEntry type="library" name="Vault" level="project" />
     <orderEntry type="library" name="VotingPlugin" level="project" />
-    <orderEntry type="library" name="spigot-1.16.1" level="project" />
     <orderEntry type="library" name="PlaceholderAPI-2.10.8" level="project" />
+    <orderEntry type="library" name="spigot-1.16.1" level="project" />
+    <orderEntry type="library" name="spigot-1.13.2" level="project" />
   </component>
 </module>

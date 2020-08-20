@@ -203,9 +203,9 @@ public class editorUtils implements Listener {
         if(!p.getOpenInventory().getTitle().contains(ChatColor.GRAY + "Editing Panel:")){
             return;
         }
-        String panelName = ""; //all panels from ALL files (panel names)
-        File fileName = null; //all panels from ALL files (panel names)
-        YamlConfiguration file = new YamlConfiguration(); //all panels from ALL files (panel yaml files)
+        String panelName = "";
+        String fileName = "";
+        YamlConfiguration file = new YamlConfiguration();
         boolean found = false;
         try {
             //neew to loop through files to get file names
@@ -219,7 +219,7 @@ public class editorUtils implements Listener {
                     key = s;
                     if (e.getView().getTitle().equals(ChatColor.GRAY + "Editing Panel: " + plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
                         panelName = key;
-                        fileName = new File(plugin.panelsf + File.separator + tempName);
+                        fileName = tempName;
                         file = temp;
                         found = true;
                         break;
@@ -250,7 +250,7 @@ public class editorUtils implements Listener {
             onEditPanelClose(p,e.getInventory(),e.getView());
             inventoryItemSettingsOpening.add(p.getName());
             //refresh the yaml config
-            file = YamlConfiguration.loadConfiguration(fileName);
+            file = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
             plugin.openItemSettings(p,panelName,file,e.getSlot());
             return;
         }
@@ -265,7 +265,7 @@ public class editorUtils implements Listener {
         if(e.getAction() == InventoryAction.CLONE_STACK){
             saveTempItem(e, p, file, panelName);
         }else if(e.getAction() == InventoryAction.PLACE_ALL){
-            loadTempItem(e, p, file, fileName.getName(), panelName);
+            loadTempItem(e, p, file, fileName, panelName);
             clearTemp(p, panelName);
         }else if(e.getAction() == InventoryAction.COLLECT_TO_CURSOR){
             //e.setCancelled(true);
@@ -285,7 +285,7 @@ public class editorUtils implements Listener {
         }else if(e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY){
             e.setCancelled(true);
         }else if(e.getAction() == InventoryAction.PLACE_SOME){
-            loadTempItem(e, p, file, fileName.getName(), panelName);
+            loadTempItem(e, p, file, fileName, panelName);
         }else if(e.getAction() == InventoryAction.SWAP_WITH_CURSOR){
             e.setCancelled(true);
         }else if(e.getAction() == InventoryAction.PICKUP_ALL){
@@ -297,7 +297,7 @@ public class editorUtils implements Listener {
         }else if(e.getAction() == InventoryAction.PICKUP_SOME){
             saveTempItem(e, p, file, panelName);
         }else if(e.getAction() == InventoryAction.PLACE_ONE){
-            loadTempItem(e, p, file, fileName.getName(), panelName);
+            loadTempItem(e, p, file, fileName, panelName);
         }
     }
     @EventHandler
