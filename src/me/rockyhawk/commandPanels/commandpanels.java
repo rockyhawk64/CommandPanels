@@ -40,6 +40,7 @@ import me.rockyhawk.commandPanels.premium.commandpanelrefresher;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -187,7 +188,7 @@ public class commandpanels extends JavaPlugin {
                 String section = "";
                 //onOpen needs to not be 3 so the editor won't include hasperm and hasvalue, etc items
                 if (onOpen != 3) {
-                    section = hasSection(panels, pconfig, Integer.parseInt(item.split("\\s")[c]), p);
+                    section = hasSection(pconfig.getConfigurationSection("panels." + panels + ".item." + Integer.parseInt(item.split("\\s")[c])), p);
                     //This section is for animations below here: VISUAL ONLY
 
                     //check for if there is animations inside the items section
@@ -1818,92 +1819,100 @@ public class commandpanels extends JavaPlugin {
     }
 
     //hasperm hasvalue, etc sections will be done here
-    public String hasSection(String panelName, YamlConfiguration cf, int slot, Player p){
-        if (cf.contains("panels." + panelName + ".item." + slot + ".hasvalue")) {
-            //loop through possible hasvalue 1,2,3,etc
-            for (int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panelName + ".item." + slot)).getKeys(false).size() > count; count++) {
-                if (cf.contains("panels." + panelName + ".item." + slot + ".hasvalue" + count)) {
-                    boolean outputValue = true;
-                    //outputValue will default to true
-                    if (cf.contains("panels." + panelName + ".item." + slot + ".hasvalue" + count + ".output")) {
-                        //if output is true, and values match it will be this item, vice versa
-                        outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasvalue" + count + ".output");
-                    }
-                    String value = cf.getString("panels." + panelName + ".item." + slot + ".hasvalue" + count + ".value");
-                    String compare = ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("panels." + panelName + ".item." + slot + ".hasvalue" + count + ".compare"))));
-                    if (compare.equals(value) == outputValue) {
-                        //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
-                        return ".hasvalue" + count;
-                    }
-                }
-            }
+    public String hasSection(ConfigurationSection cf, Player p){
+        if (cf.contains("hasvalue")) {
             //this will do the hasvalue without any numbers
             boolean outputValue = true;
             //outputValue will default to true
-            if (cf.contains("panels." + panelName + ".item." + slot + ".hasvalue.output")) {
+            if (cf.contains("hasvalue.output")) {
                 //if output is true, and values match it will be this item, vice versa
-                outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasvalue.output");
+                outputValue = cf.getBoolean("hasvalue.output");
             }
-            String value = cf.getString("panels." + panelName + ".item." + slot + ".hasvalue.value");
-            String compare = ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("panels." + panelName + ".item." + slot + ".hasvalue.compare"))));
+            String value = cf.getString("hasvalue.value");
+            String compare = ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("hasvalue.compare"))));
             if (compare.equals(value) == outputValue) {
                 //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
-                return ".hasvalue";
+                String section = hasSection(Objects.requireNonNull(cf.getConfigurationSection("hasvalue")), p);
+                //string section, it executes itself to check for subsections
+                return ".hasvalue" + section;
             }
-        }
-        if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater")) {
-            //this will do the hasgreater without any numbers
-            boolean outputValue = true;
-            //outputValue will default to true
-            if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater.output")) {
-                //if output is true, and values match it will be this item, vice versa
-                outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasgreater.output");
-            }
-            int value = cf.getInt("panels." + panelName + ".item." + slot + ".hasgreater.value");
-            double compare = Double.parseDouble(ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("panels." + panelName + ".item." + slot + ".hasgreater.compare")))));
-            if ((compare >= value) == outputValue) {
-                //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
-                return ".hasgreater";
-            }
-            //loop through possible hasgreater 1,2,3,etc
-            for (int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panelName + ".item." + slot)).getKeys(false).size() > count; count++) {
-                if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater" + count)) {
+            //loop through possible hasvalue 1,2,3,etc
+            for (int count = 0; cf.getKeys(false).size() > count; count++) {
+                if (cf.contains("hasvalue" + count)) {
                     outputValue = true;
                     //outputValue will default to true
-                    if (cf.contains("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".output")) {
+                    if (cf.contains("hasvalue" + count + ".output")) {
                         //if output is true, and values match it will be this item, vice versa
-                        outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".output");
+                        outputValue = cf.getBoolean("hasvalue" + count + ".output");
                     }
-                    value = cf.getInt("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".value");
-                    compare = Double.parseDouble(ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("panels." + panelName + ".item." + slot + ".hasgreater" + count + ".compare")))));
-                    if ((compare >= value) == outputValue) {
-                        //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
-                        return ".hasgreater" + count;
+                    value = cf.getString("hasvalue" + count + ".value");
+                    compare = ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("hasvalue" + count + ".compare"))));
+                    if (compare.equals(value) == outputValue) {
+                        //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
+                        String section = hasSection(Objects.requireNonNull(cf.getConfigurationSection("hasvalue" + count)), p);
+                        //string section, it executes itself to check for subsections
+                        return ".hasvalue" + count + section;
                     }
                 }
             }
         }
-        if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm")) {
+        if (cf.contains("hasgreater")) {
+            //this will do the hasgreater without any numbers
+            boolean outputValue = true;
+            //outputValue will default to true
+            if (cf.contains("hasgreater.output")) {
+                //if output is true, and values match it will be this item, vice versa
+                outputValue = cf.getBoolean("hasgreater.output");
+            }
+            int value = cf.getInt("hasgreater.value");
+            double compare = Double.parseDouble(ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("hasgreater.compare")))));
+            if ((compare >= value) == outputValue) {
+                //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
+                String section = hasSection(Objects.requireNonNull(cf.getConfigurationSection("hasgreater")), p);
+                return ".hasgreater" + section;
+            }
+            //loop through possible hasgreater 1,2,3,etc
+            for (int count = 0; cf.getKeys(false).size() > count; count++) {
+                if (cf.contains("hasgreater" + count)) {
+                    outputValue = true;
+                    //outputValue will default to true
+                    if (cf.contains("hasgreater" + count + ".output")) {
+                        //if output is true, and values match it will be this item, vice versa
+                        outputValue = cf.getBoolean("hasgreater" + count + ".output");
+                    }
+                    value = cf.getInt("hasgreater" + count + ".value");
+                    compare = Double.parseDouble(ChatColor.stripColor(papi(p,setCpPlaceholders(p,cf.getString("hasgreater" + count + ".compare")))));
+                    if ((compare >= value) == outputValue) {
+                        //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
+                        String section = hasSection(Objects.requireNonNull(cf.getConfigurationSection("hasgreater" + count)), p);
+                        return ".hasgreater" + count + section;
+                    }
+                }
+            }
+        }
+        if (cf.contains("hasperm")) {
             //this will do hasperm with no numbers
             boolean outputValue = true;
             //outputValue will default to true
-            if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm" + ".output")) {
+            if (cf.contains("output")) {
                 //if output is true, and values match it will be this item, vice versa
-                outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasperm" + ".output");
+                outputValue = cf.getBoolean("output");
             }
-            if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + slot + ".hasperm.perm"))) == outputValue) {
-                return ".hasperm";
+            if (p.hasPermission(Objects.requireNonNull(cf.getString("hasperm.perm"))) == outputValue) {
+                String section = hasSection(Objects.requireNonNull(cf.getConfigurationSection("hasperm")), p);
+                return ".hasperm" + section;
             }
-            for(int count = 0; Objects.requireNonNull(cf.getConfigurationSection("panels." + panelName + ".item." + slot)).getKeys(false).size() > count; count++){
-                if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm" + count) && cf.contains("panels." + panelName + ".item." + slot + ".hasperm"  + count + ".perm")) {
+            for(int count = 0; cf.getKeys(false).size() > count; count++){
+                if (cf.contains("hasperm" + count) && cf.contains("hasperm"  + count + ".perm")) {
                     outputValue = true;
                     //outputValue will default to true
-                    if (cf.contains("panels." + panelName + ".item." + slot + ".hasperm" + count + ".output")) {
+                    if (cf.contains("hasperm" + count + ".output")) {
                         //if output is true, and values match it will be this item, vice versa
-                        outputValue = cf.getBoolean("panels." + panelName + ".item." + slot + ".hasperm" + count + ".output");
+                        outputValue = cf.getBoolean("hasperm" + count + ".output");
                     }
-                    if (p.hasPermission(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + slot + ".hasperm" + count + ".perm"))) == outputValue) {
-                        return ".hasperm" + count;
+                    if (p.hasPermission(Objects.requireNonNull(cf.getString("hasperm" + count + ".perm"))) == outputValue) {
+                        String section = hasSection(Objects.requireNonNull(cf.getConfigurationSection("hasperm" + count)), p);
+                        return ".hasperm" + count + section;
                     }
                 }
             }

@@ -19,9 +19,6 @@ public class commandpanelrefresher implements Listener {
     public commandpanelrefresher(commandpanels pl) {
         this.plugin = pl;
     }
-    private int c = 0;
-    private int animatevalue = -1;
-    private int animatecount = 0;
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent e){ //Handles when Players open inventory
         //I have to convert HumanEntity to a player
@@ -38,7 +35,6 @@ public class commandpanelrefresher implements Listener {
             return;
         }
         //get all panel names (not titles)
-        String tag = plugin.config.getString("config.format.tag") + " ";
         YamlConfiguration cf = null;
         String panel = null;
         String panelTitle = null;
@@ -82,9 +78,11 @@ public class commandpanelrefresher implements Listener {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + p.getName() + " Opened " + panel);
             }
         }
-        assert cf != null;
-        if(cf.contains("panels." + panel + ".animatevalue")){
-            animatevalue = cf.getInt("panels." + panel + ".animatevalue");
+        if(cf.contains("panels." + panel + ".panelType")) {
+            if (cf.getString("panels." + panel + ".panelType").equalsIgnoreCase("temporary")) {
+                //do not update temporary panels, only default panels
+                return;
+            }
         }
         final YamlConfiguration cfFinal = cf;
         final String fpanel = panel;
@@ -92,8 +90,14 @@ public class commandpanelrefresher implements Listener {
         ItemStack[] panelItemList = plugin.openGui(fpanel, p, cf,2, -1).getContents();
         ItemStack[] playerItemList = p.getInventory().getStorageContents();
         new BukkitRunnable(){
+            int c = 0;
+            int animatecount = 0;
             @Override
             public void run() {
+                int animatevalue = -1;
+                if(cfFinal.contains("panels." + fpanel + ".animatevalue")){
+                    animatevalue = cfFinal.getInt("panels." + fpanel + ".animatevalue");
+                }
                 //counter counts to refresh delay (in seconds) then restarts
                 if(c < Double.parseDouble(Objects.requireNonNull(plugin.config.getString("config.refresh-delay")).trim())){
                     c+=1;

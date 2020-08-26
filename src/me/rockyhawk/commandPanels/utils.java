@@ -1,6 +1,7 @@
 package me.rockyhawk.commandPanels;
 
 import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -89,7 +90,7 @@ public class utils implements Listener {
                 return;
             }
             //loop through possible hasvalue/hasperm 1,2,3,etc
-            String section = plugin.hasSection(panel, cf, e.getSlot(),p);
+            String section = plugin.hasSection(cf.getConfigurationSection("panels." + panel + ".item." + e.getSlot()), p);
             //this will remove any pending user inputs, if there is already something there from a previous item
             for(int o = 0; plugin.userInputStrings.size() > o; o++){
                 if(plugin.userInputStrings.get(o)[0].equals(p.getName())){
@@ -198,13 +199,26 @@ public class utils implements Listener {
             p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.nopanel")));
             return;
         }
+        boolean forced = false;
         if(cf.contains("panels." + panel + ".item." + slot + section + ".redirect.force")){
             //this will force the panel open without consideration of permissions, world, etc
             if(cf.getBoolean("panels." + panel + ".item." + slot + section + ".redirect.force")){
-                plugin.openGui(panelName, p, panelConfig, 1, 0);
-                return;
+                forced = true;
             }
         }
-        plugin.openCommandPanel(p, p, panelName, panelConfig, false);
+        if(cf.contains("panels." + panel + ".item." + slot + section + ".redirect.replacements")){
+            if(!panelConfig.getString("panels." + panelName + ".panelType").equalsIgnoreCase("temporary") && plugin.config.getBoolean("config.refresh-panels")){
+                p.sendMessage(plugin.papi(tag + ChatColor.RED + panelName + " panel type needs to be temporary to replace elements."));
+            }
+            for(String sectionName : cf.getConfigurationSection("panels." + panel + ".item." + slot + section + ".redirect.replacements").getKeys(false)){
+                ConfigurationSection temp = cf.getConfigurationSection("panels." + panel + ".item." + slot + section + ".redirect.replacements." + sectionName);
+                panelConfig.set("panels." + panelName + ".item." + sectionName, temp);
+            }
+        }
+        if(forced){
+            plugin.openGui(panelName, p, panelConfig, 1, 0);
+        }else{
+            plugin.openCommandPanel(p, p, panelName, panelConfig, false);
+        }
     }
 }
