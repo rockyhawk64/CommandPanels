@@ -5,7 +5,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -29,8 +28,10 @@ import me.rockyhawk.commandPanels.ingameEditor.cpIngameEditCommand;
 import me.rockyhawk.commandPanels.ingameEditor.cpTabCompleteIngame;
 import me.rockyhawk.commandPanels.ingameEditor.editorUserInput;
 import me.rockyhawk.commandPanels.ingameEditor.editorUtils;
+
 import me.rockyhawk.commandPanels.ioClasses.sequence_1_13;
 import me.rockyhawk.commandPanels.ioClasses.sequence_1_14;
+
 import me.rockyhawk.commandPanels.openWithItem.utilsOpenWithItem;
 import me.rockyhawk.commandPanels.panelBlocks.blocksTabComplete;
 import me.rockyhawk.commandPanels.panelBlocks.commandpanelblocks;
@@ -40,7 +41,6 @@ import me.rockyhawk.commandPanels.premium.commandpanelrefresher;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -58,6 +58,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.swing.*;
 
@@ -355,47 +356,6 @@ public class commandpanels extends JavaPlugin {
         return null;
     }
 
-    public ItemStack getItem(String b64stringtexture) {
-        //get head from base64
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        PropertyMap propertyMap = profile.getProperties();
-        if (propertyMap == null) {
-            throw new IllegalStateException("Profile doesn't contain a property map");
-        } else {
-            propertyMap.put("textures", new Property("textures", b64stringtexture));
-            ItemStack head = new ItemStack(Material.PLAYER_HEAD, 1);
-            ItemMeta headMeta = head.getItemMeta();
-            assert headMeta != null;
-            Class headMetaClass = headMeta.getClass();
-
-            try {
-                getField(headMetaClass, "profile", GameProfile.class, 0).set(headMeta, profile);
-            } catch (IllegalArgumentException | IllegalAccessException var10) {
-                debug(var10);
-            }
-
-            head.setItemMeta(headMeta);
-            return head;
-        }
-    }
-
-    private <T> Field getField(Class<?> target, String name, Class<T> fieldType, int index) {
-        Field[] var4 = target.getDeclaredFields();
-
-        for (Field field : var4) {
-            if ((name == null || field.getName().equals(name)) && fieldType.isAssignableFrom(field.getType()) && index-- <= 0) {
-                field.setAccessible(true);
-                return field;
-            }
-        }
-
-        if (target.getSuperclass() != null) {
-            return getField(target.getSuperclass(), name, fieldType, index);
-        } else {
-            throw new IllegalArgumentException("Cannot find field with type " + fieldType);
-        }
-    }
-
     //regular string papi
     public String papi(Player p, String setpapi) {
         try {
@@ -508,6 +468,17 @@ public class commandpanels extends JavaPlugin {
                 debug(exc);
                 p.sendMessage(tag + papi( config.getString("config.format.error") + " op=: Error in op command!"));
             }
+        }else if (command.split("\\s")[0].equalsIgnoreCase("delay=")) {
+            //if player uses op= it will perform command as op
+            final int delaySeconds = Integer.parseInt(command.split("\\s")[1]);
+            String finalCommand = command.split("\\s",3)[2];
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    commandTags(p, finalCommand);
+                    this.cancel();
+                }
+            }.runTaskTimer(this, 20*delaySeconds, 20); //20 ticks == 1 second
         } else if (command.split("\\s")[0].equalsIgnoreCase("console=")) {
             //if player uses console= it will perform command in the console
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), papi(p, command.replace("console=", "").trim()));
@@ -722,7 +693,7 @@ public class commandpanels extends JavaPlugin {
                         commandp = commandp.replace("tokenbuycommand=", "").trim();
                         String price = commandp.split(" ", 2)[0];
                         commandp = commandp.split(" ", 2)[1];
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), papi(p, commandp));
+                        commandTags(p,papi(p, commandp));
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(config.getString("config.format.bought")).isEmpty()) {
                             p.sendMessage(papi( tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", price)));
@@ -748,7 +719,7 @@ public class commandpanels extends JavaPlugin {
                         commandp = commandp.replace("buycommand=", "").trim();
                         String price = commandp.split(" ", 2)[0];
                         commandp = commandp.split(" ", 2)[1];
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), papi( papi(p, commandp)));
+                        commandTags(p,papi(p, commandp));
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(config.getString("config.format.bought")).isEmpty()) {
                             p.sendMessage(papi( tag + Objects.requireNonNull(config.getString("config.format.bought")).replaceAll("%cp-args%", price)));
@@ -1505,7 +1476,7 @@ public class commandpanels extends JavaPlugin {
                 temp.setItemMeta(meta);
             }else{
                 //custom head
-                temp = this.getItem(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".material")).replace("cps=", "").trim());
+                temp = new GetCustomHeads(this).getCustomHead(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".material")).replace("cps=", "").trim());
             }
         }else if (Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".material")).startsWith("%cp-player-online-")){
             //leave default for the find material tag
@@ -1646,7 +1617,7 @@ public class commandpanels extends JavaPlugin {
                 try {
                     SkullMeta meta;
                     if (matskull.split("\\s")[1].equalsIgnoreCase("self")) {
-                        //if self/own
+                        //if cps= self
                         meta = (SkullMeta) s.getItemMeta();
                         try {
                             assert meta != null;
@@ -1656,9 +1627,12 @@ public class commandpanels extends JavaPlugin {
                             debug(var23);
                         }
                         s.setItemMeta(meta);
+                    }else if (papiNoColour(p,matskull.split("\\s")[1]).length() <= 16) {
+                        //if cps= username
+                        s = new GetCustomHeads(this).getPlayerHead(papiNoColour(p,matskull.split("\\s")[1]));
                     } else {
-                        //custom data
-                        s = this.getItem(matskull.split("\\s")[1]);
+                        //custom data cps= base64
+                        s = new GetCustomHeads(this).getCustomHead(papiNoColour(p,matskull.split("\\s")[1]));
                     }
                 } catch (Exception var32) {
                     p.sendMessage(papi( tag + this.config.getString("config.format.error") + " head material: Could not load skull"));
@@ -1671,7 +1645,6 @@ public class commandpanels extends JavaPlugin {
                 cpoMeta.setOwningPlayer(Bukkit.getOfflinePlayer(Objects.requireNonNull(Bukkit.getPlayer(matskull.split("\\s")[1])).getUniqueId()));
                 s.setItemMeta(cpoMeta);
             }
-
             if (skullname.equals("hdb")) {
                 if (this.getServer().getPluginManager().isPluginEnabled("HeadDatabase")) {
                     HeadDatabaseAPI api;
