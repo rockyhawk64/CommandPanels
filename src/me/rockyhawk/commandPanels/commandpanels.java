@@ -1067,7 +1067,7 @@ public class commandpanels extends JavaPlugin {
         Inventory i = Bukkit.createInventory(null, 54, "Command Panels Editor");
         ArrayList<String> panelNames = new ArrayList<String>(); //all panels from ALL files (panel names)
         ArrayList<String> panelTitles = new ArrayList<String>(); //all panels from ALL files (panel titles)
-        ArrayList<Material> panelItems = new ArrayList<Material>(); //all panels from ALL files (panel materials)
+        ArrayList<ItemStack> panelItems = new ArrayList<ItemStack>(); //all panels from ALL files (panel materials)
         try {
             for(String fileName : panelFiles) { //will loop through all the files in folder
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(panelsf + File.separator + fileName));
@@ -1080,9 +1080,9 @@ public class commandpanels extends JavaPlugin {
                     panelNames.add(papi( key));
                     panelTitles.add(papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))));
                     if (temp.contains("panels." + key + ".open-with-item.material")) {
-                        panelItems.add(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material"))));
+                        panelItems.add(makeItemFromConfig(temp.getConfigurationSection("panels." + key + ".open-with-item"), p, false, true));
                     } else {
-                        panelItems.add(Material.FILLED_MAP);
+                        panelItems.add(new ItemStack(Material.FILLED_MAP));
                     }
                 }
             }
@@ -1141,8 +1141,8 @@ public class commandpanels extends JavaPlugin {
         for (String panelName : panelNames) {
             //count is +1 because count starts at 0 not 1
             if ((pageNumber * 45 - 45) < (count + 1) && (pageNumber * 45) > (count)) {
-                temp = new ItemStack(panelItems.get(count), 1);
-                setName(temp, ChatColor.WHITE + panelName, null, p, true, true);
+                temp = panelItems.get(count);
+                setName(temp, ChatColor.WHITE + panelName, null, p, false, true);
                 i.setItem(slot, temp);
                 slot += 1;
             }
@@ -1266,7 +1266,7 @@ public class commandpanels extends JavaPlugin {
 
         if(cf.contains("panels." + panelName + ".open-with-item.material")){
             hotbarItems = true;
-            temp = new ItemStack((Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(cf.getString("panels." + panelName + ".open-with-item.material"))))), 1);
+            temp = makeItemFromConfig(cf.getConfigurationSection("panels." + panelName + ".open-with-item"), p, false, true);
         }else{
             temp = new ItemStack(Material.REDSTONE_BLOCK, 1);
         }

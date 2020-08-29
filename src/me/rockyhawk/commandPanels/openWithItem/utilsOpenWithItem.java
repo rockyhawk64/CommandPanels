@@ -307,38 +307,26 @@ public class utilsOpenWithItem implements Listener {
         }catch(Exception b){
             return;
         }
-        String tpanels; //tpanels is the temp to check through the files
         ItemStack clicked = e.getItemDrop().getItemStack();
-        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
-            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-            String key;
-            tpanels = "";
-            if(!plugin.checkPanels(temp)){
-                continue;
-            }
-            for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
-                key = (String) var10.next();
-                for(String ekey : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)){
-                    if(temp.contains("panels." + key + ".open-with-item")){
-                        if(clicked.getType() != Material.AIR) {
-                            //try and catch loop to stop errors with the same material type but different name
-                            try {
-                                if (clicked.getType() == new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + ekey + ".open-with-item.material")))), 1).getType()) {
-                                    if ((plugin.papi( Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(plugin.papi( Objects.requireNonNull(temp.getString("panels." + ekey + ".open-with-item.name")))))) {
-                                        //cancel the click item event
-                                        if(temp.contains("panels." + key + ".open-with-item.stationary")){
-                                            if(p.getInventory().getHeldItemSlot() == Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
-                                                e.setCancelled(true);
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
-                            }catch(Exception n){
-                                //do nothing
+        for(String[] panelName : plugin.panelNames){
+            YamlConfiguration tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1]))));
+            String tempName = panelName[0];
+            if(tempFile.contains("panels." + tempName + ".open-with-item")) {
+                try{
+                    assert clicked != null;
+                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(plugin.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("panels." + tempName + ".open-with-item")), p, false, true).getType()), 1).getType()) {
+                        if ((plugin.papi( Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(plugin.papi( Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.name")))))) {
+                            //cancel the click item event
+                            if (tempFile.contains("panels." + tempName + ".open-with-item.stationary")) {
+                                e.setCancelled(true);
+                                p.updateInventory();
+                                return;
                             }
+                            return;
                         }
                     }
+                }catch(NullPointerException cancel){
+                    //do nothing skip item
                 }
             }
         }

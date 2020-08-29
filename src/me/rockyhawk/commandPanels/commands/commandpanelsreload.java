@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 
 import java.io.File;
+import java.io.IOException;
 
 public class commandpanelsreload implements CommandExecutor {
     commandpanels plugin;
@@ -20,6 +21,11 @@ public class commandpanelsreload implements CommandExecutor {
         if (label.equalsIgnoreCase("cpr") || label.equalsIgnoreCase("commandpanelreload") || label.equalsIgnoreCase("cpanelr")) {
             if (sender.hasPermission("commandpanel.reload")) {
                 plugin.reloadPanelFiles();
+                try {
+                    YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "temp.yml")).save(new File(plugin.getDataFolder() + File.separator + "temp.yml"));
+                } catch (IOException e) {
+                    //skip clearing temp
+                }
                 plugin.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "config.yml"));
                 tag = plugin.config.getString("config.format.tag") + " ";
                 sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.reload")));

@@ -249,13 +249,12 @@ public class editorUserInput implements Listener {
                     plugin.reloadPanelFiles();
                     break;
                 }
-                Material temp = Material.matchMaterial(e.getMessage());
-                cf.set("panels." + panelName + ".open-with-item.material", temp.toString());
+                cf.set("panels." + panelName + ".open-with-item.material", e.getMessage());
                 if(!cf.contains("panels." + panelName + ".open-with-item.name")){
                     cf.set("panels." + panelName + ".open-with-item.name", panelName + " Item");
                 }
                 savePanelFile(cf, panelFile);
-                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set new Material to " + ChatColor.WHITE + temp.toString()));
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set new Material to " + ChatColor.WHITE + e.getMessage()));
                 //after an open-with-item has been altered, reload after changes
                 plugin.reloadPanelFiles();
                 break;

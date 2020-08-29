@@ -652,16 +652,7 @@ public class editorUtils implements Listener {
                 if(!cont.getEnchantments().isEmpty()){
                     file.set("panels." + panelName + ".item." + i + ".enchanted", "true");
                 }
-                if(file.contains("panels." + panelName + ".item." + i + ".name")){
-                    //these will ensure &f items (blank items) will be set to &f to stay blank
-                    if(Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".name")).equalsIgnoreCase("&f") || file.getString("panels." + panelName + ".item." + i + ".name").equalsIgnoreCase("§f")){
-                        file.set("panels." + panelName + ".item." + i + ".name", "&f");
-                    }else{
-                        file.set("panels." + panelName + ".item." + i + ".name", Objects.requireNonNull(cont.getItemMeta()).getDisplayName());
-                    }
-                }else {
-                    file.set("panels." + panelName + ".item." + i + ".name", Objects.requireNonNull(cont.getItemMeta()).getDisplayName());
-                }
+                file.set("panels." + panelName + ".item." + i + ".name", Objects.requireNonNull(cont.getItemMeta()).getDisplayName());
                 file.set("panels." + panelName + ".item." + i + ".lore", Objects.requireNonNull(cont.getItemMeta()).getLore());
             }catch(Exception n){
                 //skip over an item that spits an error
@@ -669,7 +660,6 @@ public class editorUtils implements Listener {
         }
         try {
             file.save(new File(plugin.panelsf + File.separator + fileName));
-            tempEdit.save(new File(plugin.getDataFolder() + File.separator + "temp.yml"));
             p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Saved Changes!"));
         } catch (IOException s) {
             p.sendMessage(plugin.papi(tag + ChatColor.RED + "Could Not Save Changes!"));
