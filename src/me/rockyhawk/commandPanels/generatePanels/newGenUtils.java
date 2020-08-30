@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,6 +53,7 @@ public class newGenUtils implements Listener {
             }
         }
     }
+
     @EventHandler
     public void onInventoryOpenEvent(InventoryOpenEvent e) {
         HumanEntity h = e.getPlayer();
@@ -61,6 +63,8 @@ public class newGenUtils implements Listener {
             generatePanel(p,e.getInventory());
         }
     }
+
+    @SuppressWarnings("deprecation")
     void generatePanel(Player p, Inventory inv){
         ItemStack[] cont = inv.getContents();
         String tag = plugin.config.getString("config.format.tag") + " ";
@@ -101,8 +105,13 @@ public class newGenUtils implements Listener {
             try{
                 //make the item here
                 if(cont[i].getType() == Material.PLAYER_HEAD){
+                    SkullMeta meta = (SkullMeta) cont[i].getItemMeta();
                     if(plugin.getHeadBase64(cont[i]) != null){
+                        //check for base64
                         file.addDefault("panels." + date + ".item." + i + ".material", "cps= " + plugin.getHeadBase64(cont[i]));
+                    }else if(meta.hasOwner()){
+                        //check for skull owner
+                        file.addDefault("panels." + date + ".item." + i + ".material", "cps= " + meta.getOwner());
                     }else{
                         file.addDefault("panels." + date + ".item." + i + ".material", cont[i].getType().toString());
                     }

@@ -46,7 +46,7 @@ public class panelBlockOnClick implements Listener {
                                 cf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(temp[1]))));
                             }
                         }
-                        plugin.openCommandPanel(p,p,panelName,cf,false);
+                        plugin.openVoids.openCommandPanel(p,p,panelName,cf,false);
                         return;
                     }
                 }

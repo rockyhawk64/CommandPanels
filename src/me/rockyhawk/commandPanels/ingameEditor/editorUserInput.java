@@ -69,7 +69,7 @@ public class editorUserInput implements Listener {
             if(section.startsWith("panel.")){
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-                        plugin.openEditorGui(p, 0); //I have to do this to run regular Bukkit voids in an ASYNC Event
+                        plugin.editorGuis.openEditorGui(p, 0); //I have to do this to run regular Bukkit voids in an ASYNC Event
                     }
                 });
             }else if(section.startsWith("item.")) {

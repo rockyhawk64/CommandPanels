@@ -111,7 +111,7 @@ public class cpIngameEditCommand implements CommandExecutor {
                 return true;
             }
             if (args.length == 0) {
-                plugin.openEditorGui(p,0);
+                plugin.editorGuis.openEditorGui(p,0);
                 return true;
             }
             if (args.length == 1) {

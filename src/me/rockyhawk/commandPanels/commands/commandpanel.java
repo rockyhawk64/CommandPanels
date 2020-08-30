@@ -74,7 +74,7 @@ public class commandpanel implements CommandExecutor {
                 //do console command command
                 if(args.length == 2){
                     if(!args[1].equals("item")){
-                        plugin.openCommandPanel(sender,plugin.getServer().getPlayer(args[1]),panels,cf,true);
+                        plugin.openVoids.openCommandPanel(sender,plugin.getServer().getPlayer(args[1]),panels,cf,true);
                         return true;
                     }else{
                         sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cp <panel> [item] [player]"));
@@ -82,7 +82,7 @@ public class commandpanel implements CommandExecutor {
                     }
                 }else if(args.length == 3){
                     if (args[1].equals("item")) {
-                        plugin.giveHotbarItem(sender,plugin.getServer().getPlayer(args[2]),panels,cf,true);
+                        plugin.openVoids.giveHotbarItem(sender,plugin.getServer().getPlayer(args[2]),panels,cf,true);
                         return true;
                     }else{
                         sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cp <panel> item [player]"));
@@ -97,17 +97,17 @@ public class commandpanel implements CommandExecutor {
                 Player p = (Player) sender;
                 //do player command
                 if (args.length == 1) {
-                    plugin.openCommandPanel(sender, p, panels, cf,false);
+                    plugin.openVoids.openCommandPanel(sender, p, panels, cf,false);
                     return true;
                 }else if(args.length == 2){
                     if (args[1].equals("item")) {
-                        plugin.giveHotbarItem(sender, p, panels, cf, false);
+                        plugin.openVoids.giveHotbarItem(sender, p, panels, cf, false);
                     }else{
-                        plugin.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panels, cf,true);
+                        plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panels, cf,true);
                     }
                     return true;
                 }else if(args.length == 3){
-                    plugin.giveHotbarItem(sender, plugin.getServer().getPlayer(args[2]), panels, cf,true);
+                    plugin.openVoids.giveHotbarItem(sender, plugin.getServer().getPlayer(args[2]), panels, cf,true);
                     return true;
                 }
             }

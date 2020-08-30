@@ -43,14 +43,14 @@ public class utilsOpenWithItem implements Listener {
             if(tempFile.contains("panels." + tempName + ".open-with-item") && Objects.requireNonNull(e.getClickedInventory()).getType() == InventoryType.PLAYER) {
                 try{
                     assert clicked != null;
-                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(plugin.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("panels." + tempName + ".open-with-item")), p, false, true).getType()), 1).getType()) {
+                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("panels." + tempName + ".open-with-item")), p, false, true).getType()), 1).getType()) {
                         if ((plugin.papi( Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(plugin.papi( Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.name")))))) {
                             //cancel the click item event
                             if (tempFile.contains("panels." + tempName + ".open-with-item.stationary")) {
                                 if (e.getSlot() == Integer.parseInt(Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.stationary")))) {
                                     e.setCancelled(true);
                                     p.updateInventory();
-                                    plugin.openCommandPanel(p,p,tempName,tempFile,false);
+                                    plugin.openVoids.openCommandPanel(p,p,tempName,tempFile,false);
                                     return;
                                 }
                             }
@@ -90,7 +90,7 @@ public class utilsOpenWithItem implements Listener {
             if(tempFile.contains("panels." + tempName + ".open-with-item")) {
                 try{
                     assert clicked != null;
-                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(plugin.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("panels." + tempName + ".open-with-item")), p, false, true).getType()), 1).getType()) {
+                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("panels." + tempName + ".open-with-item")), p, false, true).getType()), 1).getType()) {
                         if ((plugin.papi( Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(plugin.papi(Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.name")))))) {
                             //cancel the click item event
                             if (tempFile.contains("panels." + tempName + ".open-with-item.stationary")) {
@@ -100,7 +100,7 @@ public class utilsOpenWithItem implements Listener {
                             }
                             e.setCancelled(true);
                             p.updateInventory();
-                            plugin.openCommandPanel(p,p,tempName,tempFile,false);
+                            plugin.openVoids.openCommandPanel(p,p,tempName,tempFile,false);
                             return;
                         }
                     }
@@ -152,7 +152,7 @@ public class utilsOpenWithItem implements Listener {
                     }
                 }
                 if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
-                    ItemStack s = plugin.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true);
+                    ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true);
                     if(temp.contains("panels." + key + ".open-with-item.stationary")) {
                         if (0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 8 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))) {
                             p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
@@ -194,7 +194,7 @@ public class utilsOpenWithItem implements Listener {
                     }
                 }
                 if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
-                    ItemStack s = plugin.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true);
+                    ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true);
                     if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 8 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
                         p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
                     }
@@ -228,7 +228,7 @@ public class utilsOpenWithItem implements Listener {
                 key = (String) var10.next();
                 if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
                     if(temp.contains("panels." + key + ".open-with-item.stationary")){
-                        ItemStack s = plugin.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true);
+                        ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true);
                         e.getDrops().remove(s);
                     }
                 }
@@ -266,7 +266,7 @@ public class utilsOpenWithItem implements Listener {
                             continue;
                         }
                     }
-                    ItemStack s = plugin.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true);
+                    ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true);
                     if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 8 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
                         p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
                     }
@@ -314,7 +314,7 @@ public class utilsOpenWithItem implements Listener {
             if(tempFile.contains("panels." + tempName + ".open-with-item")) {
                 try{
                     assert clicked != null;
-                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(plugin.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("panels." + tempName + ".open-with-item")), p, false, true).getType()), 1).getType()) {
+                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("panels." + tempName + ".open-with-item")), p, false, true).getType()), 1).getType()) {
                         if ((plugin.papi( Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(plugin.papi( Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.name")))))) {
                             //cancel the click item event
                             if (tempFile.contains("panels." + tempName + ".open-with-item.stationary")) {

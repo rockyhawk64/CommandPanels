@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class editorUtils implements Listener {
             //previous page button
             try {
                 if (Objects.requireNonNull(e.getCurrentItem()).getType() == Material.PAPER) {
-                    plugin.openEditorGui(p, -1);
+                    plugin.editorGuis.openEditorGui(p, -1);
                     p.updateInventory();
                     return;
                 }
@@ -84,7 +85,7 @@ public class editorUtils implements Listener {
             //next page button
             try{
                 if(Objects.requireNonNull(e.getCurrentItem()).getType() == Material.PAPER){
-                    plugin.openEditorGui(p, 1);
+                    plugin.editorGuis.openEditorGui(p, 1);
                     p.updateInventory();
                     return;
                 }
@@ -115,7 +116,7 @@ public class editorUtils implements Listener {
                         int count = 0;
                         for(String panelName : panelNames){
                             if(panelName.equals(ChatColor.stripColor(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getDisplayName()))){
-                                plugin.openPanelSettings(p,panelName,panelYaml.get(count));
+                                plugin.editorGuis.openPanelSettings(p,panelName,panelYaml.get(count));
                                 return;
                             }
                             count +=1;
@@ -251,7 +252,7 @@ public class editorUtils implements Listener {
             inventoryItemSettingsOpening.add(p.getName());
             //refresh the yaml config
             file = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-            plugin.openItemSettings(p,panelName,file,e.getSlot());
+            plugin.editorGuis.openItemSettings(p,panelName,file,e.getSlot());
             return;
         }
         if(tempEdit.contains("panels." + panelName + ".temp." + p.getName() + ".material")) {
@@ -405,7 +406,7 @@ public class editorUtils implements Listener {
             p.closeInventory();
         }
         if(e.getSlot() == 18){
-            plugin.openEditorGui(p,0);
+            plugin.editorGuis.openEditorGui(p,0);
             p.updateInventory();
         }
         if(e.getSlot() == 40){
@@ -576,6 +577,8 @@ public class editorUtils implements Listener {
             plugin.debug(s);
         }
     }
+
+    @SuppressWarnings("deprecation")
     public void onEditPanelClose(Player p, Inventory inv, InventoryView invView) {
         String tag = plugin.config.getString("config.format.tag") + " ";
         if(inv.getType() != InventoryType.CHEST){
@@ -644,6 +647,11 @@ public class editorUtils implements Listener {
                     //inject base64 here
                     if(plugin.getHeadBase64(cont) != null){
                         file.set("panels." + panelName + ".item." + i + ".material", "cps= " + plugin.getHeadBase64(cont));
+                    }
+                    //check for skull owner
+                    SkullMeta meta = (SkullMeta) cont.getItemMeta();
+                    if(meta.hasOwner()){
+                        file.set("panels." + panelName + ".item." + i + ".material", "cps= " + meta.getOwner());
                     }
                 }
                 if(cont.getAmount() != 1){

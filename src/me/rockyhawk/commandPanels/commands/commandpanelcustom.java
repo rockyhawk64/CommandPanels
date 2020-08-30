@@ -67,7 +67,7 @@ public class commandpanelcustom implements Listener {
         }
         e.setCancelled(true);
         try {
-            plugin.openCommandPanel(p,p,panel,cf,false);
+            plugin.openVoids.openCommandPanel(p,p,panel,cf,false);
         }catch(Exception er){
             //do nothing
             p.sendMessage(plugin.papi(tag + ChatColor.RED + "Error opening panel!"));

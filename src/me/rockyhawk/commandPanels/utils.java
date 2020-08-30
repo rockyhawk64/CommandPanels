@@ -90,7 +90,7 @@ public class utils implements Listener {
                 return;
             }
             //loop through possible hasvalue/hasperm 1,2,3,etc
-            String section = plugin.hasSection(cf.getConfigurationSection("panels." + panel + ".item." + e.getSlot()), p);
+            String section = plugin.itemCreate.hasSection(cf.getConfigurationSection("panels." + panel + ".item." + e.getSlot()), p);
             //this will remove any pending user inputs, if there is already something there from a previous item
             for(int o = 0; plugin.userInputStrings.size() > o; o++){
                 if(plugin.userInputStrings.get(o)[0].equals(p.getName())){
@@ -157,12 +157,12 @@ public class utils implements Listener {
                             commands.set(i, commands.get(i).replaceAll("%cp-clicked%", "Air"));
                         }
                         //end custom PlaceHolders
-                        int val = plugin.commandPayWall(p,commands.get(i));
+                        int val = plugin.commandTags.commandPayWall(p,commands.get(i));
                         if(val == 0){
                             return;
                         }
                         if(val == 2){
-                            plugin.commandTags(p, commands.get(i));
+                            plugin.commandTags.commandTags(p, commands.get(i));
                         }
                     }
                 }
@@ -193,6 +193,7 @@ public class utils implements Listener {
         for(String[] tempName : plugin.panelNames){
             if(tempName[0].equals(panelName)){
                 panelConfig = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(tempName[1]))));
+                break;
             }
         }
         if(panelConfig == null){
@@ -218,7 +219,7 @@ public class utils implements Listener {
         if(forced){
             plugin.openGui(panelName, p, panelConfig, 1, 0);
         }else{
-            plugin.openCommandPanel(p, p, panelName, panelConfig, false);
+            plugin.openVoids.openCommandPanel(p, p, panelName, panelConfig, false);
         }
     }
 }

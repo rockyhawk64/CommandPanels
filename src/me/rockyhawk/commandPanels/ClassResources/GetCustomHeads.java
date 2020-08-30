@@ -1,8 +1,9 @@
-package me.rockyhawk.commandPanels;
+package me.rockyhawk.commandPanels.ClassResources;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import me.rockyhawk.commandPanels.commandpanels;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
