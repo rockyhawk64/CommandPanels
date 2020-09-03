@@ -1,5 +1,5 @@
-version: 3.10.3
-main: me.rockyhawk.commandPanels.commandpanels
+version: 3.10.4
+main: me.rockyhawk.commandpanels.CommandPanels
 name: CommandPanels
 author: RockyHawk
 api-version: '1.13'
