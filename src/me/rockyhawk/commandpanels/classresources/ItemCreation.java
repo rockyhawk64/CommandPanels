@@ -326,9 +326,9 @@ public class ItemCreation {
             //this will do hasperm with no numbers
             boolean outputValue = true;
             //outputValue will default to true
-            if (cf.contains("output")) {
+            if (cf.contains("hasperm.output")) {
                 //if output is true, and values match it will be this item, vice versa
-                outputValue = cf.getBoolean("output");
+                outputValue = cf.getBoolean("hasperm.output");
             }
             if (p.hasPermission(Objects.requireNonNull(cf.getString("hasperm.perm"))) == outputValue) {
                 String section = hasSection(Objects.requireNonNull(cf.getConfigurationSection("hasperm")), p);

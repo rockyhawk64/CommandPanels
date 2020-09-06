@@ -1,4 +1,4 @@
-package me.rockyhawk.commandpanels.premium;
+package me.rockyhawk.commandpanels.interactives;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.*;

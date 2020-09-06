@@ -6,10 +6,8 @@ import com.mojang.authlib.properties.Property;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,8 +32,9 @@ import me.rockyhawk.commandpanels.openwithitem.UtilsOpenWithItem;
 import me.rockyhawk.commandpanels.panelblocks.BlocksTabComplete;
 import me.rockyhawk.commandpanels.panelblocks.Commandpanelblocks;
 import me.rockyhawk.commandpanels.panelblocks.PanelBlockOnClick;
-import me.rockyhawk.commandpanels.premium.CommandpanelUserInput;
-import me.rockyhawk.commandpanels.premium.Commandpanelrefresher;
+import me.rockyhawk.commandpanels.interactives.CommandpanelUserInput;
+import me.rockyhawk.commandpanels.interactives.Commandpanelrefresher;
+import me.rockyhawk.commandpanels.updater.Updater;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
@@ -69,6 +68,7 @@ public class CommandPanels extends JavaPlugin {
     public ExecuteOpenVoids openVoids = new ExecuteOpenVoids(this);
     public ItemCreation itemCreate = new ItemCreation(this);
     public GetCustomHeads customHeads = new GetCustomHeads(this);
+    public Updater updater = new Updater(this);
 
     public File panelsf;
     public YamlConfiguration blockConfig; //where panel block locations are stored
@@ -142,7 +142,7 @@ public class CommandPanels extends JavaPlugin {
         }
 
         if (Objects.requireNonNull(this.config.getString("config.update-notifications")).equalsIgnoreCase("true")) {
-            githubNewUpdate(true);
+            updater.githubNewUpdate(true);
         }
 
         //load panelFiles
@@ -612,44 +612,6 @@ public class CommandPanels extends JavaPlugin {
         }else{
             return new Sequence_1_14().getReaderFromStream(initialStream);
         }
-    }
-
-    public String githubNewUpdate(boolean sendMessages){
-        HttpURLConnection connection;
-        String gitVersion;
-        if(this.getDescription().getVersion().contains("-")){
-            if(sendMessages) {
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Running a custom version.");
-            }
-            return null;
-        }
-        try{
-            connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/rockyhawk64/CommandPanels/master/resource/plugin.yml").openConnection();
-            connection.connect();
-            gitVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine().split("\\s")[1];
-            if(gitVersion.contains("-")){
-                if(sendMessages) {
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Cannot check for update.");
-                }
-                return null;
-            }
-            if(!this.getDescription().getVersion().equals(gitVersion)){
-                if(sendMessages) {
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " ================================================");
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " An update for CommandPanels is available.");
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " Download version " + gitVersion + " here:");
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " https://www.spigotmc.org/resources/command-panels-custom-guis.67788/");
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " ================================================");
-                }
-                return gitVersion;
-            }
-        }catch(IOException e){
-            if(sendMessages) {
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error checking for updates online.");
-            }
-            debug(e);
-        }
-        return null;
     }
 
     //used to translate hex colours into ChatColors

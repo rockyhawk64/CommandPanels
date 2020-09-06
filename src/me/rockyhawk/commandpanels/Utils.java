@@ -57,7 +57,7 @@ public class Utils implements Listener {
             }
             for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                 key = s;
-                if (ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(temp.getString("panels." + key + ".title"))).equals(e.getView().getTitle())) {
+                if (plugin.papi(Objects.requireNonNull(temp.getString("panels." + key + ".title"))).equals(e.getView().getTitle())) {
                     panel = key;
                     cf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filename));
                     foundPanel = true;
@@ -106,7 +106,7 @@ public class Utils implements Listener {
                     List<String> commandsAfterSequence = commands;
                     for (int i = 0; commands.size() - 1 >= i; i++) {
                         if(commands.get(i).startsWith("sequence=")){
-                            String locationOfSequence = commands.get(i).split("\\s")[1];
+                            String locationOfSequence = plugin.papiNoColour(p,commands.get(i).split("\\s")[1]);
                             List<String> commandsSequence = cf.getStringList(locationOfSequence);
                             commandsAfterSequence.remove(i);
                             commandsAfterSequence.addAll(i,commandsSequence);
