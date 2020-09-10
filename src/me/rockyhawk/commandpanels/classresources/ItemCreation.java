@@ -26,6 +26,7 @@ public class ItemCreation {
         plugin = pl;
     }
 
+    @SuppressWarnings("deprecation")
     public ItemStack makeItemFromConfig(ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours){
         String tag = plugin.config.getString("config.format.tag") + " ";
         String material = itemSection.getString("material");
@@ -60,17 +61,27 @@ public class ItemCreation {
             mat = material.toUpperCase();
             matskull = material;
             skullname = "no skull";
+            short id = 0;
+            if(itemSection.contains("ID")){
+                id = Short.parseShort(itemSection.getString("ID"));
+            }
             if (matskull.split("\\s")[0].toLowerCase().equals("cps=") || matskull.split("\\s")[0].toLowerCase().equals("cpo=")) {
                 skullname = p.getUniqueId().toString();
-                mat = "PLAYER_HEAD";
+                mat = plugin.getHeads.playerHeadString();
+                if(plugin.legacy.isLegacy()){
+                    id = 3;
+                }
             }
 
             if (matskull.split("\\s")[0].toLowerCase().equals("hdb=")) {
                 skullname = "hdb";
-                mat = "PLAYER_HEAD";
+                mat = plugin.getHeads.playerHeadString();
+                if(plugin.legacy.isLegacy()){
+                    id = 3;
+                }
             }
 
-            s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(mat)), 1);
+            s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(mat)), 1,id);
 
             if (!skullname.equals("no skull") && !skullname.equals("hdb") && !matskull.split("\\s")[0].equalsIgnoreCase("cpo=")) {
                 try {
@@ -78,12 +89,16 @@ public class ItemCreation {
                     if (matskull.split("\\s")[1].equalsIgnoreCase("self")) {
                         //if cps= self
                         meta = (SkullMeta) s.getItemMeta();
-                        try {
-                            assert meta != null;
-                            meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(skullname)));
-                        } catch (Exception var23) {
-                            p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.error") + " material: cps= self"));
-                            plugin.debug(var23);
+                        if(!plugin.legacy.isLegacy()) {
+                            try {
+                                assert meta != null;
+                                meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(skullname)));
+                            } catch (Exception var23) {
+                                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " material: cps= self"));
+                                plugin.debug(var23);
+                            }
+                        }else{
+                            meta.setOwner(p.getName());
                         }
                         s.setItemMeta(meta);
                     }else if (plugin.papiNoColour(p,matskull.split("\\s")[1]).length() <= 16) {

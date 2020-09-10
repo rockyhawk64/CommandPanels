@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
+import java.util.Iterator;
 import java.util.UUID;
 
 public class GetCustomHeads {
@@ -18,16 +19,41 @@ public class GetCustomHeads {
         this.plugin = pl;
     }
 
+    public String getHeadBase64(ItemStack head) {
+        if (plugin.getHeads.ifSkullOrHead(head.getType().toString()) && head.hasItemMeta()) {
+            try {
+                SkullMeta meta = (SkullMeta) head.getItemMeta();
+                assert meta != null;
+                if (!meta.hasOwner()) {
+                    Field fld = meta.getClass().getDeclaredField("profile");
+                    fld.setAccessible(true);
+                    GameProfile prof = (GameProfile) fld.get(meta);
+                    Iterator itr = prof.getProperties().get("textures").iterator();
+                    if (itr.hasNext()) {
+                        Property var5 = (Property) itr.next();
+                        return var5.getValue();
+                    }
+                }
+            }catch(Exception exc){/*skip return null*/}
+        }
+        return null;
+    }
+
     //getting the head from a Player
     @SuppressWarnings("deprecation")
     public ItemStack getPlayerHead(String name) {
-        ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD, 1);
+        byte id = 0;
+        if(plugin.legacy.isLegacy()){
+            id = 3;
+        }
+        ItemStack itemStack = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1,id);
         SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
         meta.setOwner(name);
         itemStack.setItemMeta(meta);
         return itemStack;
     }
 
+    @SuppressWarnings("deprecation")
     public ItemStack getCustomHead(String b64stringtexture) {
         //get head from base64
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
@@ -36,7 +62,11 @@ public class GetCustomHeads {
             throw new IllegalStateException("Profile doesn't contain a property map");
         } else {
             propertyMap.put("textures", new Property("textures", b64stringtexture));
-            ItemStack head = new ItemStack(Material.PLAYER_HEAD, 1);
+            byte id = 0;
+            if(plugin.legacy.isLegacy()){
+                id = 3;
+            }
+            ItemStack head = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1,id);
             ItemMeta headMeta = head.getItemMeta();
             assert headMeta != null;
             Class headMetaClass = headMeta.getClass();

@@ -28,6 +28,9 @@ import me.rockyhawk.commandpanels.ingameeditor.EditorUtils;
 import me.rockyhawk.commandpanels.ioclasses.Sequence_1_13;
 import me.rockyhawk.commandpanels.ioclasses.Sequence_1_14;
 
+import me.rockyhawk.commandpanels.legacy.LegacyVersion;
+import me.rockyhawk.commandpanels.legacy.PlayerHeads;
+import me.rockyhawk.commandpanels.openwithitem.SwapItemEvent;
 import me.rockyhawk.commandpanels.openwithitem.UtilsOpenWithItem;
 import me.rockyhawk.commandpanels.panelblocks.BlocksTabComplete;
 import me.rockyhawk.commandpanels.panelblocks.Commandpanelblocks;
@@ -69,6 +72,8 @@ public class CommandPanels extends JavaPlugin {
     public ItemCreation itemCreate = new ItemCreation(this);
     public GetCustomHeads customHeads = new GetCustomHeads(this);
     public Updater updater = new Updater(this);
+    public PlayerHeads getHeads = new PlayerHeads(this);
+    public LegacyVersion legacy = new LegacyVersion(this);
 
     public File panelsf;
     public YamlConfiguration blockConfig; //where panel block locations are stored
@@ -107,6 +112,9 @@ public class CommandPanels extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new EditorUserInput(this), this);
         this.getServer().getPluginManager().registerEvents(new Commandpanelrefresher(this), this);
         this.getServer().getPluginManager().registerEvents(new PanelBlockOnClick(this), this);
+        if (!Bukkit.getVersion().contains("1.8")) {
+            this.getServer().getPluginManager().registerEvents(new SwapItemEvent(this), this);
+        }
 
         //save the config.yml file
         File configFile = new File(this.getDataFolder() + File.separator + "config.yml");
@@ -155,6 +163,7 @@ public class CommandPanels extends JavaPlugin {
         Bukkit.getLogger().info("RockyHawk's CommandPanels Plugin Disabled, aww man.");
     }
 
+    @SuppressWarnings("deprecation")
     public Inventory openGui(String panels, Player p, YamlConfiguration pconfig, int onOpen, int animateValue) {
         String tag = this.config.getString("config.format.tag") + " ";
         if (Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) < 7 && Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) > 0) {
@@ -164,7 +173,7 @@ public class CommandPanels extends JavaPlugin {
                 i = Bukkit.createInventory(null, Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) * 9, papi(p, Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))));
             } else {
                 //this means it is the Editor window
-                i = Bukkit.createInventory(null, Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) * 9, papi(p, ChatColor.GRAY + "Editing Panel: " + pconfig.getString("panels." + panels + ".title")));
+                i = Bukkit.createInventory(null, Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) * 9, "Editing Panel: " + panels);
             }
             String item = "";
 
@@ -217,7 +226,11 @@ public class CommandPanels extends JavaPlugin {
                     if (!found) {
                         ItemStack empty;
                         try {
-                            empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(pconfig.getString("panels." + panels + ".empty")).toUpperCase())), 1);
+                            short id = 0;
+                            if(pconfig.contains("panels." + panels + ".emptyID")){
+                                id = Short.parseShort(pconfig.getString("panels." + panels + ".emptyID"));
+                            }
+                            empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(pconfig.getString("panels." + panels + ".empty")).toUpperCase())), 1,id);
                             if (empty.getType() == Material.AIR) {
                                 continue;
                             }
@@ -328,26 +341,6 @@ public class CommandPanels extends JavaPlugin {
         } catch (Exception var3) {
             return false;
         }
-    }
-
-    public String getHeadBase64(ItemStack var0) {
-        if (var0.getType().equals(Material.PLAYER_HEAD) && var0.hasItemMeta()) {
-            try {
-                SkullMeta var1 = (SkullMeta) var0.getItemMeta();
-                assert var1 != null;
-                if (!var1.hasOwner()) {
-                    Field var2 = var1.getClass().getDeclaredField("profile");
-                    var2.setAccessible(true);
-                    GameProfile var3 = (GameProfile) var2.get(var1);
-                    Iterator var4 = var3.getProperties().get("textures").iterator();
-                    if (var4.hasNext()) {
-                        Property var5 = (Property) var4.next();
-                        return var5.getValue();
-                    }
-                }
-            }catch(Exception exc){/*If there is a problem with the head skip and return null*/}
-        }
-        return null;
     }
 
     //regular string papi
@@ -607,7 +600,7 @@ public class CommandPanels extends JavaPlugin {
 
     public Reader getReaderFromStream(InputStream initialStream) throws IOException {
         //this reads the encrypted resource files in the jar file
-        if(Bukkit.getVersion().contains("1.13")){
+        if(Bukkit.getVersion().contains("1.13") || legacy.isLegacy()){
             return new Sequence_1_13().getReaderFromStream(initialStream);
         }else{
             return new Sequence_1_14().getReaderFromStream(initialStream);

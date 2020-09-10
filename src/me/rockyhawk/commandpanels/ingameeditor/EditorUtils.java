@@ -76,7 +76,7 @@ public class EditorUtils implements Listener {
         }
         if(e.getSlot() == 49){
             //sunflower page index
-            if(Objects.requireNonNull(e.getCurrentItem()).getType() == Material.SUNFLOWER){
+            if(Objects.requireNonNull(e.getCurrentItem()).getType() == Material.SLIME_BALL){
                 p.updateInventory();
                 return;
             }
@@ -134,7 +134,7 @@ public class EditorUtils implements Listener {
         if(e.getInventory().getType() != InventoryType.CHEST){
             return;
         }
-        if(!p.getOpenInventory().getTitle().contains(ChatColor.GRAY + "Editing Panel:")){
+        if(!p.getOpenInventory().getTitle().contains("Editing Panel:")){
             return;
         }
         String panelName = ""; //all panels from ALL files (panel names)
@@ -151,7 +151,7 @@ public class EditorUtils implements Listener {
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;
-                    if (e.getView().getTitle().equals(ChatColor.GRAY + "Editing Panel: " + plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
+                    if (e.getView().getTitle().equals("Editing Panel: " + key)) {
                         panelName = key;
                         fileName = fileTempName;
                         file = temp;
@@ -201,7 +201,7 @@ public class EditorUtils implements Listener {
         if(e.getInventory().getType() != InventoryType.CHEST){
             return;
         }
-        if(!p.getOpenInventory().getTitle().contains(ChatColor.GRAY + "Editing Panel:")){
+        if(!p.getOpenInventory().getTitle().contains("Editing Panel:")){
             return;
         }
         String panelName = "";
@@ -212,14 +212,12 @@ public class EditorUtils implements Listener {
             //neew to loop through files to get file names
             for(String tempName : plugin.panelFiles) { //will loop through all the files in folder
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + tempName));
-                String key;
                 if(!plugin.checkPanels(temp)){
                     continue;
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
-                    key = s;
-                    if (e.getView().getTitle().equals(ChatColor.GRAY + "Editing Panel: " + plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
-                        panelName = key;
+                    if (e.getView().getTitle().equals("Editing Panel: " + s)) {
+                        panelName = s;
                         fileName = tempName;
                         file = temp;
                         found = true;
@@ -256,7 +254,7 @@ public class EditorUtils implements Listener {
             return;
         }
         if(tempEdit.contains("panels." + panelName + ".temp." + p.getName() + ".material")) {
-            if(Objects.requireNonNull(e.getCursor()).getType() != Material.PLAYER_HEAD) {
+            if(!plugin.getHeads.ifSkullOrHead(Objects.requireNonNull(e.getCursor()).getType().toString())) {
                 //if the material doesn't match and also isn't a PLAYER_HEAD
                 if (e.getCursor().getType() != Material.matchMaterial(Objects.requireNonNull(tempEdit.getString("panels." + panelName + ".temp." + p.getName() + ".material")))) {
                     clearTemp(p, panelName);
@@ -584,7 +582,7 @@ public class EditorUtils implements Listener {
         if(inv.getType() != InventoryType.CHEST){
             return;
         }
-        if(!p.getOpenInventory().getTitle().contains(ChatColor.GRAY + "Editing Panel:")){
+        if(!p.getOpenInventory().getTitle().contains("Editing Panel:")){
             return;
         }
         String panelName = ""; //all panels from ALL files (panel names)
@@ -601,7 +599,7 @@ public class EditorUtils implements Listener {
                 }
                 for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
                     key = s;
-                    if (invView.getTitle().equals(ChatColor.GRAY + "Editing Panel: " + plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))))) {
+                    if (invView.getTitle().equals("Editing Panel: " + key)) {
                         panelName = key;
                         fileName = tempFile;
                         file = temp;
@@ -634,7 +632,7 @@ public class EditorUtils implements Listener {
                 }
                 if(file.contains("panels." + panelName + ".item." + i + ".material")){
                     if(Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("%") || Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("=")){
-                        if(cont.getType() != Material.PLAYER_HEAD){
+                        if(!plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
                             file.set("panels." + panelName + ".item." + i + ".material", cont.getType().toString());
                         }
                     }else{
@@ -643,15 +641,17 @@ public class EditorUtils implements Listener {
                 }else{
                     file.set("panels." + panelName + ".item." + i + ".material", cont.getType().toString());
                 }
-                if(cont.getType() == Material.PLAYER_HEAD){
-                    //inject base64 here
-                    if(plugin.getHeadBase64(cont) != null){
-                        file.set("panels." + panelName + ".item." + i + ".material", "cps= " + plugin.getHeadBase64(cont));
-                    }
-                    //check for skull owner
+                if(plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
                     SkullMeta meta = (SkullMeta) cont.getItemMeta();
-                    if(meta.hasOwner()){
-                        file.set("panels." + panelName + ".item." + i + ".material", "cps= " + meta.getOwner());
+                    //disable for legacy as is broken
+                    if(!plugin.legacy.isLegacy()) {
+                        if (plugin.customHeads.getHeadBase64(cont) != null) {
+                            //inject base64 here
+                            file.set("panels." + panelName + ".item." + i + ".material", "cps= " + plugin.customHeads.getHeadBase64(cont));
+                        } else if (meta.hasOwner()) {
+                            //check for skull owner
+                            file.set("panels." + panelName + ".item." + i + ".material", "cps= " + meta.getOwner());
+                        }
                     }
                 }
                 if(cont.getAmount() != 1){

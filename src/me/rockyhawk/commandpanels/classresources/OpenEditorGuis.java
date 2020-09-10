@@ -5,6 +5,7 @@ import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -27,9 +28,9 @@ public class OpenEditorGuis {
 
     public void openEditorGui(Player p, int pageChange) {
         Inventory i = Bukkit.createInventory(null, 54, "Command Panels Editor");
-        ArrayList<String> panelNames = new ArrayList<String>(); //all panels from ALL files (panel names)
-        ArrayList<String> panelTitles = new ArrayList<String>(); //all panels from ALL files (panel titles)
-        ArrayList<ItemStack> panelItems = new ArrayList<ItemStack>(); //all panels from ALL files (panel materials)
+        ArrayList<String> panelNames = new ArrayList<>(); //all panels from ALL files (panel names)
+        ArrayList<String> panelTitles = new ArrayList<>(); //all panels from ALL files (panel titles)
+        ArrayList<ItemStack> panelItems = new ArrayList<>(); //all panels from ALL files (panel materials)
         try {
             for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
@@ -44,7 +45,7 @@ public class OpenEditorGuis {
                     if (temp.contains("panels." + key + ".open-with-item.material")) {
                         panelItems.add(plugin.itemCreate.makeItemFromConfig(temp.getConfigurationSection("panels." + key + ".open-with-item"), p, false, true));
                     } else {
-                        panelItems.add(new ItemStack(Material.FILLED_MAP));
+                        panelItems.add(new ItemStack(Material.PAPER));
                     }
                 }
             }
@@ -68,7 +69,7 @@ public class OpenEditorGuis {
         int pagesAmount = (int) Math.ceil(panelNames.size() / 45.0);
         //make all the bottom bar items
         ItemStack temp;
-        temp = new ItemStack(Material.SUNFLOWER, 1);
+        temp = new ItemStack(Material.SLIME_BALL, 1);
         plugin.setName(temp, ChatColor.WHITE + "Page " + pageNumber, null, p, true, true);
         i.setItem(49, temp);
         temp = new ItemStack(Material.BARRIER, 1);
@@ -114,8 +115,9 @@ public class OpenEditorGuis {
         p.openInventory(i);
     }
 
+    @SuppressWarnings("deprecation")
     public void openPanelSettings(Player p, String panelName, YamlConfiguration cf) {
-        Inventory i = Bukkit.createInventory(null, 45, "Panel Settings: " + panelName);
+        Inventory i = Bukkit.createInventory(null, 45, ChatColor.stripColor("Panel Settings: " + panelName));
         List<String> lore = new ArrayList();
         ItemStack temp;
         //remove if the player already had a string from previously
@@ -126,7 +128,7 @@ public class OpenEditorGuis {
             }
         }
         //make all the items
-        temp = new ItemStack(Material.WRITABLE_BOOK, 1);
+        temp = new ItemStack(Material.IRON_INGOT, 1);
         lore.add(ChatColor.GRAY + "Permission required to open panel");
         lore.add(ChatColor.GRAY + "commandpanel.panel.[insert]");
         if (cf.contains("panels." + panelName + ".perm")) {
@@ -172,14 +174,14 @@ public class OpenEditorGuis {
         plugin.setName(temp, ChatColor.RED + "Delete Panel", lore, p,true, true);
         i.setItem(21, temp);
 
-        temp = new ItemStack(Material.PISTON, 1);
+        temp = new ItemStack(Material.LADDER, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "How many rows the panel will be");
         lore.add(ChatColor.GRAY + "choose an integer from 1 to 6");
         plugin.setName(temp, ChatColor.WHITE + "Panel Rows", lore, p,true, true);
         i.setItem(23, temp);
 
-        temp = new ItemStack(Material.BLACK_STAINED_GLASS, 1);
+        temp = new ItemStack(Material.GLASS, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Fill empty slots with an item");
         if (cf.contains("panels." + panelName + ".empty")) {
@@ -189,7 +191,7 @@ public class OpenEditorGuis {
         plugin.setName(temp, ChatColor.WHITE + "Panel Empty Item", lore, p,true, true);
         i.setItem(13, temp);
 
-        temp = new ItemStack(Material.COMMAND_BLOCK, 1);
+        temp = new ItemStack(Material.ANVIL, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Execute commands when opening");
         lore.add(ChatColor.GRAY + "- Left click to add command");
@@ -219,7 +221,11 @@ public class OpenEditorGuis {
         i.setItem(18, temp);
 
         //This will create a wall of glass panes, separating panel settings with hotbar settings
-        temp = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1);
+        if(plugin.legacy.isLegacy()) {
+            temp = new ItemStack(Material.matchMaterial("STAINED_GLASS_PANE"), 1,(short)15);
+        }else{
+            temp = new ItemStack(Material.matchMaterial("BLACK_STAINED_GLASS_PANE"), 1);
+        }
         plugin.setName(temp, ChatColor.WHITE + "", null, p,false, true);
         for(int d = 27; d < 36; d++){
             i.setItem(d, temp);
@@ -256,7 +262,7 @@ public class OpenEditorGuis {
             plugin.setName(temp, ChatColor.WHITE + "Hotbar Item Name", lore, p, true, true);
             i.setItem(38, temp);
 
-            temp = new ItemStack(Material.SPRUCE_SIGN, 1);
+            temp = new ItemStack(Material.FEATHER, 1);
             lore.clear();
             lore.add(ChatColor.GRAY + "Display a lore under the Hotbar item");
             lore.add(ChatColor.GRAY + "- Left click to add lore");
@@ -299,7 +305,7 @@ public class OpenEditorGuis {
     }
 
     public void openItemSettings(Player p, String panelName, YamlConfiguration cf, int itemNumber) {
-        Inventory i = Bukkit.createInventory(null, 36, "Item Settings: " + panelName);
+        Inventory i = Bukkit.createInventory(null, 36, ChatColor.stripColor("Item Settings: " + panelName));
         List<String> lore = new ArrayList();
         ItemStack temp;
         //remove if the player already had a string from previously
@@ -321,7 +327,7 @@ public class OpenEditorGuis {
         plugin.setName(temp, ChatColor.WHITE + "Item Name", lore, p,true, true);
         i.setItem(1, temp);
 
-        temp = new ItemStack(Material.COMMAND_BLOCK, 1);
+        temp = new ItemStack(Material.ANVIL, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Execute commands when item is clicked");
         lore.add(ChatColor.GRAY + "- Left click to add command");
@@ -337,7 +343,7 @@ public class OpenEditorGuis {
         plugin.setName(temp, ChatColor.WHITE + "Item Commands", lore, p,true, true);
         i.setItem(3, temp);
 
-        temp = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
+        temp = new ItemStack(Material.ENCHANTED_BOOK, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Display enchantment of the item in the Panel");
         if (cf.contains("panels." + panelName + ".item." + itemNumber + ".enchanted")) {
@@ -364,7 +370,7 @@ public class OpenEditorGuis {
         plugin.setName(temp, ChatColor.WHITE + "Item Potion Effect", lore, p,true, true);
         i.setItem(7, temp);
 
-        temp = new ItemStack(Material.SPRUCE_SIGN, 1);
+        temp = new ItemStack(Material.FEATHER, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Display a lore under the item name");
         lore.add(ChatColor.GRAY + "- Left click to add lore line");
@@ -396,17 +402,19 @@ public class OpenEditorGuis {
         plugin.setName(temp, ChatColor.WHITE + "Item Stack Size", lore, p, true, true);
         i.setItem(21, temp);
 
-        temp = new ItemStack(Material.ANVIL, 1);
-        lore.clear();
-        lore.add(ChatColor.GRAY + "Add Custom Model Data here");
-        if (cf.contains("panels." + panelName + ".item." + itemNumber + ".customdata")) {
-            if (!Objects.equals(cf.getString("panels." + panelName + ".item." + itemNumber + ".customdata"), "")) {
-                lore.add(ChatColor.WHITE + "--------------------------------");
-                lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".customdata"));
+        if(!plugin.legacy.isLegacy()) {
+            temp = new ItemStack(Material.PAINTING, 1);
+            lore.clear();
+            lore.add(ChatColor.GRAY + "Add Custom Model Data here");
+            if (cf.contains("panels." + panelName + ".item." + itemNumber + ".customdata")) {
+                if (!Objects.equals(cf.getString("panels." + panelName + ".item." + itemNumber + ".customdata"), "")) {
+                    lore.add(ChatColor.WHITE + "--------------------------------");
+                    lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".customdata"));
+                }
             }
+            plugin.setName(temp, ChatColor.WHITE + "Custom Model Data", lore, p, true, true);
+            i.setItem(23, temp);
         }
-        plugin.setName(temp, ChatColor.WHITE + "Custom Model Data", lore, p, true, true);
-        i.setItem(23, temp);
 
         temp = new ItemStack(Material.LEATHER_HELMET, 1);
         lore.clear();
@@ -425,55 +433,7 @@ public class OpenEditorGuis {
         plugin.setName(temp, ChatColor.RED + "Back", null, p, true, true);
         i.setItem(27, temp);
 
-        if(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".material")).startsWith("cps=")){
-            temp = new ItemStack(Material.PLAYER_HEAD, 1);
-            if(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".material")).equalsIgnoreCase("cps= self")){
-                //if self
-                SkullMeta meta = (SkullMeta) temp.getItemMeta();
-                try {
-                    assert meta != null;
-                    meta.setOwningPlayer(Bukkit.getOfflinePlayer(p.getUniqueId()));
-                } catch (Exception var23) {
-                    plugin.debug(var23);
-                }
-                temp.setItemMeta(meta);
-            }else{
-                //custom head
-                temp = plugin.customHeads.getCustomHead(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".material")).replace("cps=", "").trim());
-            }
-        }else if (Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".material")).startsWith("%cp-player-online-")){
-            //leave default for the find material tag
-            temp = new ItemStack(Material.PLAYER_HEAD, 1);
-        }else if (Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".material")).startsWith("hdb=")){
-            //head database head
-            temp = new ItemStack(Material.PLAYER_HEAD, 1);
-            if (plugin.getServer().getPluginManager().isPluginEnabled("HeadDatabase")) {
-                HeadDatabaseAPI api;
-                api = new HeadDatabaseAPI();
-                try {
-                    temp = api.getItemHead(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".material")).replace("hdb=", "").trim());
-                } catch (Exception var22) {
-                    plugin.debug(var22);
-                }
-            }
-        }else{
-            temp = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".material")))), 1);
-        }
-        try {
-            temp.setAmount(Integer.parseInt(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".stack"))));
-        } catch (Exception ex) {
-            //skip
-        }
-        if (cf.contains("panels." + panelName + ".item." + itemNumber + ".enchanted")) {
-            if (!Objects.equals(cf.getString("panels." + panelName + ".item." + itemNumber + ".enchanted"), "false")) {
-                ItemMeta EnchantMeta;
-                EnchantMeta = temp.getItemMeta();
-                assert EnchantMeta != null;
-                EnchantMeta.addEnchant(Enchantment.KNOCKBACK, 1, true);
-                EnchantMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                temp.setItemMeta(EnchantMeta);
-            }
-        }
+        temp = plugin.itemCreate.makeItemFromConfig(cf.getConfigurationSection("panels." + panelName + ".item." + itemNumber),p,false,false);
         lore.clear();
         lore.add(ChatColor.GRAY + "Click to set custom material");
         lore.add(ChatColor.GRAY + "typically for custom heads");

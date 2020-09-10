@@ -338,7 +338,7 @@ public class EditorUserInput implements Listener {
                 break;
             case "head":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".material", "PLAYER_HEAD");
+                    cf.set("panels." + panelName + ".item." + itemSlot + ".material", plugin.getHeads.playerHeadString());
                     savePanelFile(cf, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Material is now default."));
                     break;

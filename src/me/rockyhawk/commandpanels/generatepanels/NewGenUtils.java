@@ -99,16 +99,21 @@ public class NewGenUtils implements Listener {
         file.addDefault("panels." + date + ".rows", inv.getSize()/9);
         file.addDefault("panels." + date + ".title", "&8Generated " + date);
         file.addDefault("panels." + date + ".command", date);
-        file.addDefault("panels." + date + ".empty", "BLACK_STAINED_GLASS_PANE");
+        if(plugin.legacy.isLegacy()) {
+            file.addDefault("panels." + date + ".empty", "STAINED_GLASS_PANE");
+            file.addDefault("panels." + date + ".emptyID", "15");
+        }else{
+            file.addDefault("panels." + date + ".empty", "BLACK_STAINED_GLASS_PANE");
+        }
         for(int i = 0; cont.length > i; i++){
             //repeat through all the items in the chest
             try{
                 //make the item here
-                if(cont[i].getType() == Material.PLAYER_HEAD){
+                if(plugin.getHeads.ifSkullOrHead(cont[i].getType().toString())){
                     SkullMeta meta = (SkullMeta) cont[i].getItemMeta();
-                    if(plugin.getHeadBase64(cont[i]) != null){
+                    if(plugin.customHeads.getHeadBase64(cont[i]) != null){
                         //check for base64
-                        file.addDefault("panels." + date + ".item." + i + ".material", "cps= " + plugin.getHeadBase64(cont[i]));
+                        file.addDefault("panels." + date + ".item." + i + ".material", "cps= " + plugin.customHeads.getHeadBase64(cont[i]));
                     }else if(meta.hasOwner()){
                         //check for skull owner
                         file.addDefault("panels." + date + ".item." + i + ".material", "cps= " + meta.getOwner());
