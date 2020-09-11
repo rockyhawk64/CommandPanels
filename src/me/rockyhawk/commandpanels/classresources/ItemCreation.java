@@ -243,13 +243,22 @@ public class ItemCreation {
             }
             if (itemSection.contains("damage")) {
                 //change the damage amount (placeholders accepted)
-                try {
-                    Damageable itemDamage = (Damageable) s.getItemMeta();
-                    itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(plugin.papi(p, itemSection.getString("damage")))));
-                    s.setItemMeta((ItemMeta) itemDamage);
-                }catch(Exception e){
-                    plugin.debug(e);
-                    p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
+                if(plugin.legacy.isLegacy()){
+                    try {
+                        s.setDurability(Short.parseShort(Objects.requireNonNull(plugin.papi(p, itemSection.getString("damage")))));
+                    }catch(Exception e){
+                        plugin.debug(e);
+                        p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
+                    }
+                }else {
+                    try {
+                        Damageable itemDamage = (Damageable) s.getItemMeta();
+                        itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(plugin.papi(p, itemSection.getString("damage")))));
+                        s.setItemMeta((ItemMeta) itemDamage);
+                    } catch (Exception e) {
+                        plugin.debug(e);
+                        p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
+                    }
                 }
             }
             if (itemSection.contains("stack")) {

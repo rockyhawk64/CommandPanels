@@ -142,7 +142,12 @@ public class CommandPanels extends JavaPlugin {
         //save the example.yml file
         if (!this.panelsf.exists() || Objects.requireNonNull(this.panelsf.list()).length == 0) {
             try {
-                FileConfiguration exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example.yml")));
+                FileConfiguration exampleFileConfiguration;
+                if(legacy.isLegacy()){
+                    exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("exampleLegacy.yml")));
+                }else {
+                    exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example.yml")));
+                }
                 exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example.yml"));
             } catch (IOException var11) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not save the example file!");
