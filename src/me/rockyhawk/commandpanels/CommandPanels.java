@@ -1,11 +1,8 @@
 package me.rockyhawk.commandpanels;
 
 import com.Ben12345rocks.VotingPlugin.UserManager.UserManager;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
@@ -18,7 +15,7 @@ import me.rockyhawk.commandpanels.classresources.*;
 import me.rockyhawk.commandpanels.commands.*;
 import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
 import me.rockyhawk.commandpanels.generatepanels.Commandpanelsgenerate;
-import me.rockyhawk.commandpanels.generatepanels.NewGenUtils;
+import me.rockyhawk.commandpanels.generatepanels.GenUtils;
 import me.rockyhawk.commandpanels.generatepanels.TabCompleteGenerate;
 import me.rockyhawk.commandpanels.ingameeditor.CpIngameEditCommand;
 import me.rockyhawk.commandpanels.ingameeditor.CpTabCompleteIngame;
@@ -106,7 +103,7 @@ public class CommandPanels extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new Utils(this), this);
         this.getServer().getPluginManager().registerEvents(new UtilsOpenWithItem(this), this);
         this.getServer().getPluginManager().registerEvents(new EditorUtils(this), this);
-        this.getServer().getPluginManager().registerEvents(new NewGenUtils(this), this);
+        this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
         this.getServer().getPluginManager().registerEvents(new Commandpanelcustom(this), this);
         this.getServer().getPluginManager().registerEvents(new CommandpanelUserInput(this), this);
         this.getServer().getPluginManager().registerEvents(new EditorUserInput(this), this);
@@ -281,7 +278,7 @@ public class CommandPanels extends JavaPlugin {
                 p.openInventory(i);
             } else if (onOpen == 0) {
                 //onOpen 0 will just refresh the panel
-                p.getOpenInventory().getTopInventory().setStorageContents(i.getStorageContents());
+                legacy.setStorageContents(p,legacy.getStorageContents(i));
             } else if (onOpen == 2) {
                 //will return the inventory, not opening it at all
                 return i;
@@ -446,7 +443,7 @@ public class CommandPanels extends JavaPlugin {
         str = str.replaceAll("%cp-player-y%", String.valueOf(Math.round(p.getLocation().getY())));
         str = str.replaceAll("%cp-player-z%", String.valueOf(Math.round(p.getLocation().getZ())));
         str = str.replaceAll("%cp-online-players%", Integer.toString(Bukkit.getServer().getOnlinePlayers().size()));
-        //placeholder to check for server availability
+        //placeholder to check for server availability %cp-server-IP:PORT%
         while (str.contains("%cp-server-")) {
             int start = str.indexOf("%cp-server-");
             int end = str.indexOf("%", str.indexOf("%cp-server-")+1);
@@ -459,6 +456,15 @@ public class CommandPanels extends JavaPlugin {
             }catch (IOException ex){
                 str = str.replace(str.substring(start, end) + "%", papi(p, "false"));
             }
+        }
+        //does %cp-random-MIN,MAX%
+        while (str.contains("%cp-random-")) {
+            int start = str.indexOf("%cp-random-");
+            int end = str.indexOf("%", str.indexOf("%cp-random-")+1);
+            String min_max = str.substring(start, end).replace("%cp-random-", "").replace("%","");
+            int min = Integer.parseInt(min_max.split(",")[0]);
+            int max = Integer.parseInt(min_max.split(",")[1]);
+            str = str.replace(str.substring(start, end) + "%", String.valueOf(getRandomNumberInRange(min,max)));
         }
         while (str.contains("%cp-player-online-")) {
             int start = str.indexOf("%cp-player-online-");
@@ -606,10 +612,20 @@ public class CommandPanels extends JavaPlugin {
     public Reader getReaderFromStream(InputStream initialStream) throws IOException {
         //this reads the encrypted resource files in the jar file
         if(Bukkit.getVersion().contains("1.13") || legacy.isLegacy()){
-            return new Sequence_1_13().getReaderFromStream(initialStream);
+            return new Sequence_1_13(this).getReaderFromStream(initialStream);
         }else{
-            return new Sequence_1_14().getReaderFromStream(initialStream);
+            return new Sequence_1_14(this).getReaderFromStream(initialStream);
         }
+    }
+
+    public int getRandomNumberInRange(int min, int max) {
+
+        if (min >= max) {
+            throw new IllegalArgumentException("max must be greater than min");
+        }
+
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
     }
 
     //used to translate hex colours into ChatColors

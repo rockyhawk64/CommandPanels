@@ -88,7 +88,7 @@ public class Commandpanelrefresher implements Listener {
         final String fpanel = panel;
         final String fpanelTitle = panelTitle;
         ItemStack[] panelItemList = plugin.openGui(fpanel, p, cf,2, -1).getContents();
-        ItemStack[] playerItemList = p.getInventory().getStorageContents();
+        ItemStack[] playerItemList = plugin.legacy.getStorageContents(p.getInventory());
         new BukkitRunnable(){
             int c = 0;
             int animatecount = 0;
@@ -133,7 +133,7 @@ public class Commandpanelrefresher implements Listener {
                     //check to ensure players haven't duplicated items
                     try {
                         p.updateInventory();
-                        for (ItemStack playerContent : p.getInventory().getStorageContents()) {
+                        for (ItemStack playerContent : plugin.legacy.getStorageContents(p.getInventory())) {
                             for (ItemStack panelContent : panelItemList) {
                                 if (playerContent != null && panelContent != null) {
                                     if (!playerContent.getType().equals(Material.matchMaterial("AIR")) && !panelContent.getType().equals(Material.matchMaterial("AIR"))) {

@@ -20,6 +20,7 @@ public class CommandTags {
         this.plugin = pl;
     }
 
+    @SuppressWarnings("deprecation")
     public void commandTags(Player p, String command) {
         String tag = plugin.config.getString("config.format.tag") + " ";
         //set cp placeholders
@@ -78,10 +79,20 @@ public class CommandTags {
                         if(!Objects.requireNonNull(plugin.config.getString("config.format.bought")).isEmpty()){
                             p.sendMessage(plugin.papi( tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
+                        //legacy ID
+                        byte id = 0;
+                        if(plugin.legacy.isLegacy()) {
+                            for (String argsTemp : command.split("\\s")) {
+                                if (argsTemp.startsWith("id:")) {
+                                    id = Byte.parseByte(argsTemp.replace("id:", ""));
+                                    break;
+                                }
+                            }
+                        }
                         if (p.getInventory().firstEmpty() >= 0) {
-                            p.getInventory().addItem(new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3])));
+                            p.getInventory().addItem(new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3]),id));
                         } else {
-                            Objects.requireNonNull(p.getLocation().getWorld()).dropItemNaturally(p.getLocation(), new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3])));
+                            Objects.requireNonNull(p.getLocation().getWorld()).dropItemNaturally(p.getLocation(), new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3]),id));
                         }
                     } else {
                         p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.needmoney")));
@@ -106,10 +117,20 @@ public class CommandTags {
                         if(!Objects.requireNonNull(plugin.config.getString("config.format.bought")).isEmpty()) {
                             p.sendMessage(plugin.papi( tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
+                        //legacy ID
+                        byte id = 0;
+                        if(plugin.legacy.isLegacy()) {
+                            for (String argsTemp : command.split("\\s")) {
+                                if (argsTemp.startsWith("id:")) {
+                                    id = Byte.parseByte(argsTemp.replace("id:", ""));
+                                    break;
+                                }
+                            }
+                        }
                         if (p.getInventory().firstEmpty() >= 0) {
-                            p.getInventory().addItem(new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3])));
+                            p.getInventory().addItem(new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3]),id));
                         } else {
-                            Objects.requireNonNull(p.getLocation().getWorld()).dropItemNaturally(p.getLocation(), new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3])));
+                            Objects.requireNonNull(p.getLocation().getWorld()).dropItemNaturally(p.getLocation(), new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3]),id));
                         }
                     } else {
                         p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.needmoney")));
@@ -134,6 +155,17 @@ public class CommandTags {
                             for(String argsTemp : command.split("\\s")){
                                 if(argsTemp.startsWith("potion:")){
                                     potion = argsTemp.replace("potion:","");
+                                    break;
+                                }
+                            }
+                            //legacy ID
+                            byte id = -1;
+                            if(plugin.legacy.isLegacy()) {
+                                for (String argsTemp : command.split("\\s")) {
+                                    if (argsTemp.startsWith("id:")) {
+                                        id = Byte.parseByte(argsTemp.replace("id:", ""));
+                                        break;
+                                    }
                                 }
                             }
                             //check to ensure any extensions are checked
@@ -142,8 +174,12 @@ public class CommandTags {
                                     PotionMeta potionMeta = (PotionMeta) itm.getItemMeta();
                                     assert potionMeta != null;
                                     if (!potionMeta.getBasePotionData().getType().name().equalsIgnoreCase(potion)) {
-                                        p.sendMessage(plugin.papi( tag + ChatColor.RED + "Your item has the wrong potion effect"));
-                                        return;
+                                        continue;
+                                    }
+                                }
+                                if (id != -1) {
+                                    if (itm.getDurability() != id) {
+                                        continue;
                                     }
                                 }
                             }catch(Exception exc){
@@ -192,6 +228,16 @@ public class CommandTags {
                                     potion = argsTemp.replace("potion:","");
                                 }
                             }
+                            //legacy ID
+                            byte id = -1;
+                            if(plugin.legacy.isLegacy()) {
+                                for (String argsTemp : command.split("\\s")) {
+                                    if (argsTemp.startsWith("id:")) {
+                                        id = Byte.parseByte(argsTemp.replace("id:", ""));
+                                        break;
+                                    }
+                                }
+                            }
                             //check to ensure any extensions are checked
                             try {
                                 if (!potion.equals("false")) {
@@ -200,6 +246,11 @@ public class CommandTags {
                                     if (!potionMeta.getBasePotionData().getType().name().equalsIgnoreCase(potion)) {
                                         p.sendMessage(plugin.papi( tag + ChatColor.RED + "Your item has the wrong potion effect"));
                                         return;
+                                    }
+                                }
+                                if (id != -1) {
+                                    if (itm.getDurability() != id) {
+                                        continue;
                                     }
                                 }
                             }catch(Exception exc){

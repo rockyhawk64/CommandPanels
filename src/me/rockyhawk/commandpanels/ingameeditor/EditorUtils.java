@@ -630,6 +630,11 @@ public class EditorUtils implements Listener {
                         continue;
                     }
                 }
+                if(plugin.legacy.isLegacy()){
+                    if (cont.getDurability() != 0 && !cont.getType().toString().equals("SKULL_ITEM") && !cont.getType().toString().equals("SKULL_ITEM")) {
+                        file.addDefault("panels." + panelName + ".item." + i + ".ID", cont.getDurability());
+                    }
+                }
                 if(file.contains("panels." + panelName + ".item." + i + ".material")){
                     if(Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("%") || Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("=")){
                         if(!plugin.getHeads.ifSkullOrHead(cont.getType().toString())){

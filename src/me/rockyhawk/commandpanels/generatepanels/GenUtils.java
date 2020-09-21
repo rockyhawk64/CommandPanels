@@ -24,10 +24,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class NewGenUtils implements Listener {
+public class GenUtils implements Listener {
     public YamlConfiguration tempEdit;
     CommandPanels plugin;
-    public NewGenUtils(CommandPanels pl) {
+    public GenUtils(CommandPanels pl) {
         this.plugin = pl;
         this.tempEdit = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "temp.yml"));
     }
@@ -122,6 +122,11 @@ public class NewGenUtils implements Listener {
                     }
                 }else {
                     file.addDefault("panels." + date + ".item." + i + ".material", cont[i].getType().toString());
+                }
+                if(plugin.legacy.isLegacy()){
+                    if (cont[i].getDurability() != 0 && !cont[i].getType().toString().equals("SKULL_ITEM") && !cont[i].getType().toString().equals("SKULL_ITEM")) {
+                        file.addDefault("panels." + date + ".item." + i + ".ID", cont[i].getDurability());
+                    }
                 }
                 if(cont[i].getAmount() != 1){
                     file.addDefault("panels." + date + ".item." + i + ".stack", cont[i].getAmount());
