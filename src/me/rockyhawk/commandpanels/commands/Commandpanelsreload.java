@@ -21,10 +21,8 @@ public class Commandpanelsreload implements CommandExecutor {
         if (label.equalsIgnoreCase("cpr") || label.equalsIgnoreCase("commandpanelreload") || label.equalsIgnoreCase("cpanelr")) {
             if (sender.hasPermission("commandpanel.reload")) {
                 plugin.reloadPanelFiles();
-                try {
-                    YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "temp.yml")).save(new File(plugin.getDataFolder() + File.separator + "temp.yml"));
-                } catch (IOException e) {
-                    //skip clearing temp
+                if(new File(plugin.getDataFolder() + File.separator + "temp.yml").delete()){
+                    //empty
                 }
                 plugin.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "config.yml"));
                 tag = plugin.config.getString("config.format.tag") + " ";

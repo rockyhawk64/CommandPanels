@@ -9,7 +9,6 @@ panels:
     rows: 4
     title: '&6[&bExample Panel&6]&f Welcome!'
     command: example
-    sound-on-open: NOTE_PLING
     empty: STAINED_GLASS_PANE
     emptyID: 15
     disabled-worlds:

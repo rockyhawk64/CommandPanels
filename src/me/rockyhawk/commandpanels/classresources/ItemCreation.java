@@ -3,9 +3,13 @@ package me.rockyhawk.commandpanels.classresources;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.*;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
@@ -17,6 +21,8 @@ import org.bukkit.potion.PotionType;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -194,6 +200,20 @@ public class ItemCreation {
                 assert customMeta != null;
                 customMeta.setCustomModelData(Integer.parseInt(Objects.requireNonNull(itemSection.getString("customdata"))));
                 s.setItemMeta(customMeta);
+            }
+            try {
+                if (itemSection.contains("banner")) {
+                    BannerMeta bannerMeta = (BannerMeta) s.getItemMeta();
+                    List<Pattern> patterns = new ArrayList<>(); //Load patterns in order top to bottom
+                    for (String temp : itemSection.getStringList("banner")) {
+                        String[] dyePattern = temp.split(",");
+                        patterns.add(new Pattern(DyeColor.valueOf(dyePattern[0]), PatternType.valueOf(dyePattern[1]))); //load patterns in config: RED:STRIPE_TOP
+                    }
+                    bannerMeta.setPatterns(patterns);
+                    s.setItemMeta(bannerMeta);
+                }
+            }catch(Exception ignore){
+                //not a banner or error
             }
             if (itemSection.contains("leatherarmor")) {
                 //if the item is leather armor, change the colour to this
@@ -374,5 +394,73 @@ public class ItemCreation {
             }
         }
         return "";
+    }
+
+    @SuppressWarnings("deprecation")
+    public YamlConfiguration generatePanelFile(String panelName, Inventory inv, YamlConfiguration file){
+        ItemStack cont;
+        for(int i = 0; inv.getSize() > i; i++){
+            cont = inv.getItem(i);
+            //repeat through all the items in the editor
+            try{
+                //make the item here
+                if(cont == null){
+                    //remove if items have been removed
+                    if(file.contains("panels." + panelName + ".item." + i)){
+                        file.set("panels." + panelName + ".item." + i, null);
+                        continue;
+                    }
+                }
+                if(plugin.legacy.isLegacy()){
+                    if (cont.getDurability() != 0 && !cont.getType().toString().equals("SKULL_ITEM")) {
+                        file.set("panels." + panelName + ".item." + i + ".ID", cont.getDurability());
+                    }
+                }
+                if(file.contains("panels." + panelName + ".item." + i + ".material")){
+                    if(Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("%") || Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("=")){
+                        if(!plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
+                            file.set("panels." + panelName + ".item." + i + ".material", cont.getType().toString());
+                        }
+                    }else{
+                        file.set("panels." + panelName + ".item." + i + ".material", cont.getType().toString());
+                    }
+                }else{
+                    file.set("panels." + panelName + ".item." + i + ".material", cont.getType().toString());
+                }
+                if(plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
+                    SkullMeta meta = (SkullMeta) cont.getItemMeta();
+                    //disable for legacy as is broken
+                    if(!plugin.legacy.isLegacy()) {
+                        if (plugin.customHeads.getHeadBase64(cont) != null) {
+                            //inject base64 here
+                            file.set("panels." + panelName + ".item." + i + ".material", "cps= " + plugin.customHeads.getHeadBase64(cont));
+                        } else if (meta.hasOwner()) {
+                            //check for skull owner
+                            file.set("panels." + panelName + ".item." + i + ".material", "cps= " + meta.getOwner());
+                        }
+                    }
+                }
+                try {
+                    BannerMeta bannerMeta = (BannerMeta) cont.getItemMeta();
+                    List<String> dyePattern = new ArrayList<>();
+                    for(Pattern pattern : bannerMeta.getPatterns()) { //sublist to skip first value
+                        dyePattern.add(pattern.getColor().toString() + "," + pattern.getPattern().toString());
+                    }
+                    file.set("panels." + panelName + ".item." + i + ".banner", dyePattern);
+                }catch(Exception ignore){
+                    //not a banner
+                    file.set("panels." + panelName + ".item." + i + ".banner", null);
+                }
+                file.set("panels." + panelName + ".item." + i + ".stack", cont.getAmount());
+                if(!cont.getEnchantments().isEmpty()){
+                    file.set("panels." + panelName + ".item." + i + ".enchanted", "true");
+                }
+                file.set("panels." + panelName + ".item." + i + ".name", Objects.requireNonNull(cont.getItemMeta()).getDisplayName());
+                file.set("panels." + panelName + ".item." + i + ".lore", Objects.requireNonNull(cont.getItemMeta()).getLore());
+            }catch(Exception n){
+                //skip over an item that spits an error
+            }
+        }
+        return file;
     }
 }

@@ -1,19 +1,14 @@
 package me.rockyhawk.commandpanels.classresources;
 
-import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -181,6 +176,22 @@ public class OpenEditorGuis {
         plugin.setName(temp, ChatColor.WHITE + "Panel Rows", lore, p,true, true);
         i.setItem(23, temp);
 
+        temp = new ItemStack(Material.STONE, 1);
+        lore.clear();
+        lore.add(ChatColor.GRAY + "Worlds that cannot access the panel");
+        lore.add(ChatColor.GRAY + "- Left click to add world");
+        lore.add(ChatColor.GRAY + "- Right click to remove world");
+        if (cf.contains("panels." + panelName + ".disabled-worlds")) {
+            lore.add(ChatColor.WHITE + "-----------------------------");
+            int count = 1;
+            for (String tempLore : cf.getStringList("panels." + panelName + ".disabled-worlds")) {
+                lore.add(ChatColor.WHITE + Integer.toString(count) + ") " + tempLore);
+                count += 1;
+            }
+        }
+        plugin.setName(temp, ChatColor.WHITE + "Disabled Worlds", lore, p,true, true);
+        i.setItem(25, temp);
+
         temp = new ItemStack(Material.GLASS, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Fill empty slots with an item");
@@ -304,7 +315,8 @@ public class OpenEditorGuis {
         p.openInventory(i);
     }
 
-    public void openItemSettings(Player p, String panelName, YamlConfiguration cf, int itemNumber) {
+    //section is similar to hassection, but with the slot eg, 1.hasperm.hasvalue
+    public void openItemSettings(Player p, String panelName, ConfigurationSection cf, String section) {
         Inventory i = Bukkit.createInventory(null, 36, ChatColor.stripColor("Item Settings: " + panelName));
         List<String> lore = new ArrayList();
         ItemStack temp;
@@ -318,10 +330,10 @@ public class OpenEditorGuis {
         //make all the items
         temp = new ItemStack(Material.NAME_TAG, 1);
         lore.add(ChatColor.GRAY + "Display name of the item in the Panel");
-        if (cf.contains("panels." + panelName + ".item." + itemNumber + ".name")) {
-            if (!Objects.equals(cf.getString("panels." + panelName + ".item." + itemNumber + ".name"), "")) {
+        if (cf.contains("name")) {
+            if (!Objects.equals(cf.getString("name"), "")) {
                 lore.add(ChatColor.WHITE + "--------------------------------");
-                lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".name"));
+                lore.add(ChatColor.WHITE + cf.getString("name"));
             }
         }
         plugin.setName(temp, ChatColor.WHITE + "Item Name", lore, p,true, true);
@@ -332,10 +344,10 @@ public class OpenEditorGuis {
         lore.add(ChatColor.GRAY + "Execute commands when item is clicked");
         lore.add(ChatColor.GRAY + "- Left click to add command");
         lore.add(ChatColor.GRAY + "- Right click to remove command");
-        if (cf.contains("panels." + panelName + ".item." + itemNumber + ".commands")) {
+        if (cf.contains("commands")) {
             lore.add(ChatColor.WHITE + "-----------------------------");
             int count = 1;
-            for (String tempLore : cf.getStringList("panels." + panelName + ".item." + itemNumber + ".commands")) {
+            for (String tempLore : cf.getStringList("commands")) {
                 lore.add(ChatColor.WHITE + Integer.toString(count) + ") " + tempLore);
                 count += 1;
             }
@@ -346,10 +358,10 @@ public class OpenEditorGuis {
         temp = new ItemStack(Material.ENCHANTED_BOOK, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Display enchantment of the item in the Panel");
-        if (cf.contains("panels." + panelName + ".item." + itemNumber + ".enchanted")) {
-            if (!Objects.equals(cf.getString("panels." + panelName + ".item." + itemNumber + ".name"), "")) {
+        if (cf.contains("enchanted")) {
+            if (!Objects.equals(cf.getString("name"), "")) {
                 lore.add(ChatColor.WHITE + "--------------------------------");
-                lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".enchanted"));
+                lore.add(ChatColor.WHITE + cf.getString("enchanted"));
             }
         } else {
             lore.add(ChatColor.WHITE + "--------------------------------");
@@ -361,10 +373,10 @@ public class OpenEditorGuis {
         temp = new ItemStack(Material.POTION, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Display potion effect of the item in the Panel");
-        if (cf.contains("panels." + panelName + ".item." + itemNumber + ".potion")) {
-            if (!Objects.equals(cf.getString("panels." + panelName + ".item." + itemNumber + ".potion"), "")) {
+        if (cf.contains("potion")) {
+            if (!Objects.equals(cf.getString("potion"), "")) {
                 lore.add(ChatColor.WHITE + "--------------------------------");
-                lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".potion"));
+                lore.add(ChatColor.WHITE + cf.getString("potion"));
             }
         }
         plugin.setName(temp, ChatColor.WHITE + "Item Potion Effect", lore, p,true, true);
@@ -375,10 +387,10 @@ public class OpenEditorGuis {
         lore.add(ChatColor.GRAY + "Display a lore under the item name");
         lore.add(ChatColor.GRAY + "- Left click to add lore line");
         lore.add(ChatColor.GRAY + "- Right click to remove lore line");
-        if (cf.contains("panels." + panelName + ".item." + itemNumber + ".lore")) {
+        if (cf.contains("lore")) {
             lore.add(ChatColor.WHITE + "-----------------------------");
             int count = 1;
-            for (String tempLore : cf.getStringList("panels." + panelName + ".item." + itemNumber + ".lore")) {
+            for (String tempLore : cf.getStringList("lore")) {
                 lore.add(ChatColor.WHITE + Integer.toString(count) + ") " + tempLore);
                 count += 1;
             }
@@ -389,14 +401,14 @@ public class OpenEditorGuis {
         temp = new ItemStack(Material.ITEM_FRAME, 2);
         lore.clear();
         lore.add(ChatColor.GRAY + "How many of the item will be stacked");
-        if (cf.contains("panels." + panelName + ".item." + itemNumber + ".stack")) {
-            if (!Objects.equals(cf.getString("panels." + panelName + ".item." + itemNumber + ".stack"), "")) {
+        if (cf.contains("stack")) {
+            if (!Objects.equals(cf.getString("stack"), "")) {
                 try {
-                    temp.setAmount(Integer.parseInt(Objects.requireNonNull(cf.getString("panels." + panelName + ".item." + itemNumber + ".stack"))));
+                    temp.setAmount(Integer.parseInt(Objects.requireNonNull(cf.getString("stack"))));
                 } catch (Exception ignored) {
                 }
                 lore.add(ChatColor.WHITE + "--------------------------------");
-                lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".stack"));
+                lore.add(ChatColor.WHITE + cf.getString("stack"));
             }
         }
         plugin.setName(temp, ChatColor.WHITE + "Item Stack Size", lore, p, true, true);
@@ -406,24 +418,38 @@ public class OpenEditorGuis {
             temp = new ItemStack(Material.PAINTING, 1);
             lore.clear();
             lore.add(ChatColor.GRAY + "Add Custom Model Data here");
-            if (cf.contains("panels." + panelName + ".item." + itemNumber + ".customdata")) {
-                if (!Objects.equals(cf.getString("panels." + panelName + ".item." + itemNumber + ".customdata"), "")) {
+            if (cf.contains("customdata")) {
+                if (!Objects.equals(cf.getString("customdata"), "")) {
                     lore.add(ChatColor.WHITE + "--------------------------------");
-                    lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".customdata"));
+                    lore.add(ChatColor.WHITE + cf.getString("customdata"));
                 }
             }
             plugin.setName(temp, ChatColor.WHITE + "Custom Model Data", lore, p, true, true);
             i.setItem(23, temp);
         }
 
+        /*show the compass that opens the viewer for the sections..
+        it will only show the sections immidiatly under the other, so
+        if there is a hasperm inside another hasperm, it will not appear
+        until the other hasperm is opened.
+         */
+        temp = new ItemStack(Material.COMPASS, 1);
+        lore.clear();
+        lore.add(ChatColor.GRAY + "View the items different");
+        lore.add(ChatColor.GRAY + "Sections and add complex values.");
+        lore.add(ChatColor.WHITE + "--------------------------------");
+        lore.add(ChatColor.WHITE + section);
+        plugin.setName(temp, ChatColor.WHITE + "Item Sections", lore, p, true, true);
+        i.setItem(31, temp);
+
         temp = new ItemStack(Material.LEATHER_HELMET, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Choose a colour for the armor");
         lore.add(ChatColor.GRAY + "use r,g,b or a spigot API color");
-        if (cf.contains("panels." + panelName + ".item." + itemNumber + ".leatherarmor")) {
-            if (!Objects.equals(cf.getString("panels." + panelName + ".item." + itemNumber + ".leatherarmor"), "")) {
+        if (cf.contains("leatherarmor")) {
+            if (!Objects.equals(cf.getString("leatherarmor"), "")) {
                 lore.add(ChatColor.WHITE + "--------------------------------");
-                lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".item." + itemNumber + ".leatherarmor"));
+                lore.add(ChatColor.WHITE + cf.getString("leatherarmor"));
             }
         }
         plugin.setName(temp, ChatColor.WHITE + "Leather Armor Colour", lore, p, true, true);
@@ -433,12 +459,72 @@ public class OpenEditorGuis {
         plugin.setName(temp, ChatColor.RED + "Back", null, p, true, true);
         i.setItem(27, temp);
 
-        temp = plugin.itemCreate.makeItemFromConfig(cf.getConfigurationSection("panels." + panelName + ".item." + itemNumber),p,false,false);
+        temp = plugin.itemCreate.makeItemFromConfig(cf,p,false,false);
         lore.clear();
         lore.add(ChatColor.GRAY + "Click to set custom material");
         lore.add(ChatColor.GRAY + "typically for custom heads");
-        plugin.setName(temp, ChatColor.WHITE + "Item Slot " + itemNumber + " Preview", lore, p, true, true);
+        plugin.setName(temp, ChatColor.WHITE + "Item Section " + section + " Preview", lore, p, true, true);
         i.setItem(35, temp);
+
+        p.openInventory(i);
+    }
+
+    //section is similar to hassection, but with the slot eg, 1.hasperm.hasvalue
+    public void openItemSections(Player p, String panelName, ConfigurationSection cf, String itemSection) {
+        Inventory i = Bukkit.createInventory(null, 45, ChatColor.stripColor("Item Sections: " + panelName));
+        ItemStack temp;
+        int slot = 0;
+        for(String section : cf.getKeys(false)){
+            //get list of item sections
+            if(slot > 35){
+                break;
+            }
+            if(section.contains("hasperm") || section.contains("hasvalue") || section.contains("hasgreater")){
+                List<String> lore = new ArrayList<>();
+                lore.add(ChatColor.GRAY + "Left click to open item");
+                lore.add(ChatColor.GRAY + "Right click to change below settings");
+                if(cf.contains(section + ".output")) {
+                    lore.add(ChatColor.WHITE + "Output: " + ChatColor.GRAY + cf.getString(section + ".output"));
+                }else{
+                    lore.add(ChatColor.WHITE + "Output: " + ChatColor.GRAY + "true");
+                }
+                if(cf.contains(section + ".perm")) {
+                    lore.add(ChatColor.WHITE + "Perm: " + ChatColor.GRAY + cf.getString(section + ".perm"));
+                }
+                if(cf.contains(section + ".value")) {
+                    lore.add(ChatColor.WHITE + "Value: " + ChatColor.GRAY + cf.getString(section + ".value"));
+                }
+                if(cf.contains(section + ".compare")) {
+                    lore.add(ChatColor.WHITE + "Compare: " + ChatColor.GRAY + cf.getString(section + ".compare"));
+                }
+
+                temp = plugin.itemCreate.makeItemFromConfig(cf.getConfigurationSection(section),p,false,false);
+                plugin.setName(temp, ChatColor.AQUA + section, lore, p,false, true);
+                i.setItem(slot, temp);
+                slot++;
+            }
+        }
+
+        temp = new ItemStack(Material.REDSTONE, 1);
+        plugin.setName(temp, ChatColor.WHITE + "Remove Section", null, p, true, true);
+        i.setItem(38, temp);
+
+        temp = new ItemStack(Material.SLIME_BALL, 1);
+        plugin.setName(temp, ChatColor.WHITE + "Add Section", null, p, true, true);
+        i.setItem(42, temp);
+
+        temp = new ItemStack(Material.BARRIER, 1);
+        plugin.setName(temp, ChatColor.RED + "Back", null, p, true, true);
+        i.setItem(36, temp);
+
+        temp = new ItemStack(Material.BOOK, 1);
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Section Types:");
+        lore.add(ChatColor.GRAY + "- hasperm");
+        lore.add(ChatColor.GRAY + "- hasvalue");
+        lore.add(ChatColor.GRAY + "- hasgreater");
+        plugin.setName(temp, ChatColor.WHITE + "Item Section " + itemSection, lore, p, true, true);
+        i.setItem(44, temp);
 
         p.openInventory(i);
     }

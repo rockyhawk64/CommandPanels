@@ -4,6 +4,7 @@ import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -61,8 +62,10 @@ public class EditorUserInput implements Listener {
             }
             if(section.startsWith("panel.")) {
                 panelSectionCheck(p, section, panelName, panelTitle, cf, panelFile, e);
-            }else if(section.startsWith("item.")){
+            }else if(section.startsWith("item:")){
                 itemSectionCheck(p, section, panelName, cf, panelFile, e);
+            }else if(section.startsWith("section.")){
+                itemSectionSectionCheck(p, section, panelName, cf, panelFile, e);
             }
             plugin.editorInputStrings.remove(temp);
             plugin.reloadPanelFiles();
@@ -72,13 +75,31 @@ public class EditorUserInput implements Listener {
                         plugin.editorGuis.openEditorGui(p, 0); //I have to do this to run regular Bukkit voids in an ASYNC Event
                     }
                 });
-            }else if(section.startsWith("item.")) {
+            }else if(section.startsWith("item:")) {
                 final YamlConfiguration finalCF = cf;
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         plugin.openGui(panelName, p, finalCF, 3,0); //I have to do this to run regular Bukkit voids in an ASYNC Event
                     }
                 });
+            }else if(section.startsWith("section.")){
+                String itemSection = ChatColor.stripColor(section.replace("section." + section.split("\\.")[1] + ".", ""));
+                final ConfigurationSection finalCF = cf.getConfigurationSection("panels." + panelName + ".item." + itemSection);
+                if(section.contains("change")){
+                    final String changeItemSection = itemSection.substring(0, itemSection.lastIndexOf("."));
+                    final ConfigurationSection changeFinalCF = cf.getConfigurationSection("panels." + panelName + ".item." + changeItemSection);
+                    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                        public void run() {
+                            plugin.editorGuis.openItemSections(p,panelName,changeFinalCF,changeItemSection);
+                        }
+                    });
+                }else{
+                    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                        public void run() {
+                            plugin.editorGuis.openItemSections(p,panelName,finalCF,itemSection);
+                        }
+                    });
+                }
             }
             return;
         }
@@ -92,6 +113,7 @@ public class EditorUserInput implements Listener {
             return false;
         }
     }
+
     void panelSectionCheck(Player p, String section, String panelName, String panelTitle, YamlConfiguration cf, File panelFile, AsyncPlayerChatEvent e){
         String tag = plugin.config.getString("config.format.tag") + " ";
         switch (section) {
@@ -240,6 +262,38 @@ public class EditorUserInput implements Listener {
                 savePanelFile(cf, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed command line " + e.getMessage()));
                 break;
+            case "panel.disabled-worlds.add":
+                List<String> disabledWorldsAdd = new ArrayList<>();
+                if(cf.contains("panels." + panelName + ".disabled-worlds")){
+                    disabledWorldsAdd = cf.getStringList("panels." + panelName + ".disabled-worlds");
+                }
+                disabledWorldsAdd.add(e.getMessage());
+                cf.set("panels." + panelName + ".disabled-worlds", disabledWorldsAdd);
+                savePanelFile(cf, panelFile);
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added new World: " + e.getMessage()));
+                break;
+            case "panel.disabled-worlds.remove":
+                List<String> disabledWorldsRemove;
+                if(cf.contains("panels." + panelName + ".disabled-worlds")){
+                    disabledWorldsRemove = cf.getStringList("panels." + panelName + ".disabled-worlds");
+                }else{
+                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "No Worlds found to remove!"));
+                    break;
+                }
+                try {
+                    disabledWorldsRemove.remove(Integer.parseInt(e.getMessage())-1);
+                }catch (Exception ex){
+                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "Could not find World!"));
+                    break;
+                }
+                if(disabledWorldsRemove.size() == 0){
+                    cf.set("panels." + panelName + ".disabled-worlds", null);
+                }else{
+                    cf.set("panels." + panelName + ".disabled-worlds", disabledWorldsRemove);
+                }
+                savePanelFile(cf, panelFile);
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed World line " + e.getMessage()));
+                break;
             case "panel.hotbar.material":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
                     cf.set("panels." + panelName + ".open-with-item", null);
@@ -320,10 +374,11 @@ public class EditorUserInput implements Listener {
                 break;
         }
     }
+
     void itemSectionCheck(Player p, String section, String panelName, YamlConfiguration cf, File panelFile, AsyncPlayerChatEvent e){
         String tag = plugin.config.getString("config.format.tag") + " ";
-        String itemSlot = section.split("\\.")[1];
-        String sectionChange = section.replace("item." + itemSlot + ".","");
+        String itemSlot = section.split("\\:")[1];
+        String sectionChange = section.replace("item:" + itemSlot + ":","");
         switch (sectionChange) {
             case "name":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
@@ -475,6 +530,42 @@ public class EditorUserInput implements Listener {
                 }
                 savePanelFile(cf, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed lore line " + e.getMessage()));
+                break;
+        }
+    }
+
+    void itemSectionSectionCheck(Player p, String section, String panelName, YamlConfiguration cf, File panelFile, AsyncPlayerChatEvent e){
+        String tag = plugin.config.getString("config.format.tag") + " ";
+        String secondValue = section.split("\\.")[1];
+        //section includes slot at front eg, 1.hasvalue
+        String itemSection = ChatColor.stripColor(section.replace("section." + secondValue + ".", ""));
+        String playerMessage = ChatColor.stripColor(e.getMessage()).toLowerCase();
+        switch (secondValue) {
+            case "add":
+                cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage + ".output", "true");
+                if(playerMessage.equals("hasperm")) {
+                    cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage + ".perm", "admin");
+                }else{
+                    cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage + ".value", "10");
+                    cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage + ".compare", "%cp-player-balance%");
+                }
+                cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage + ".material", "DIRT");
+                cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage + ".name", "");
+                savePanelFile(cf, panelFile);
+                plugin.reloadPanelFiles();
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added Section " + ChatColor.WHITE + playerMessage));
+                break;
+            case "remove":
+                cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage, null);
+                savePanelFile(cf, panelFile);
+                plugin.reloadPanelFiles();
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed Section " + ChatColor.WHITE + playerMessage));
+                break;
+            case "change":
+                cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage.split("\\:")[0], playerMessage.split("\\:")[1]);
+                savePanelFile(cf, panelFile);
+                plugin.reloadPanelFiles();
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set " + playerMessage.split("\\:")[0] + " to " + ChatColor.WHITE + playerMessage.split("\\:")[1]));
                 break;
         }
     }

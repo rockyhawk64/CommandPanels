@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.ingameeditor;
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,8 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.io.File;
 import java.io.IOException;
@@ -243,14 +242,15 @@ public class EditorUtils implements Listener {
         Save temp item if the item is picked up from inside the panel
         */
         if(e.getClick().isShiftClick() && e.getClickedInventory() == e.getView().getTopInventory()){
-            if(e.getCurrentItem() == null) {
+            if(e.getInventory().getItem(e.getSlot()) == null) {
                 return;
             }
             onEditPanelClose(p,e.getInventory(),e.getView());
             inventoryItemSettingsOpening.add(p.getName());
             //refresh the yaml config
             file = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-            plugin.editorGuis.openItemSettings(p,panelName,file,e.getSlot());
+            plugin.editorGuis.openItemSettings(p,panelName,file.getConfigurationSection("panels." + panelName + ".item." + e.getSlot()), String.valueOf(e.getSlot()));
+            p.updateInventory();
             return;
         }
         if(tempEdit.contains("panels." + panelName + ".temp." + p.getName() + ".material")) {
@@ -261,14 +261,19 @@ public class EditorUtils implements Listener {
                 }
             }
         }
+        if(e.getSlotType() != InventoryType.SlotType.CONTAINER){
+            return;
+        }
         if(e.getAction() == InventoryAction.CLONE_STACK){
             saveTempItem(e, p, file, panelName);
+            saveFile(fileName,file,true);
         }else if(e.getAction() == InventoryAction.PLACE_ALL){
             loadTempItem(e, p, file, fileName, panelName);
             clearTemp(p, panelName);
+            saveFile(fileName,file,true);
         }else if(e.getAction() == InventoryAction.COLLECT_TO_CURSOR){
-            //e.setCancelled(true);
             saveTempItem(e, p, file, panelName);
+            saveFile(fileName,file,true);
         }else if(e.getAction() == InventoryAction.DROP_ALL_CURSOR){
             e.setCancelled(true);
         }else if(e.getAction() == InventoryAction.DROP_ALL_SLOT){
@@ -285,18 +290,24 @@ public class EditorUtils implements Listener {
             e.setCancelled(true);
         }else if(e.getAction() == InventoryAction.PLACE_SOME){
             loadTempItem(e, p, file, fileName, panelName);
+            saveFile(fileName,file,true);
         }else if(e.getAction() == InventoryAction.SWAP_WITH_CURSOR){
             e.setCancelled(true);
         }else if(e.getAction() == InventoryAction.PICKUP_ALL){
             saveTempItem(e, p, file, panelName);
+            saveFile(fileName,file,true);
         }else if(e.getAction() == InventoryAction.PICKUP_HALF){
             saveTempItem(e, p, file, panelName);
+            saveFile(fileName,file,true);
         }else if(e.getAction() == InventoryAction.PICKUP_ONE){
             saveTempItem(e, p, file, panelName);
+            saveFile(fileName,file,true);
         }else if(e.getAction() == InventoryAction.PICKUP_SOME){
             saveTempItem(e, p, file, panelName);
+            saveFile(fileName,file,true);
         }else if(e.getAction() == InventoryAction.PLACE_ONE){
             loadTempItem(e, p, file, fileName, panelName);
+            saveFile(fileName,file,true);
         }
     }
     @EventHandler
@@ -354,53 +365,64 @@ public class EditorUtils implements Listener {
         }
         if(e.getSlot() == 1){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.perm"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Permission"));
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Permission"));
             p.closeInventory();
         }
         if(e.getSlot() == 3){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.title"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Title"));
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Title"));
             p.closeInventory();
         }
         if(e.getSlot() == 5){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.sound-on-open"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Sound ID"));
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Sound ID"));
             p.closeInventory();
         }
         if(e.getSlot() == 7){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.command"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Command"));
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Command"));
             p.closeInventory();
         }
         if(e.getSlot() == 21){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.delete"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Are you sure? (yes/no)"));
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Are you sure? (yes/no)"));
             p.closeInventory();
         }
         if(e.getSlot() == 23){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.rows"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter Row Amount (1 to 6)"));
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter Row Amount (1 to 6)"));
             p.closeInventory();
         }
         if(e.getSlot() == 13){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.empty"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Material ID"));
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Material ID"));
             p.closeInventory();
         }
         if(e.getSlot() == 15){
             //adds abilities to add and remove lines
             if(e.getClick().isLeftClick()) {
                 plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "panel.commands-on-open.add"});
-                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Command"));
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Command"));
             }else{
                 plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "panel.commands-on-open.remove"});
-                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter command line to remove (must be an integer)"));
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter Command line to remove (must be an integer)"));
+            }
+            p.closeInventory();
+        }
+        if(e.getSlot() == 25){
+            //adds abilities to add and remove lines
+            if(e.getClick().isLeftClick()) {
+                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "panel.disabled-worlds.add"});
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New World Name"));
+            }else{
+                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "panel.disabled-worlds.remove"});
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter World line to remove (must be an integer)"));
             }
             p.closeInventory();
         }
         if(e.getSlot() == 11){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.name"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Name"));
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Name"));
             p.closeInventory();
         }
         if(e.getSlot() == 18){
@@ -409,31 +431,32 @@ public class EditorUtils implements Listener {
         }
         if(e.getSlot() == 40){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.material"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Material"));
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Material"));
             p.closeInventory();
         }
         if(e.getSlot() == 38 && hotbarItems){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.name"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Name"));
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Name"));
             p.closeInventory();
         }
         if(e.getSlot() == 36 && hotbarItems){
             //adds abilities to add and remove lines
             if(e.getClick().isLeftClick()) {
                 plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.lore.add"});
-                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Lore"));
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Item Lore"));
             }else{
                 plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.lore.remove"});
-                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter lore line to remove (must be an integer)"));
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter lore line to remove (must be an integer)"));
             }
             p.closeInventory();
         }
         if(e.getSlot() == 42 && hotbarItems){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.stationary"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter Location (1 to 9)"));
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter Location (1 to 9)"));
             p.closeInventory();
         }
     }
+
     @EventHandler
     public void onItemSettings(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
@@ -454,7 +477,7 @@ public class EditorUtils implements Listener {
         YamlConfiguration panelYaml = null; //all panels from ALL files (panel names)
         boolean found = false;
         try {
-            //neew to loop through files to get file names
+            //loop through files to get file names
             for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
                 if(!plugin.checkPanels(temp)){
@@ -468,6 +491,9 @@ public class EditorUtils implements Listener {
                         break;
                     }
                 }
+                if(found){
+                    break;
+                }
             }
         }catch(Exception fail){
             //could not fetch all panel names (probably no panels exist)
@@ -477,76 +503,181 @@ public class EditorUtils implements Listener {
         if(!found){
             return;
         }
-        int itemSlot;
+        String itemSlot;
         try {
-            itemSlot = Integer.parseInt(Objects.requireNonNull(Objects.requireNonNull(e.getView().getTopInventory().getItem(35)).getItemMeta()).getDisplayName().split("\\s")[2]);
+            itemSlot = ChatColor.stripColor(e.getView().getTopInventory().getItem(35).getItemMeta().getDisplayName().split("\\s")[2]);
         }catch(Exception ex){
             plugin.getServer().getConsoleSender().sendMessage("[CommandPanels] Could not get item slot");
             plugin.debug(ex);
             return;
         }
         if(e.getSlot() == 1){
-            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".name"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Name"));
+            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item:" + itemSlot + ":name"});
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Item Name"));
             p.closeInventory();
         }
         if(e.getSlot() == 3){
             //adds abilities to add and remove lines
             if(e.getClick().isLeftClick()) {
-                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item." + itemSlot + ".commands.add"});
-                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Command"));
+                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item:" + itemSlot + ":commands:add"});
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Item Command"));
             }else{
-                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item." + itemSlot + ".commands.remove"});
-                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter command line to remove (must be an integer)"));
+                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item:" + itemSlot + ":commands:remove"});
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter command line to remove (must be an integer)"));
             }
             p.closeInventory();
         }
         if(e.getSlot() == 5){
-            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".enchanted"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Enchantment"));
+            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item:" + itemSlot + ":enchanted"});
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Item Enchantment"));
             p.closeInventory();
         }
         if(e.getSlot() == 7){
-            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".potion"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Potion Effect"));
+            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item:" + itemSlot + ":potion"});
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Item Potion Effect"));
             p.closeInventory();
         }
         if(e.getSlot() == 19){
             //adds abilities to add and remove lines
             if(e.getClick().isLeftClick()) {
-                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item." + itemSlot + ".lore.add"});
-                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Lore"));
+                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item:" + itemSlot + ":lore:add"});
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Item Lore"));
             }else{
-                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item." + itemSlot + ".lore.remove"});
-                p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter lore line to remove (must be an integer)"));
+                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item:" + itemSlot + ":lore:remove"});
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter lore line to remove (must be an integer)"));
             }
             p.closeInventory();
         }
         if(e.getSlot() == 21){
-            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".stack"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Item Stack (must be an integer)"));
+            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item:" + itemSlot + ":stack"});
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Item Stack (must be an integer)"));
             p.closeInventory();
         }
         if(e.getSlot() == 23){
-            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".customdata"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Custom Model Data"));
+            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item:" + itemSlot + ":customdata"});
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Custom Model Data"));
             p.closeInventory();
         }
         if(e.getSlot() == 25){
-            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".leatherarmor"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Leather Armor Colour"));
+            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item:" + itemSlot + ":leatherarmor"});
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Leather Armor Colour"));
             p.closeInventory();
         }
+        if(e.getSlot() == 31){
+            //section includes the slot number at the front
+            plugin.editorGuis.openItemSections(p,panelName,panelYaml.getConfigurationSection("panels." + panelName + ".item." + itemSlot), itemSlot);
+            p.updateInventory();
+        }
         if(e.getSlot() == 35){
-            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item." + itemSlot + ".head"});
-            p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Enter New Custom Material (eg. cps= self)"));
+            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item:" + itemSlot + ":head"});
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Custom Material (eg. cps= self)"));
             p.closeInventory();
         }
         if(e.getSlot() == 27){
-            plugin.openGui(panelName, p, panelYaml,3,0);
+            if(itemSlot.contains(".")){
+                String newSection = itemSlot.substring(0, itemSlot.lastIndexOf("."));
+                plugin.editorGuis.openItemSections(p,panelName,panelYaml.getConfigurationSection("panels." + panelName + ".item." + newSection), newSection);
+            }else {
+                plugin.openGui(panelName, p, panelYaml, 3, 0);
+            }
             p.updateInventory();
         }
     }
+
+    //item section viewer click event
+    @EventHandler
+    public void onItemSection(InventoryClickEvent e) {
+        Player p = (Player)e.getWhoClicked();
+        String tag = plugin.config.getString("config.format.tag") + " ";
+        try {
+            if (Objects.requireNonNull(e.getClickedInventory()).getType() != InventoryType.CHEST) {
+                return;
+            }
+        }catch(Exception outOf){
+            //skip as player clicked outside the inventory
+            return;
+        }
+        if(!p.getOpenInventory().getTitle().contains("Item Sections:")){
+            return;
+        }
+        e.setCancelled(true);
+        String panelName = ""; //all panels from ALL files (panel names)
+        YamlConfiguration panelYaml = null;
+        ConfigurationSection itemConfSection; //all panels from ALL files (panel names)
+        boolean found = false;
+        try {
+            //loop through files to get file names
+            YamlConfiguration temp;
+            for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+                temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
+                if(!plugin.checkPanels(temp)){
+                    continue;
+                }
+                for (String key : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)){
+                    if(e.getView().getTitle().equals("Item Sections: " + key)){
+                        panelName = key;
+                        panelYaml = temp;
+                        found = true;
+                        break;
+                    }
+                }
+                if(found){
+                    break;
+                }
+            }
+        }catch(Exception fail){
+            //could not fetch all panel names (probably no panels exist)
+            plugin.debug(fail);
+            return;
+        }
+        if(!found){
+            return;
+        }
+
+        //this section includes slot at front
+        String section;
+        try {
+            section = ChatColor.stripColor(Objects.requireNonNull(Objects.requireNonNull(e.getView().getTopInventory().getItem(44)).getItemMeta()).getDisplayName().split("\\s")[2]);
+        }catch(Exception ex){
+            plugin.getServer().getConsoleSender().sendMessage("[CommandPanels] Could not get item slot");
+            plugin.debug(ex);
+            return;
+        }
+        itemConfSection = panelYaml.getConfigurationSection("panels." + panelName + ".item." + section);
+
+        if(e.getSlot() <= 35){
+            if(e.getInventory().getItem(e.getSlot()) != null){
+                if(e.getClick().isLeftClick()) {
+                    String newSection = section + "." + ChatColor.stripColor(e.getInventory().getItem(e.getSlot()).getItemMeta().getDisplayName());
+                    plugin.editorGuis.openItemSettings(p, panelName, itemConfSection.getConfigurationSection(ChatColor.stripColor(e.getInventory().getItem(e.getSlot()).getItemMeta().getDisplayName())), newSection);
+                    p.updateInventory();
+                }else{
+                    String itemNameSection = "." + ChatColor.stripColor(e.getInventory().getItem(e.getSlot()).getItemMeta().getDisplayName());
+                    plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"section.change." + section + itemNameSection});
+                    p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter Setting to change, eg, value:500"));
+                    p.closeInventory();
+                }
+            }
+        }
+
+        if(e.getSlot() == 38){
+            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"section.remove." + section});
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter Section name to remove, eg, hasperm or hasperm0"));
+            p.closeInventory();
+        }
+
+        if(e.getSlot() == 42){
+            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"section.add." + section});
+            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter Section name to add, eg, hasperm or hasperm0"));
+            p.closeInventory();
+        }
+
+        if(e.getSlot() == 36){
+            plugin.editorGuis.openItemSettings(p,panelName,itemConfSection, section);
+            p.updateInventory();
+        }
+    }
+
     public void saveTempItem(InventoryClickEvent e, Player p, YamlConfiguration file, String panelName){
         //saves item to temp, using getslot
         tempEdit.set("panels." + panelName + ".temp." + p.getName(),file.get("panels." + panelName + ".item." + e.getSlot()));
@@ -617,60 +748,7 @@ public class EditorUtils implements Listener {
             return;
         }
         //save items as they appear
-        ItemStack cont;
-        for(int i = 0; inv.getSize() > i; i++){
-            cont = inv.getItem(i);
-            //repeat through all the items in the editor
-            try{
-                //make the item here
-                if(cont == null){
-                    //remove if items have been removed
-                    if(file.contains("panels." + panelName + ".item." + i)){
-                        file.set("panels." + panelName + ".item." + i, null);
-                        continue;
-                    }
-                }
-                if(plugin.legacy.isLegacy()){
-                    if (cont.getDurability() != 0 && !cont.getType().toString().equals("SKULL_ITEM") && !cont.getType().toString().equals("SKULL_ITEM")) {
-                        file.addDefault("panels." + panelName + ".item." + i + ".ID", cont.getDurability());
-                    }
-                }
-                if(file.contains("panels." + panelName + ".item." + i + ".material")){
-                    if(Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("%") || Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("=")){
-                        if(!plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
-                            file.set("panels." + panelName + ".item." + i + ".material", cont.getType().toString());
-                        }
-                    }else{
-                        file.set("panels." + panelName + ".item." + i + ".material", cont.getType().toString());
-                    }
-                }else{
-                    file.set("panels." + panelName + ".item." + i + ".material", cont.getType().toString());
-                }
-                if(plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
-                    SkullMeta meta = (SkullMeta) cont.getItemMeta();
-                    //disable for legacy as is broken
-                    if(!plugin.legacy.isLegacy()) {
-                        if (plugin.customHeads.getHeadBase64(cont) != null) {
-                            //inject base64 here
-                            file.set("panels." + panelName + ".item." + i + ".material", "cps= " + plugin.customHeads.getHeadBase64(cont));
-                        } else if (meta.hasOwner()) {
-                            //check for skull owner
-                            file.set("panels." + panelName + ".item." + i + ".material", "cps= " + meta.getOwner());
-                        }
-                    }
-                }
-                if(cont.getAmount() != 1){
-                    file.set("panels." + panelName + ".item." + i + ".stack", cont.getAmount());
-                }
-                if(!cont.getEnchantments().isEmpty()){
-                    file.set("panels." + panelName + ".item." + i + ".enchanted", "true");
-                }
-                file.set("panels." + panelName + ".item." + i + ".name", Objects.requireNonNull(cont.getItemMeta()).getDisplayName());
-                file.set("panels." + panelName + ".item." + i + ".lore", Objects.requireNonNull(cont.getItemMeta()).getLore());
-            }catch(Exception n){
-                //skip over an item that spits an error
-            }
-        }
+        file = plugin.itemCreate.generatePanelFile(panelName,inv,file);
         try {
             file.save(new File(plugin.panelsf + File.separator + fileName));
             p.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Saved Changes!"));
