@@ -15,6 +15,7 @@ import org.bukkit.inventory.InventoryView;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class EditorUtils implements Listener {
@@ -261,7 +262,8 @@ public class EditorUtils implements Listener {
                 }
             }
         }
-        if(e.getSlotType() != InventoryType.SlotType.CONTAINER){
+        if(e.getClickedInventory().getType() != InventoryType.CHEST){
+            clearTemp(p, panelName);
             return;
         }
         if(e.getAction() == InventoryAction.CLONE_STACK){
@@ -274,6 +276,7 @@ public class EditorUtils implements Listener {
         }else if(e.getAction() == InventoryAction.COLLECT_TO_CURSOR){
             saveTempItem(e, p, file, panelName);
             saveFile(fileName,file,true);
+            removeOldItem(e, p, file, fileName, panelName);
         }else if(e.getAction() == InventoryAction.DROP_ALL_CURSOR){
             e.setCancelled(true);
         }else if(e.getAction() == InventoryAction.DROP_ALL_SLOT){
@@ -296,6 +299,7 @@ public class EditorUtils implements Listener {
         }else if(e.getAction() == InventoryAction.PICKUP_ALL){
             saveTempItem(e, p, file, panelName);
             saveFile(fileName,file,true);
+            removeOldItem(e, p, file, fileName, panelName);
         }else if(e.getAction() == InventoryAction.PICKUP_HALF){
             saveTempItem(e, p, file, panelName);
             saveFile(fileName,file,true);
@@ -689,6 +693,11 @@ public class EditorUtils implements Listener {
             file.set("panels." + panelName + ".item." + e.getSlot(),tempEdit.get("panels." + panelName + ".temp." + p.getName()));
             saveFile(fileName, file, true);
         }
+    }
+    public void removeOldItem(InventoryClickEvent e, Player p, YamlConfiguration file,String fileName, String panelName){
+        //removes the old item from config, if it has been picked up (use this only after saving)
+        file.set("panels." + panelName + ".item." + e.getSlot(),null);
+        saveFile(fileName, file, true);
     }
     public void clearTemp(Player p, String panelName){
         //empty temp item

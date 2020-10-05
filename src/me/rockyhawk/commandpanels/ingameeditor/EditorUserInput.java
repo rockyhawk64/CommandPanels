@@ -376,6 +376,12 @@ public class EditorUserInput implements Listener {
     }
 
     void itemSectionCheck(Player p, String section, String panelName, YamlConfiguration cf, File panelFile, AsyncPlayerChatEvent e){
+        /*
+        I am using : instead of . because the
+        item sections could contain 18.hasperm <- the periods
+        so using a different symbol will help to separate the section from
+        everything else
+         */
         String tag = plugin.config.getString("config.format.tag") + " ";
         String itemSlot = section.split("\\:")[1];
         String sectionChange = section.replace("item:" + itemSlot + ":","");
@@ -467,7 +473,7 @@ public class EditorUserInput implements Listener {
                 savePanelFile(cf, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Leather armor colour set to " + e.getMessage()));
                 break;
-            case "commands.add":
+            case "commands:add":
                 List<String> commandsOnOpenAdd = new ArrayList<>();
                 if(cf.contains("panels." + panelName + ".item." + itemSlot + ".commands")){
                     commandsOnOpenAdd = cf.getStringList("panels." + panelName + ".item." + itemSlot + ".commands");
@@ -477,7 +483,7 @@ public class EditorUserInput implements Listener {
                 savePanelFile(cf, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added new command: " + e.getMessage()));
                 break;
-            case "commands.remove":
+            case "commands:remove":
                 List<String> commandsOnOpenRemove;
                 if(cf.contains("panels." + panelName + ".item." + itemSlot + ".commands")){
                     commandsOnOpenRemove = cf.getStringList("panels." + panelName + ".item." + itemSlot + ".commands");
@@ -499,7 +505,7 @@ public class EditorUserInput implements Listener {
                 savePanelFile(cf, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed command line " + e.getMessage()));
                 break;
-            case "lore.add":
+            case "lore:add":
                 List<String> loreOnOpenAdd = new ArrayList<>();
                 if(cf.contains("panels." + panelName + ".item." + itemSlot + ".lore")){
                     loreOnOpenAdd = cf.getStringList("panels." + panelName + ".item." + itemSlot + ".lore");
@@ -509,7 +515,7 @@ public class EditorUserInput implements Listener {
                 savePanelFile(cf, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added new lore: " + e.getMessage()));
                 break;
-            case "lore.remove":
+            case "lore:remove":
                 List<String> loreOnOpenRemove;
                 if(cf.contains("panels." + panelName + ".item." + itemSlot + ".lore")){
                     loreOnOpenRemove = cf.getStringList("panels." + panelName + ".item." + itemSlot + ".lore");
