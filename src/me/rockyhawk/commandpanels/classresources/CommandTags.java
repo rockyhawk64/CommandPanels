@@ -5,6 +5,7 @@ import com.google.common.io.ByteStreams;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -38,8 +39,8 @@ public class CommandTags {
             String panelName = command.split("\\s")[1];
             for(String[] tempName : plugin.panelNames){
                 if(tempName[0].equals(panelName)){
-                    YamlConfiguration panelConfig = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(tempName[1]))));
-                    plugin.openGui(panelName, p, panelConfig, 1, 0);
+                    ConfigurationSection panelConfig = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(tempName[1])))).getConfigurationSection("panels." + panelName);
+                    plugin.openVoids.openCommandPanel(p,p,panelName,panelConfig,false);
                     return;
                 }
             }

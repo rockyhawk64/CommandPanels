@@ -44,7 +44,7 @@ public class EditorUtils implements Listener {
         }
         ArrayList<String> panelNames = new ArrayList<String>(); //all panels from ALL files (panel names)
         ArrayList<String> panelTitles = new ArrayList<String>(); //all panels from ALL files (panel titles)
-        ArrayList<YamlConfiguration> panelYaml = new ArrayList<YamlConfiguration>(); //all panels from ALL files (panel yaml files)
+        ArrayList<ConfigurationSection> panelYaml = new ArrayList<ConfigurationSection>(); //all panels from ALL files (panel yaml files)
         try {
             for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
                 YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
@@ -56,7 +56,7 @@ public class EditorUtils implements Listener {
                     key = s;
                     panelNames.add(plugin.papi( key));
                     panelTitles.add(plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))));
-                    panelYaml.add(temp);
+                    panelYaml.add(temp.getConfigurationSection("panels." + key));
                 }
             }
         }catch(Exception fail){
@@ -106,7 +106,7 @@ public class EditorUtils implements Listener {
                         int count = 0;
                         for(String panelName : panelNames){
                             if(panelName.equals(ChatColor.stripColor(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getDisplayName()))){
-                                plugin.openGui(panelName, p, panelYaml.get(count),3,0);
+                                plugin.createGUI.openGui(panelName, p, panelYaml.get(count),3,0);
                                 return;
                             }
                             count +=1;
@@ -582,7 +582,7 @@ public class EditorUtils implements Listener {
                 String newSection = itemSlot.substring(0, itemSlot.lastIndexOf("."));
                 plugin.editorGuis.openItemSections(p,panelName,panelYaml.getConfigurationSection("panels." + panelName + ".item." + newSection), newSection);
             }else {
-                plugin.openGui(panelName, p, panelYaml, 3, 0);
+                plugin.createGUI.openGui(panelName, p, panelYaml.getConfigurationSection("panels." + panelName), 3, 0);
             }
             p.updateInventory();
         }

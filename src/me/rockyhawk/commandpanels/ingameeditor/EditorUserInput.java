@@ -34,7 +34,8 @@ public class EditorUserInput implements Listener {
             String panelTitle = temp[1];
             File panelFile = null;
             String section = temp[2];
-            YamlConfiguration cf = null;
+            YamlConfiguration cfile = null;
+            ConfigurationSection cf = null;
             try {
                 for (String tempFile : plugin.panelFiles) { //will loop through all the files in folder
                     YamlConfiguration tempConf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + tempFile));
@@ -43,9 +44,10 @@ public class EditorUserInput implements Listener {
                     }
                     for (String key : Objects.requireNonNull(tempConf.getConfigurationSection("panels")).getKeys(false)) {
                         if (key.equals(panelName)) {
-                            cf = tempConf;
+                            cfile = tempConf;
+                            cf = tempConf.getConfigurationSection("panels." + key);
                             panelFile = new File(plugin.panelsf + File.separator + tempFile);
-                            panelTitle = plugin.papi( Objects.requireNonNull(tempConf.getString("panels." + key + ".title")));
+                            panelTitle = plugin.papi( Objects.requireNonNull(cf.getString("title")));
                             break;
                         }
                     }
@@ -61,11 +63,11 @@ public class EditorUserInput implements Listener {
                 return;
             }
             if(section.startsWith("panel.")) {
-                panelSectionCheck(p, section, panelName, panelTitle, cf, panelFile, e);
+                panelSectionCheck(p, section, panelName, panelTitle, cf, cfile, panelFile, e);
             }else if(section.startsWith("item:")){
-                itemSectionCheck(p, section, panelName, cf, panelFile, e);
+                itemSectionCheck(p, section, panelName, cf, cfile, panelFile, e);
             }else if(section.startsWith("section.")){
-                itemSectionSectionCheck(p, section, panelName, cf, panelFile, e);
+                itemSectionSectionCheck(p, section, panelName, cf, cfile, panelFile, e);
             }
             plugin.editorInputStrings.remove(temp);
             plugin.reloadPanelFiles();
@@ -76,18 +78,18 @@ public class EditorUserInput implements Listener {
                     }
                 });
             }else if(section.startsWith("item:")) {
-                final YamlConfiguration finalCF = cf;
+                final ConfigurationSection finalCF = cf;
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-                        plugin.openGui(panelName, p, finalCF, 3,0); //I have to do this to run regular Bukkit voids in an ASYNC Event
+                        plugin.createGUI.openGui(panelName, p, finalCF, 3,0); //I have to do this to run regular Bukkit voids in an ASYNC Event
                     }
                 });
             }else if(section.startsWith("section.")){
                 String itemSection = ChatColor.stripColor(section.replace("section." + section.split("\\.")[1] + ".", ""));
-                final ConfigurationSection finalCF = cf.getConfigurationSection("panels." + panelName + ".item." + itemSection);
+                final ConfigurationSection finalCF = cf.getConfigurationSection("item." + itemSection);
                 if(section.contains("change")){
                     final String changeItemSection = itemSection.substring(0, itemSection.lastIndexOf("."));
-                    final ConfigurationSection changeFinalCF = cf.getConfigurationSection("panels." + panelName + ".item." + changeItemSection);
+                    final ConfigurationSection changeFinalCF = cf.getConfigurationSection("item." + changeItemSection);
                     plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                         public void run() {
                             plugin.editorGuis.openItemSections(p,panelName,changeFinalCF,changeItemSection);
@@ -104,9 +106,10 @@ public class EditorUserInput implements Listener {
             return;
         }
     }
-    boolean savePanelFile(YamlConfiguration cf, File panelFile){
+    boolean savePanelFile(ConfigurationSection cf, YamlConfiguration cfile, String panelName, File panelFile){
         try {
-            cf.save(panelFile);
+            cfile.set("panels." + panelName, cf);
+            cfile.save(panelFile);
             return true;
         } catch (Exception io) {
             plugin.debug(io);
@@ -114,7 +117,7 @@ public class EditorUserInput implements Listener {
         }
     }
 
-    void panelSectionCheck(Player p, String section, String panelName, String panelTitle, YamlConfiguration cf, File panelFile, AsyncPlayerChatEvent e){
+    void panelSectionCheck(Player p, String section, String panelName, String panelTitle, ConfigurationSection cf, YamlConfiguration cfile, File panelFile, AsyncPlayerChatEvent e){
         String tag = plugin.config.getString("config.format.tag") + " ";
         switch (section) {
             case "panel.delete":
@@ -122,7 +125,7 @@ public class EditorUserInput implements Listener {
                     if(Objects.requireNonNull(cf.getConfigurationSection("panels")).getKeys(false).size() != 1){
                         //if the file has more than one panel in it
                         cf.set("panels." + panelName, null);
-                        if(savePanelFile(cf, panelFile)){
+                        if(savePanelFile(cf, cfile, panelName, panelFile)){
                             p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Deleted Panel!"));
                         }else{
                             p.sendMessage(plugin.papi( tag + ChatColor.RED + "Could Not Delete Panel!"));
@@ -142,8 +145,8 @@ public class EditorUserInput implements Listener {
                     p.sendMessage(plugin.papi( tag + ChatColor.RED + "Permission cannot contain spaces!"));
                     break;
                 }
-                cf.set("panels." + panelName + ".perm", e.getMessage());
-                savePanelFile(cf, panelFile);
+                cf.set("perm", e.getMessage());
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Permission required is now " + "commandpanel.panel." + e.getMessage()));
                 break;
             case "panel.rows":
@@ -154,8 +157,8 @@ public class EditorUserInput implements Listener {
                         p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Choose an integer between 1 to 6!"));
                         return;
                     }
-                    cf.set("panels." + panelName + ".rows", rows);
-                    cf.save(panelFile);
+                    cf.set("rows", rows);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set Panel to " + rows + " rows!"));
                 } catch (Exception io) {
                     plugin.debug(io);
@@ -166,8 +169,8 @@ public class EditorUserInput implements Listener {
                     p.sendMessage(plugin.papi(tag + e.getMessage() + ChatColor.RED + " is in use from another panel!"));
                     break;
                 }
-                cf.set("panels." + panelName + ".title", e.getMessage());
-                savePanelFile(cf, panelFile);
+                cf.set("title", e.getMessage());
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set new Title to " + ChatColor.WHITE + e.getMessage()));
                 break;
             case "panel.name":
@@ -181,13 +184,13 @@ public class EditorUserInput implements Listener {
                 }
                 cf.set("panels." + e.getMessage(), cf.get("panels." + panelName));
                 cf.set("panels." + panelName, null);
-                savePanelFile(cf, panelFile);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set new Name to " + e.getMessage()));
                 break;
             case "panel.empty":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".empty", null);
-                    savePanelFile(cf, panelFile);
+                    cf.set("empty", null);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Empty materials have been removed."));
                     break;
                 }
@@ -197,14 +200,14 @@ public class EditorUserInput implements Listener {
                 }catch(NullPointerException ex){
                     p.sendMessage(plugin.papi( tag + ChatColor.RED + e.getMessage() + " is not a valid Material!"));
                 }
-                cf.set("panels." + panelName + ".empty", materialTemp);
-                savePanelFile(cf, panelFile);
+                cf.set("empty", materialTemp);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set Empty material to " + materialTemp));
                 break;
             case "panel.sound-on-open":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".sound-on-open", null);
-                    savePanelFile(cf, panelFile);
+                    cf.set("sound-on-open", null);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Sounds have been removed."));
                     break;
                 }
@@ -215,35 +218,35 @@ public class EditorUserInput implements Listener {
                     p.sendMessage(plugin.papi( tag + ChatColor.RED + e.getMessage() + " is not a valid Sound!"));
                     return;
                 }
-                cf.set("panels." + panelName + ".sound-on-open", tempSound);
-                savePanelFile(cf, panelFile);
+                cf.set("sound-on-open", tempSound);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Sound when opening is now " + tempSound));
                 break;
             case "panel.command":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".command", null);
-                    savePanelFile(cf, panelFile);
+                    cf.set("command", null);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Custom commands have been removed."));
                     break;
                 }
-                cf.set("panels." + panelName + ".command", e.getMessage());
-                savePanelFile(cf, panelFile);
+                cf.set("command", e.getMessage());
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set new custom commands to " + ChatColor.WHITE + "/" + e.getMessage().trim().replace(" ", " /")));
                 break;
             case "panel.commands-on-open.add":
                 List<String> commandsOnOpenAdd = new ArrayList<>();
-                if(cf.contains("panels." + panelName + ".commands-on-open")){
-                    commandsOnOpenAdd = cf.getStringList("panels." + panelName + ".commands-on-open");
+                if(cf.contains("commands-on-open")){
+                    commandsOnOpenAdd = cf.getStringList("commands-on-open");
                 }
                 commandsOnOpenAdd.add(e.getMessage());
-                cf.set("panels." + panelName + ".commands-on-open", commandsOnOpenAdd);
-                savePanelFile(cf, panelFile);
+                cf.set("commands-on-open", commandsOnOpenAdd);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added new command: " + e.getMessage()));
                 break;
             case "panel.commands-on-open.remove":
                 List<String> commandsOnOpenRemove;
-                if(cf.contains("panels." + panelName + ".commands-on-open")){
-                    commandsOnOpenRemove = cf.getStringList("panels." + panelName + ".commands-on-open");
+                if(cf.contains("commands-on-open")){
+                    commandsOnOpenRemove = cf.getStringList("commands-on-open");
                 }else{
                     p.sendMessage(plugin.papi( tag + ChatColor.RED + "No commands found to remove!"));
                     break;
@@ -255,27 +258,27 @@ public class EditorUserInput implements Listener {
                     break;
                 }
                 if(commandsOnOpenRemove.size() == 0){
-                    cf.set("panels." + panelName + ".commands-on-open", null);
+                    cf.set("commands-on-open", null);
                 }else{
-                    cf.set("panels." + panelName + ".commands-on-open", commandsOnOpenRemove);
+                    cf.set("commands-on-open", commandsOnOpenRemove);
                 }
-                savePanelFile(cf, panelFile);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed command line " + e.getMessage()));
                 break;
             case "panel.disabled-worlds.add":
                 List<String> disabledWorldsAdd = new ArrayList<>();
-                if(cf.contains("panels." + panelName + ".disabled-worlds")){
-                    disabledWorldsAdd = cf.getStringList("panels." + panelName + ".disabled-worlds");
+                if(cf.contains("disabled-worlds")){
+                    disabledWorldsAdd = cf.getStringList("disabled-worlds");
                 }
                 disabledWorldsAdd.add(e.getMessage());
-                cf.set("panels." + panelName + ".disabled-worlds", disabledWorldsAdd);
-                savePanelFile(cf, panelFile);
+                cf.set("disabled-worlds", disabledWorldsAdd);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added new World: " + e.getMessage()));
                 break;
             case "panel.disabled-worlds.remove":
                 List<String> disabledWorldsRemove;
-                if(cf.contains("panels." + panelName + ".disabled-worlds")){
-                    disabledWorldsRemove = cf.getStringList("panels." + panelName + ".disabled-worlds");
+                if(cf.contains("disabled-worlds")){
+                    disabledWorldsRemove = cf.getStringList("disabled-worlds");
                 }else{
                     p.sendMessage(plugin.papi( tag + ChatColor.RED + "No Worlds found to remove!"));
                     break;
@@ -287,35 +290,35 @@ public class EditorUserInput implements Listener {
                     break;
                 }
                 if(disabledWorldsRemove.size() == 0){
-                    cf.set("panels." + panelName + ".disabled-worlds", null);
+                    cf.set("disabled-worlds", null);
                 }else{
-                    cf.set("panels." + panelName + ".disabled-worlds", disabledWorldsRemove);
+                    cf.set("disabled-worlds", disabledWorldsRemove);
                 }
-                savePanelFile(cf, panelFile);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed World line " + e.getMessage()));
                 break;
             case "panel.hotbar.material":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".open-with-item", null);
-                    savePanelFile(cf, panelFile);
+                    cf.set("open-with-item", null);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Hotbar item have been removed."));
                     //after an open-with-item has been altered, reload after changes
                     plugin.reloadPanelFiles();
                     break;
                 }
-                cf.set("panels." + panelName + ".open-with-item.material", e.getMessage());
-                if(!cf.contains("panels." + panelName + ".open-with-item.name")){
-                    cf.set("panels." + panelName + ".open-with-item.name", panelName + " Item");
+                cf.set("open-with-item.material", e.getMessage());
+                if(!cf.contains("open-with-item.name")){
+                    cf.set("open-with-item.name", panelName + " Item");
                 }
-                savePanelFile(cf, panelFile);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set new Material to " + ChatColor.WHITE + e.getMessage()));
                 //after an open-with-item has been altered, reload after changes
                 plugin.reloadPanelFiles();
                 break;
             case "panel.hotbar.stationary":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".open-with-item.stationary", null);
-                    savePanelFile(cf, panelFile);
+                    cf.set("open-with-item.stationary", null);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Hotbar item can now be moved."));
                     break;
                 }
@@ -329,31 +332,31 @@ public class EditorUserInput implements Listener {
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set Hotbar Location to " + loc + "!"));
                     //because it needs to convert 1-9 to 0-8 for in the panel
                     loc -= 1;
-                    cf.set("panels." + panelName + ".open-with-item.stationary", loc);
-                    cf.save(panelFile);
+                    cf.set("open-with-item.stationary", loc);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                 } catch (Exception io) {
                     plugin.debug(io);
                 }
                 break;
             case "panel.hotbar.name":
-                cf.set("panels." + panelName + ".open-with-item.name",e.getMessage());
-                savePanelFile(cf, panelFile);
+                cf.set("open-with-item.name",e.getMessage());
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set new Name to " + ChatColor.WHITE + e.getMessage()));
                 break;
             case "panel.hotbar.lore.add":
                 List<String> loreAdd = new ArrayList<>();
-                if(cf.contains("panels." + panelName + ".open-with-item.lore")){
-                    loreAdd = cf.getStringList("panels." + panelName + ".open-with-item.lore");
+                if(cf.contains("open-with-item.lore")){
+                    loreAdd = cf.getStringList("open-with-item.lore");
                 }
                 loreAdd.add(e.getMessage());
-                cf.set("panels." + panelName + ".open-with-item.lore", loreAdd);
-                savePanelFile(cf, panelFile);
+                cf.set("open-with-item.lore", loreAdd);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added new lore: " + e.getMessage()));
                 break;
             case "panel.hotbar.lore.remove":
                 List<String> loreRemove;
-                if(cf.contains("panels." + panelName + ".open-with-item.lore")){
-                    loreRemove = cf.getStringList("panels." + panelName + ".open-with-item.lore");
+                if(cf.contains("open-with-item.lore")){
+                    loreRemove = cf.getStringList("open-with-item.lore");
                 }else{
                     p.sendMessage(plugin.papi( tag + ChatColor.RED + "No lore found to remove!"));
                     break;
@@ -365,17 +368,17 @@ public class EditorUserInput implements Listener {
                     break;
                 }
                 if(loreRemove.size() == 0){
-                    cf.set("panels." + panelName + ".open-with-item.lore", null);
+                    cf.set("open-with-item.lore", null);
                 }else{
-                    cf.set("panels." + panelName + ".open-with-item.lore", loreRemove);
+                    cf.set("open-with-item.lore", loreRemove);
                 }
-                savePanelFile(cf, panelFile);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed lore line " + e.getMessage()));
                 break;
         }
     }
 
-    void itemSectionCheck(Player p, String section, String panelName, YamlConfiguration cf, File panelFile, AsyncPlayerChatEvent e){
+    void itemSectionCheck(Player p, String section, String panelName, ConfigurationSection cf, YamlConfiguration cfile, File panelFile, AsyncPlayerChatEvent e){
         /*
         I am using : instead of . because the
         item sections could contain 18.hasperm <- the periods
@@ -388,30 +391,30 @@ public class EditorUserInput implements Listener {
         switch (sectionChange) {
             case "name":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".name", "");
-                    savePanelFile(cf, panelFile);
+                    cf.set("item." + itemSlot + ".name", "");
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Name is now default."));
                     break;
                 }
-                cf.set("panels." + panelName + ".item." + itemSlot + ".name", e.getMessage());
-                savePanelFile(cf, panelFile);
+                cf.set("item." + itemSlot + ".name", e.getMessage());
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set new name to " + ChatColor.WHITE + e.getMessage()));
                 break;
             case "head":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".material", plugin.getHeads.playerHeadString());
-                    savePanelFile(cf, panelFile);
+                    cf.set("item." + itemSlot + ".material", plugin.getHeads.playerHeadString());
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Material is now default."));
                     break;
                 }
-                cf.set("panels." + panelName + ".item." + itemSlot + ".material", e.getMessage());
-                savePanelFile(cf, panelFile);
+                cf.set("item." + itemSlot + ".material", e.getMessage());
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set Material value to " + ChatColor.WHITE + e.getMessage()));
                 break;
             case "stack":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".stack", null);
-                    savePanelFile(cf, panelFile);
+                    cf.set("item." + itemSlot + ".stack", null);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Item has been unstacked."));
                     break;
                 }
@@ -422,8 +425,8 @@ public class EditorUserInput implements Listener {
                         p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Choose an integer between 1 to 64!"));
                         return;
                     }
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".stack", rows);
-                    cf.save(panelFile);
+                    cf.set("item." + itemSlot + ".stack", rows);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set stack to " + rows + "!"));
                 } catch (Exception io) {
                     plugin.debug(io);
@@ -431,62 +434,62 @@ public class EditorUserInput implements Listener {
                 break;
             case "enchanted":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".enchanted", null);
-                    savePanelFile(cf, panelFile);
+                    cf.set("item." + itemSlot + ".enchanted", null);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Enchantments have been removed."));
                     break;
                 }
-                cf.set("panels." + panelName + ".item." + itemSlot + ".enchanted", e.getMessage());
-                savePanelFile(cf, panelFile);
+                cf.set("item." + itemSlot + ".enchanted", e.getMessage());
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set new Enchantment to " + ChatColor.WHITE + e.getMessage()));
                 break;
             case "potion":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".potion", null);
-                    savePanelFile(cf, panelFile);
+                    cf.set("item." + itemSlot + ".potion", null);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Potion effects have been removed."));
                     break;
                 }
-                cf.set("panels." + panelName + ".item." + itemSlot + ".potion", e.getMessage());
-                savePanelFile(cf, panelFile);
+                cf.set("item." + itemSlot + ".potion", e.getMessage());
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set new Potion to " + e.getMessage().toUpperCase()));
                 break;
             case "customdata":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".customdata", null);
-                    savePanelFile(cf, panelFile);
+                    cf.set("item." + itemSlot + ".customdata", null);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Custom Model Data has been removed."));
                     break;
                 }
-                cf.set("panels." + panelName + ".item." + itemSlot + ".customdata", e.getMessage());
-                savePanelFile(cf, panelFile);
+                cf.set("item." + itemSlot + ".customdata", e.getMessage());
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Custom Model Data set to " + e.getMessage()));
                 break;
             case "leatherarmor":
                 if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".leatherarmor", null);
-                    savePanelFile(cf, panelFile);
+                    cf.set("item." + itemSlot + ".leatherarmor", null);
+                    savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Leather armor colour has been removed."));
                     break;
                 }
-                cf.set("panels." + panelName + ".item." + itemSlot + ".leatherarmor", e.getMessage());
-                savePanelFile(cf, panelFile);
+                cf.set("item." + itemSlot + ".leatherarmor", e.getMessage());
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Leather armor colour set to " + e.getMessage()));
                 break;
             case "commands:add":
                 List<String> commandsOnOpenAdd = new ArrayList<>();
-                if(cf.contains("panels." + panelName + ".item." + itemSlot + ".commands")){
-                    commandsOnOpenAdd = cf.getStringList("panels." + panelName + ".item." + itemSlot + ".commands");
+                if(cf.contains("item." + itemSlot + ".commands")){
+                    commandsOnOpenAdd = cf.getStringList("item." + itemSlot + ".commands");
                 }
                 commandsOnOpenAdd.add(e.getMessage());
-                cf.set("panels." + panelName + ".item." + itemSlot + ".commands", commandsOnOpenAdd);
-                savePanelFile(cf, panelFile);
+                cf.set("item." + itemSlot + ".commands", commandsOnOpenAdd);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added new command: " + e.getMessage()));
                 break;
             case "commands:remove":
                 List<String> commandsOnOpenRemove;
-                if(cf.contains("panels." + panelName + ".item." + itemSlot + ".commands")){
-                    commandsOnOpenRemove = cf.getStringList("panels." + panelName + ".item." + itemSlot + ".commands");
+                if(cf.contains("item." + itemSlot + ".commands")){
+                    commandsOnOpenRemove = cf.getStringList("item." + itemSlot + ".commands");
                 }else{
                     p.sendMessage(plugin.papi( tag + ChatColor.RED + "No commands found to remove!"));
                     break;
@@ -498,27 +501,27 @@ public class EditorUserInput implements Listener {
                     break;
                 }
                 if(commandsOnOpenRemove.size() == 0){
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".commands", null);
+                    cf.set("item." + itemSlot + ".commands", null);
                 }else{
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".commands", commandsOnOpenRemove);
+                    cf.set("item." + itemSlot + ".commands", commandsOnOpenRemove);
                 }
-                savePanelFile(cf, panelFile);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed command line " + e.getMessage()));
                 break;
             case "lore:add":
                 List<String> loreOnOpenAdd = new ArrayList<>();
-                if(cf.contains("panels." + panelName + ".item." + itemSlot + ".lore")){
-                    loreOnOpenAdd = cf.getStringList("panels." + panelName + ".item." + itemSlot + ".lore");
+                if(cf.contains("item." + itemSlot + ".lore")){
+                    loreOnOpenAdd = cf.getStringList("item." + itemSlot + ".lore");
                 }
                 loreOnOpenAdd.add(e.getMessage());
-                cf.set("panels." + panelName + ".item." + itemSlot + ".lore", loreOnOpenAdd);
-                savePanelFile(cf, panelFile);
+                cf.set("item." + itemSlot + ".lore", loreOnOpenAdd);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added new lore: " + e.getMessage()));
                 break;
             case "lore:remove":
                 List<String> loreOnOpenRemove;
-                if(cf.contains("panels." + panelName + ".item." + itemSlot + ".lore")){
-                    loreOnOpenRemove = cf.getStringList("panels." + panelName + ".item." + itemSlot + ".lore");
+                if(cf.contains("item." + itemSlot + ".lore")){
+                    loreOnOpenRemove = cf.getStringList("item." + itemSlot + ".lore");
                 }else{
                     p.sendMessage(plugin.papi( tag + ChatColor.RED + "No lore found to remove!"));
                     break;
@@ -530,17 +533,17 @@ public class EditorUserInput implements Listener {
                     break;
                 }
                 if(loreOnOpenRemove.size() == 0){
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".lore", null);
+                    cf.set("item." + itemSlot + ".lore", null);
                 }else{
-                    cf.set("panels." + panelName + ".item." + itemSlot + ".lore", loreOnOpenRemove);
+                    cf.set("item." + itemSlot + ".lore", loreOnOpenRemove);
                 }
-                savePanelFile(cf, panelFile);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed lore line " + e.getMessage()));
                 break;
         }
     }
 
-    void itemSectionSectionCheck(Player p, String section, String panelName, YamlConfiguration cf, File panelFile, AsyncPlayerChatEvent e){
+    void itemSectionSectionCheck(Player p, String section, String panelName, ConfigurationSection cf, YamlConfiguration cfile, File panelFile, AsyncPlayerChatEvent e){
         String tag = plugin.config.getString("config.format.tag") + " ";
         String secondValue = section.split("\\.")[1];
         //section includes slot at front eg, 1.hasvalue
@@ -548,28 +551,28 @@ public class EditorUserInput implements Listener {
         String playerMessage = ChatColor.stripColor(e.getMessage()).toLowerCase();
         switch (secondValue) {
             case "add":
-                cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage + ".output", "true");
+                cf.set("item." + itemSection + "." + playerMessage + ".output", "true");
                 if(playerMessage.equals("hasperm")) {
-                    cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage + ".perm", "admin");
+                    cf.set("item." + itemSection + "." + playerMessage + ".perm", "admin");
                 }else{
-                    cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage + ".value", "10");
-                    cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage + ".compare", "%cp-player-balance%");
+                    cf.set("item." + itemSection + "." + playerMessage + ".value", "10");
+                    cf.set("item." + itemSection + "." + playerMessage + ".compare", "%cp-player-balance%");
                 }
-                cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage + ".material", "DIRT");
-                cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage + ".name", "");
-                savePanelFile(cf, panelFile);
+                cf.set("item." + itemSection + "." + playerMessage + ".material", "DIRT");
+                cf.set("item." + itemSection + "." + playerMessage + ".name", "");
+                savePanelFile(cf, cfile, panelName, panelFile);
                 plugin.reloadPanelFiles();
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added Section " + ChatColor.WHITE + playerMessage));
                 break;
             case "remove":
-                cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage, null);
-                savePanelFile(cf, panelFile);
+                cf.set("item." + itemSection + "." + playerMessage, null);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 plugin.reloadPanelFiles();
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed Section " + ChatColor.WHITE + playerMessage));
                 break;
             case "change":
-                cf.set("panels." + panelName + ".item." + itemSection + "." + playerMessage.split("\\:")[0], playerMessage.split("\\:")[1]);
-                savePanelFile(cf, panelFile);
+                cf.set("item." + itemSection + "." + playerMessage.split("\\:")[0], playerMessage.split("\\:")[1]);
+                savePanelFile(cf, cfile, panelName, panelFile);
                 plugin.reloadPanelFiles();
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set " + playerMessage.split("\\:")[0] + " to " + ChatColor.WHITE + playerMessage.split("\\:")[1]));
                 break;

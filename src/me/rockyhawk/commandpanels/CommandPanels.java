@@ -27,6 +27,9 @@ import me.rockyhawk.commandpanels.ioclasses.Sequence_1_14;
 
 import me.rockyhawk.commandpanels.legacy.LegacyVersion;
 import me.rockyhawk.commandpanels.legacy.PlayerHeads;
+import me.rockyhawk.commandpanels.openpanelsmanager.OpenGUI;
+import me.rockyhawk.commandpanels.openpanelsmanager.OpenPanelsLoader;
+import me.rockyhawk.commandpanels.openpanelsmanager.UtilsPanelsLoader;
 import me.rockyhawk.commandpanels.openwithitem.SwapItemEvent;
 import me.rockyhawk.commandpanels.openwithitem.UtilsOpenWithItem;
 import me.rockyhawk.commandpanels.panelblocks.BlocksTabComplete;
@@ -41,7 +44,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
@@ -56,7 +58,6 @@ public class CommandPanels extends JavaPlugin {
     public boolean openWithItem = false; //this will be true if there is a panel with open-with-item
 
     public List<Player> generateMode = new ArrayList<>(); //players that are currently in generate mode
-    public List<String> panelRunning = new ArrayList<>();
     public List<String[]> userInputStrings = new ArrayList<>();
     public List<String[]> editorInputStrings = new ArrayList<>();
     public List<String> panelFiles = new ArrayList<>(); //names of all the files in the panels folder including extension
@@ -71,6 +72,8 @@ public class CommandPanels extends JavaPlugin {
     public Updater updater = new Updater(this);
     public PlayerHeads getHeads = new PlayerHeads(this);
     public LegacyVersion legacy = new LegacyVersion(this);
+    public OpenPanelsLoader openPanels = new OpenPanelsLoader(this);
+    public OpenGUI createGUI = new OpenGUI(this);
 
     public File panelsf;
     public YamlConfiguration blockConfig; //where panel block locations are stored
@@ -81,38 +84,9 @@ public class CommandPanels extends JavaPlugin {
     }
 
     public void onEnable() {
-        this.config = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + File.separator + "config.yml"));
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loading...");
-        this.setupEconomy();
-        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        new Metrics(this);
-        Objects.requireNonNull(this.getCommand("commandpanel")).setExecutor(new Commandpanel(this));
-        Objects.requireNonNull(this.getCommand("commandpanel")).setTabCompleter(new CpTabComplete(this));
-        Objects.requireNonNull(this.getCommand("commandpanelblock")).setTabCompleter(new BlocksTabComplete(this));
-        Objects.requireNonNull(this.getCommand("commandpanelgenerate")).setTabCompleter(new TabCompleteGenerate(this));
-        Objects.requireNonNull(this.getCommand("commandpaneledit")).setTabCompleter(new CpTabCompleteIngame(this));
-        Objects.requireNonNull(this.getCommand("commandpanelgenerate")).setExecutor(new Commandpanelsgenerate(this));
-        Objects.requireNonNull(this.getCommand("commandpanelreload")).setExecutor(new Commandpanelsreload(this));
-        Objects.requireNonNull(this.getCommand("commandpaneldebug")).setExecutor(new Commandpanelsdebug(this));
-        Objects.requireNonNull(this.getCommand("commandpanelclose")).setExecutor(new Commandpanelclose(this));
-        Objects.requireNonNull(this.getCommand("commandpanelversion")).setExecutor(new Commandpanelversion(this));
-        Objects.requireNonNull(this.getCommand("commandpaneladdons")).setExecutor(new Commandpanelresources(this));
-        Objects.requireNonNull(this.getCommand("commandpanellist")).setExecutor(new Commandpanelslist(this));
-        Objects.requireNonNull(this.getCommand("commandpaneledit")).setExecutor(new CpIngameEditCommand(this));
-        Objects.requireNonNull(this.getCommand("commandpanelblock")).setExecutor(new Commandpanelblocks(this));
-        this.getServer().getPluginManager().registerEvents(new Utils(this), this);
-        this.getServer().getPluginManager().registerEvents(new UtilsOpenWithItem(this), this);
-        this.getServer().getPluginManager().registerEvents(new EditorUtils(this), this);
-        this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
-        this.getServer().getPluginManager().registerEvents(new Commandpanelcustom(this), this);
-        this.getServer().getPluginManager().registerEvents(new CommandpanelUserInput(this), this);
-        this.getServer().getPluginManager().registerEvents(new EditorUserInput(this), this);
-        this.getServer().getPluginManager().registerEvents(new Commandpanelrefresher(this), this);
-        this.getServer().getPluginManager().registerEvents(new PanelBlockOnClick(this), this);
-        if (!Bukkit.getVersion().contains("1.8")) {
-            this.getServer().getPluginManager().registerEvents(new SwapItemEvent(this), this);
-        }
 
+        this.config = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + File.separator + "config.yml"));
         //save the config.yml file
         File configFile = new File(this.getDataFolder() + File.separator + "config.yml");
         if (!configFile.exists()) {
@@ -134,6 +108,56 @@ public class CommandPanels extends JavaPlugin {
             } catch (IOException var10) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not save the config file!");
             }
+        }
+
+        //setup class files
+        this.setupEconomy();
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        new Metrics(this);
+        Objects.requireNonNull(this.getCommand("commandpanel")).setExecutor(new Commandpanel(this));
+        Objects.requireNonNull(this.getCommand("commandpanel")).setTabCompleter(new CpTabComplete(this));
+        Objects.requireNonNull(this.getCommand("commandpanelgenerate")).setTabCompleter(new TabCompleteGenerate(this));
+        Objects.requireNonNull(this.getCommand("commandpanelgenerate")).setExecutor(new Commandpanelsgenerate(this));
+        Objects.requireNonNull(this.getCommand("commandpanelreload")).setExecutor(new Commandpanelsreload(this));
+        Objects.requireNonNull(this.getCommand("commandpaneldebug")).setExecutor(new Commandpanelsdebug(this));
+        Objects.requireNonNull(this.getCommand("commandpanelclose")).setExecutor(new Commandpanelclose(this));
+        Objects.requireNonNull(this.getCommand("commandpanelversion")).setExecutor(new Commandpanelversion(this));
+        Objects.requireNonNull(this.getCommand("commandpaneladdons")).setExecutor(new Commandpanelresources(this));
+        Objects.requireNonNull(this.getCommand("commandpanellist")).setExecutor(new Commandpanelslist(this));
+        this.getServer().getPluginManager().registerEvents(new Utils(this), this);
+        this.getServer().getPluginManager().registerEvents(new UtilsPanelsLoader(this), this);
+        this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
+        this.getServer().getPluginManager().registerEvents(new Commandpanelcustom(this), this);
+        this.getServer().getPluginManager().registerEvents(new CommandpanelUserInput(this), this);
+
+        //if refresh-panels set to false, don't load this
+        if(Objects.requireNonNull(config.getString("config.refresh-panels")).equalsIgnoreCase("true")){
+            this.getServer().getPluginManager().registerEvents(new Commandpanelrefresher(this), this);
+        }
+
+        //if hotbar-items set to false, don't load this
+        if(Objects.requireNonNull(config.getString("config.hotbar-items")).equalsIgnoreCase("true")){
+            this.getServer().getPluginManager().registerEvents(new UtilsOpenWithItem(this), this);
+        }
+
+        //if ingame-editor set to false, don't load this
+        if(Objects.requireNonNull(config.getString("config.ingame-editor")).equalsIgnoreCase("true")){
+            Objects.requireNonNull(this.getCommand("commandpaneledit")).setTabCompleter(new CpTabCompleteIngame(this));
+            Objects.requireNonNull(this.getCommand("commandpaneledit")).setExecutor(new CpIngameEditCommand(this));
+            this.getServer().getPluginManager().registerEvents(new EditorUtils(this), this);
+            this.getServer().getPluginManager().registerEvents(new EditorUserInput(this), this);
+        }
+
+        //if panel-blocks set to false, don't load this
+        if(Objects.requireNonNull(config.getString("config.panel-blocks")).equalsIgnoreCase("true")){
+            Objects.requireNonNull(this.getCommand("commandpanelblock")).setExecutor(new Commandpanelblocks(this));
+            Objects.requireNonNull(this.getCommand("commandpanelblock")).setTabCompleter(new BlocksTabComplete(this));
+            this.getServer().getPluginManager().registerEvents(new PanelBlockOnClick(this), this);
+        }
+
+        //if 1.8 don't use this
+        if (!Bukkit.getVersion().contains("1.8")) {
+            this.getServer().getPluginManager().registerEvents(new SwapItemEvent(this), this);
         }
 
         //save the example.yml file
@@ -163,131 +187,6 @@ public class CommandPanels extends JavaPlugin {
 
     public void onDisable() {
         Bukkit.getLogger().info("RockyHawk's CommandPanels Plugin Disabled, aww man.");
-    }
-
-    @SuppressWarnings("deprecation")
-    public Inventory openGui(String panels, Player p, YamlConfiguration pconfig, int onOpen, int animateValue) {
-        String tag = this.config.getString("config.format.tag") + " ";
-        if (Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) < 7 && Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) > 0) {
-            Inventory i;
-            if (onOpen != 3) {
-                //use the regular inventory
-                i = Bukkit.createInventory(null, Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) * 9, papi(p, Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))));
-            } else {
-                //this means it is the Editor window
-                i = Bukkit.createInventory(null, Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) * 9, "Editing Panel: " + panels);
-            }
-            String item = "";
-
-            String key;
-            for (Iterator var6 = Objects.requireNonNull(pconfig.getConfigurationSection("panels." + panels + ".item")).getKeys(false).iterator(); var6.hasNext(); item = item + key + " ") {
-                key = (String) var6.next();
-            }
-
-            item = item.trim();
-            int c;
-            for (c = 0; item.split("\\s").length - 1 >= c; ++c) {
-                if(item.equals("")){
-                    //skip putting any items in the inventory if it is empty
-                    break;
-                }
-                String section = "";
-                //onOpen needs to not be 3 so the editor won't include hasperm and hasvalue, etc items
-                if (onOpen != 3) {
-                    section = itemCreate.hasSection(pconfig.getConfigurationSection("panels." + panels + ".item." + Integer.parseInt(item.split("\\s")[c])), p);
-                    //This section is for animations below here: VISUAL ONLY
-
-                    //check for if there is animations inside the items section
-                    if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + section + ".animate" + animateValue)) {
-                        //check for if it contains the animate that has the animvatevalue
-                        if (pconfig.contains("panels." + panels + ".item." + item.split("\\s")[c] + section + ".animate" + animateValue)) {
-                            section = section + ".animate" + animateValue;
-                        }
-                    }
-                }
-                ItemStack s = itemCreate.makeItemFromConfig(Objects.requireNonNull(pconfig.getConfigurationSection("panels." + panels + ".item." + item.split("\\s")[c] + section)), p, onOpen != 3, onOpen != 3);
-                try {
-                    i.setItem(Integer.parseInt(item.split("\\s")[c]), s);
-                } catch (ArrayIndexOutOfBoundsException var24) {
-                    debug(var24);
-                    if (debug) {
-                        p.sendMessage(papi(tag + this.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!"));
-                    }
-                }
-            }
-            if (pconfig.contains("panels." + panels + ".empty") && !Objects.equals(pconfig.getString("panels." + panels + ".empty"), "AIR")) {
-                for (c = 0; Integer.parseInt(Objects.requireNonNull(pconfig.getString("panels." + panels + ".rows"))) * 9 - 1 >= c; ++c) {
-                    boolean found = false;
-                    if(!item.equals("")) {
-                        for (int f = 0; item.split("\\s").length - 1 >= f; ++f) {
-                            if (Integer.parseInt(item.split("\\s")[f]) == c) {
-                                found = true;
-                            }
-                        }
-                    }
-                    if (!found) {
-                        ItemStack empty;
-                        try {
-                            short id = 0;
-                            if(pconfig.contains("panels." + panels + ".emptyID")){
-                                id = Short.parseShort(pconfig.getString("panels." + panels + ".emptyID"));
-                            }
-                            empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(pconfig.getString("panels." + panels + ".empty")).toUpperCase())), 1,id);
-                            if (empty.getType() == Material.AIR) {
-                                continue;
-                            }
-                        } catch (IllegalArgumentException | NullPointerException var26) {
-                            debug(var26);
-                            p.sendMessage(papi(tag + this.config.getString("config.format.error") + " empty: " + pconfig.getString("panels." + panels + ".empty")));
-                            return null;
-                        }
-
-                        ItemMeta renamedMeta = empty.getItemMeta();
-                        assert renamedMeta != null;
-                        renamedMeta.setDisplayName(" ");
-                        empty.setItemMeta(renamedMeta);
-                        if (onOpen != 3) {
-                            //only place empty items if not editing
-                            i.setItem(c, empty);
-                        }
-                    }
-                }
-            }
-            if (papi( Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).equals("Chest")) {
-                p.sendMessage(papi(tag + this.config.getString("config.format.error") + " Title: Cannot be named Chest"));
-                return null;
-            }
-            if (papi( Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).contains("Editing Panel:")) {
-                p.sendMessage(papi(tag + this.config.getString("config.format.error") + " Title: Cannot contain Editing Panel:"));
-                return null;
-            }
-            if (papi( Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).contains("Panel Settings:")) {
-                p.sendMessage(papi(tag + this.config.getString("config.format.error") + " Title: Cannot contain Panel Settings:"));
-                return null;
-            }
-            if (papi( Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).contains("Item Settings:")) {
-                p.sendMessage(papi(tag + this.config.getString("config.format.error") + " Title: Cannot contain Item Settings:"));
-                return null;
-            }
-            if (papi( Objects.requireNonNull(pconfig.getString("panels." + panels + ".title"))).equals("Command Panels Editor")) {
-                p.sendMessage(papi(tag + this.config.getString("config.format.error") + " Title: Cannot be named Command Panels Editor"));
-                return null;
-            }
-            if (onOpen == 1 || onOpen == 3) {
-                //onOpen 1 is default and 3 is for the editor
-                p.openInventory(i);
-            } else if (onOpen == 0) {
-                //onOpen 0 will just refresh the panel
-                legacy.setStorageContents(p,legacy.getStorageContents(i));
-            } else if (onOpen == 2) {
-                //will return the inventory, not opening it at all
-                return i;
-            }
-            return i;
-        } else {
-            p.sendMessage(papi(tag + this.config.getString("config.format.error") + " rows: " + pconfig.getString("panels." + panels + ".rows")));
-            return null;
-        }
     }
 
     public void setName(ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours) {
@@ -510,6 +409,30 @@ public class CommandPanels extends JavaPlugin {
         }
         //end nodes with PlaceHolders
         return str;
+    }
+
+    //check for duplicate panel names
+    public boolean checkDuplicatePanel(CommandSender sender){
+        ArrayList<String> apanels = new ArrayList<>();
+        for(String[] panelName : panelNames){
+            apanels.add(panelName[0]);
+        }
+
+        //names is a list of the titles for the Panels
+        Set<String> oset = new HashSet<String>(apanels);
+        if (oset.size() < apanels.size()) {
+            //there are duplicate panel names
+            ArrayList<String> opanelsTemp = new ArrayList<String>();
+            for(String tempName : apanels){
+                if(opanelsTemp.contains(tempName)){
+                    sender.sendMessage("[CommandPanels]" + ChatColor.RED + " Error duplicate panel name: " + tempName);
+                    return false;
+                }
+                opanelsTemp.add(tempName);
+            }
+            return false;
+        }
+        return true;
     }
 
     //look through all files in all folders

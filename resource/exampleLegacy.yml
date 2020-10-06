@@ -5,7 +5,8 @@
 # |------------------------------------------------------------------------
 panels:
   example:
-    perm: default
+    perm: admin
+    panelType: default
     rows: 4
     title: '&6[&bExample Panel&6]&f Welcome!'
     command: example

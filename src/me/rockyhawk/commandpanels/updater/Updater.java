@@ -36,28 +36,11 @@ public class Updater {
                 }
                 return null;
             }
-            //major.minor.patch for variables
-            ArrayList<Integer> updateOnlineVersion = new ArrayList<>();
-            ArrayList<Integer> updateCurrentVersion = new ArrayList<>();
-            for(String key : plugin.getDescription().getVersion().split("\\.")){
-                updateCurrentVersion.add(Integer.parseInt(key));
-            }
-            for(String key : gitVersion.split("\\.")){
-                updateOnlineVersion.add(Integer.parseInt(key));
-            }
 
             //if update is true there is a new update
             boolean update = false;
-            if(updateOnlineVersion.get(0) > updateCurrentVersion.get(0)){
+            if(!gitVersion.equals(plugin.getDescription().getVersion())){
                 update = true;
-            }else {
-                if (updateOnlineVersion.get(1) > updateCurrentVersion.get(1)) {
-                    update = true;
-                }else{
-                    if (updateOnlineVersion.get(2) > updateCurrentVersion.get(2)) {
-                        update = true;
-                    }
-                }
             }
 
             if(update){

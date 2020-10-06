@@ -111,7 +111,7 @@ public class OpenEditorGuis {
     }
 
     @SuppressWarnings("deprecation")
-    public void openPanelSettings(Player p, String panelName, YamlConfiguration cf) {
+    public void openPanelSettings(Player p, String panelName, ConfigurationSection cf) {
         Inventory i = Bukkit.createInventory(null, 45, ChatColor.stripColor("Panel Settings: " + panelName));
         List<String> lore = new ArrayList();
         ItemStack temp;
@@ -126,9 +126,9 @@ public class OpenEditorGuis {
         temp = new ItemStack(Material.IRON_INGOT, 1);
         lore.add(ChatColor.GRAY + "Permission required to open panel");
         lore.add(ChatColor.GRAY + "commandpanel.panel.[insert]");
-        if (cf.contains("panels." + panelName + ".perm")) {
+        if (cf.contains("perm")) {
             lore.add(ChatColor.WHITE + "--------------------------------");
-            lore.add(ChatColor.WHITE + "commandpanel.panel." + cf.getString("panels." + panelName + ".perm"));
+            lore.add(ChatColor.WHITE + "commandpanel.panel." + cf.getString("perm"));
         }
         plugin.setName(temp, ChatColor.WHITE + "Panel Permission", lore, p,true, true);
         i.setItem(1, temp);
@@ -136,9 +136,9 @@ public class OpenEditorGuis {
         temp = new ItemStack(Material.NAME_TAG, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Title of the Panel");
-        if (cf.contains("panels." + panelName + ".title")) {
+        if (cf.contains("title")) {
             lore.add(ChatColor.WHITE + "------------------");
-            lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".title"));
+            lore.add(ChatColor.WHITE + cf.getString("title"));
         }
         plugin.setName(temp, ChatColor.WHITE + "Panel Title", lore, p,true, true);
         i.setItem(3, temp);
@@ -146,9 +146,9 @@ public class OpenEditorGuis {
         temp = new ItemStack(Material.JUKEBOX, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Sound when opening panel");
-        if (cf.contains("panels." + panelName + ".sound-on-open")) {
+        if (cf.contains("sound-on-open")) {
             lore.add(ChatColor.WHITE + "------------------------");
-            lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("panels." + panelName + ".sound-on-open")).toUpperCase());
+            lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("sound-on-open")).toUpperCase());
         }
         plugin.setName(temp, ChatColor.WHITE + "Panel Sound", lore, p,true, true);
         i.setItem(5, temp);
@@ -156,9 +156,9 @@ public class OpenEditorGuis {
         temp = new ItemStack(Material.IRON_DOOR, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Custom command to open panel");
-        if (cf.contains("panels." + panelName + ".command")) {
+        if (cf.contains("command")) {
             lore.add(ChatColor.WHITE + "----------------------------");
-            lore.add(ChatColor.WHITE + cf.getString("panels." + panelName + ".command"));
+            lore.add(ChatColor.WHITE + cf.getString("command"));
         }
         plugin.setName(temp, ChatColor.WHITE + "Panel Command", lore, p,true, true);
         i.setItem(7, temp);
@@ -181,10 +181,10 @@ public class OpenEditorGuis {
         lore.add(ChatColor.GRAY + "Worlds that cannot access the panel");
         lore.add(ChatColor.GRAY + "- Left click to add world");
         lore.add(ChatColor.GRAY + "- Right click to remove world");
-        if (cf.contains("panels." + panelName + ".disabled-worlds")) {
+        if (cf.contains("disabled-worlds")) {
             lore.add(ChatColor.WHITE + "-----------------------------");
             int count = 1;
-            for (String tempLore : cf.getStringList("panels." + panelName + ".disabled-worlds")) {
+            for (String tempLore : cf.getStringList("disabled-worlds")) {
                 lore.add(ChatColor.WHITE + Integer.toString(count) + ") " + tempLore);
                 count += 1;
             }
@@ -195,9 +195,9 @@ public class OpenEditorGuis {
         temp = new ItemStack(Material.GLASS, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Fill empty slots with an item");
-        if (cf.contains("panels." + panelName + ".empty")) {
+        if (cf.contains("empty")) {
             lore.add(ChatColor.WHITE + "-----------------------");
-            lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("panels." + panelName + ".empty")).toUpperCase());
+            lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("empty")).toUpperCase());
         }
         plugin.setName(temp, ChatColor.WHITE + "Panel Empty Item", lore, p,true, true);
         i.setItem(13, temp);
@@ -207,10 +207,10 @@ public class OpenEditorGuis {
         lore.add(ChatColor.GRAY + "Execute commands when opening");
         lore.add(ChatColor.GRAY + "- Left click to add command");
         lore.add(ChatColor.GRAY + "- Right click to remove command");
-        if (cf.contains("panels." + panelName + ".commands-on-open")) {
+        if (cf.contains("commands-on-open")) {
             lore.add(ChatColor.WHITE + "-----------------------------");
             int count = 1;
-            for (String tempLore : cf.getStringList("panels." + panelName + ".commands-on-open")) {
+            for (String tempLore : cf.getStringList("commands-on-open")) {
                 lore.add(ChatColor.WHITE + Integer.toString(count) + ") " + tempLore);
                 count += 1;
             }
@@ -244,17 +244,17 @@ public class OpenEditorGuis {
         //This is the items for hotbar items (open-with-item)
         boolean hotbarItems = false;
 
-        if(cf.contains("panels." + panelName + ".open-with-item.material")){
+        if(cf.contains("open-with-item.material")){
             hotbarItems = true;
-            temp = plugin.itemCreate.makeItemFromConfig(cf.getConfigurationSection("panels." + panelName + ".open-with-item"), p, false, true);
+            temp = plugin.itemCreate.makeItemFromConfig(cf.getConfigurationSection("open-with-item"), p, false, true);
         }else{
             temp = new ItemStack(Material.REDSTONE_BLOCK, 1);
         }
         lore.clear();
         lore.add(ChatColor.GRAY + "Current Item");
-        if (cf.contains("panels." + panelName + ".open-with-item.material")) {
+        if (cf.contains("open-with-item.material")) {
             lore.add(ChatColor.WHITE + "-----------------------");
-            lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("panels." + panelName + ".open-with-item.material")).toUpperCase());
+            lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("open-with-item.material")).toUpperCase());
         }else{
             lore.add(ChatColor.WHITE + "-----------------------");
             lore.add(ChatColor.RED + "DISABLED");
@@ -266,9 +266,9 @@ public class OpenEditorGuis {
             temp = new ItemStack(Material.NAME_TAG, 1);
             lore.clear();
             lore.add(ChatColor.GRAY + "Name for Hotbar item");
-            if (cf.contains("panels." + panelName + ".open-with-item.name")) {
+            if (cf.contains("open-with-item.name")) {
                 lore.add(ChatColor.WHITE + "----------");
-                lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("panels." + panelName + ".open-with-item.name")));
+                lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("open-with-item.name")));
             }
             plugin.setName(temp, ChatColor.WHITE + "Hotbar Item Name", lore, p, true, true);
             i.setItem(38, temp);
@@ -278,10 +278,10 @@ public class OpenEditorGuis {
             lore.add(ChatColor.GRAY + "Display a lore under the Hotbar item");
             lore.add(ChatColor.GRAY + "- Left click to add lore");
             lore.add(ChatColor.GRAY + "- Right click to remove lore");
-            if (cf.contains("panels." + panelName + ".open-with-item.lore")) {
+            if (cf.contains("open-with-item.lore")) {
                 lore.add(ChatColor.WHITE + "-------------------------------");
                 int count = 1;
-                for (String tempLore : cf.getStringList("panels." + panelName + ".open-with-item.lore")) {
+                for (String tempLore : cf.getStringList("open-with-item.lore")) {
                     lore.add(ChatColor.WHITE + Integer.toString(count) + ") " + tempLore);
                     count += 1;
                 }
@@ -293,10 +293,10 @@ public class OpenEditorGuis {
             lore.clear();
             lore.add(ChatColor.GRAY + "Hotbar location for the item");
             lore.add(ChatColor.GRAY + "choose a number from 1 to 9");
-            if (cf.contains("panels." + panelName + ".open-with-item.stationary")) {
+            if (cf.contains("open-with-item.stationary")) {
                 lore.add(ChatColor.WHITE + "-------------------------");
                 //in the editor, change the value of 0-8 to 1-9 for simplicity
-                int location = cf.getInt("panels." + panelName + ".open-with-item.stationary") + 1;
+                int location = cf.getInt("open-with-item.stationary") + 1;
                 lore.add(ChatColor.WHITE + String.valueOf(location));
             }
             plugin.setName(temp, ChatColor.WHITE + "Hotbar Item Location", lore, p, true, true);

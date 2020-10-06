@@ -132,7 +132,7 @@ public class CpIngameEditCommand implements CommandExecutor {
                     return true;
                 }
                 //open editor window here
-                plugin.openGui(panels, p, cf,3,0);
+                plugin.createGUI.openGui(panels, p, cf,3,0);
                 return true;
             }
         }

@@ -22,66 +22,19 @@ public class Utils implements Listener {
     @EventHandler
     public void onPanelClick(InventoryClickEvent e) {
         //when clicked on a panel
-        String tag = plugin.config.getString("config.format.tag") + " ";
         Player p = (Player)e.getWhoClicked();
         ItemStack clicked = e.getCurrentItem();
-        try {
-            if(e.getView().getType() != InventoryType.CHEST){
-                //if it isn't a chest interface
-                return;
-            }
-            if(ChatColor.stripColor(e.getView().getTitle()).equals("Chest") || ChatColor.stripColor(e.getView().getTitle()).equals("Large Chest") || ChatColor.stripColor(e.getView().getTitle()).equals("Trapped Chest")){
-                //if the inventory is just a chest that has no panel
-                return;
-            }
-            if (plugin.panelFiles == null) {
-                //if no panels are present
-                return;
-            }
-            if(clicked == null){
-                //if itemstack is null
-                return;
-            }
-        }catch(Exception b){
+        if(!plugin.openPanels.hasPanelOpen(p.getName())){
             return;
         }
-        YamlConfiguration cf = null; //this is the file to use for any panel.* requests
-        String panel = null;
-        boolean foundPanel = false;
-        for (String filename : plugin.panelFiles) { //will loop through all the files in folder
-            String key;
-            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filename));
-            if (!plugin.checkPanels(temp)) {
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + ": Syntax error Found or Missing certain element!"));
-                return;
-            }
-            for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
-                key = s;
-                if (plugin.papi(Objects.requireNonNull(temp.getString("panels." + key + ".title"))).equals(e.getView().getTitle())) {
-                    panel = key;
-                    cf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + filename));
-                    foundPanel = true;
-                    break;
-                }
-            }
-            if (foundPanel) {
-                //this is to avoid the plugin to continue looking when it was already found
-                break;
-            }
-        }
-        if(panel == null){
-            return;
-        }
-        if(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(cf.getString("panels." + panel + ".title")))).equals("Command Panels Editor")){
-            //cancel if it is the editor (this should never happen unless the user made a panel called Command Panels Editor for some reason)
-            return;
-        }
-        if(e.getSlotType().equals(InventoryType.SlotType.CONTAINER) && e.getRawSlot() <= Integer.parseInt(Objects.requireNonNull(cf.getString("panels." + panel + ".rows")))*9-1){
+        ConfigurationSection cf = plugin.openPanels.getOpenPanel(p.getName()); //this is the panel cf section
+
+        if(e.getSlotType().equals(InventoryType.SlotType.CONTAINER) && e.getRawSlot() <= Integer.parseInt(Objects.requireNonNull(cf.getString("rows")))*9-1){
             e.setCancelled(true);
             p.updateInventory();
             //this loops through all the items in the panel
             boolean foundSlot = false;
-            for(String slot : Objects.requireNonNull(cf.getConfigurationSection("panels." + panel + ".item")).getKeys(false)){
+            for(String slot : Objects.requireNonNull(cf.getConfigurationSection("item")).getKeys(false)){
                 if(slot.equals(Integer.toString(e.getSlot()))){
                     foundSlot = true;
                 }
@@ -90,7 +43,7 @@ public class Utils implements Listener {
                 return;
             }
             //loop through possible hasvalue/hasperm 1,2,3,etc
-            String section = plugin.itemCreate.hasSection(cf.getConfigurationSection("panels." + panel + ".item." + e.getSlot()), p);
+            String section = plugin.itemCreate.hasSection(cf.getConfigurationSection("item." + e.getSlot()), p);
             //this will remove any pending user inputs, if there is already something there from a previous item
             for(int o = 0; plugin.userInputStrings.size() > o; o++){
                 if(plugin.userInputStrings.get(o)[0].equals(p.getName())){
@@ -98,9 +51,9 @@ public class Utils implements Listener {
                     o=o-1;
                 }
             }
-            redirectPanel(p,cf,panel,section,e.getSlot());
-            if(cf.contains("panels." + panel + ".item." + e.getSlot() + section + ".commands")) {
-                List<String> commands = cf.getStringList("panels." + panel + ".item." + e.getSlot() + section + ".commands");
+            redirectPanel(p,cf,section,e.getSlot());
+            if(cf.contains("item." + e.getSlot() + section + ".commands")) {
+                List<String> commands = cf.getStringList("item." + e.getSlot() + section + ".commands");
                 if (commands.size() != 0) {
                     //this will replace a sequence tag command with the commands from the sequence
                     List<String> commandsAfterSequence = commands;
@@ -183,16 +136,16 @@ public class Utils implements Listener {
         }
     }
 
-    public void redirectPanel(Player p, YamlConfiguration cf, String panel, String section, int slot){
+    public void redirectPanel(Player p, ConfigurationSection cf, String section, int slot){
         String tag = plugin.config.getString("config.format.tag") + " ";
-        if(!cf.contains("panels." + panel + ".item." + slot + section + ".redirect") || !cf.contains("panels." + panel + ".item." + slot + section + ".redirect.panel")) {
+        if(!cf.contains("item." + slot + section + ".redirect") || !cf.contains("item." + slot + section + ".redirect.panel")) {
             return;
         }
-        String panelName = cf.getString("panels." + panel + ".item." + slot + section + ".redirect.panel");
-        YamlConfiguration panelConfig = null;
+        String panelName = cf.getString("item." + slot + section + ".redirect.panel");
+        ConfigurationSection panelConfig = null;
         for(String[] tempName : plugin.panelNames){
             if(tempName[0].equals(panelName)){
-                panelConfig = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(tempName[1]))));
+                panelConfig = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(tempName[1])))).getConfigurationSection("panels." + panelName);
                 break;
             }
         }
@@ -200,26 +153,15 @@ public class Utils implements Listener {
             p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.nopanel")));
             return;
         }
-        boolean forced = false;
-        if(cf.contains("panels." + panel + ".item." + slot + section + ".redirect.force")){
-            //this will force the panel open without consideration of permissions, world, etc
-            if(cf.getBoolean("panels." + panel + ".item." + slot + section + ".redirect.force")){
-                forced = true;
-            }
-        }
-        if(cf.contains("panels." + panel + ".item." + slot + section + ".redirect.replacements")){
+        if(cf.contains("item." + slot + section + ".redirect.replacements")){
             if(!panelConfig.getString("panels." + panelName + ".panelType").equalsIgnoreCase("temporary") && plugin.config.getBoolean("config.refresh-panels")){
                 p.sendMessage(plugin.papi(tag + ChatColor.RED + panelName + " panel type needs to be temporary to replace elements."));
             }
-            for(String sectionName : cf.getConfigurationSection("panels." + panel + ".item." + slot + section + ".redirect.replacements").getKeys(false)){
-                ConfigurationSection temp = cf.getConfigurationSection("panels." + panel + ".item." + slot + section + ".redirect.replacements." + sectionName);
+            for(String sectionName : cf.getConfigurationSection("item." + slot + section + ".redirect.replacements").getKeys(false)){
+                ConfigurationSection temp = cf.getConfigurationSection("item." + slot + section + ".redirect.replacements." + sectionName);
                 panelConfig.set("panels." + panelName + ".item." + sectionName, temp);
             }
         }
-        if(forced){
-            plugin.openGui(panelName, p, panelConfig, 1, 0);
-        }else{
-            plugin.openVoids.openCommandPanel(p, p, panelName, panelConfig, false);
-        }
+        plugin.openVoids.openCommandPanel(p, p, panelName, panelConfig, false);
     }
 }
