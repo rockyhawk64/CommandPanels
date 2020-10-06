@@ -1,6 +1,6 @@
 # Command Panels
 
-[![Command|Panel|Wiki](https://i.imgur.com/9aU4p4q.png)](https://rockyhawk99.gitbook.io/rockyhawk-wiki/)
+[![Command|Panel|Wiki](https://i.imgur.com/wwYvBeM.png)](https://rockyhawk99.gitbook.io/rockyhawk-wiki/)
 
 Looking for a simple and intuitive gui plugin? You've found it.
 
