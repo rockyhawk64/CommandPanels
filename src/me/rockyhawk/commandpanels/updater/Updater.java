@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class Updater {
     CommandPanels plugin;
@@ -51,8 +50,8 @@ public class Updater {
                     Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.AQUA + " https://www.spigotmc.org/resources/command-panels-custom-guis.67788/");
                     Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GOLD + " ================================================");
                 }
-                return gitVersion;
             }
+            return gitVersion;
         }catch(IOException e){
             if(sendMessages) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error checking for updates online.");

@@ -15,7 +15,6 @@ import org.bukkit.inventory.InventoryView;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class EditorUtils implements Listener {
@@ -35,13 +34,13 @@ public class EditorUtils implements Listener {
                 return;
             }
         }catch(NullPointerException nu){return;}
-        if(!p.getOpenInventory().getTitle().equals(ChatColor.stripColor(plugin.papi("Command Panels Editor")))){
+        if(!p.getOpenInventory().getTitle().equals(ChatColor.stripColor(plugin.papi("Command Panels Editor"))) || plugin.openPanels.hasPanelOpen(p.getName())){
             return;
         }
-        e.setCancelled(true);
         if(e.getClickedInventory() != e.getView().getTopInventory()){
             return;
         }
+        e.setCancelled(true);
         ArrayList<String> panelNames = new ArrayList<String>(); //all panels from ALL files (panel names)
         ArrayList<String> panelTitles = new ArrayList<String>(); //all panels from ALL files (panel titles)
         ArrayList<ConfigurationSection> panelYaml = new ArrayList<ConfigurationSection>(); //all panels from ALL files (panel yaml files)
@@ -134,7 +133,7 @@ public class EditorUtils implements Listener {
         if(e.getInventory().getType() != InventoryType.CHEST){
             return;
         }
-        if(!p.getOpenInventory().getTitle().contains("Editing Panel:")){
+        if(!p.getOpenInventory().getTitle().contains("Editing Panel:") || plugin.openPanels.hasPanelOpen(p.getName())){
             return;
         }
         String panelName = ""; //all panels from ALL files (panel names)
@@ -201,7 +200,7 @@ public class EditorUtils implements Listener {
         if(e.getInventory().getType() != InventoryType.CHEST){
             return;
         }
-        if(!p.getOpenInventory().getTitle().contains("Editing Panel:")){
+        if(!p.getOpenInventory().getTitle().contains("Editing Panel:") || plugin.openPanels.hasPanelOpen(p.getName())){
             return;
         }
         String panelName = "";
@@ -314,14 +313,25 @@ public class EditorUtils implements Listener {
             saveFile(fileName,file,true);
         }
     }
+
     @EventHandler
-    public void onEditInventoryClose(InventoryCloseEvent e) {
+    public void onPlayerClosePanel(InventoryCloseEvent e){
+        //this is put here to avoid conflicts, close panel if it is closed
+        for(int i = 0; i < plugin.openPanels.openPanelsPN.size(); i++){
+            if(plugin.openPanels.openPanelsPN.get(i)[0].equals(e.getPlayer().getName())){
+                plugin.openPanels.openPanelsPN.remove(i);
+                plugin.openPanels.openPanelsCF.remove(i);
+                return;
+            }
+        }
+        //do editor settings if it is not a regular panel
         if(inventoryItemSettingsOpening.contains(e.getPlayer().getName())) {
             inventoryItemSettingsOpening.remove(e.getPlayer().getName());
             return;
         }
         onEditPanelClose((Player) e.getPlayer(), e.getInventory(), e.getView());
     }
+
     @EventHandler
     public void onPanelSettings(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
@@ -334,7 +344,7 @@ public class EditorUtils implements Listener {
             //skip as player clicked outside the inventory
             return;
         }
-        if(!p.getOpenInventory().getTitle().contains("Panel Settings:")){
+        if(!p.getOpenInventory().getTitle().contains("Panel Settings:") || plugin.openPanels.hasPanelOpen(p.getName())){
             return;
         }
         e.setCancelled(true);
@@ -473,7 +483,7 @@ public class EditorUtils implements Listener {
             //skip as player clicked outside the inventory
             return;
         }
-        if(!p.getOpenInventory().getTitle().contains("Item Settings:")){
+        if(!p.getOpenInventory().getTitle().contains("Item Settings:") || plugin.openPanels.hasPanelOpen(p.getName())){
             return;
         }
         e.setCancelled(true);
@@ -601,7 +611,7 @@ public class EditorUtils implements Listener {
             //skip as player clicked outside the inventory
             return;
         }
-        if(!p.getOpenInventory().getTitle().contains("Item Sections:")){
+        if(!p.getOpenInventory().getTitle().contains("Item Sections:") || plugin.openPanels.hasPanelOpen(p.getName())){
             return;
         }
         e.setCancelled(true);

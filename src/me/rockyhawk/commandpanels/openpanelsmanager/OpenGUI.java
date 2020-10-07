@@ -106,26 +106,6 @@ public class OpenGUI {
                     }
                 }
             }
-            if (plugin.papi( Objects.requireNonNull(pconfig.getString("title"))).equals("Chest")) {
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " Title: Cannot be named Chest"));
-                return null;
-            }
-            if (plugin.papi( Objects.requireNonNull(pconfig.getString("title"))).contains("Editing Panel:")) {
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " Title: Cannot contain Editing Panel:"));
-                return null;
-            }
-            if (plugin.papi( Objects.requireNonNull(pconfig.getString("title"))).contains("Panel Settings:")) {
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " Title: Cannot contain Panel Settings:"));
-                return null;
-            }
-            if (plugin.papi( Objects.requireNonNull(pconfig.getString("title"))).contains("Item Settings:")) {
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " Title: Cannot contain Item Settings:"));
-                return null;
-            }
-            if (plugin.papi( Objects.requireNonNull(pconfig.getString("title"))).equals("Command Panels Editor")) {
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " Title: Cannot be named Command Panels Editor"));
-                return null;
-            }
             if (onOpen == 1 || onOpen == 3) {
                 //onOpen 1 is default and 3 is for the editor
                 p.openInventory(i);

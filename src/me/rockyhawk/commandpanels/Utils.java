@@ -24,12 +24,12 @@ public class Utils implements Listener {
         //when clicked on a panel
         Player p = (Player)e.getWhoClicked();
         ItemStack clicked = e.getCurrentItem();
-        if(!plugin.openPanels.hasPanelOpen(p.getName())){
+        if(!plugin.openPanels.hasPanelOpen(p.getName()) || e.getSlotType() == InventoryType.SlotType.OUTSIDE){
             return;
         }
         ConfigurationSection cf = plugin.openPanels.getOpenPanel(p.getName()); //this is the panel cf section
 
-        if(e.getSlotType().equals(InventoryType.SlotType.CONTAINER) && e.getRawSlot() <= Integer.parseInt(Objects.requireNonNull(cf.getString("rows")))*9-1){
+        if(e.getClickedInventory().getType() == InventoryType.CHEST){
             e.setCancelled(true);
             p.updateInventory();
             //this loops through all the items in the panel
@@ -121,8 +121,6 @@ public class Utils implements Listener {
                 }
             }
         }
-        //stop duplicate
-        p.updateInventory();
     }
 
     @EventHandler
