@@ -2,7 +2,7 @@
 name: Feature request (server)
 about: Suggest an idea for this project
 title: ''
-labels: 't'
+labels: 'enhancement (server)'
 assignees: ''
 
 ---
