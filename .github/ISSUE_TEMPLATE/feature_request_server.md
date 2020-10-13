@@ -1,19 +1,12 @@
 ---
-name: Feature request (plugin)
+name: Feature request (server)
 about: Suggest an idea for this project
 title: ''
-labels: 'enhancement'
+labels: 'enhancement (server)'
 assignees: ''
 
 ---
-### Have you checked the [wiki](https://rockyhawk99.gitbook.io/rockyhawk-wiki/commandpanels/wiki) page to see if your suggestion is already added?
-Yes/No
-
-### Have you checked the [issue tracker](https://github.com/rockyhawk64/CommandPanels/issues?q=is%3Aissue) to see if your suggestion was already submitted and denied?
-Yes/No
-
-### Have you asked if the feature already exists in the [Discord Server](https://discord.com/invite/eUWBWh7)? *(Or got redirected to a Github issue here)*
-Yes/No
+This template is used to suggest things to be added to the **Command Panels Server**, if you would like to suggest something for the **Command Panels Plugin**, click [here](https://github.com/rockyhawk64/CommandPanels/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=)
 
 ### Is your feature request related to a problem? Please describe.
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
