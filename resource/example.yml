@@ -9,16 +9,17 @@ panels:
     panelType: default
     rows: 4
     title: '&6[&bExample Panel&6]&f Welcome!'
-    command: example
+    commands:
+      - "example"
     sound-on-open: BLOCK_NOTE_BLOCK_CHIME
     empty: BLACK_STAINED_GLASS_PANE
     disabled-worlds:
-    - 'world_nether'
+      - 'world_nether'
     open-with-item:
       material: CLOCK
       name: '&6[&bExample Panel&6]'
       lore:
-      - '&3Click me to open the panel!'
+        - '&3Click me to open the panel!'
       stationary: 4
     item:
       '0':
@@ -76,7 +77,7 @@ panels:
         material: RED_WOOL
         name: '&cYour nickname is not ''RockyHawk'''
         commands:
-        - 'msg= &cNot RockyHawk'
+          - 'msg= &cNot RockyHawk'
         hasvalue:
           output: true
           value: RockyHawk
@@ -84,7 +85,7 @@ panels:
           material: LIME_WOOL
           name: '&aYour username is ''RockyHawk'''
           commands:
-          - 'msg= &aWelcome my master!'
+            - 'msg= &aWelcome my master!'
       '27':
         material: LEATHER_BOOTS
         name: '&e&lYELLOW'
@@ -96,38 +97,38 @@ panels:
         enchanted: true
         name: '&cClick Me'
         lore:
-        - '&fI will teleport you home!'
+          - '&fI will teleport you home!'
         commands:
-        - home
-        - commandpanels:commandpanelclose
-        - console= title %cp-player-name% times 20 60 20
-        - console= title %cp-player-name% subtitle {"text":"%cp-player-displayname%","color":"green"}
-        - console= title %cp-player-name% title {"text":"Welcome Home"}
+          - home
+          - commandpanels:commandpanelclose
+          - console= title %cp-player-name% times 20 60 20
+          - console= title %cp-player-name% subtitle {"text":"%cp-player-displayname%","color":"green"}
+          - console= title %cp-player-name% title {"text":"Welcome Home"}
       '30':
         material: POTION
         name: '&5&lInstant Health II'
         potion: INSTANT_HEAL
         commands:
-        - heal
-        - commandpanels:commandpanelclose
+          - heal
+          - commandpanels:commandpanelclose
       '34':
         material: REDSTONE_BLOCK
         name: '&cNo Permission'
         lore:
-        - '&4You cannot change to'
-        - '&4creative looking like that!'
+          - '&4You cannot change to'
+          - '&4creative looking like that!'
         hasperm:
           perm: essentials.gamemode
           output: true
           material: EMERALD_BLOCK
           name: '&aClick Me'
           lore:
-          - '&2I will change you'
-          - '&2to creative mode!'
+            - '&2I will change you'
+            - '&2to creative mode!'
           commands:
-          - gamemode creative
-          - commandpanels:commandpanelclose
-          - console= title %cp-player-name% times 20 60 20
-          - console= title %cp-player-name% subtitle {"text":"You are now in creative
+            - gamemode creative
+            - commandpanels:commandpanelclose
+            - console= title %cp-player-name% times 20 60 20
+            - console= title %cp-player-name% subtitle {"text":"You are now in creative
             mode!","color":"green"}
-          - console= title %cp-player-name% title {"text":"Awesome %cp-player-displayname%"}
+            - console= title %cp-player-name% title {"text":"Awesome %cp-player-displayname%"}

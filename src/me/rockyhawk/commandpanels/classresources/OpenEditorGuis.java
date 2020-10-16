@@ -155,10 +155,16 @@ public class OpenEditorGuis {
 
         temp = new ItemStack(Material.IRON_DOOR, 1);
         lore.clear();
-        lore.add(ChatColor.GRAY + "Custom command to open panel");
-        if (cf.contains("command")) {
-            lore.add(ChatColor.WHITE + "----------------------------");
-            lore.add(ChatColor.WHITE + cf.getString("command"));
+        lore.add(ChatColor.GRAY + "Custom commands to open panel");
+        lore.add(ChatColor.GRAY + "- Left click to add command");
+        lore.add(ChatColor.GRAY + "- Right click to remove command");
+        if (cf.contains("commands")) {
+            lore.add(ChatColor.WHITE + "-----------------------------");
+            int count = 1;
+            for (String tempLore : cf.getStringList("commands")) {
+                lore.add(ChatColor.WHITE + Integer.toString(count) + ") " + tempLore);
+                count += 1;
+            }
         }
         plugin.setName(temp, ChatColor.WHITE + "Panel Command", lore, p,true, true);
         i.setItem(7, temp);

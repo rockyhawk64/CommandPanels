@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.commands;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -9,7 +10,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 
 import java.io.File;
-import java.io.IOException;
 
 public class Commandpanelsreload implements CommandExecutor {
     CommandPanels plugin;
@@ -25,8 +25,10 @@ public class Commandpanelsreload implements CommandExecutor {
                     //empty
                 }
                 plugin.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "config.yml"));
+
                 //check for duplicates
                 plugin.checkDuplicatePanel(sender);
+
                 tag = plugin.config.getString("config.format.tag") + " ";
                 sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.reload")));
                 return true;

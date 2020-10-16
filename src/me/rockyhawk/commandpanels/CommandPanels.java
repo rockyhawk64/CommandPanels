@@ -14,6 +14,7 @@ import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.classresources.*;
 import me.rockyhawk.commandpanels.commands.*;
 import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
+import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
 import me.rockyhawk.commandpanels.generatepanels.Commandpanelsgenerate;
 import me.rockyhawk.commandpanels.generatepanels.GenUtils;
 import me.rockyhawk.commandpanels.generatepanels.TabCompleteGenerate;
@@ -127,12 +128,16 @@ public class CommandPanels extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new Utils(this), this);
         this.getServer().getPluginManager().registerEvents(new UtilsPanelsLoader(this), this);
         this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
-        this.getServer().getPluginManager().registerEvents(new Commandpanelcustom(this), this);
         this.getServer().getPluginManager().registerEvents(new CommandpanelUserInput(this), this);
 
         //if refresh-panels set to false, don't load this
         if(Objects.requireNonNull(config.getString("config.refresh-panels")).equalsIgnoreCase("true")){
             this.getServer().getPluginManager().registerEvents(new Commandpanelrefresher(this), this);
+        }
+
+        //if custom-commands set to false, don't load this
+        if(Objects.requireNonNull(config.getString("config.custom-commands")).equalsIgnoreCase("true")){
+            this.getServer().getPluginManager().registerEvents(new Commandpanelcustom(this), this);
         }
 
         //if hotbar-items set to false, don't load this

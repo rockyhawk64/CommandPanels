@@ -304,7 +304,7 @@ public class ItemCreation {
                 //if output is true, and values match it will be this item, vice versa
                 outputValue = cf.getBoolean("hasvalue.output");
             }
-            String value = cf.getString("hasvalue.value");
+            String value = ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasvalue.value"))));
             String compare = ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasvalue.compare"))));
             if (compare.equals(value) == outputValue) {
                 //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
@@ -321,7 +321,7 @@ public class ItemCreation {
                         //if output is true, and values match it will be this item, vice versa
                         outputValue = cf.getBoolean("hasvalue" + count + ".output");
                     }
-                    value = cf.getString("hasvalue" + count + ".value");
+                    value = ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasvalue" + count + ".value"))));
                     compare = ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasvalue" + count + ".compare"))));
                     if (compare.equals(value) == outputValue) {
                         //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
@@ -340,7 +340,7 @@ public class ItemCreation {
                 //if output is true, and values match it will be this item, vice versa
                 outputValue = cf.getBoolean("hasgreater.output");
             }
-            int value = cf.getInt("hasgreater.value");
+            int value = Integer.parseInt(ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasgreater.value")))));
             double compare = Double.parseDouble(ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasgreater.compare")))));
             if ((compare >= value) == outputValue) {
                 //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
@@ -356,7 +356,7 @@ public class ItemCreation {
                         //if output is true, and values match it will be this item, vice versa
                         outputValue = cf.getBoolean("hasgreater" + count + ".output");
                     }
-                    value = cf.getInt("hasgreater" + count + ".value");
+                    value = Integer.parseInt(ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasgreater" + count + ".value")))));
                     compare = Double.parseDouble(ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasgreater" + count + ".compare")))));
                     if ((compare >= value) == outputValue) {
                         //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking

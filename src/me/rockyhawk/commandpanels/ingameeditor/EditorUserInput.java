@@ -122,10 +122,9 @@ public class EditorUserInput implements Listener {
         switch (section) {
             case "panel.delete":
                 if (e.getMessage().contains("y")) {
-                    if(Objects.requireNonNull(cf.getConfigurationSection("panels")).getKeys(false).size() != 1){
+                    if(Objects.requireNonNull(cfile.getConfigurationSection("panels")).getKeys(false).size() != 1){
                         //if the file has more than one panel in it
-                        cf.set("panels." + panelName, null);
-                        if(savePanelFile(cf, cfile, panelName, panelFile)){
+                        if(savePanelFile(null, cfile, panelName, panelFile)){
                             p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Deleted Panel!"));
                         }else{
                             p.sendMessage(plugin.papi( tag + ChatColor.RED + "Could Not Delete Panel!"));
@@ -182,9 +181,9 @@ public class EditorUserInput implements Listener {
                     p.sendMessage(plugin.papi(tag + ChatColor.RED + e.getMessage() + " is in use from another panel!"));
                     break;
                 }
-                cf.set("panels." + e.getMessage(), cf.get("panels." + panelName));
-                cf.set("panels." + panelName, null);
-                savePanelFile(cf, cfile, panelName, panelFile);
+                cfile.set("panels." + e.getMessage(), cfile.get("panels." + panelName));
+                //I have put null there instead of cf because that will replicate cp = null to delete it
+                savePanelFile(null, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set new Name to " + e.getMessage()));
                 break;
             case "panel.empty":
@@ -222,16 +221,37 @@ public class EditorUserInput implements Listener {
                 savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Sound when opening is now " + tempSound));
                 break;
-            case "panel.command":
-                if(e.getMessage().trim().equalsIgnoreCase("remove")){
-                    cf.set("command", null);
-                    savePanelFile(cf, cfile, panelName, panelFile);
-                    p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Custom commands have been removed."));
+            case "panel.commands.add":
+                List<String> commandsAdd = new ArrayList<>();
+                if(cf.contains("commands")){
+                    commandsAdd = cf.getStringList("commands");
+                }
+                commandsAdd.add(e.getMessage());
+                cf.set("commands", commandsAdd);
+                savePanelFile(cf, cfile, panelName, panelFile);
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added new command: " + e.getMessage()));
+                break;
+            case "panel.commands.remove":
+                List<String> commandsRemove;
+                if(cf.contains("commands")){
+                    commandsRemove = cf.getStringList("commands");
+                }else{
+                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "No commands found to remove!"));
                     break;
                 }
-                cf.set("command", e.getMessage());
+                try {
+                    commandsRemove.remove(Integer.parseInt(e.getMessage())-1);
+                }catch (Exception ex){
+                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "Could not find command!"));
+                    break;
+                }
+                if(commandsRemove.size() == 0){
+                    cf.set("commands", null);
+                }else{
+                    cf.set("commands", commandsRemove);
+                }
                 savePanelFile(cf, cfile, panelName, panelFile);
-                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set new custom commands to " + ChatColor.WHITE + "/" + e.getMessage().trim().replace(" ", " /")));
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed command line " + e.getMessage()));
                 break;
             case "panel.commands-on-open.add":
                 List<String> commandsOnOpenAdd = new ArrayList<>();
@@ -386,7 +406,7 @@ public class EditorUserInput implements Listener {
         everything else
          */
         String tag = plugin.config.getString("config.format.tag") + " ";
-        String itemSlot = section.split("\\:")[1];
+        String itemSlot = section.split(":")[1];
         String sectionChange = section.replace("item:" + itemSlot + ":","");
         switch (sectionChange) {
             case "name":
@@ -571,10 +591,10 @@ public class EditorUserInput implements Listener {
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed Section " + ChatColor.WHITE + playerMessage));
                 break;
             case "change":
-                cf.set("item." + itemSection + "." + playerMessage.split("\\:")[0], playerMessage.split("\\:")[1]);
+                cf.set("item." + itemSection + "." + playerMessage.split(":")[0], playerMessage.split(":")[1]);
                 savePanelFile(cf, cfile, panelName, panelFile);
                 plugin.reloadPanelFiles();
-                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set " + playerMessage.split("\\:")[0] + " to " + ChatColor.WHITE + playerMessage.split("\\:")[1]));
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Set " + playerMessage.split(":")[0] + " to " + ChatColor.WHITE + playerMessage.split(":")[1]));
                 break;
         }
     }

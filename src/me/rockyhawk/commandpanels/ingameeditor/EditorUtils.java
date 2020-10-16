@@ -393,8 +393,13 @@ public class EditorUtils implements Listener {
             p.closeInventory();
         }
         if(e.getSlot() == 7){
-            plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.command"});
-            p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Command"));
+            if(e.getClick().isLeftClick()) {
+                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "panel.commands.add"});
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Command"));
+            }else{
+                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "panel.commands.remove"});
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter Command to remove (must be an integer)"));
+            }
             p.closeInventory();
         }
         if(e.getSlot() == 21){
@@ -419,7 +424,7 @@ public class EditorUtils implements Listener {
                 p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Command"));
             }else{
                 plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "panel.commands-on-open.remove"});
-                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter Command line to remove (must be an integer)"));
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter Command to remove (must be an integer)"));
             }
             p.closeInventory();
         }

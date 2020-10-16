@@ -9,7 +9,8 @@ panels:
     panelType: default
     rows: 4
     title: '&6[&bExample Panel&6]&f Welcome!'
-    command: example
+    commands:
+      - "example"
     empty: STAINED_GLASS_PANE
     emptyID: 15
     disabled-worlds:
