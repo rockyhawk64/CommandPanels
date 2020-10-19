@@ -41,6 +41,13 @@ public class Commandpanelrefresher implements Listener {
         ConfigurationSection cf = plugin.openPanels.getOpenPanel(p.getName()); //this is the panel cf section
         String panelName = plugin.openPanels.getOpenPanelName(p.getName()); //get panel name
 
+        //remove sound-on-open on 1.8 for those who do not read the wiki ;)
+        if(cf.contains("sound-on-open")){
+            if(Bukkit.getVersion().contains("1.8")){
+                cf.set("sound-on-open", null);
+            }
+        }
+
         if(cf.contains("panelType")) {
             if (cf.getString("panelType").equalsIgnoreCase("temporary")) {
                 //do not update temporary panels, only default panels
