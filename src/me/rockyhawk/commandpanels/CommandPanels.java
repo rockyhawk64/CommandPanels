@@ -476,6 +476,7 @@ public class CommandPanels extends JavaPlugin {
 
     public void debug(Exception e) {
         if (debug) {
+            getServer().getConsoleSender().sendMessage(ChatColor.DARK_RED + "[CommandPanels] The plugin has generated a debug error, find the error below");
             e.printStackTrace();
         }
     }

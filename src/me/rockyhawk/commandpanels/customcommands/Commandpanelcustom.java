@@ -27,27 +27,32 @@ public class Commandpanelcustom implements Listener {
         }
         ConfigurationSection tempFile;
 
-        for(String[] panelName  : plugin.panelNames){
-            tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1])))).getConfigurationSection("panels." + panelName[0]);
-            if(tempFile.contains("commands")) {
-                List<String> panelCommands = tempFile.getStringList("commands");
-                if(panelCommands.contains(e.getMessage().replace("/",""))){
-                    e.setCancelled(true);
-                    plugin.openVoids.openCommandPanel(e.getPlayer(),e.getPlayer(),panelName[0],tempFile,false);
-                    return;
+        try {
+            for (String[] panelName : plugin.panelNames) {
+                tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1])))).getConfigurationSection("panels." + panelName[0]);
+                if (tempFile.contains("commands")) {
+                    List<String> panelCommands = tempFile.getStringList("commands");
+                    if (panelCommands.contains(e.getMessage().replace("/", ""))) {
+                        e.setCancelled(true);
+                        plugin.openVoids.openCommandPanel(e.getPlayer(), e.getPlayer(), panelName[0], tempFile, false);
+                        return;
+                    }
                 }
-            }
 
-            //this will be deleted next update
-            if(tempFile.contains("command")) {
-                List<String> panelCommands = Arrays.asList(tempFile.getString("command").split("\\s"));
-                if(panelCommands.contains(e.getMessage().replace("/",""))){
-                    e.setCancelled(true);
-                    plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[CommandPanels] Using command: for custom commands will soon be deprecated. Please use commands: as shown in the wiki instead!");
-                    plugin.openVoids.openCommandPanel(e.getPlayer(),e.getPlayer(),panelName[0],tempFile,false);
-                    return;
+                //this will be deleted in 3.13.x
+                if (tempFile.contains("command")) {
+                    List<String> panelCommands = Arrays.asList(tempFile.getString("command").split("\\s"));
+                    if (panelCommands.contains(e.getMessage().replace("/", ""))) {
+                        e.setCancelled(true);
+                        plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[CommandPanels] Using command: for custom commands will soon be deprecated. Please use commands: as shown in the wiki instead!");
+                        plugin.openVoids.openCommandPanel(e.getPlayer(), e.getPlayer(), panelName[0], tempFile, false);
+                        return;
+                    }
                 }
             }
+        }catch(NullPointerException exc){
+            //this is placed to prevent null exceptions if the commandpanels reload command has file changes
+            plugin.debug(exc);
         }
     }
 }

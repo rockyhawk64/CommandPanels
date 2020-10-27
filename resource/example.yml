@@ -129,6 +129,5 @@ panels:
             - gamemode creative
             - commandpanels:commandpanelclose
             - console= title %cp-player-name% times 20 60 20
-            - console= title %cp-player-name% subtitle {"text":"You are now in creative
-            mode!","color":"green"}
+            - console= title %cp-player-name% subtitle {"text":"You are now in creative mode!","color":"green"}
             - console= title %cp-player-name% title {"text":"Awesome %cp-player-displayname%"}
