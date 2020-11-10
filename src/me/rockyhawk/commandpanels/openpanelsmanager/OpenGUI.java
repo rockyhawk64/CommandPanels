@@ -9,6 +9,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -60,7 +61,40 @@ public class OpenGUI {
                 }
                 ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(pconfig.getConfigurationSection("item." + item.split("\\s")[c] + section)), p, onOpen != 3, onOpen != 3);
                 try {
+                    //place item into the GUI
                     i.setItem(Integer.parseInt(item.split("\\s")[c]), s);
+                    //only place duplicate items in without the editor mode. These are merely visual and will not carry over commands
+                    if(pconfig.contains("item." + item.split("\\s")[c] + section + ".duplicate") && onOpen != 3) {
+                        try {
+                            String[] duplicateItems = pconfig.getString("item." + item.split("\\s")[c] + section + ".duplicate").split(",");
+                            for (String tempDupe : duplicateItems) {
+                                if (tempDupe.contains("-")) {
+                                    //if there is multiple dupe items, convert numbers to ints
+                                    int[] bothNumbers = new int[]{Integer.parseInt(tempDupe.split("-")[0]), Integer.parseInt(tempDupe.split("-")[1])};
+                                    for(int n = bothNumbers[0]; n <= bothNumbers[1]; n++){
+                                        try{
+                                            if(i.getItem(n).getType() == Material.AIR){
+                                                i.setItem(n, s);
+                                            }
+                                        }catch(NullPointerException ignore){
+                                            i.setItem(n, s);
+                                        }
+                                    }
+                                } else {
+                                    //if there is only one dupe item
+                                    try{
+                                        if(i.getItem(Integer.parseInt(tempDupe)).getType() == Material.AIR){
+                                            i.setItem(Integer.parseInt(tempDupe), s);
+                                        }
+                                    }catch(NullPointerException ignore){
+                                        i.setItem(Integer.parseInt(tempDupe), s);
+                                    }
+                                }
+                            }
+                        }catch(NullPointerException nullp){
+                            plugin.debug(nullp);
+                        }
+                    }
                 } catch (ArrayIndexOutOfBoundsException var24) {
                     plugin.debug(var24);
                     if (plugin.debug) {

@@ -14,6 +14,7 @@ import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.classresources.*;
 import me.rockyhawk.commandpanels.commands.*;
 import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
+import me.rockyhawk.commandpanels.customcommands.CommandPlaceholderLoader;
 import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
 import me.rockyhawk.commandpanels.generatepanels.Commandpanelsgenerate;
 import me.rockyhawk.commandpanels.generatepanels.GenUtils;
@@ -75,6 +76,7 @@ public class CommandPanels extends JavaPlugin {
     public LegacyVersion legacy = new LegacyVersion(this);
     public OpenPanelsLoader openPanels = new OpenPanelsLoader(this);
     public OpenGUI createGUI = new OpenGUI(this);
+    public CommandPlaceholderLoader customCommand = new CommandPlaceholderLoader(this);
 
     public File panelsf;
     public YamlConfiguration blockConfig; //where panel block locations are stored
@@ -361,6 +363,15 @@ public class CommandPanels extends JavaPlugin {
                 str = str.replace(str.substring(start, end) + "%", papi(p, "false"));
             }
         }
+
+        for(String[] placeholder : customCommand.getCCP(p.getName())){
+            while (str.contains(placeholder[0])) {
+                int start = str.indexOf(placeholder[0]);
+                int end = start+placeholder[0].length()-1;
+                str = str.replace(str.substring(start, end) + "%", placeholder[1]);
+            }
+        }
+
         //does %cp-random-MIN,MAX%
         while (str.contains("%cp-random-")) {
             int start = str.indexOf("%cp-random-");
@@ -381,6 +392,7 @@ public class CommandPanels extends JavaPlugin {
                 str = str.replace(str.substring(start, end) + "-find%", playerFind[Integer.parseInt(playerLocation) - 1].getName());
             }
         }
+
         try {
             if (econ != null) {
                 str = str.replaceAll("%cp-player-balance%", String.valueOf(Math.round(econ.getBalance(p))));

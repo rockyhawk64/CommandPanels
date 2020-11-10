@@ -388,6 +388,22 @@ public class OpenEditorGuis {
         plugin.setName(temp, ChatColor.WHITE + "Item Potion Effect", lore, p,true, true);
         i.setItem(7, temp);
 
+        temp = new ItemStack(Material.PAPER, 1);
+        lore.clear();
+        lore.add(ChatColor.GRAY + "Duplicate item visuals in other slots");
+        lore.add(ChatColor.GRAY + "- Left click to add duplicate item/s");
+        lore.add(ChatColor.GRAY + "- Right click to remove duplicate item/s");
+        if (cf.contains("duplicate")) {
+            lore.add(ChatColor.WHITE + "-----------------------------");
+            int count = 1;
+            for (String tempLore : cf.getString("duplicate").split(",")) {
+                lore.add(ChatColor.WHITE + Integer.toString(count) + ") " + tempLore);
+                count += 1;
+            }
+        }
+        plugin.setName(temp, ChatColor.WHITE + "Item Duplicates", lore, p, true, true);
+        i.setItem(13, temp);
+
         temp = new ItemStack(Material.FEATHER, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Display a lore under the item name");

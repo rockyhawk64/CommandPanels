@@ -35,8 +35,14 @@ public class CommandTags {
             assert player != null;
             player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
         } else if (command.split("\\s")[0].equalsIgnoreCase("open=")) {
-            //if player uses open= it will open the panel forced
-            String panelName = command.split("\\s")[1];
+            //if player uses open= it will open the panel, with the option to add custom placeholders
+            String[] cmd = command.split("\\s");
+            String panelName = cmd[1];
+            for(int i = 2; i < cmd.length; i++){
+                if(cmd[i].startsWith("%cp-")){
+                    plugin.customCommand.addCCP(panelName,p.getName(),cmd[i].split(":")[0],cmd[i].split(":")[1]);
+                }
+            }
             for(String[] tempName : plugin.panelNames){
                 if(tempName[0].equals(panelName)){
                     ConfigurationSection panelConfig = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(tempName[1])))).getConfigurationSection("panels." + panelName);

@@ -20,6 +20,10 @@ public class ExecuteOpenVoids {
     //this is the main method to open a panel
     public void openCommandPanel(CommandSender sender, Player p, String panelName, ConfigurationSection cf, boolean sendOpenedMessage){
         String tag = plugin.config.getString("config.format.tag") + " ";
+        if(p.isSleeping()){
+            //avoid plugin glitches when sleeping
+            return;
+        }
         if (sender.hasPermission("commandpanel.panel." + cf.getString("perm"))) {
             //if the sender has OTHER perms, or if sendOpenedMessage is false, implying it is not for another person
             if(sender.hasPermission("commandpanel.other") || !sendOpenedMessage) {

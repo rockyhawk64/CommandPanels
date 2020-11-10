@@ -319,6 +319,7 @@ public class EditorUtils implements Listener {
         //this is put here to avoid conflicts, close panel if it is closed
         for(int i = 0; i < plugin.openPanels.openPanelsPN.size(); i++){
             if(plugin.openPanels.openPanelsPN.get(i)[0].equals(e.getPlayer().getName())){
+                plugin.customCommand.removeCCP(plugin.openPanels.openPanelsPN.get(i)[1], e.getPlayer().getName());
                 plugin.openPanels.openPanelsPN.remove(i);
                 plugin.openPanels.openPanelsCF.remove(i);
                 return;
@@ -554,6 +555,17 @@ public class EditorUtils implements Listener {
         if(e.getSlot() == 7){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"item:" + itemSlot + ":potion"});
             p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Item Potion Effect"));
+            p.closeInventory();
+        }
+        if(e.getSlot() == 13){
+            //adds abilities to add and remove items
+            if(e.getClick().isLeftClick()) {
+                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item:" + itemSlot + ":duplicate:add"});
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter Duplicate Item Location/s"));
+            }else{
+                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "item:" + itemSlot + ":duplicate:remove"});
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter Duplicate Item/s to Remove (must be an integer)"));
+            }
             p.closeInventory();
         }
         if(e.getSlot() == 19){

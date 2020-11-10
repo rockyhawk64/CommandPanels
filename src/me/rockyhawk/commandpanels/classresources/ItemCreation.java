@@ -35,9 +35,9 @@ public class ItemCreation {
     @SuppressWarnings("deprecation")
     public ItemStack makeItemFromConfig(ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours){
         String tag = plugin.config.getString("config.format.tag") + " ";
-        String material = itemSection.getString("material");
+        String material = plugin.papiNoColour(p,itemSection.getString("material"));
         try {
-            if (Objects.requireNonNull(itemSection.getString("material")).equalsIgnoreCase("AIR")) {
+            if (Objects.requireNonNull(material).equalsIgnoreCase("AIR")) {
                 return null;
             }
         }catch(NullPointerException e){
@@ -50,7 +50,6 @@ public class ItemCreation {
         String matskull;
         String skullname;
         //this will convert the %cp-player-online-1-find% into cps= NAME
-        assert material != null;
         if (material.contains("%cp-player-online-")) {
             int start = material.indexOf("%cp-player-online-");
             int end = material.lastIndexOf("-find%");
@@ -340,8 +339,8 @@ public class ItemCreation {
                 //if output is true, and values match it will be this item, vice versa
                 outputValue = cf.getBoolean("hasgreater.output");
             }
-            int value = Integer.parseInt(ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasgreater.value")))));
-            double compare = Double.parseDouble(ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasgreater.compare")))));
+            double value = Double.parseDouble(ChatColor.stripColor(plugin.papiNoColour(p,cf.getString("hasgreater.value"))));
+            double compare = Double.parseDouble(ChatColor.stripColor(plugin.papiNoColour(p,cf.getString("hasgreater.compare"))));
             if ((compare >= value) == outputValue) {
                 //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
                 String section = hasSection(Objects.requireNonNull(cf.getConfigurationSection("hasgreater")), p);
@@ -356,8 +355,8 @@ public class ItemCreation {
                         //if output is true, and values match it will be this item, vice versa
                         outputValue = cf.getBoolean("hasgreater" + count + ".output");
                     }
-                    value = Integer.parseInt(ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasgreater" + count + ".value")))));
-                    compare = Double.parseDouble(ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasgreater" + count + ".compare")))));
+                    value = Double.parseDouble(ChatColor.stripColor(plugin.papiNoColour(p,cf.getString("hasgreater" + count + ".value"))));
+                    compare = Double.parseDouble(ChatColor.stripColor(plugin.papiNoColour(p,cf.getString("hasgreater" + count + ".compare"))));
                     if ((compare >= value) == outputValue) {
                         //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
                         String section = hasSection(Objects.requireNonNull(cf.getConfigurationSection("hasgreater" + count)), p);

@@ -60,6 +60,7 @@ public class OpenPanelsLoader {
         return false;
     }
 
+    //tell loader that a panel has been opened
     public void openPanelForLoader(String playerName, String panelName, ConfigurationSection cf){
         //just to make sure there are no duplicates
         for(int i = 0; i < openPanelsCF.size(); i++){
@@ -73,6 +74,7 @@ public class OpenPanelsLoader {
         openPanelsPN.add(new String[]{playerName,panelName});
     }
 
+    //tell loader that the panel is closed
     public void closePanelForLoader(String playerName, String panelName){
         for(int i = 0; i < openPanelsCF.size(); i++){
             if(Arrays.equals(openPanelsPN.get(i), new String[]{playerName, panelName})){

@@ -13,6 +13,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -518,6 +519,7 @@ public class EditorUserInput implements Listener {
                     commandsOnOpenRemove.remove(Integer.parseInt(e.getMessage())-1);
                 }catch (Exception ex){
                     p.sendMessage(plugin.papi( tag + ChatColor.RED + "Could not find command!"));
+                    plugin.debug(ex);
                     break;
                 }
                 if(commandsOnOpenRemove.size() == 0){
@@ -550,6 +552,7 @@ public class EditorUserInput implements Listener {
                     loreOnOpenRemove.remove(Integer.parseInt(e.getMessage())-1);
                 }catch (Exception ex){
                     p.sendMessage(plugin.papi( tag + ChatColor.RED + "Could not find lore!"));
+                    plugin.debug(ex);
                     break;
                 }
                 if(loreOnOpenRemove.size() == 0){
@@ -559,6 +562,46 @@ public class EditorUserInput implements Listener {
                 }
                 savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed lore line " + e.getMessage()));
+                break;
+            case "duplicate:add":
+                if(cf.contains("item." + itemSlot + ".duplicate")){
+                    cf.set("item." + itemSlot + ".duplicate", cf.getString("item." + itemSlot + ".duplicate") + "," + e.getMessage());
+                }else{
+                    cf.set("item." + itemSlot + ".duplicate", e.getMessage());
+                }
+                savePanelFile(cf, cfile, panelName, panelFile);
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added new duplicate item/s: " + e.getMessage()));
+                break;
+            case "duplicate:remove":
+                if(cf.contains("item." + itemSlot + ".duplicate")){
+                    if(cf.getString("item." + itemSlot + ".duplicate").contains(",")) {
+                        try {
+                            String[] duplicateItems = cf.getString("item." + itemSlot + ".duplicate").split(",");
+                            StringBuilder items = new StringBuilder();
+                            for(int s = 0; s < duplicateItems.length; s++){
+                                if(Integer.parseInt(e.getMessage()) != s+1) {
+                                    items.append(duplicateItems[s]);
+                                    items.append(",");
+                                }
+                            }
+                            cf.set("item." + itemSlot + ".duplicate", items.toString());
+                        } catch (Exception ex) {
+                            p.sendMessage(plugin.papi(tag + ChatColor.RED + "Could not delete or find item!"));
+                            plugin.debug(ex);
+                            break;
+                        }
+                        if(cf.getString("item." + itemSlot + ".duplicate").equals("")){
+                            cf.set("item." + itemSlot + ".duplicate", null);
+                        }
+                    }else{
+                        cf.set("item." + itemSlot + ".duplicate", null);
+                    }
+                }else{
+                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "No items found to remove!"));
+                    break;
+                }
+                savePanelFile(cf, cfile, panelName, panelFile);
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed duplicate item/s: " + e.getMessage()));
                 break;
         }
     }

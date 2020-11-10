@@ -1,17 +1,13 @@
 package me.rockyhawk.commandpanels;
 
-import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.File;
 import java.util.*;
 
 public class Utils implements Listener {
@@ -51,7 +47,6 @@ public class Utils implements Listener {
                     o=o-1;
                 }
             }
-            redirectPanel(p,cf,section,e.getSlot());
             if(cf.contains("item." + e.getSlot() + section + ".commands")) {
                 List<String> commands = cf.getStringList("item." + e.getSlot() + section + ".commands");
                 if (commands.size() != 0) {
@@ -121,45 +116,5 @@ public class Utils implements Listener {
                 }
             }
         }
-    }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e){
-        Player p = e.getPlayer();
-        if(p.isOp() || p.hasPermission("*.*")){
-            if(plugin.update) {
-                p.sendMessage(ChatColor.WHITE + "CommandPanels " + ChatColor.DARK_RED + "is not running the latest version! A new version is available at");
-                p.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/command-panels-custom-guis.67788/");
-            }
-        }
-    }
-
-    public void redirectPanel(Player p, ConfigurationSection cf, String section, int slot){
-        String tag = plugin.config.getString("config.format.tag") + " ";
-        if(!cf.contains("item." + slot + section + ".redirect") || !cf.contains("item." + slot + section + ".redirect.panel")) {
-            return;
-        }
-        String panelName = cf.getString("item." + slot + section + ".redirect.panel");
-        ConfigurationSection panelConfig = null;
-        for(String[] tempName : plugin.panelNames){
-            if(tempName[0].equals(panelName)){
-                panelConfig = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(tempName[1])))).getConfigurationSection("panels." + panelName);
-                break;
-            }
-        }
-        if(panelConfig == null){
-            p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.nopanel")));
-            return;
-        }
-        if(cf.contains("item." + slot + section + ".redirect.replacements")){
-            if(!panelConfig.getString("panels." + panelName + ".panelType").equalsIgnoreCase("temporary") && plugin.config.getBoolean("config.refresh-panels")){
-                p.sendMessage(plugin.papi(tag + ChatColor.RED + panelName + " panel type needs to be temporary to replace elements."));
-            }
-            for(String sectionName : cf.getConfigurationSection("item." + slot + section + ".redirect.replacements").getKeys(false)){
-                ConfigurationSection temp = cf.getConfigurationSection("item." + slot + section + ".redirect.replacements." + sectionName);
-                panelConfig.set("panels." + panelName + ".item." + sectionName, temp);
-            }
-        }
-        plugin.openVoids.openCommandPanel(p, p, panelName, panelConfig, false);
     }
 }

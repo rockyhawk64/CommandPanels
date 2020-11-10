@@ -14,10 +14,12 @@ public class UtilsPanelsLoader implements Listener {
         this.plugin = pl;
     }
 
+    //tell panel loader that player has opened panel
     @EventHandler
     public void onPlayerClosePanel(PlayerQuitEvent e){
         for(int i = 0; i < plugin.openPanels.openPanelsPN.size(); i++){
             if(plugin.openPanels.openPanelsPN.get(i)[0].equals(e.getPlayer().getName())){
+                plugin.customCommand.removeCCP(plugin.openPanels.openPanelsPN.get(i)[1], e.getPlayer().getName());
                 plugin.openPanels.openPanelsPN.remove(i);
                 plugin.openPanels.openPanelsCF.remove(i);
                 return;
@@ -25,6 +27,7 @@ public class UtilsPanelsLoader implements Listener {
         }
     }
 
+    //tell panel loader that player has closed the panel
     @EventHandler
     public void onPlayerClosePanel(InventoryCloseEvent e){
         //only do this if editor is disabled as it will disabled this code
@@ -32,6 +35,7 @@ public class UtilsPanelsLoader implements Listener {
             //this is put here to avoid conflicts, close panel if it is closed
             for (int i = 0; i < plugin.openPanels.openPanelsPN.size(); i++) {
                 if (plugin.openPanels.openPanelsPN.get(i)[0].equals(e.getPlayer().getName())) {
+                    plugin.customCommand.removeCCP(plugin.openPanels.openPanelsPN.get(i)[1], e.getPlayer().getName());
                     plugin.openPanels.openPanelsPN.remove(i);
                     plugin.openPanels.openPanelsCF.remove(i);
                     return;

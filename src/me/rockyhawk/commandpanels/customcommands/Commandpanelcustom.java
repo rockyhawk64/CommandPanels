@@ -1,7 +1,6 @@
 package me.rockyhawk.commandpanels.customcommands;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
@@ -32,21 +31,37 @@ public class Commandpanelcustom implements Listener {
                 tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1])))).getConfigurationSection("panels." + panelName[0]);
                 if (tempFile.contains("commands")) {
                     List<String> panelCommands = tempFile.getStringList("commands");
-                    if (panelCommands.contains(e.getMessage().replace("/", ""))) {
-                        e.setCancelled(true);
-                        plugin.openVoids.openCommandPanel(e.getPlayer(), e.getPlayer(), panelName[0], tempFile, false);
-                        return;
-                    }
-                }
+                    for(String cmd : panelCommands){
+                        if(cmd.equalsIgnoreCase(e.getMessage().replace("/", ""))){
+                            e.setCancelled(true);
+                            plugin.openVoids.openCommandPanel(e.getPlayer(), e.getPlayer(), panelName[0], tempFile, false);
+                            return;
+                        }
 
-                //this will be deleted in 3.13.x
-                if (tempFile.contains("command")) {
-                    List<String> panelCommands = Arrays.asList(tempFile.getString("command").split("\\s"));
-                    if (panelCommands.contains(e.getMessage().replace("/", ""))) {
-                        e.setCancelled(true);
-                        plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[CommandPanels] Using command: for custom commands will soon be deprecated. Please use commands: as shown in the wiki instead!");
-                        plugin.openVoids.openCommandPanel(e.getPlayer(), e.getPlayer(), panelName[0], tempFile, false);
-                        return;
+                        boolean correctCommand = true;
+                        ArrayList<String[]> placeholders = new ArrayList<>(); //should read placeholder,argument
+                        String[] args = cmd.split("\\s");
+                        String[] executedCommand = e.getMessage().replace("/", "").split("\\s"); //command split into args
+                        if(args.length != executedCommand.length){
+                            continue;
+                        }
+
+                        for(int i = 0; i < cmd.split("\\s").length; i++){
+                            if(args[i].startsWith("%cp-")){
+                                placeholders.add(new String[]{args[i], executedCommand[i]});
+                            }else if(!args[i].equals(executedCommand[i])){
+                                correctCommand = false;
+                            }
+                        }
+
+                        if(correctCommand){
+                            e.setCancelled(true);
+                            for(String[] placeholder : placeholders){
+                                plugin.customCommand.addCCP(panelName[0],e.getPlayer().getName(),placeholder[0],placeholder[1]);
+                            }
+                            plugin.openVoids.openCommandPanel(e.getPlayer(), e.getPlayer(), panelName[0], tempFile, false);
+                            return;
+                        }
                     }
                 }
             }
