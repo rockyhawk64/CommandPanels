@@ -1,7 +1,6 @@
 package me.rockyhawk.commandpanels.commands;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

@@ -224,6 +224,22 @@ public class OpenEditorGuis {
         plugin.setName(temp, ChatColor.WHITE + "Panel Commands", lore, p,true, true);
         i.setItem(15, temp);
 
+        temp = new ItemStack(Material.STRING, 1);
+        lore.clear();
+        lore.add(ChatColor.GRAY + "Special panel types");
+        lore.add(ChatColor.GRAY + "- Left click to add panel type");
+        lore.add(ChatColor.GRAY + "- Right click to remove panel type");
+        if (cf.contains("panelType")) {
+            lore.add(ChatColor.WHITE + "-----------------------------");
+            int count = 1;
+            for (String tempLore : cf.getStringList("panelType")) {
+                lore.add(ChatColor.WHITE + Integer.toString(count) + ") " + tempLore);
+                count += 1;
+            }
+        }
+        plugin.setName(temp, ChatColor.WHITE + "Panel Types", lore, p,true, true);
+        i.setItem(17, temp);
+
         temp = new ItemStack(Material.ITEM_FRAME, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "Code name to open panel");

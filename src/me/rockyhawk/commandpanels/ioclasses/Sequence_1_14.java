@@ -4,9 +4,6 @@ package me.rockyhawk.commandpanels.ioclasses;
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.IOUtils;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.input.CharSequenceReader;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.io.InputStream;

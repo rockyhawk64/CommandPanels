@@ -429,6 +429,17 @@ public class EditorUtils implements Listener {
             }
             p.closeInventory();
         }
+        if(e.getSlot() == 17){
+            //adds abilities to add and remove types
+            if(e.getClick().isLeftClick()) {
+                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "panel.panelType.add"});
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter New Panel type"));
+            }else{
+                plugin.editorInputStrings.add(new String[]{p.getName(), panelName, "panel.panelType.remove"});
+                p.sendMessage(plugin.papi(tag + ChatColor.WHITE + "Enter Panel Type to remove (must be an integer)"));
+            }
+            p.closeInventory();
+        }
         if(e.getSlot() == 25){
             //adds abilities to add and remove lines
             if(e.getClick().isLeftClick()) {

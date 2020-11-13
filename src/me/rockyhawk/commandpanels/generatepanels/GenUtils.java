@@ -92,7 +92,6 @@ public class GenUtils implements Listener {
         File folder = new File(plugin.getDataFolder() + File.separator + "panels");
         file = YamlConfiguration.loadConfiguration(new File(folder + File.separator + date + ".yml"));
         file.set("panels." + date + ".perm", "default");
-        file.set("panels." + date + ".panelType", "default");
         file.set("panels." + date + ".rows", inv.getSize()/9);
         file.set("panels." + date + ".title", "&8Generated " + date);
         file.addDefault("panels." + date + ".command", date);

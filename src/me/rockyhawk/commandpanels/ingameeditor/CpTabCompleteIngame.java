@@ -42,7 +42,7 @@ public class CpTabCompleteIngame implements TabCompleter {
                                 if(temp.contains("panels." + key + ".disabled-worlds")){
                                     List<String> disabledWorlds = temp.getStringList("panels." + key + ".disabled-worlds");
                                     assert p != null;
-                                    assert disabledWorlds != null;
+
                                     if(!disabledWorlds.contains(p.getWorld().getName())){
                                         apanels.add(key);
                                     }

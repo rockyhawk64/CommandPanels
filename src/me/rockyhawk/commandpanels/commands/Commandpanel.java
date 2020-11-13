@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
 import java.io.File;
-import java.util.*;
 
 public class Commandpanel implements CommandExecutor {
     CommandPanels plugin;
@@ -42,6 +41,12 @@ public class Commandpanel implements CommandExecutor {
             sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.nopanel")));
             return true;
         }
+        if(cf.contains("panelType")) {
+            if (cf.getStringList("panelType").contains("nocommand")) {
+                //do not allow command with noCommand
+                return true;
+            }
+        }
         //below will start the command, once it got the right file and panel
         if (cmd.getName().equalsIgnoreCase("cp") || cmd.getName().equalsIgnoreCase("commandpanel") || cmd.getName().equalsIgnoreCase("cpanel")) {
             if(!(sender instanceof Player)) {
@@ -49,19 +54,17 @@ public class Commandpanel implements CommandExecutor {
                 if(args.length == 2){
                     if(!args[1].equals("item")){
                         plugin.openVoids.openCommandPanel(sender,plugin.getServer().getPlayer(args[1]),panelName,cf,true);
-                        return true;
                     }else{
                         sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cp <panel> [item] [player]"));
-                        return true;
                     }
+                    return true;
                 }else if(args.length == 3){
                     if (args[1].equals("item")) {
                         plugin.openVoids.giveHotbarItem(sender,plugin.getServer().getPlayer(args[2]),cf,true);
-                        return true;
                     }else{
                         sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cp <panel> item [player]"));
-                        return true;
                     }
+                    return true;
                 } else {
                     sender.sendMessage(plugin.papi( tag + ChatColor.RED + "Please execute command directed to a Player!"));
                     return true;

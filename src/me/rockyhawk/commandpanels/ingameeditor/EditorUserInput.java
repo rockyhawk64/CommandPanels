@@ -13,7 +13,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -221,6 +220,38 @@ public class EditorUserInput implements Listener {
                 cf.set("sound-on-open", tempSound);
                 savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Sound when opening is now " + tempSound));
+                break;
+            case "panel.panelType.add":
+                List<String> typeAdd = new ArrayList<>();
+                if(cf.contains("panelType")){
+                    typeAdd = cf.getStringList("panelType");
+                }
+                typeAdd.add(e.getMessage().toLowerCase());
+                cf.set("panelType", typeAdd);
+                savePanelFile(cf, cfile, panelName, panelFile);
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Added new panel type: " + e.getMessage().toLowerCase()));
+                break;
+            case "panel.panelType.remove":
+                List<String> typeRemove;
+                if(cf.contains("panelType")){
+                    typeRemove = cf.getStringList("panelType");
+                }else{
+                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "No types found to remove!"));
+                    break;
+                }
+                try {
+                    typeRemove.remove(Integer.parseInt(e.getMessage())-1);
+                }catch (Exception ex){
+                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "Could not find type!"));
+                    break;
+                }
+                if(typeRemove.size() == 0){
+                    cf.set("panelType", null);
+                }else{
+                    cf.set("panelType", typeRemove);
+                }
+                savePanelFile(cf, cfile, panelName, panelFile);
+                p.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Removed panel type " + e.getMessage()));
                 break;
             case "panel.commands.add":
                 List<String> commandsAdd = new ArrayList<>();

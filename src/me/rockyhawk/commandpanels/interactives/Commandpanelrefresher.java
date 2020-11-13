@@ -48,7 +48,7 @@ public class Commandpanelrefresher implements Listener {
         }
 
         if(cf.contains("panelType")) {
-            if (cf.getString("panelType").equalsIgnoreCase("temporary")) {
+            if (cf.getStringList("panelType").contains("static")) {
                 //do not update temporary panels, only default panels
                 return;
             }
