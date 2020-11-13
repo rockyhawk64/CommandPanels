@@ -27,11 +27,10 @@ public class Commandpanelsdebug implements CommandExecutor {
                 }else{
                     sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpd"));
                 }
-                return true;
             }else{
                 sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
-                return true;
             }
+            return true;
         }
         sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpd"));
         return true;

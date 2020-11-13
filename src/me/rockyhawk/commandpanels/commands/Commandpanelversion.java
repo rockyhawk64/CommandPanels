@@ -24,11 +24,10 @@ public class Commandpanelversion implements CommandExecutor {
                 sender.sendMessage(ChatColor.GRAY + "-------------------");
                 sender.sendMessage(ChatColor.GREEN + "Developer " + ChatColor.GRAY + "RockyHawk");
                 sender.sendMessage(ChatColor.GREEN + "Command " + ChatColor.GRAY + "/cp");
-                return true;
             }else{
                 sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
-                return true;
             }
+            return true;
         }
         sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpv"));
         return true;

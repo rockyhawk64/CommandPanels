@@ -501,7 +501,7 @@ public class CommandPanels extends JavaPlugin {
             p.sendMessage(ChatColor.GOLD + "/cpr " + ChatColor.WHITE + "Reloads plugin config.");
         }
         if (p.hasPermission("commandpanel.addons")) {
-            p.sendMessage(ChatColor.GOLD + "/cpa " + ChatColor.WHITE + "View downloadable addons for CommandPanels.");
+            p.sendMessage(ChatColor.GOLD + "/cpa " + ChatColor.WHITE + "View downloadable panels for CommandPanels.");
         }
         p.sendMessage(ChatColor.GOLD + "/cpc " + ChatColor.WHITE + "Close current GUI.");
         if (p.hasPermission("commandpanel.generate")) {

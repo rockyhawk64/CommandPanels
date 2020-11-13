@@ -30,11 +30,10 @@ public class Commandpanelsreload implements CommandExecutor {
 
                 tag = plugin.config.getString("config.format.tag") + " ";
                 sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.reload")));
-                return true;
             }else{
                 sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
-                return true;
             }
+            return true;
         }
         sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpr"));
         return true;

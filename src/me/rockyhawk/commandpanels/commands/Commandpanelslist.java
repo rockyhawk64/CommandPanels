@@ -79,11 +79,10 @@ public class Commandpanelslist implements CommandExecutor {
                         sender.sendMessage(ChatColor.GREEN + "- " + apanels.get(f));
                     }
                 }
-                return true;
             }else{
                 sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
-                return true;
             }
+            return true;
         }
         sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpl"));
         return true;

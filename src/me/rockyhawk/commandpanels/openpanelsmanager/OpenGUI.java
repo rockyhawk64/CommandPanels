@@ -107,7 +107,10 @@ public class OpenGUI {
                     if(!item.equals("")) {
                         for (int f = 0; item.split("\\s").length - 1 >= f; ++f) {
                             if (Integer.parseInt(item.split("\\s")[f]) == c) {
-                                found = true;
+                                //check to ensure slot is empty
+                                if(i.getItem(f) == null){
+                                    found = true;
+                                }
                             }
                         }
                     }
@@ -134,7 +137,9 @@ public class OpenGUI {
                         empty.setItemMeta(renamedMeta);
                         if (onOpen != 3) {
                             //only place empty items if not editing
-                            i.setItem(c, empty);
+                            if(i.getItem(c) == null) {
+                                i.setItem(c, empty);
+                            }
                         }
                     }
                 }

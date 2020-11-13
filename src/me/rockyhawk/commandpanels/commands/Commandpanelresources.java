@@ -20,12 +20,11 @@ public class Commandpanelresources implements CommandExecutor {
                 //version command
                 sender.sendMessage(plugin.papi(tag));
                 sender.sendMessage(ChatColor.GREEN + "Version " + ChatColor.GRAY + plugin.getDescription().getVersion());
-                sender.sendMessage(ChatColor.GREEN + "Find Addons " + ChatColor.GRAY + "https://commandpanels.org/resources/");
-                return true;
+                sender.sendMessage(ChatColor.GREEN + "Find Panels " + ChatColor.GRAY + "https://commandpanels.org/resources/");
             }else{
                 sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
-                return true;
             }
+            return true;
         }
         sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpa"));
         return true;
