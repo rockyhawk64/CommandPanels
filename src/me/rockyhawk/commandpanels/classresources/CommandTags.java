@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -24,8 +25,9 @@ public class CommandTags {
     @SuppressWarnings("deprecation")
     public void commandTags(Player p, String command) {
         String tag = plugin.config.getString("config.format.tag") + " ";
-        //set cp placeholders
-        command = plugin.papi(p, plugin.setCpPlaceholders(p, command));
+        //set cp placeholders, commandRAW is without placeholders
+        String commandRAW = command;
+        command = plugin.papi(p, command);
         if (command.split("\\s")[0].equalsIgnoreCase("server=")) {
             //this contacts bungee and tells it to send the server change command
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -36,18 +38,46 @@ public class CommandTags {
             player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
         } else if (command.split("\\s")[0].equalsIgnoreCase("open=")) {
             //if player uses open= it will open the panel, with the option to add custom placeholders
-            String[] cmd = command.split("\\s");
-            String panelName = cmd[1];
-            for(int i = 2; i < cmd.length; i++){
-                if(cmd[i].startsWith("%cp-")){
-                    plugin.customCommand.addCCP(panelName,p.getName(),cmd[i].split(":")[0],cmd[i].split(":")[1]);
+            String panelName = commandRAW.split("\\s")[1];
+            String cmd = commandRAW.replace("open= " + panelName,"");
+            panelName = plugin.papi(p,panelName);
+
+            Character[] cm = ArrayUtils.toObject(cmd.toCharArray());
+            for(int i = 0; i < cm.length; i++){
+                if(cm[i].equals('[')){
+                    String contents = cmd.substring(i+1, i+cmd.substring(i).indexOf(']'));
+                    //do not change the placeholder
+                    String placeholder = contents.substring(0,contents.indexOf(':'));
+                    //only convert placeholders for the value
+                    String value = plugin.papi(p,contents.substring(contents.indexOf(':')+1));
+                    plugin.customCommand.addCCP(panelName,p.getName(),placeholder,value);
+                    i = i+contents.length()-1;
                 }
             }
+
             for(String[] tempName : plugin.panelNames){
                 if(tempName[0].equals(panelName)){
                     ConfigurationSection panelConfig = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(tempName[1])))).getConfigurationSection("panels." + panelName);
                     plugin.openVoids.openCommandPanel(p,p,panelName,panelConfig,false);
                     return;
+                }
+            }
+        }else if (command.split("\\s")[0].equalsIgnoreCase("placeholder=")) {
+            //if player uses placeholder= it will only change the placeholders for the panel
+            String panelName = commandRAW.split("\\s")[1];
+            String cmd = commandRAW.replace("placeholder= " + panelName,"");
+            panelName = plugin.papi(p,panelName);
+
+            Character[] cm = ArrayUtils.toObject(cmd.toCharArray());
+            for(int i = 0; i < cm.length; i++){
+                if(cm[i].equals('[')){
+                    String contents = cmd.substring(i+1, i+cmd.substring(i).indexOf(']'));
+                    //do not change the placeholder
+                    String placeholder = contents.substring(0,contents.indexOf(':'));
+                    //only convert placeholders for the value
+                    String value = plugin.papi(p,contents.substring(contents.indexOf(':')+1));
+                    plugin.customCommand.editCCP(panelName,p.getName(),placeholder,value);
+                    i = i+contents.length()-1;
                 }
             }
         }else if (command.split("\\s")[0].equalsIgnoreCase("op=")) {
@@ -405,6 +435,7 @@ public class CommandTags {
 
     public int commandPayWall(Player p, String command) { //return 0 means no funds, 1 is they passed and 2 means paywall is not this command
         String tag = plugin.config.getString("config.format.tag") + " ";
+        command = plugin.papi(p,command);
         if (command.split("\\s")[0].equalsIgnoreCase("paywall=")) {
             //if player uses paywall= [price]
             try {

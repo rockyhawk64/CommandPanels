@@ -282,7 +282,7 @@ public class ItemCreation {
             }
             if (itemSection.contains("stack")) {
                 //change the stack amount (placeholders accepted)
-                s.setAmount(Integer.parseInt(Objects.requireNonNull(plugin.papi(p,itemSection.getString("stack")))));
+                s.setAmount((int)Double.parseDouble(Objects.requireNonNull(plugin.papi(p,itemSection.getString("stack")))));
             }
         } catch (IllegalArgumentException | NullPointerException var33) {
             plugin.debug(var33);

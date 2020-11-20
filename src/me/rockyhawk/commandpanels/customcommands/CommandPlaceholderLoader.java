@@ -36,4 +36,17 @@ public class CommandPlaceholderLoader {
         }
         return returnPlaceholders;
     }
+
+    //change a placeholder for a panel
+    public void editCCP(String panelName, String playerName, String placeholder, String argument){
+        for(int i = 0; i < pendingPlaceholders.size(); i++){
+            if(playerName.equals(pendingPlaceholders.get(i)[1]) && panelName.equals(pendingPlaceholders.get(i)[0]) && placeholder.equals(pendingPlaceholders.get(i)[2])){
+                pendingPlaceholders.remove(i);
+                pendingPlaceholders.add(new String[]{panelName,playerName,placeholder,argument});
+                return;
+            }
+        }
+        //if it reaches here it has not found the placeholder, add it manually
+        pendingPlaceholders.add(new String[]{panelName,playerName,placeholder,argument});
+    }
 }

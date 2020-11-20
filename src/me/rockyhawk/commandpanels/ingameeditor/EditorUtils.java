@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.ingameeditor;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -261,6 +262,12 @@ public class EditorUtils implements Listener {
                 }
             }
         }
+        if(e.getSlot() == -999){
+            if(e.getCurrentItem() == null) {
+                clearTemp(p, panelName);
+            }
+            return;
+        }
         if(e.getClickedInventory().getType() != InventoryType.CHEST){
             clearTemp(p, panelName);
             return;
@@ -320,6 +327,11 @@ public class EditorUtils implements Listener {
         for(int i = 0; i < plugin.openPanels.openPanelsPN.size(); i++){
             if(plugin.openPanels.openPanelsPN.get(i)[0].equals(e.getPlayer().getName())){
                 plugin.customCommand.removeCCP(plugin.openPanels.openPanelsPN.get(i)[1], e.getPlayer().getName());
+                if (plugin.config.contains("config.panel-snooper")) {
+                    if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {
+                        Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + e.getPlayer().getName() + " Closed " + plugin.openPanels.openPanelsPN.get(i)[1]);
+                    }
+                }
                 plugin.openPanels.openPanelsPN.remove(i);
                 plugin.openPanels.openPanelsCF.remove(i);
                 return;

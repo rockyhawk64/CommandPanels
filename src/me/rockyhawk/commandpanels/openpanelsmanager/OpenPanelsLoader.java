@@ -1,10 +1,12 @@
 package me.rockyhawk.commandpanels.openpanelsmanager;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class OpenPanelsLoader {
     CommandPanels plugin;
@@ -72,6 +74,11 @@ public class OpenPanelsLoader {
         }
         openPanelsCF.add(cf);
         openPanelsPN.add(new String[]{playerName,panelName});
+        if (plugin.config.contains("config.panel-snooper")) {
+            if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + playerName + " Opened " + panelName);
+            }
+        }
     }
 
     //tell loader that the panel is closed
@@ -81,6 +88,11 @@ public class OpenPanelsLoader {
                 openPanelsCF.remove(i);
                 openPanelsPN.remove(i);
                 return;
+            }
+        }
+        if (plugin.config.contains("config.panel-snooper")) {
+            if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + playerName + " Closed " + panelName);
             }
         }
     }

@@ -363,7 +363,6 @@ public class CommandPanels extends JavaPlugin {
                 str = str.replace(str.substring(start, end) + "%", papi(p, "false"));
             }
         }
-
         for(String[] placeholder : customCommand.getCCP(p.getName())){
             while (str.contains(placeholder[0])) {
                 int start = str.indexOf(placeholder[0]);

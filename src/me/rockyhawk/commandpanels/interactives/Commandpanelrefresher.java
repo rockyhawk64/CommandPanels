@@ -53,11 +53,6 @@ public class Commandpanelrefresher implements Listener {
                 return;
             }
         }
-        if (plugin.config.contains("config.panel-snooper")) {
-            if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + p.getName() + " Opened " + panelName);
-            }
-        }
 
         final ConfigurationSection cfFinal = cf;
         ItemStack[] panelItemList = plugin.createGUI.openGui(null, p, cf,2, -1).getContents();
@@ -92,6 +87,9 @@ public class Commandpanelrefresher implements Listener {
                             plugin.createGUI.openGui(null, p, cfFinal, 0,animatecount);
                         } catch (Exception e) {
                             //error opening gui
+                            p.closeInventory();
+                            plugin.openPanels.closePanelForLoader(p.getName(),panelName);
+                            this.cancel();
                         }
                     }
                 }else{
@@ -131,11 +129,6 @@ public class Commandpanelrefresher implements Listener {
                         //oof
                     }
                     this.cancel();
-                    if (plugin.config.contains("config.panel-snooper")) {
-                        if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {
-                            Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + p.getName() + " Closed " + panelName);
-                        }
-                    }
                 }
             }
         }.runTaskTimer(this.plugin, 5, 5); //20 ticks == 1 second (5 ticks = 0.25 of a second)

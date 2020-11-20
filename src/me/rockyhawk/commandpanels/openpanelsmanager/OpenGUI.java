@@ -92,12 +92,16 @@ public class OpenGUI {
                             }
                         }catch(NullPointerException nullp){
                             plugin.debug(nullp);
+                            p.closeInventory();
+                            plugin.openPanels.closePanelForLoader(p.getName(),panels);
                         }
                     }
                 } catch (ArrayIndexOutOfBoundsException var24) {
                     plugin.debug(var24);
                     if (plugin.debug) {
                         p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!"));
+                        p.closeInventory();
+                        plugin.openPanels.closePanelForLoader(p.getName(),panels);
                     }
                 }
             }
@@ -128,6 +132,8 @@ public class OpenGUI {
                         } catch (IllegalArgumentException | NullPointerException var26) {
                             plugin.debug(var26);
                             p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " empty: " + pconfig.getString("empty")));
+                            p.closeInventory();
+                            plugin.openPanels.closePanelForLoader(p.getName(),panels);
                             return null;
                         }
 
@@ -157,6 +163,8 @@ public class OpenGUI {
             return i;
         } else {
             p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " rows: " + pconfig.getString("rows")));
+            p.closeInventory();
+            plugin.openPanels.closePanelForLoader(p.getName(),panels);
             return null;
         }
     }
