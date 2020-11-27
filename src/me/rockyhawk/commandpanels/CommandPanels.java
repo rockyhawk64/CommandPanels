@@ -1,7 +1,5 @@
 package me.rockyhawk.commandpanels;
 
-import com.Ben12345rocks.VotingPlugin.UserManager.UserManager;
-
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -9,6 +7,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.bencodez.votingplugin.user.UserManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.classresources.*;
@@ -55,9 +54,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class CommandPanels extends JavaPlugin {
     public YamlConfiguration config;
     public Economy econ = null;
-    public boolean update = false;
     public boolean debug = false;
     public boolean openWithItem = false; //this will be true if there is a panel with open-with-item
+
+    //initialise the tag
+    public String tag = "[CommandPanels]";
 
     public List<Player> generateMode = new ArrayList<>(); //players that are currently in generate mode
     public List<String[]> userInputStrings = new ArrayList<>();
@@ -188,6 +189,9 @@ public class CommandPanels extends JavaPlugin {
 
         //load panelFiles
         reloadPanelFiles();
+
+        //get tag
+        tag = papi(config.getString("config.format.tag") + " ");
 
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loaded!");
     }
@@ -340,7 +344,6 @@ public class CommandPanels extends JavaPlugin {
     }
 
     public String setCpPlaceholders(Player p, String str) {
-        String tag = config.getString("config.format.tag") + " ";
         //replace nodes with PlaceHolders
         str = str.replaceAll("%cp-player-displayname%", p.getDisplayName());
         str = str.replaceAll("%cp-player-name%", p.getName());
@@ -493,7 +496,6 @@ public class CommandPanels extends JavaPlugin {
     }
 
     public void helpMessage(CommandSender p) {
-        String tag = config.getString("config.format.tag") + " ";
         p.sendMessage(papi( tag + ChatColor.GREEN + "Commands:"));
         p.sendMessage(ChatColor.GOLD + "/cp <panel> [player:item] [player] " + ChatColor.WHITE + "Open a command panel.");
         if (p.hasPermission("commandpanel.reload")) {

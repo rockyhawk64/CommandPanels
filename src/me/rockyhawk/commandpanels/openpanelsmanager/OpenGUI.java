@@ -20,7 +20,6 @@ public class OpenGUI {
 
     @SuppressWarnings("deprecation")
     public Inventory openGui(String panels, Player p, ConfigurationSection pconfig, int onOpen, int animateValue) {
-        String tag = plugin.config.getString("config.format.tag") + " ";
         if (Integer.parseInt(Objects.requireNonNull(pconfig.getString("rows"))) < 7 && Integer.parseInt(Objects.requireNonNull(pconfig.getString("rows"))) > 0) {
             Inventory i;
             if (onOpen != 3) {
@@ -99,7 +98,7 @@ public class OpenGUI {
                 } catch (ArrayIndexOutOfBoundsException var24) {
                     plugin.debug(var24);
                     if (plugin.debug) {
-                        p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!"));
+                        p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!"));
                         p.closeInventory();
                         plugin.openPanels.closePanelForLoader(p.getName(),panels);
                     }
@@ -131,7 +130,7 @@ public class OpenGUI {
                             }
                         } catch (IllegalArgumentException | NullPointerException var26) {
                             plugin.debug(var26);
-                            p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " empty: " + pconfig.getString("empty")));
+                            p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " empty: " + pconfig.getString("empty")));
                             p.closeInventory();
                             plugin.openPanels.closePanelForLoader(p.getName(),panels);
                             return null;
@@ -162,7 +161,7 @@ public class OpenGUI {
             }
             return i;
         } else {
-            p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " rows: " + pconfig.getString("rows")));
+            p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " rows: " + pconfig.getString("rows")));
             p.closeInventory();
             plugin.openPanels.closePanelForLoader(p.getName(),panels);
             return null;

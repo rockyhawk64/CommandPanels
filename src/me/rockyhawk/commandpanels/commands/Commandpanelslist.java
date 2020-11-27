@@ -19,18 +19,17 @@ public class Commandpanelslist implements CommandExecutor {
 
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        String tag = plugin.config.getString("config.format.tag") + " ";
         if (label.equalsIgnoreCase("cpl") || label.equalsIgnoreCase("commandpanellist") || label.equalsIgnoreCase("cpanell")) {
             if (sender.hasPermission("commandpanel.list")) {
                 //command /cpl
                 //check to make sure the panels isn't empty
                 try {
                     if (plugin.panelFiles == null) {
-                        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "No panels found!"));
+                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "No panels found!"));
                         return true;
                     }
                 }catch(Exception b){
-                    sender.sendMessage(plugin.papi(tag + ChatColor.RED + "No panels found!"));
+                    sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "No panels found!"));
                     return true;
                 }
                 ArrayList<String> apanels = new ArrayList<String>(); //all panels from all files (panel names)
@@ -57,7 +56,7 @@ public class Commandpanelslist implements CommandExecutor {
                         page = Integer.parseInt(args[0]);
                         skip = page*9-9;
                     }catch (Exception e){
-                        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Inaccessible Page"));
+                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Inaccessible Page"));
                     }
                 }
                 for (int f = skip; apanels.size() > f; f++) {
@@ -67,7 +66,7 @@ public class Commandpanelslist implements CommandExecutor {
                         break;
                     }
                 }
-                sender.sendMessage(plugin.papi(tag + ChatColor.DARK_AQUA + "Panels: (Page " + page + ")"));
+                sender.sendMessage(plugin.papi(plugin.tag + ChatColor.DARK_AQUA + "Panels: (Page " + page + ")"));
                 for (int f = skip; apanels.size() > f; f++) {
                     if(apanels.get(f).contains("%file%")){
                         if(skip+9 <= f){
@@ -80,11 +79,11 @@ public class Commandpanelslist implements CommandExecutor {
                     }
                 }
             }else{
-                sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
             }
             return true;
         }
-        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpl"));
+        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cpl"));
         return true;
     }
 }

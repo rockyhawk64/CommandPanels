@@ -19,7 +19,6 @@ public class ExecuteOpenVoids {
 
     //this is the main method to open a panel
     public void openCommandPanel(CommandSender sender, Player p, String panelName, ConfigurationSection cf, boolean sendOpenedMessage){
-        String tag = plugin.config.getString("config.format.tag") + " ";
         if(p.isSleeping()){
             //avoid plugin glitches when sleeping
             return;
@@ -33,14 +32,14 @@ public class ExecuteOpenVoids {
                         if (disabledWorlds.contains(p.getWorld().getName())) {
                             //panel cannot be used in the players world!
                             if (Objects.requireNonNull(plugin.config.getString("config.disabled-world-message")).equalsIgnoreCase("true")) {
-                                sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Panel is disabled in the world!"));
+                                sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Panel is disabled in the world!"));
                             }
                             return;
                         }
                     }
                 }catch(NullPointerException offlinePlayer){
                     //SKIP because player is offline
-                    sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.notitem")));
+                    sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.notitem")));
                     return;
                 }
                 //close the inventory after the checks for permissions and worlds, so other panels can load
@@ -52,7 +51,7 @@ public class ExecuteOpenVoids {
                             try {
                                 p.playSound(p.getLocation(), Sound.valueOf(Objects.requireNonNull(cf.getString("sound-on-open")).toUpperCase()), 1F, 1F);
                             } catch (Exception s) {
-                                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " " + "sound-on-open: " + cf.getString("sound-on-open")));
+                                p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "sound-on-open: " + cf.getString("sound-on-open")));
                             }
                         }
                     }
@@ -70,29 +69,28 @@ public class ExecuteOpenVoids {
                                 }
                             }
                         }catch(Exception s){
-                            p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " " + "commands-on-open: " + cf.getString("commands-on-open")));
+                            p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands-on-open: " + cf.getString("commands-on-open")));
                         }
                     }
                     plugin.openPanels.openPanelForLoader(p.getName(), panelName, cf);
                     plugin.createGUI.openGui(panelName, p, cf,1,0);
                     if(sendOpenedMessage) {
-                        sender.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Panel Opened for " + p.getDisplayName()));
+                        sender.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Panel Opened for " + p.getDisplayName()));
                     }
                 } catch (Exception r) {
                     plugin.debug(r);
-                    sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.notitem")));
+                    sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.notitem")));
                 }
             }else{
-                sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
             }
             return;
         }
-        sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
+        sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
     }
 
     //this will give a hotbar item to a player
     public void giveHotbarItem(CommandSender sender, Player p, ConfigurationSection cf, boolean sendGiveMessage){
-        String tag = plugin.config.getString("config.format.tag") + " ";
         if (sender.hasPermission("commandpanel.item." + cf.getString("perm")) && cf.contains("open-with-item")) {
             try {
                 if (cf.contains("disabled-worlds")) {
@@ -100,21 +98,21 @@ public class ExecuteOpenVoids {
                     if (disabledWorlds.contains(p.getWorld().getName())) {
                         //panel cannot be used in the players world!
                         if (Objects.requireNonNull(plugin.config.getString("config.disabled-world-message")).equalsIgnoreCase("true")) {
-                            sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Panel is disabled in the world!"));
+                            sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Panel is disabled in the world!"));
                         }
                         return;
                     }
                 }
             }catch(NullPointerException offlinePlayer){
                 //SKIP because player is offline
-                sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.notitem")));
+                sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.notitem")));
                 return;
             }
             ItemStack s;
             try {
                 s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(cf.getConfigurationSection("open-with-item")), p, false, true);
             }catch(Exception n){
-                sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " open-with-item: material"));
+                sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " open-with-item: material"));
                 return;
             }
             plugin.setName(s, cf.getString("open-with-item.name"), cf.getStringList("open-with-item.lore"),p,false, true);
@@ -127,20 +125,20 @@ public class ExecuteOpenVoids {
                         p.getInventory().addItem(s);
                     }
                     if(sendGiveMessage) {
-                        sender.sendMessage(plugin.papi( tag + ChatColor.GREEN + "Item Given to " + p.getDisplayName()));
+                        sender.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Item Given to " + p.getDisplayName()));
                     }
                 } catch (Exception r) {
-                    sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.notitem")));
+                    sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.notitem")));
                 }
             }else{
-                sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
             }
             return;
         }
         if (!cf.contains("open-with-item")) {
-            sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.noitem")));
+            sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.noitem")));
             return;
         }
-        sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
+        sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
     }
 }

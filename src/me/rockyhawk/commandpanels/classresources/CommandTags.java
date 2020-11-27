@@ -24,7 +24,6 @@ public class CommandTags {
 
     @SuppressWarnings("deprecation")
     public void commandTags(Player p, String command) {
-        String tag = plugin.config.getString("config.format.tag") + " ";
         //set cp placeholders, commandRAW is without placeholders
         String commandRAW = command;
         command = plugin.papi(p, command);
@@ -90,7 +89,7 @@ public class CommandTags {
             } catch (Exception exc) {
                 p.setOp(isop);
                 plugin.debug(exc);
-                p.sendMessage(tag + plugin.papi( plugin.config.getString("config.format.error") + " op=: Error in op command!"));
+                p.sendMessage(plugin.tag + plugin.papi( plugin.config.getString("config.format.error") + " op=: Error in op command!"));
             }
         }else if (command.split("\\s")[0].equalsIgnoreCase("delay=")) {
             //if player uses op= it will perform command as op
@@ -114,7 +113,7 @@ public class CommandTags {
                         plugin.econ.withdrawPlayer(p, Double.parseDouble(command.split("\\s")[1]));
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(plugin.config.getString("config.format.bought")).isEmpty()){
-                            p.sendMessage(plugin.papi( tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                            p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                         //legacy ID
                         byte id = 0;
@@ -132,14 +131,14 @@ public class CommandTags {
                             Objects.requireNonNull(p.getLocation().getWorld()).dropItemNaturally(p.getLocation(), new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3]),id));
                         }
                     } else {
-                        p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.needmoney")));
+                        p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.needmoney")));
                     }
                 } else {
-                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
+                    p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
                 }
             } catch (Exception buy) {
                 plugin.debug(buy);
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
+                p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("tokenbuy=")) {
             //if player uses tokenbuy= it will be eg. tokenbuy= <price> <item> <amount of item> <ID>
@@ -152,7 +151,7 @@ public class CommandTags {
                         api.removeTokens(p, Long.parseLong(command.split("\\s")[1]));
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(plugin.config.getString("config.format.bought")).isEmpty()) {
-                            p.sendMessage(plugin.papi( tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                            p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                         //legacy ID
                         byte id = 0;
@@ -170,14 +169,14 @@ public class CommandTags {
                             Objects.requireNonNull(p.getLocation().getWorld()).dropItemNaturally(p.getLocation(), new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3]),id));
                         }
                     } else {
-                        p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.needmoney")));
+                        p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.needmoney")));
                     }
                 } else {
-                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "Buying Requires TokenManager to work!"));
+                    p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Buying Requires TokenManager to work!"));
                 }
             } catch (Exception buy) {
                 plugin.debug(buy);
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
+                p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("sell=")) {
             //if player uses sell= it will be eg. sell= <cashback> <item> <amount of item> [enchanted:KNOCKBACK:1] [potion:JUMP]
@@ -235,19 +234,19 @@ public class CommandTags {
                         }
                     }
                     if (!sold) {
-                        p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.needitems")));
+                        p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.needitems")));
                     } else {
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(plugin.config.getString("config.format.sold")).isEmpty()) {
-                            p.sendMessage(plugin.papi( tag + Objects.requireNonNull(plugin.config.getString("config.format.sold")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                            p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.sold")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                     }
                 } else {
-                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "Selling Requires Vault and an Economy to work!"));
+                    p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Selling Requires Vault and an Economy to work!"));
                 }
             } catch (Exception sell) {
                 plugin.debug(sell);
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
+                p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("tokensell=")) {
             //if player uses tokensell= it will be eg. tokensell= <cashback> <item> <amount of item> [enchanted:KNOCKBACK:1] [potion:JUMP]
@@ -281,7 +280,7 @@ public class CommandTags {
                                     PotionMeta potionMeta = (PotionMeta) itm.getItemMeta();
                                     assert potionMeta != null;
                                     if (!potionMeta.getBasePotionData().getType().name().equalsIgnoreCase(potion)) {
-                                        p.sendMessage(plugin.papi( tag + ChatColor.RED + "Your item has the wrong potion effect"));
+                                        p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Your item has the wrong potion effect"));
                                         return;
                                     }
                                 }
@@ -308,19 +307,19 @@ public class CommandTags {
                         }
                     }
                     if (!sold) {
-                        p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.needitems")));
+                        p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.needitems")));
                     } else {
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(plugin.config.getString("config.format.sold")).isEmpty()) {
-                            p.sendMessage(plugin.papi( tag + Objects.requireNonNull(plugin.config.getString("config.format.sold")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                            p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.sold")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                     }
                 } else {
-                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "Selling Requires TokenManager to work!"));
+                    p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Selling Requires TokenManager to work!"));
                 }
             } catch (Exception sell) {
                 plugin.debug(sell);
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
+                p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("msg=")) {
             //if player uses msg= it will send the player a message
@@ -331,7 +330,7 @@ public class CommandTags {
                 p.playSound(p.getLocation(), Sound.valueOf(command.split("\\s")[1]), 1F, 1F);
             } catch (Exception s) {
                 plugin.debug(s);
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
+                p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("tokenbuycommand=")) {
             //if player uses tokenbuycommand [price] [command]
@@ -350,17 +349,17 @@ public class CommandTags {
                         commandTags(p,plugin.papi(p, commandp));
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(plugin.config.getString("config.format.bought")).isEmpty()) {
-                            p.sendMessage(plugin.papi( tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", price)));
+                            p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", price)));
                         }
                     } else {
-                        p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.needmoney")));
+                        p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.needmoney")));
                     }
                 } else {
-                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
+                    p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
                 }
             } catch (Exception buyc) {
                 plugin.debug(buyc);
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
+                p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("buycommand=")) {
             //if player uses buycommand [price] [command]
@@ -376,17 +375,17 @@ public class CommandTags {
                         commandTags(p,plugin.papi(p, commandp));
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(plugin.config.getString("config.format.bought")).isEmpty()) {
-                            p.sendMessage(plugin.papi( tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", price)));
+                            p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", price)));
                         }
                     } else {
-                        p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.needmoney")));
+                        p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.needmoney")));
                     }
                 } else {
-                    p.sendMessage(plugin.papi( tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
+                    p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
                 }
             } catch (Exception buyc) {
                 plugin.debug(buyc);
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
+                p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("teleport=")) {
             //if player uses teleport= x y z (optional other player)
@@ -414,7 +413,7 @@ public class CommandTags {
                     assert otherplayer != null;
                     otherplayer.teleport(new Location(otherplayer.getWorld(), x, y, z));
                 } catch (Exception tpe) {
-                    p.sendMessage(tag + plugin.config.getString("config.format.notitem"));
+                    p.sendMessage(plugin.tag + plugin.config.getString("config.format.notitem"));
                 }
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("stopsound=")) {
@@ -423,7 +422,7 @@ public class CommandTags {
                 p.stopSound(Sound.valueOf(command.split("\\s")[1]));
             } catch (Exception ss) {
                 plugin.debug(ss);
-                p.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
+                p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("sudo=")) {
             //if player uses sudo= [command]

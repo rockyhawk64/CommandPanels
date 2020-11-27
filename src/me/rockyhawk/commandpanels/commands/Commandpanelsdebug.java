@@ -13,26 +13,25 @@ public class Commandpanelsdebug implements CommandExecutor {
 
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        String tag = plugin.config.getString("config.format.tag") + " ";
         if (label.equalsIgnoreCase("cpd") || label.equalsIgnoreCase("commandpaneldebug") || label.equalsIgnoreCase("cpaneld")) {
             if (sender.hasPermission("commandpanel.debug")) {
                 if (args.length == 0) {
                     //command /cpd
                     plugin.debug = !plugin.debug;
                     if(plugin.debug){
-                        sender.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Debug Mode Enabled!"));
+                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.GREEN + "Debug Mode Enabled!"));
                     }else{
-                        sender.sendMessage(plugin.papi(tag + ChatColor.GREEN + "Debug Mode Disabled!"));
+                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.GREEN + "Debug Mode Disabled!"));
                     }
                 }else{
-                    sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpd"));
+                    sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cpd"));
                 }
             }else{
-                sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
             }
             return true;
         }
-        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpd"));
+        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cpd"));
         return true;
     }
 }

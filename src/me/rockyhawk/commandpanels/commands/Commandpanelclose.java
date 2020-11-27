@@ -14,9 +14,8 @@ public class Commandpanelclose implements CommandExecutor {
 
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        String tag = plugin.config.getString("config.format.tag") + " ";
         if(!(sender instanceof Player)) {
-            sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Please execute command as a Player!"));
+            sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Please execute command as a Player!"));
             return true;
         }
         Player p = (Player)sender;
@@ -25,7 +24,7 @@ public class Commandpanelclose implements CommandExecutor {
             p.closeInventory();
             return true;
         }
-        p.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpc"));
+        p.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cpc"));
         return true;
     }
 }

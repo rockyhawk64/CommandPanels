@@ -21,7 +21,6 @@ public class Commandpanel implements CommandExecutor {
 
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        String tag = plugin.config.getString("config.format.tag") + " ";
         ConfigurationSection cf = null; //this is the file to use for any panel.* requests
         String panelName = "";
         //below is going to go through the files and find the right one
@@ -38,7 +37,7 @@ public class Commandpanel implements CommandExecutor {
             return true;
         }
         if(cf == null){
-            sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.nopanel")));
+            sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.nopanel")));
             return true;
         }
         if(cf.contains("panelType")) {
@@ -55,18 +54,18 @@ public class Commandpanel implements CommandExecutor {
                     if(!args[1].equals("item")){
                         plugin.openVoids.openCommandPanel(sender,plugin.getServer().getPlayer(args[1]),panelName,cf,true);
                     }else{
-                        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cp <panel> [item] [player]"));
+                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cp <panel> [item] [player]"));
                     }
                     return true;
                 }else if(args.length == 3){
                     if (args[1].equals("item")) {
                         plugin.openVoids.giveHotbarItem(sender,plugin.getServer().getPlayer(args[2]),cf,true);
                     }else{
-                        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cp <panel> item [player]"));
+                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cp <panel> item [player]"));
                     }
                     return true;
                 } else {
-                    sender.sendMessage(plugin.papi( tag + ChatColor.RED + "Please execute command directed to a Player!"));
+                    sender.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Please execute command directed to a Player!"));
                     return true;
                 }
             }else{
@@ -89,7 +88,7 @@ public class Commandpanel implements CommandExecutor {
                 }
             }
         }
-        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cp <panel> [player:item] [player]"));
+        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cp <panel> [player:item] [player]"));
         return true;
     }
 }

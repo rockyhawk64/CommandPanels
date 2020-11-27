@@ -13,20 +13,19 @@ public class Commandpanelresources implements CommandExecutor {
 
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        String tag = plugin.config.getString("config.format.tag") + " ";
 
         if (label.equalsIgnoreCase("cpa") || label.equalsIgnoreCase("commandpaneladdons") || label.equalsIgnoreCase("cpanela")) {
             if (sender.hasPermission("commandpanel.addons")) {
                 //version command
-                sender.sendMessage(plugin.papi(tag));
+                sender.sendMessage(plugin.papi(plugin.tag));
                 sender.sendMessage(ChatColor.GREEN + "Version " + ChatColor.GRAY + plugin.getDescription().getVersion());
                 sender.sendMessage(ChatColor.GREEN + "Find Panels " + ChatColor.GRAY + "https://commandpanels.org/resources/");
             }else{
-                sender.sendMessage(plugin.papi(tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
             }
             return true;
         }
-        sender.sendMessage(plugin.papi(tag + ChatColor.RED + "Usage: /cpa"));
+        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cpa"));
         return true;
     }
 }
