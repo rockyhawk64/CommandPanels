@@ -85,6 +85,7 @@ public class OpenPanelsLoader {
     public void closePanelForLoader(String playerName, String panelName){
         for(int i = 0; i < openPanelsCF.size(); i++){
             if(Arrays.equals(openPanelsPN.get(i), new String[]{playerName, panelName})){
+                panelCloseCommands(playerName,panelName);
                 openPanelsCF.remove(i);
                 openPanelsPN.remove(i);
                 return;
@@ -93,6 +94,31 @@ public class OpenPanelsLoader {
         if (plugin.config.contains("config.panel-snooper")) {
             if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + playerName + " Closed " + panelName);
+            }
+        }
+    }
+
+    public void panelCloseCommands(String playerName, String panelName){
+        for(int i = 0; i < openPanelsCF.size(); i++){
+            if(Arrays.equals(openPanelsPN.get(i), new String[]{playerName, panelName})){
+                if (openPanelsCF.get(i).contains("commands-on-close")) {
+                    //execute commands on panel close
+                    try {
+                        List<String> commands = openPanelsCF.get(i).getStringList("commands-on-close");
+                        for (String command : commands) {
+                            int val = plugin.commandTags.commandPayWall(Bukkit.getPlayer(openPanelsPN.get(i)[0]),command);
+                            if(val == 0){
+                                break;
+                            }
+                            if(val == 2){
+                                plugin.commandTags.commandTags(Bukkit.getPlayer(openPanelsPN.get(i)[0]), plugin.papi(Bukkit.getPlayer(openPanelsPN.get(i)[0]),command), command);
+                            }
+                        }
+                    }catch(Exception s){
+                        plugin.debug(s);
+                    }
+                }
+                return;
             }
         }
     }

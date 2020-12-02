@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -190,6 +191,16 @@ public class CommandPanels extends JavaPlugin {
         //load panelFiles
         reloadPanelFiles();
 
+        //add custom charts bStats
+        Metrics metrics = new Metrics(this);
+        metrics.addCustomChart(new Metrics.SingleLineChart("panels_amount", new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                //this is the total panels loaded
+                return panelNames.size();
+            }
+        }));
+
         //get tag
         tag = papi(config.getString("config.format.tag") + " ");
 
@@ -352,6 +363,7 @@ public class CommandPanels extends JavaPlugin {
         str = str.replaceAll("%cp-player-y%", String.valueOf(Math.round(p.getLocation().getY())));
         str = str.replaceAll("%cp-player-z%", String.valueOf(Math.round(p.getLocation().getZ())));
         str = str.replaceAll("%cp-online-players%", Integer.toString(Bukkit.getServer().getOnlinePlayers().size()));
+        str = str.replaceAll("%cp-tag%", papi(tag));
         //placeholder to check for server availability %cp-server-IP:PORT%
         while (str.contains("%cp-server-")) {
             int start = str.indexOf("%cp-server-");
@@ -360,12 +372,14 @@ public class CommandPanels extends JavaPlugin {
             Socket s = new Socket();
             try {
                 s.connect(new InetSocketAddress(ip_port.split(":")[0], Integer.parseInt(ip_port.split(":")[1])), config.getInt("config.server-ping-timeout"));
-                str = str.replace(str.substring(start, end) + "%", papi(p, "true"));
+                str = str.replace(str.substring(start, end) + "%", "true");
                 s.close();
             }catch (IOException ex){
-                str = str.replace(str.substring(start, end) + "%", papi(p, "false"));
+                str = str.replace(str.substring(start, end) + "%", "false");
             }
         }
+
+        //set custom placeholders to their values
         for(String[] placeholder : customCommand.getCCP(p.getName())){
             while (str.contains(placeholder[0])) {
                 int start = str.indexOf(placeholder[0]);
@@ -374,14 +388,50 @@ public class CommandPanels extends JavaPlugin {
             }
         }
 
+        //get material value from slot in current open inventory (panel)
+        while (str.contains("%cp-material-")) {
+            try {
+                int start = str.indexOf("%cp-material-");
+                int end = str.indexOf("%", str.indexOf("%cp-material-") + 1);
+                String matNumber = str.substring(start, end).replace("%cp-material-", "").replace("%", "");
+                String material;
+                try {
+                    material = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().toString();
+                } catch (NullPointerException er) {
+                    material = "AIR";
+                }
+                str = str.replace(str.substring(start, end) + "%", material);
+            }catch(Exception ex){
+                debug(ex);
+            }
+        }
+
+        //get stack amount from slot in current open inventory (panel)
+        while (str.contains("%cp-stack-")) {
+            try {
+                int start = str.indexOf("%cp-stack-");
+                int end = str.indexOf("%", str.indexOf("%cp-stack-") + 1);
+                String matNumber = str.substring(start, end).replace("%cp-stack-", "").replace("%", "");
+                int amount;
+                try {
+                    amount = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getAmount();
+                } catch (NullPointerException er) {
+                    amount = 0;
+                }
+                str = str.replace(str.substring(start, end) + "%", String.valueOf(amount));
+            }catch(Exception ex){
+                debug(ex);
+            }
+        }
+
         //does %cp-random-MIN,MAX%
         while (str.contains("%cp-random-")) {
             int start = str.indexOf("%cp-random-");
-            int end = str.indexOf("%", str.indexOf("%cp-random-")+1);
-            String min_max = str.substring(start, end).replace("%cp-random-", "").replace("%","");
+            int end = str.indexOf("%", str.indexOf("%cp-random-") + 1);
+            String min_max = str.substring(start, end).replace("%cp-random-", "").replace("%", "");
             int min = Integer.parseInt(min_max.split(",")[0]);
             int max = Integer.parseInt(min_max.split(",")[1]);
-            str = str.replace(str.substring(start, end) + "%", String.valueOf(getRandomNumberInRange(min,max)));
+            str = str.replace(str.substring(start, end) + "%", String.valueOf(getRandomNumberInRange(min, max)));
         }
         while (str.contains("%cp-player-online-")) {
             int start = str.indexOf("%cp-player-online-");
@@ -389,7 +439,7 @@ public class CommandPanels extends JavaPlugin {
             String playerLocation = str.substring(start, end).replace("%cp-player-online-", "");
             Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
             if (Integer.parseInt(playerLocation) > playerFind.length) {
-                str = str.replace(str.substring(start, end) + "-find%", papi(p,Objects.requireNonNull(config.getString("config.format.offline"))));
+                str = str.replace(str.substring(start, end) + "-find%", papi(Objects.requireNonNull(config.getString("config.format.offline"))));
             } else {
                 str = str.replace(str.substring(start, end) + "-find%", playerFind[Integer.parseInt(playerLocation) - 1].getName());
             }
@@ -421,7 +471,6 @@ public class CommandPanels extends JavaPlugin {
             List<String> inputMessages = new ArrayList<String>(config.getStringList("config.input-message"));
             for (String temp : inputMessages) {
                 temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(config.getString("config.input-cancel")));
-                temp = temp.replaceAll("%cp-tag%", tag);
                 p.sendMessage(papi(p, temp));
             }
             str = "commandpanels:commandpanelclose";

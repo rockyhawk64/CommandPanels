@@ -26,8 +26,8 @@ public class Utils implements Listener {
         ConfigurationSection cf = plugin.openPanels.getOpenPanel(p.getName()); //this is the panel cf section
 
         if(e.getClickedInventory().getType() == InventoryType.CHEST){
-            e.setCancelled(true);
-            p.updateInventory();
+            //loop through possible hasvalue/hasperm 1,2,3,etc
+
             //this loops through all the items in the panel
             boolean foundSlot = false;
             for(String slot : Objects.requireNonNull(cf.getConfigurationSection("item")).getKeys(false)){
@@ -36,10 +36,24 @@ public class Utils implements Listener {
                 }
             }
             if(!foundSlot){
+                e.setCancelled(true);
+                p.updateInventory();
                 return;
             }
-            //loop through possible hasvalue/hasperm 1,2,3,etc
+
             String section = plugin.itemCreate.hasSection(cf.getConfigurationSection("item." + e.getSlot()), p);
+
+            if(cf.contains("item." + e.getSlot() + section + ".itemType")){
+                if(cf.getStringList("item." + e.getSlot() + section + ".itemType").contains("placeable")){
+                    //skip if the item is a placeable
+                    e.setCancelled(false);
+                    return;
+                }
+            }
+
+            e.setCancelled(true);
+            p.updateInventory();
+
             //this will remove any pending user inputs, if there is already something there from a previous item
             for(int o = 0; plugin.userInputStrings.size() > o; o++){
                 if(plugin.userInputStrings.get(o)[0].equals(p.getName())){
@@ -47,6 +61,7 @@ public class Utils implements Listener {
                     o=o-1;
                 }
             }
+
             if(cf.contains("item." + e.getSlot() + section + ".commands")) {
                 List<String> commands = cf.getStringList("item." + e.getSlot() + section + ".commands");
                 if (commands.size() != 0) {
@@ -54,7 +69,7 @@ public class Utils implements Listener {
                     List<String> commandsAfterSequence = commands;
                     for (int i = 0; commands.size() - 1 >= i; i++) {
                         if(commands.get(i).startsWith("sequence=")){
-                            String locationOfSequence = plugin.papiNoColour(p,commands.get(i).split("\\s")[1]);
+                            String locationOfSequence = commands.get(i).split("\\s")[1];
                             List<String> commandsSequence = cf.getStringList(locationOfSequence);
                             commandsAfterSequence.remove(i);
                             commandsAfterSequence.addAll(i,commandsSequence);
@@ -99,18 +114,20 @@ public class Utils implements Listener {
                         } catch (Exception click) {
                             //skip if you can't do this
                         }
+                        //start custom command placeholders
                         try {
                             commands.set(i, commands.get(i).replaceAll("%cp-clicked%", clicked.getType().toString()));
                         } catch (Exception mate) {
                             commands.set(i, commands.get(i).replaceAll("%cp-clicked%", "Air"));
                         }
-                        //end custom PlaceHolders
-                        int val = plugin.commandTags.commandPayWall(p,commands.get(i));
+                        //end custom command PlaceHolders
+                        String command = plugin.papi(p,commands.get(i));
+                        int val = plugin.commandTags.commandPayWall(p,command);
                         if(val == 0){
                             return;
                         }
                         if(val == 2){
-                            plugin.commandTags.commandTags(p, commands.get(i));
+                            plugin.commandTags.commandTags(p, command, commands.get(i));
                         }
                     }
                 }

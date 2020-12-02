@@ -405,8 +405,11 @@ public class ItemCreation {
                 if(cont == null){
                     //remove if items have been removed
                     if(file.contains("panels." + panelName + ".item." + i)){
-                        file.set("panels." + panelName + ".item." + i, null);
-                        continue;
+                        //if the material doesn't equal air (don't delete air materials in the editor)
+                        if(!file.getString("panels." + panelName + ".item." + i + ".material").equalsIgnoreCase("AIR")) {
+                            file.set("panels." + panelName + ".item." + i, null);
+                            continue;
+                        }
                     }
                 }
                 if(plugin.legacy.isLegacy()){

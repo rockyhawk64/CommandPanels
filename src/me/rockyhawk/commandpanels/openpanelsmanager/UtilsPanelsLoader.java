@@ -20,6 +20,7 @@ public class UtilsPanelsLoader implements Listener {
     public void onPlayerClosePanel(PlayerQuitEvent e){
         for(int i = 0; i < plugin.openPanels.openPanelsPN.size(); i++){
             if(plugin.openPanels.openPanelsPN.get(i)[0].equals(e.getPlayer().getName())){
+                plugin.openPanels.panelCloseCommands(e.getPlayer().getName(),plugin.openPanels.openPanelsPN.get(i)[1]);
                 plugin.customCommand.removeCCP(plugin.openPanels.openPanelsPN.get(i)[1], e.getPlayer().getName());
                 if (plugin.config.contains("config.panel-snooper")) {
                     if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {
@@ -33,7 +34,7 @@ public class UtilsPanelsLoader implements Listener {
         }
     }
 
-    //tell panel loader that player has closed the panel
+    //tell panel loader that player has closed the panel (there is also one of these in EditorUtils)
     @EventHandler
     public void onPlayerClosePanel(InventoryCloseEvent e){
         //only do this if editor is disabled as it will disabled this code
@@ -41,6 +42,7 @@ public class UtilsPanelsLoader implements Listener {
             //this is put here to avoid conflicts, close panel if it is closed
             for (int i = 0; i < plugin.openPanels.openPanelsPN.size(); i++) {
                 if (plugin.openPanels.openPanelsPN.get(i)[0].equals(e.getPlayer().getName())) {
+                    plugin.openPanels.panelCloseCommands(e.getPlayer().getName(),plugin.openPanels.openPanelsPN.get(i)[1]);
                     plugin.customCommand.removeCCP(plugin.openPanels.openPanelsPN.get(i)[1], e.getPlayer().getName());
                     if (plugin.config.contains("config.panel-snooper")) {
                         if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {

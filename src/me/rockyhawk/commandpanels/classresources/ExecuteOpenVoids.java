@@ -65,7 +65,7 @@ public class ExecuteOpenVoids {
                                     break;
                                 }
                                 if(val == 2){
-                                    plugin.commandTags.commandTags(p, commands.get(i));
+                                    plugin.commandTags.commandTags(p, plugin.papi(p,commands.get(i)),commands.get(i));
                                 }
                             }
                         }catch(Exception s){

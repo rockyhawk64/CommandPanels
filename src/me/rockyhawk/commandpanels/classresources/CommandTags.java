@@ -23,10 +23,8 @@ public class CommandTags {
     }
 
     @SuppressWarnings("deprecation")
-    public void commandTags(Player p, String command) {
+    public void commandTags(Player p, String command, String commandRAW) {
         //set cp placeholders, commandRAW is without placeholders
-        String commandRAW = command;
-        command = plugin.papi(p, command);
         if (command.split("\\s")[0].equalsIgnoreCase("server=")) {
             //this contacts bungee and tells it to send the server change command
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -84,7 +82,7 @@ public class CommandTags {
             boolean isop = p.isOp();
             try {
                 p.setOp(true);
-                Bukkit.dispatchCommand(p,plugin.papi(p, command.replace("op=", "").trim()));
+                Bukkit.dispatchCommand(p,command.replace("op=", "").trim());
                 p.setOp(isop);
             } catch (Exception exc) {
                 p.setOp(isop);
@@ -98,14 +96,14 @@ public class CommandTags {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    commandTags(p, finalCommand);
+                    commandTags(p, finalCommand, commandRAW);
                     this.cancel();
                 }
             }.runTaskTimer(plugin, 20*delaySeconds, 20); //20 ticks == 1 second
         } else if (command.split("\\s")[0].equalsIgnoreCase("console=")) {
             //if player uses console= it will perform command in the console
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), plugin.papi(p, command.replace("console=", "").trim()));
-        } else if (command.split("\\s")[0].equalsIgnoreCase("buy=")) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("console=", "").trim());
+        }else if (command.split("\\s")[0].equalsIgnoreCase("buy=")) {
             //if player uses buy= it will be eg. buy= <price> <item> <amount of item> <ID>
             try {
                 if (plugin.econ != null) {
@@ -150,8 +148,8 @@ public class CommandTags {
                     if (balance >= Double.parseDouble(command.split("\\s")[1])) {
                         api.removeTokens(p, Long.parseLong(command.split("\\s")[1]));
                         //if the message is empty don't send
-                        if(!Objects.requireNonNull(plugin.config.getString("config.format.bought")).isEmpty()) {
-                            p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                        if(!Objects.requireNonNull(plugin.config.getString("config.format.bought-token")).isEmpty()) {
+                            p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.bought-token")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                         //legacy ID
                         byte id = 0;
@@ -169,7 +167,7 @@ public class CommandTags {
                             Objects.requireNonNull(p.getLocation().getWorld()).dropItemNaturally(p.getLocation(), new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[2])), Integer.parseInt(command.split("\\s")[3]),id));
                         }
                     } else {
-                        p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.needmoney")));
+                        p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.needmoney-token")));
                     }
                 } else {
                     p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Buying Requires TokenManager to work!"));
@@ -310,8 +308,8 @@ public class CommandTags {
                         p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.needitems")));
                     } else {
                         //if the message is empty don't send
-                        if(!Objects.requireNonNull(plugin.config.getString("config.format.sold")).isEmpty()) {
-                            p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.sold")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                        if(!Objects.requireNonNull(plugin.config.getString("config.format.sold-token")).isEmpty()) {
+                            p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.sold-token")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                     }
                 } else {
@@ -323,7 +321,7 @@ public class CommandTags {
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("msg=")) {
             //if player uses msg= it will send the player a message
-            p.sendMessage(plugin.papi(p, command.replace("msg=", "").trim()));
+            p.sendMessage(command.replace("msg=", "").trim());
         } else if (command.split("\\s")[0].equalsIgnoreCase("sound=")) {
             //if player uses sound= it will play a sound (sound= [sound])
             try {
@@ -346,13 +344,13 @@ public class CommandTags {
                         commandp = commandp.replace("tokenbuycommand=", "").trim();
                         String price = commandp.split(" ", 2)[0];
                         commandp = commandp.split(" ", 2)[1];
-                        commandTags(p,plugin.papi(p, commandp));
+                        commandTags(p,commandp,commandRAW);
                         //if the message is empty don't send
-                        if(!Objects.requireNonNull(plugin.config.getString("config.format.bought")).isEmpty()) {
-                            p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", price)));
+                        if(!Objects.requireNonNull(plugin.config.getString("config.format.bought-token")).isEmpty()) {
+                            p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.bought-token")).replaceAll("%cp-args%", price)));
                         }
                     } else {
-                        p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.needmoney")));
+                        p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.needmoney-token")));
                     }
                 } else {
                     p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Buying Requires Vault and an Economy to work!"));
@@ -372,7 +370,7 @@ public class CommandTags {
                         commandp = commandp.replace("buycommand=", "").trim();
                         String price = commandp.split(" ", 2)[0];
                         commandp = commandp.split(" ", 2)[1];
-                        commandTags(p,plugin.papi(p, commandp));
+                        commandTags(p,commandp,commandRAW);
                         //if the message is empty don't send
                         if(!Objects.requireNonNull(plugin.config.getString("config.format.bought")).isEmpty()) {
                             p.sendMessage(plugin.papi( plugin.tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", price)));
@@ -391,25 +389,25 @@ public class CommandTags {
             //if player uses teleport= x y z (optional other player)
             if (command.split("\\s").length == 6) {
                 float x, y, z, yaw, pitch; //pitch is the heads Y axis and yaw is the X axis
-                x = Float.parseFloat(plugin.papi(p, command.split("\\s")[1]));
-                y = Float.parseFloat(plugin.papi(p, command.split("\\s")[2]));
-                z = Float.parseFloat(plugin.papi(p, command.split("\\s")[3]));
-                yaw = Float.parseFloat(plugin.papi(p, command.split("\\s")[4]));
-                pitch = Float.parseFloat(plugin.papi(p, command.split("\\s")[5]));
+                x = Float.parseFloat(command.split("\\s")[1]);
+                y = Float.parseFloat(command.split("\\s")[2]);
+                z = Float.parseFloat(command.split("\\s")[3]);
+                yaw = Float.parseFloat(command.split("\\s")[4]);
+                pitch = Float.parseFloat(command.split("\\s")[5]);
                 p.teleport(new Location(p.getWorld(), x, y, z, yaw, pitch));
             } else if (command.split("\\s").length <= 4) {
                 float x, y, z;
-                x = Float.parseFloat(plugin.papi(p, command.split("\\s")[1]));
-                y = Float.parseFloat(plugin.papi(p, command.split("\\s")[2]));
-                z = Float.parseFloat(plugin.papi(p, command.split("\\s")[3]));
+                x = Float.parseFloat(command.split("\\s")[1]);
+                y = Float.parseFloat(command.split("\\s")[2]);
+                z = Float.parseFloat(command.split("\\s")[3]);
                 p.teleport(new Location(p.getWorld(), x, y, z));
             } else {
                 try {
-                    Player otherplayer = Bukkit.getPlayer(plugin.papi(p, command.split("\\s")[4]));
+                    Player otherplayer = Bukkit.getPlayer(command.split("\\s")[4]);
                     float x, y, z;
-                    x = Float.parseFloat(plugin.papi(p, command.split("\\s")[1]));
-                    y = Float.parseFloat(plugin.papi(p, command.split("\\s")[2]));
-                    z = Float.parseFloat(plugin.papi(p, command.split("\\s")[3]));
+                    x = Float.parseFloat(command.split("\\s")[1]);
+                    y = Float.parseFloat(command.split("\\s")[2]);
+                    z = Float.parseFloat(command.split("\\s")[3]);
                     assert otherplayer != null;
                     otherplayer.teleport(new Location(otherplayer.getWorld(), x, y, z));
                 } catch (Exception tpe) {
@@ -426,15 +424,15 @@ public class CommandTags {
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("sudo=")) {
             //if player uses sudo= [command]
-            p.chat(plugin.papi(p, "/" + command.replaceAll("sudo=", "").trim()));
+            p.chat( "/" + command.replaceAll("sudo=", "").trim());
         } else {
-            Bukkit.dispatchCommand(p, plugin.papi(p, command));
+            Bukkit.dispatchCommand(p, command);
         }
     }
 
+    @SuppressWarnings("deprecation")
     public int commandPayWall(Player p, String command) { //return 0 means no funds, 1 is they passed and 2 means paywall is not this command
         String tag = plugin.config.getString("config.format.tag") + " ";
-        command = plugin.papi(p,command);
         if (command.split("\\s")[0].equalsIgnoreCase("paywall=")) {
             //if player uses paywall= [price]
             try {
@@ -456,7 +454,7 @@ public class CommandTags {
                 }
             } catch (Exception buyc) {
                 plugin.debug(buyc);
-                p.sendMessage(plugin.papi(p, tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
+                p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
                 return 0;
             }
         } else if (command.split("\\s")[0].equalsIgnoreCase("tokenpaywall=")) {
@@ -469,12 +467,12 @@ public class CommandTags {
                     if (balance >= Double.parseDouble(command.split("\\s")[1])) {
                         api.removeTokens(p, Long.parseLong(command.split("\\s")[1]));
                         //if the message is empty don't send
-                        if(!Objects.requireNonNull(plugin.config.getString("config.format.bought")).isEmpty()) {
-                            p.sendMessage(plugin.papi( tag + Objects.requireNonNull(plugin.config.getString("config.format.bought")).replaceAll("%cp-args%", command.split("\\s")[1])));
+                        if(!Objects.requireNonNull(plugin.config.getString("config.format.bought-token")).isEmpty()) {
+                            p.sendMessage(plugin.papi( tag + Objects.requireNonNull(plugin.config.getString("config.format.bought-token")).replaceAll("%cp-args%", command.split("\\s")[1])));
                         }
                         return 1;
                     } else {
-                        p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.needmoney")));
+                        p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.needmoney-token")));
                         return 0;
                     }
                 } else {
@@ -483,13 +481,13 @@ public class CommandTags {
                 }
             } catch (Exception buyc) {
                 plugin.debug(buyc);
-                p.sendMessage(plugin.papi(p, tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
+                p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
                 return 0;
             }
         }else if (command.split("\\s")[0].equalsIgnoreCase("item-paywall=")) {
-            //if player uses item-paywall= [Material] [Amount]
+            //if player uses item-paywall= [Material] [Amount] [Id]
             try {
-                ItemStack sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[1])),Integer.parseInt(command.split("\\s")[2]));
+                ItemStack sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[1])),Integer.parseInt(command.split("\\s")[2]), Short.parseShort(command.split("\\s")[3]));
                 int sellItemAmount = sellItem.getAmount();
                 sellItem.setAmount(1);
                 int removedItem = 0;
@@ -522,7 +520,7 @@ public class CommandTags {
                 return removedItem;
             } catch (Exception buyc) {
                 plugin.debug(buyc);
-                p.sendMessage(plugin.papi(p, tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
+                p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
                 return 0;
             }
         }else if (command.split("\\s")[0].equalsIgnoreCase("xp-paywall=")) {
@@ -542,7 +540,7 @@ public class CommandTags {
                 }
             } catch (Exception buyc) {
                 plugin.debug(buyc);
-                p.sendMessage(plugin.papi(p, tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
+                p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
                 return 0;
             }
         } else {

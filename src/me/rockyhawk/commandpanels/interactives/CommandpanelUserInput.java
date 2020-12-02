@@ -35,7 +35,7 @@ public class CommandpanelUserInput implements Listener {
                 e.setCancelled(true);
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-                        new CommandTags(plugin).commandTags(e.getPlayer(), command); //I have to do this to run regular Bukkit voids in an ASYNC Event
+                        new CommandTags(plugin).commandTags(e.getPlayer(), plugin.papi(e.getPlayer(),command), command); //I have to do this to run regular Bukkit voids in an ASYNC Event
                     }
                 });
             }

@@ -58,6 +58,16 @@ public class OpenGUI {
                     }
                 }
                 ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(pconfig.getConfigurationSection("item." + item.split("\\s")[c] + section)), p, onOpen != 3, onOpen != 3);
+
+                //do itemType for placeable
+                if(pconfig.contains("item." + item.split("\\s")[c] + section + ".itemType")) {
+                    if (pconfig.getStringList("item." + item.split("\\s")[c] + section + ".itemType").contains("placeable") && onOpen == 0) {
+                        //keep item the same, onOpen == 0 meaning panel is refreshing
+                        i.setItem(Integer.parseInt(item.split("\\s")[c]), p.getOpenInventory().getItem(Integer.parseInt(item.split("\\s")[c])));
+                        continue;
+                    }
+                }
+
                 try {
                     //place item into the GUI
                     i.setItem(Integer.parseInt(item.split("\\s")[c]), s);
@@ -71,7 +81,7 @@ public class OpenGUI {
                                     int[] bothNumbers = new int[]{Integer.parseInt(tempDupe.split("-")[0]), Integer.parseInt(tempDupe.split("-")[1])};
                                     for(int n = bothNumbers[0]; n <= bothNumbers[1]; n++){
                                         try{
-                                            if(i.getItem(n).getType() == Material.AIR){
+                                            if(!pconfig.contains("item." + n)){
                                                 i.setItem(n, s);
                                             }
                                         }catch(NullPointerException ignore){
@@ -81,7 +91,7 @@ public class OpenGUI {
                                 } else {
                                     //if there is only one dupe item
                                     try{
-                                        if(i.getItem(Integer.parseInt(tempDupe)).getType() == Material.AIR){
+                                        if(!pconfig.contains("item." + Integer.parseInt(tempDupe))){
                                             i.setItem(Integer.parseInt(tempDupe), s);
                                         }
                                     }catch(NullPointerException ignore){
@@ -142,7 +152,7 @@ public class OpenGUI {
                         empty.setItemMeta(renamedMeta);
                         if (onOpen != 3) {
                             //only place empty items if not editing
-                            if(i.getItem(c) == null) {
+                            if(i.getItem(c) == null && !pconfig.contains("item." + c)) {
                                 i.setItem(c, empty);
                             }
                         }
