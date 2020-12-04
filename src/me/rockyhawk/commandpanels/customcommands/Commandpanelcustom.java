@@ -34,6 +34,9 @@ public class Commandpanelcustom implements Listener {
                     for(String cmd : panelCommands){
                         if(cmd.equalsIgnoreCase(e.getMessage().replace("/", ""))){
                             e.setCancelled(true);
+                            if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName())) {
+                                plugin.openPanels.skipPanels.add(e.getPlayer().getName());
+                            }
                             plugin.openVoids.openCommandPanel(e.getPlayer(), e.getPlayer(), panelName[0], tempFile, false);
                             return;
                         }
@@ -58,6 +61,9 @@ public class Commandpanelcustom implements Listener {
                             e.setCancelled(true);
                             for(String[] placeholder : placeholders){
                                 plugin.customCommand.addCCP(panelName[0],e.getPlayer().getName(),placeholder[0],placeholder[1]);
+                            }
+                            if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName())) {
+                                plugin.openPanels.skipPanels.add(e.getPlayer().getName());
                             }
                             plugin.openVoids.openCommandPanel(e.getPlayer(), e.getPlayer(), panelName[0], tempFile, false);
                             return;

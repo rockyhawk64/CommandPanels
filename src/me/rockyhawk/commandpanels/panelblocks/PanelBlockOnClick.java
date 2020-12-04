@@ -45,7 +45,9 @@ public class PanelBlockOnClick implements Listener {
                     if(temp[0].equals(plugin.blockConfig.getString("blocks." + configLocation + ".panel"))){
                         String panelName = temp[0];
                         YamlConfiguration cf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(temp[1]))));
-                        plugin.openVoids.openCommandPanel(p,p,panelName,cf.getConfigurationSection("panels." + panelName),false);
+                        if(!plugin.openPanels.hasPanelOpen(p.getName())) {
+                            plugin.openVoids.openCommandPanel(p, p, panelName, cf.getConfigurationSection("panels." + panelName), false);
+                        }
                         return;
                     }
                 }

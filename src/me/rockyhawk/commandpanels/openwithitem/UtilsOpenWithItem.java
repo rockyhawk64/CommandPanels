@@ -51,6 +51,9 @@ public class UtilsOpenWithItem implements Listener {
                                 if (e.getSlot() == Integer.parseInt(Objects.requireNonNull(tempFile.getString("open-with-item.stationary")))) {
                                     e.setCancelled(true);
                                     p.updateInventory();
+                                    if(plugin.openPanels.hasPanelOpen(p.getName())) {
+                                        plugin.openPanels.skipPanels.add(p.getName());
+                                    }
                                     plugin.openVoids.openCommandPanel(p,p,tempName,tempFile,false);
                                     return;
                                 }
@@ -366,6 +369,9 @@ public class UtilsOpenWithItem implements Listener {
                                     if (p.getInventory().getHeldItemSlot() == Integer.parseInt(Objects.requireNonNull(tempFile.getString("open-with-item.stationary")))) {
                                         e.setCancelled(true);
                                         p.updateInventory();
+                                        if(plugin.openPanels.hasPanelOpen(p.getName())) {
+                                            plugin.openPanels.skipPanels.add(p.getName());
+                                        }
                                         plugin.openVoids.openCommandPanel(p,p,tempName,tempFile,false);
                                     }
                                 }
