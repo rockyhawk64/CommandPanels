@@ -325,16 +325,12 @@ public class EditorUtils implements Listener {
     public void onPlayerClosePanel(InventoryCloseEvent e){
         //this is put here to avoid conflicts, close panel if it is closed
         for(int i = 0; i < plugin.openPanels.openPanelsPN.size(); i++){
+            if(plugin.openPanels.skipPanels.contains(e.getPlayer().getName())){
+                plugin.openPanels.skipPanels.remove(e.getPlayer().getName());
+                break;
+            }
             if(plugin.openPanels.openPanelsPN.get(i)[0].equals(e.getPlayer().getName())){
-                plugin.openPanels.panelCloseCommands(e.getPlayer().getName(),plugin.openPanels.openPanelsPN.get(i)[1]);
-                plugin.customCommand.removeCCP(plugin.openPanels.openPanelsPN.get(i)[1], e.getPlayer().getName());
-                if (plugin.config.contains("config.panel-snooper")) {
-                    if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {
-                        Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + e.getPlayer().getName() + " Closed " + plugin.openPanels.openPanelsPN.get(i)[1]);
-                    }
-                }
-                plugin.openPanels.openPanelsPN.remove(i);
-                plugin.openPanels.openPanelsCF.remove(i);
+                plugin.openPanels.closePanelForLoader(e.getPlayer().getName(), plugin.openPanels.openPanelsPN.get(i)[1]);
                 return;
             }
         }

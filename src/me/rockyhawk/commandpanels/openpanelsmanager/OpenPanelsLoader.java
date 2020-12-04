@@ -22,6 +22,9 @@ public class OpenPanelsLoader {
     public List<ConfigurationSection> openPanelsCF = new ArrayList<>(); //panel config section
     public List<String[]> openPanelsPN = new ArrayList<>(); //PLayer Name, Panel Name
 
+    //this will skip certain panels from closing for players
+    public List<String> skipPanels = new ArrayList<>(); //PLayer Name
+
     //this will return the panel CF based on the player, if it isn't there it returns null
     public ConfigurationSection getOpenPanel(String playerName){
         for(int i = 0; i < openPanelsCF.size(); i++){
@@ -53,9 +56,9 @@ public class OpenPanelsLoader {
     }
 
     //true if the player has a panel open
-    public boolean hasPanelOpen(String playerName){
-        for(String[] temp : openPanelsPN){
-            if(temp[0].equals(playerName)){
+    public boolean hasPanelOpen(String playerName) {
+        for (String[] temp : openPanelsPN) {
+            if (temp[0].equals(playerName)) {
                 return true;
             }
         }
@@ -81,14 +84,28 @@ public class OpenPanelsLoader {
         }
     }
 
-    //tell loader that the panel is closed
-    public void closePanelForLoader(String playerName, String panelName){
-        for(int i = 0; i < openPanelsCF.size(); i++){
-            if(Arrays.equals(openPanelsPN.get(i), new String[]{playerName, panelName})){
-                panelCloseCommands(playerName,panelName);
+    //close all of the panels for a player currently open
+    public void closePanelsForLoader(String playerName){
+        for(int i = 0; i < openPanelsPN.size(); i++){
+            if(openPanelsPN.get(i)[0].equals(playerName)){
+                panelCloseCommands(playerName,openPanelsPN.get(i)[1]);
+                plugin.customCommand.removeCCP(openPanelsPN.get(i)[1], playerName);
                 openPanelsCF.remove(i);
                 openPanelsPN.remove(i);
-                return;
+                i--;
+            }
+        }
+    }
+
+    //tell loader that the panel is closed
+    public void closePanelForLoader(String playerName, String panelName){
+        for(int i = 0; i < openPanelsPN.size(); i++){
+            if(Arrays.equals(openPanelsPN.get(i), new String[]{playerName, panelName})){
+                panelCloseCommands(playerName,panelName);
+                plugin.customCommand.removeCCP(panelName, playerName);
+                openPanelsCF.remove(i);
+                openPanelsPN.remove(i);
+                break;
             }
         }
         if (plugin.config.contains("config.panel-snooper")) {

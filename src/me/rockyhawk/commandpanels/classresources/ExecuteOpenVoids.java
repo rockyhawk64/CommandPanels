@@ -42,8 +42,8 @@ public class ExecuteOpenVoids {
                     sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.notitem")));
                     return;
                 }
-                //close the inventory after the checks for permissions and worlds, so other panels can load
-                p.closeInventory();
+                //close the panel after the checks for permissions and worlds, so other panels can load
+                plugin.openPanels.closePanelsForLoader(p.getName());
                 try {
                     if (cf.contains("sound-on-open")) {
                         //play sound when panel is opened

@@ -493,7 +493,7 @@ public class CommandPanels extends JavaPlugin {
             ArrayList<String> opanelsTemp = new ArrayList<String>();
             for(String tempName : apanels){
                 if(opanelsTemp.contains(tempName)){
-                    sender.sendMessage("[CommandPanels]" + ChatColor.RED + " Error duplicate panel name: " + tempName);
+                    sender.sendMessage(papi(tag) + ChatColor.RED + " Error duplicate panel name: " + tempName);
                     return false;
                 }
                 opanelsTemp.add(tempName);

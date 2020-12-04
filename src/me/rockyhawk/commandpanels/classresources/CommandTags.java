@@ -55,6 +55,7 @@ public class CommandTags {
             for(String[] tempName : plugin.panelNames){
                 if(tempName[0].equals(panelName)){
                     ConfigurationSection panelConfig = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(tempName[1])))).getConfigurationSection("panels." + panelName);
+                    plugin.openPanels.skipPanels.add(p.getName());
                     plugin.openVoids.openCommandPanel(p,p,panelName,panelConfig,false);
                     return;
                 }
@@ -487,7 +488,11 @@ public class CommandTags {
         }else if (command.split("\\s")[0].equalsIgnoreCase("item-paywall=")) {
             //if player uses item-paywall= [Material] [Amount] [Id]
             try {
-                ItemStack sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[1])),Integer.parseInt(command.split("\\s")[2]), Short.parseShort(command.split("\\s")[3]));
+                short id = 0;
+                if(command.split("\\s").length == 4){
+                    id = Short.parseShort(command.split("\\s")[3]);
+                }
+                ItemStack sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[1])),Integer.parseInt(command.split("\\s")[2]), id);
                 int sellItemAmount = sellItem.getAmount();
                 sellItem.setAmount(1);
                 int removedItem = 0;
