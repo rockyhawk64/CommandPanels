@@ -101,7 +101,7 @@ public class CommandTags {
                     this.cancel();
                 }
             }.runTaskTimer(plugin, 20*delaySeconds, 20); //20 ticks == 1 second
-        } else if (command.split("\\s")[0].equalsIgnoreCase("console=")) {
+        }else if (command.split("\\s")[0].equalsIgnoreCase("console=")) {
             //if player uses console= it will perform command in the console
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("console=", "").trim());
         }else if (command.split("\\s")[0].equalsIgnoreCase("buy=")) {
@@ -423,8 +423,11 @@ public class CommandTags {
                 plugin.debug(ss);
                 p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + command));
             }
-        } else if (command.split("\\s")[0].equalsIgnoreCase("sudo=")) {
-            //if player uses sudo= [command]
+        }else if (command.split("\\s")[0].equalsIgnoreCase("send=")) {
+            //if player uses send= [message] to send a message as them
+            p.chat( command.replaceAll("send=", "").trim());
+        }else if (command.split("\\s")[0].equalsIgnoreCase("sudo=")) {
+            //if player uses sudo= [command] to send a command as them
             p.chat( "/" + command.replaceAll("sudo=", "").trim());
         } else {
             Bukkit.dispatchCommand(p, command);

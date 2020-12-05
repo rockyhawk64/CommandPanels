@@ -1,6 +1,10 @@
 package me.rockyhawk.commandpanels.openwithitem;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.ioclasses.GetItemInHand;
+import me.rockyhawk.commandpanels.ioclasses.GetItemInHand_Legacy;
+import me.rockyhawk.commandpanels.ioclasses.Sequence_1_14;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -350,7 +354,14 @@ public class UtilsOpenWithItem implements Listener {
         }catch(Exception b){
             return;
         }
-        ItemStack clicked = e.getPlayer().getInventory().getItemInMainHand();
+
+        ItemStack clicked;
+        if(Bukkit.getVersion().contains("1.8")){
+            clicked =  new GetItemInHand_Legacy(plugin).itemInHand(p);
+        }else{
+            clicked = new GetItemInHand(plugin).itemInHand(p);
+        }
+
         String tempName;
         ConfigurationSection tempFile;
         for(String[] panelName : plugin.panelNames){

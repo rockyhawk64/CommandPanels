@@ -105,7 +105,12 @@ public class Commandpanelrefresher implements Listener {
                     try {
                         p.updateInventory();
                         for (ItemStack playerContent : plugin.legacy.getStorageContents(p.getInventory())) {
+                            //ensure the panel item is not a placeable item
+                            int itemSlot = 0;
                             for (ItemStack panelContent : panelItemList) {
+                                if(cf.getStringList("item." + itemSlot + ".itemType").contains("placeable")){
+                                    continue;
+                                }
                                 if (playerContent != null && panelContent != null) {
                                     if (!playerContent.getType().equals(Material.matchMaterial("AIR")) && !panelContent.getType().equals(Material.matchMaterial("AIR"))) {
                                         if (playerContent.equals(panelContent)) {
@@ -123,6 +128,7 @@ public class Commandpanelrefresher implements Listener {
                                         }
                                     }
                                 }
+                                itemSlot++;
                             }
                         }
                     }catch(Exception e){

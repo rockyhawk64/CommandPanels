@@ -6,6 +6,7 @@ import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -43,7 +44,11 @@ public class ExecuteOpenVoids {
                     return;
                 }
                 //close the panel after the checks for permissions and worlds, so other panels can load
-                plugin.openPanels.closePanelsForLoader(p.getName());
+                if(!plugin.openPanels.hasPanelOpen(p.getName()) && p.getOpenInventory().getType() != InventoryType.CRAFTING){
+                    p.closeInventory();
+                }else{
+                    plugin.openPanels.closePanelsForLoader(p.getName());
+                }
                 try {
                     if (cf.contains("sound-on-open")) {
                         //play sound when panel is opened
