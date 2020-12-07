@@ -58,8 +58,7 @@ public class HotbarItemLoader {
             if(tempFile.contains("open-with-item")){
                 ItemStack panelItem = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("open-with-item")), p, false, true);
                 if(invItem != null && panelItem != null) {
-                    panelItem.setAmount(1);
-                    invItem.setAmount(1);
+                    panelItem.setAmount(invItem.getAmount());
                 }else{
                     return false;
                 }
