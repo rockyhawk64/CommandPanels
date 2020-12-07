@@ -314,10 +314,9 @@ public class OpenEditorGuis {
             temp = new ItemStack(Material.BEDROCK, 1);
             lore.clear();
             lore.add(ChatColor.GRAY + "Hotbar location for the item");
-            lore.add(ChatColor.GRAY + "choose a number from 1 to 9");
+            lore.add(ChatColor.GRAY + "choose a number from 0 to 33");
             if (cf.contains("open-with-item.stationary")) {
                 lore.add(ChatColor.WHITE + "-------------------------");
-                //in the editor, change the value of 0-8 to 1-9 for simplicity
                 int location = cf.getInt("open-with-item.stationary") + 1;
                 lore.add(ChatColor.WHITE + String.valueOf(location));
             }

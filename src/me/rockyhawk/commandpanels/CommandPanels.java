@@ -32,6 +32,7 @@ import me.rockyhawk.commandpanels.legacy.PlayerHeads;
 import me.rockyhawk.commandpanels.openpanelsmanager.OpenGUI;
 import me.rockyhawk.commandpanels.openpanelsmanager.OpenPanelsLoader;
 import me.rockyhawk.commandpanels.openpanelsmanager.UtilsPanelsLoader;
+import me.rockyhawk.commandpanels.openwithitem.HotbarItemLoader;
 import me.rockyhawk.commandpanels.openwithitem.SwapItemEvent;
 import me.rockyhawk.commandpanels.openwithitem.UtilsOpenWithItem;
 import me.rockyhawk.commandpanels.panelblocks.BlocksTabComplete;
@@ -79,6 +80,7 @@ public class CommandPanels extends JavaPlugin {
     public OpenPanelsLoader openPanels = new OpenPanelsLoader(this);
     public OpenGUI createGUI = new OpenGUI(this);
     public CommandPlaceholderLoader customCommand = new CommandPlaceholderLoader(this);
+    public HotbarItemLoader hotbar = new HotbarItemLoader(this);
 
     public File panelsf;
     public YamlConfiguration blockConfig; //where panel block locations are stored
@@ -190,6 +192,9 @@ public class CommandPanels extends JavaPlugin {
 
         //load panelFiles
         reloadPanelFiles();
+
+        //do hotbar items
+        hotbar.reloadHotbarSlots();
 
         //add custom charts bStats
         Metrics metrics = new Metrics(this);

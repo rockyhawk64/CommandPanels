@@ -32,6 +32,9 @@ public class Commandpanelsreload implements CommandExecutor {
                 //check for duplicates
                 plugin.checkDuplicatePanel(sender);
 
+                //reloadHotbarSlots
+                plugin.hotbar.reloadHotbarSlots();
+
                 //add custom commands
                 registerCommands();
 
@@ -50,7 +53,14 @@ public class Commandpanelsreload implements CommandExecutor {
     public void registerCommands(){
         ConfigurationSection tempFile;
         File commandsLoc = new File("commands.yml");
-        YamlConfiguration cmdCF = YamlConfiguration.loadConfiguration(commandsLoc);
+        YamlConfiguration cmdCF;
+        try {
+            cmdCF = YamlConfiguration.loadConfiguration(commandsLoc);
+        }catch(Exception e){
+            //could not access the commands.yml file
+            plugin.debug(e);
+            return;
+        }
         //remove old commandpanels commands
         for(String existingCommands : cmdCF.getConfigurationSection("aliases").getKeys(false)){
             if(cmdCF.getStringList("aliases." + existingCommands).get(0).equals("commandpanel")){

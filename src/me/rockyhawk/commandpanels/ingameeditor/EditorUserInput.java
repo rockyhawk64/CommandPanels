@@ -375,9 +375,9 @@ public class EditorUserInput implements Listener {
                 }
                 try {
                     int loc = Integer.parseInt(e.getMessage());
-                    if (loc >= 10 || loc <= 0) {
+                    if (loc >= 34 || loc <= -1) {
                         //if the number isn't between 1-9
-                        p.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Choose an integer between 1 to 9!"));
+                        p.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Choose an integer between 0 to 33!"));
                         return;
                     }
                     p.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Set Hotbar Location to " + loc + "!"));
