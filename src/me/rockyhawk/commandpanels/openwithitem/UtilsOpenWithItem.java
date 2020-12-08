@@ -13,6 +13,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
@@ -36,6 +37,8 @@ public class UtilsOpenWithItem implements Listener {
         Player p = (Player)e.getWhoClicked();
         //get the item clicked, then loop through panel names after action isn't nothing
         if(e.getAction() == InventoryAction.NOTHING){return;}
+        if(e.getSlot() == -999){return;}
+        if(e.getClickedInventory().getType() != InventoryType.PLAYER){return;}
         if(plugin.hotbar.stationaryExecute(e.getSlot(),p,true)){
             e.setCancelled(true);
             p.updateInventory();

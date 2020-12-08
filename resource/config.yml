@@ -20,6 +20,9 @@ config:
   input-message:
   - '%cp-tag%&aEnter Input for Command'
   - '&cType &4%cp-args% &cto Cancel the command'
+  updater:
+    auto-update: true
+    minor-updates-only: true
   format:
     tag: '&6[&bCommandPanels&6]'
     perms: '&cNo permission.'

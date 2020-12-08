@@ -213,6 +213,9 @@ public class CommandPanels extends JavaPlugin {
     }
 
     public void onDisable() {
+        if (Objects.requireNonNull(this.config.getString("config.updater.auto-update")).equalsIgnoreCase("true")) {
+            updater.autoUpdatePlugin(this.getFile().getName());
+        }
         Bukkit.getLogger().info("RockyHawk's CommandPanels Plugin Disabled, aww man.");
     }
 
@@ -564,6 +567,9 @@ public class CommandPanels extends JavaPlugin {
         }
         if (p.hasPermission("commandpanel.version")) {
             p.sendMessage(ChatColor.GOLD + "/cpv " + ChatColor.WHITE + "Display the current version.");
+        }
+        if (p.hasPermission("commandpanel.update")) {
+            p.sendMessage(ChatColor.GOLD + "/cpv [version:latest:cancel]" + ChatColor.WHITE + "Download an update upon server reload/restart.");
         }
         if (p.hasPermission("commandpanel.edit")) {
             p.sendMessage(ChatColor.GOLD + "/cpe [panel] " + ChatColor.WHITE + "Edit a panel with the Panel Editor.");
