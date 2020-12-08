@@ -44,7 +44,7 @@ public class UtilsOpenWithItem implements Listener {
             p.updateInventory();
             return;
         }
-        if(plugin.hotbar.itemCheckExecute(e.getCurrentItem(),p,false) || plugin.hotbar.itemCheckExecute(e.getCursor(),p,false) || plugin.hotbar.stationaryExecute(e.getHotbarButton(),p,false)){
+        if (plugin.hotbar.itemCheckExecute(e.getCurrentItem(), p, false,true) || plugin.hotbar.itemCheckExecute(e.getCursor(), p, false,true) || plugin.hotbar.stationaryExecute(e.getHotbarButton(), p, false)) {
             e.setCancelled(true);
             p.updateInventory();
         }
@@ -64,7 +64,7 @@ public class UtilsOpenWithItem implements Listener {
             return;
         }
         Player p = e.getPlayer();
-        if(plugin.hotbar.itemCheckExecute(e.getItem(),p,true)){
+        if(plugin.hotbar.itemCheckExecute(e.getItem(),p,true,false)){
             e.setCancelled(true);
             p.updateInventory();
         }
@@ -259,35 +259,9 @@ public class UtilsOpenWithItem implements Listener {
         }
         //if item dropped
         Player p = e.getPlayer();
-        try {
-            if (plugin.panelFiles == null) {
-                return;
-            }
-        }catch(Exception b){
-            return;
-        }
-        ItemStack clicked = e.getItemDrop().getItemStack();
-        for(String[] panelName : plugin.panelNames){
-            YamlConfiguration tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1]))));
-            String tempName = panelName[0];
-            if(tempFile.contains("panels." + tempName + ".open-with-item")) {
-                try{
-                    assert clicked != null;
-                    if (clicked.getType() == new ItemStack(Objects.requireNonNull(plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("panels." + tempName + ".open-with-item")), p, false, true).getType()), 1).getType()) {
-                        if ((plugin.papi( Objects.requireNonNull(clicked.getItemMeta()).getDisplayName()).equals(plugin.papi( Objects.requireNonNull(tempFile.getString("panels." + tempName + ".open-with-item.name")))))) {
-                            //cancel the click item event
-                            if (tempFile.contains("panels." + tempName + ".open-with-item.stationary")) {
-                                e.setCancelled(true);
-                                p.updateInventory();
-                                return;
-                            }
-                            return;
-                        }
-                    }
-                }catch(NullPointerException cancel){
-                    //do nothing skip item
-                }
-            }
+        if(plugin.hotbar.itemCheckExecute(e.getItemDrop().getItemStack(),p,false,true)){
+            e.setCancelled(true);
+            p.updateInventory();
         }
     }
     @EventHandler
@@ -304,7 +278,7 @@ public class UtilsOpenWithItem implements Listener {
         }else{
             clicked = new GetItemInHand(plugin).itemInHand(p);
         }
-        if(plugin.hotbar.itemCheckExecute(clicked,p,true)){
+        if(plugin.hotbar.itemCheckExecute(clicked,p,true,false)){
             e.setCancelled(true);
             p.updateInventory();
         }

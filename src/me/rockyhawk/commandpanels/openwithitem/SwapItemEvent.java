@@ -18,7 +18,7 @@ public class SwapItemEvent implements Listener {
             return;
         }
         Player p = e.getPlayer();
-        if(plugin.hotbar.itemCheckExecute(e.getOffHandItem(),p,false)){
+        if(plugin.hotbar.itemCheckExecute(e.getOffHandItem(),p,false,true)){
             e.setCancelled(true);
             p.updateInventory();
         }

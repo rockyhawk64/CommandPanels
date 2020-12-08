@@ -51,10 +51,15 @@ public class HotbarItemLoader {
     }
 
     //return true if found
-    public boolean itemCheckExecute(ItemStack invItem, Player p, boolean openPanel){
+    public boolean itemCheckExecute(ItemStack invItem, Player p, boolean openPanel, boolean stationaryOnly){
         for(String[] panelName : plugin.panelNames) {
             ConfigurationSection tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1])))).getConfigurationSection("panels." + panelName[0]);
             String tempName = panelName[0];
+            if(stationaryOnly){
+                if(!tempFile.contains("open-with-item.stationary")){
+                    continue;
+                }
+            }
             if(tempFile.contains("open-with-item")){
                 ItemStack panelItem = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(tempFile.getConfigurationSection("open-with-item")), p, false, true);
                 if(invItem != null && panelItem != null) {
