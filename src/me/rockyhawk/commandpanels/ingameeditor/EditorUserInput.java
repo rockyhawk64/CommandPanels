@@ -55,6 +55,9 @@ public class EditorUserInput implements Listener {
                 }
             } catch (Exception fail) {
                 //could not fetch all panel names (probably no panels exist)
+                plugin.debug(fail);
+                plugin.editorInputStrings.remove(temp);
+                return;
             }
             if(e.getMessage().equalsIgnoreCase(plugin.config.getString("config.input-cancel"))){
                 plugin.editorInputStrings.remove(temp);
@@ -62,6 +65,7 @@ public class EditorUserInput implements Listener {
                 e.getPlayer().sendMessage(plugin.papi( Objects.requireNonNull(plugin.config.getString("config.input-cancelled"))));
                 return;
             }
+            plugin.editorInputStrings.remove(temp);
             if(section.startsWith("panel.")) {
                 panelSectionCheck(p, section, panelName, panelTitle, cf, cfile, panelFile, e);
             }else if(section.startsWith("item:")){
@@ -69,7 +73,6 @@ public class EditorUserInput implements Listener {
             }else if(section.startsWith("section.")){
                 itemSectionSectionCheck(p, section, panelName, cf, cfile, panelFile, e);
             }
-            plugin.editorInputStrings.remove(temp);
             plugin.reloadPanelFiles();
             if(section.startsWith("panel.")){
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {

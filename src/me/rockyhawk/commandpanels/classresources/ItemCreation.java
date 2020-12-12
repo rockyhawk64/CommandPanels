@@ -431,15 +431,12 @@ public class ItemCreation {
                 if(plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
                     if(!Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("%") && !Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("=")) {
                         SkullMeta meta = (SkullMeta) cont.getItemMeta();
-                        //disable for legacy as is broken
-                        if (!plugin.legacy.isLegacy()) {
-                            if (plugin.customHeads.getHeadBase64(cont) != null) {
-                                //inject base64 here
-                                file.set("panels." + panelName + ".item." + i + ".material", "cps= " + plugin.customHeads.getHeadBase64(cont));
-                            } else if (meta.hasOwner()) {
-                                //check for skull owner
-                                file.set("panels." + panelName + ".item." + i + ".material", "cps= " + meta.getOwner());
-                            }
+                        if (plugin.customHeads.getHeadBase64(cont) != null && !plugin.legacy.isLegacy()) {
+                            //inject base64 here, disable for legacy as is not working
+                            file.set("panels." + panelName + ".item." + i + ".material", "cps= " + plugin.customHeads.getHeadBase64(cont));
+                        } else if (meta.hasOwner()) {
+                            //check for skull owner
+                            file.set("panels." + panelName + ".item." + i + ".material", "cps= " + meta.getOwner());
                         }
                     }
                 }
