@@ -127,7 +127,6 @@ public class CommandPanels extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("commandpanelgenerate")).setExecutor(new Commandpanelsgenerate(this));
         Objects.requireNonNull(this.getCommand("commandpanelreload")).setExecutor(new Commandpanelsreload(this));
         Objects.requireNonNull(this.getCommand("commandpaneldebug")).setExecutor(new Commandpanelsdebug(this));
-        Objects.requireNonNull(this.getCommand("commandpanelclose")).setExecutor(new Commandpanelclose(this));
         Objects.requireNonNull(this.getCommand("commandpanelversion")).setExecutor(new Commandpanelversion(this));
         Objects.requireNonNull(this.getCommand("commandpaneladdons")).setExecutor(new Commandpanelresources(this));
         Objects.requireNonNull(this.getCommand("commandpanellist")).setExecutor(new Commandpanelslist(this));
@@ -561,7 +560,6 @@ public class CommandPanels extends JavaPlugin {
         if (p.hasPermission("commandpanel.addons")) {
             p.sendMessage(ChatColor.GOLD + "/cpa " + ChatColor.WHITE + "View downloadable panels for CommandPanels.");
         }
-        p.sendMessage(ChatColor.GOLD + "/cpc " + ChatColor.WHITE + "Close current GUI.");
         if (p.hasPermission("commandpanel.generate")) {
             p.sendMessage(ChatColor.GOLD + "/cpg <rows> " + ChatColor.WHITE + "Generate GUI from popup menu.");
         }
@@ -569,7 +567,8 @@ public class CommandPanels extends JavaPlugin {
             p.sendMessage(ChatColor.GOLD + "/cpv " + ChatColor.WHITE + "Display the current version.");
         }
         if (p.hasPermission("commandpanel.update")) {
-            p.sendMessage(ChatColor.GOLD + "/cpv [version:latest:cancel]" + ChatColor.WHITE + "Download an update upon server reload/restart.");
+            p.sendMessage(ChatColor.GOLD + "/cpv latest " + ChatColor.WHITE + "Download the latest update upon server reload/restart.");
+            p.sendMessage(ChatColor.GOLD + "/cpv [version:cancel] " + ChatColor.WHITE + "Download an update upon server reload/restart.");
         }
         if (p.hasPermission("commandpanel.edit")) {
             p.sendMessage(ChatColor.GOLD + "/cpe [panel] " + ChatColor.WHITE + "Edit a panel with the Panel Editor.");

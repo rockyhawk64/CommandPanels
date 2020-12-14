@@ -28,6 +28,7 @@ public class Commandpanelsreload implements CommandExecutor {
                     //empty
                 }
                 plugin.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "config.yml"));
+                plugin.blockConfig = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "blocks.yml"));
 
                 //check for duplicates
                 plugin.checkDuplicatePanel(sender);

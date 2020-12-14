@@ -1,4 +1,4 @@
-version: 3.14.2.2
+version: 3.14.2.3
 main: me.rockyhawk.commandpanels.CommandPanels
 name: CommandPanels
 author: RockyHawk
@@ -22,10 +22,6 @@ commands:
       description: Add or remove panels from blocks being looked at.
       usage: /commandpanelblock
       aliases: [cpb, cpanelb]
-   commandpanelclose:
-      description: Close current GUI.
-      usage: /commandpanelclose
-      aliases: [cpc, cpanelc]
    commandpanelgenerate:
       description: Generate GUI.
       usage: /commandpanelgenerate

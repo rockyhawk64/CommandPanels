@@ -39,6 +39,13 @@ public class HotbarItemLoader {
                 if(openPanel) {
                     String panelName = plugin.panelNames.get(temp[1])[0];
                     ConfigurationSection tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(plugin.panelNames.get(temp[1])[1])))).getConfigurationSection("panels." + panelName);
+                    //only open panel automatically if there are no commands
+                    if(tempFile.contains("open-with-item.commands")){
+                        for(String command : tempFile.getStringList("open-with-item.commands")){
+                            plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
+                        }
+                        return true;
+                    }
                     if (plugin.openPanels.hasPanelOpen(p.getName())) {
                         plugin.openPanels.skipPanels.add(p.getName());
                     }
@@ -69,6 +76,13 @@ public class HotbarItemLoader {
                 }
                 if(panelItem.isSimilar(invItem)){
                     if(openPanel) {
+                        //only open panel automatically if there are no commands
+                        if(tempFile.contains("open-with-item.commands")){
+                            for(String command : tempFile.getStringList("open-with-item.commands")){
+                                plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
+                            }
+                            return true;
+                        }
                         if (plugin.openPanels.hasPanelOpen(p.getName())) {
                             plugin.openPanels.skipPanels.add(p.getName());
                         }

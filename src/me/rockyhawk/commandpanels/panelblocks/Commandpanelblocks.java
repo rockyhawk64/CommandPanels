@@ -22,7 +22,7 @@ public class Commandpanelblocks implements CommandExecutor {
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (label.equalsIgnoreCase("cpb") || label.equalsIgnoreCase("commandpanelsblock") || label.equalsIgnoreCase("cpanelb")) {
-            if(args.length == 2) {
+            if(args.length >= 2) {
                 if (args[0].equalsIgnoreCase("add")) {
                     if(!(sender instanceof Player)) {
                         sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Please execute command as a Player!"));
@@ -52,7 +52,9 @@ public class Commandpanelblocks implements CommandExecutor {
                         }
                         Location blockLocation = blockType.getLocation();
                         String configValue = "blocks." + Objects.requireNonNull(blockLocation.getWorld()).getName().replaceAll("_", "%dash%") + "_" + blockLocation.getBlockX() + "_" + blockLocation.getBlockY() + "_" + blockLocation.getBlockZ() + ".panel";
-                        plugin.blockConfig.set(configValue, args[1]);
+                        //this is simply getting all of the args values after the add
+                        String panelValue = String.join(" ", args).replace("add ", "");
+                        plugin.blockConfig.set(configValue, panelValue);
                         try {
                             plugin.blockConfig.save(new File(plugin.getDataFolder() + File.separator + "blocks.yml"));
                         } catch (IOException e) {

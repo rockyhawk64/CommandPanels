@@ -109,7 +109,7 @@ public class OpenPanelsLoader {
             }
         }
         if (plugin.config.contains("config.panel-snooper")) {
-            if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {
+            if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).equalsIgnoreCase("true")) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + playerName + " Closed " + panelName);
             }
         }

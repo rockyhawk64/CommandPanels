@@ -325,11 +325,20 @@ public class OpenEditorGuis {
 
             temp = new ItemStack(Material.BOOK, 1);
             lore.clear();
-            lore.add(ChatColor.GRAY + "- To refresh changes use");
-            lore.add(ChatColor.GRAY + "  /cp " + panelName + " item");
-            lore.add(ChatColor.GRAY + "- Hotbar items will need a");
-            lore.add(ChatColor.GRAY + "  name to work properly.");
-            plugin.setName(temp, ChatColor.WHITE + "Hotbar Item Tips", lore, p, true, true);
+            lore.add(ChatColor.GRAY + "Execute commands from Hotbar Item");
+            lore.add(ChatColor.GRAY + "- Left click to add command");
+            lore.add(ChatColor.GRAY + "- Right click to remove command");
+            lore.add(ChatColor.GRAY + "If commands are added, the item will");
+            lore.add(ChatColor.GRAY + "no longer automatically open the panel");
+            if (cf.contains("open-with-item.commands")) {
+                lore.add(ChatColor.WHITE + "-------------------------------");
+                int count = 1;
+                for (String tempLore : cf.getStringList("open-with-item.commands")) {
+                    lore.add(ChatColor.WHITE + Integer.toString(count) + ") " + tempLore);
+                    count += 1;
+                }
+            }
+            plugin.setName(temp, ChatColor.WHITE + "Hotbar Item Commands", lore, p, true, true);
             i.setItem(44, temp);
         }
 

@@ -1,7 +1,6 @@
 package me.rockyhawk.commandpanels.ingameeditor;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -492,6 +491,17 @@ public class EditorUtils implements Listener {
         if(e.getSlot() == 42 && hotbarItems){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.stationary"});
             p.sendMessage(plugin.papi(plugin.tag + ChatColor.WHITE + "Enter Location (1 to 9)"));
+            p.closeInventory();
+        }
+        if(e.getSlot() == 44 && hotbarItems){
+            //adds abilities to add and remove lines
+            if(e.getClick().isLeftClick()) {
+                plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.commands.add"});
+                p.sendMessage(plugin.papi(plugin.tag + ChatColor.WHITE + "Enter New Item Command"));
+            }else{
+                plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.commands.remove"});
+                p.sendMessage(plugin.papi(plugin.tag + ChatColor.WHITE + "Enter command line to remove (must be an integer)"));
+            }
             p.closeInventory();
         }
     }

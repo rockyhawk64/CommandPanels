@@ -50,8 +50,8 @@ public class Updater {
                 if(sendMessages) {
                     Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GOLD + " ================================================");
                     Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.AQUA + " An update for CommandPanels is available.");
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " Download CommandPanels " + ChatColor.GOLD + gitVersion + ChatColor.WHITE + " here:");
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.AQUA + " https://www.spigotmc.org/resources/command-panels-custom-guis.67788/");
+                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " Download CommandPanels " + ChatColor.GOLD + gitVersion + ChatColor.WHITE + " using the");
+                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.WHITE + " following command:" + ChatColor.AQUA + " /cpv latest" + ChatColor.WHITE + " and restart the server");
                     Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GOLD + " ================================================");
                 }
             }
@@ -79,8 +79,8 @@ public class Updater {
             return;
         }
 
-        if(latestVersion.equals(thisVersion)){
-            //no need to update
+        if(latestVersion.equals(thisVersion) || thisVersion.contains("-")){
+            //no need to update or running custom version
             return;
         }
         if(Objects.equals(plugin.config.getString("config.updater.minor-updates-only"), "true")){

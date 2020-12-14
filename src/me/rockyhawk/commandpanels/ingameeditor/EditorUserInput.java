@@ -429,6 +429,38 @@ public class EditorUserInput implements Listener {
                 savePanelFile(cf, cfile, panelName, panelFile);
                 p.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Removed lore line " + e.getMessage()));
                 break;
+            case "panel.hotbar.commands.add":
+                List<String> commandAdd = new ArrayList<>();
+                if(cf.contains("open-with-item.commands")){
+                    commandAdd = cf.getStringList("open-with-item.commands");
+                }
+                commandAdd.add(e.getMessage());
+                cf.set("open-with-item.commands", commandAdd);
+                savePanelFile(cf, cfile, panelName, panelFile);
+                p.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Added new command: " + e.getMessage()));
+                break;
+            case "panel.hotbar.commands.remove":
+                List<String> commandRemove;
+                if(cf.contains("open-with-item.commands")){
+                    commandRemove = cf.getStringList("open-with-item.commands");
+                }else{
+                    p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "No commands found to remove!"));
+                    break;
+                }
+                try {
+                    commandRemove.remove(Integer.parseInt(e.getMessage())-1);
+                }catch (Exception ex){
+                    p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Could not find command!"));
+                    break;
+                }
+                if(commandRemove.size() == 0){
+                    cf.set("open-with-item.commands", null);
+                }else{
+                    cf.set("open-with-item.commands", commandRemove);
+                }
+                savePanelFile(cf, cfile, panelName, panelFile);
+                p.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Removed command line " + e.getMessage()));
+                break;
         }
     }
 
