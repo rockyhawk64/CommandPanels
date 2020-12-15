@@ -31,7 +31,9 @@ public class PanelBlockOnClick implements Listener {
         if(!plugin.blockConfig.contains("blocks")){
             return;
         }
-        if(Objects.requireNonNull(plugin.config.getString("config.panel-blocks")).equalsIgnoreCase("false")){
+        if(plugin.openPanels.hasPanelOpen(p.getName())) {
+            //some blocks run this event twice, skip if panel already open
+            //as blocks cannot be clicked obviously if a panel is open
             return;
         }
         for (String configLocation : Objects.requireNonNull(plugin.blockConfig.getConfigurationSection("blocks")).getKeys(false)) {

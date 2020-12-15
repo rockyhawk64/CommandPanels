@@ -1,6 +1,6 @@
 # |------------------------------------------------------------------------
 # |                       CommandPanels Config File
-# |                           By RockyHawk v4.3
+# |                           By RockyHawk v4.4
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
 # |
 # |        auto-update and minor-updates-only is HEAVILY RECOMMENDED
@@ -11,6 +11,7 @@ config:
   ingame-editor: true
   hotbar-items: true
   custom-commands: true
+  auto-register-commands: true
   refresh-delay: 4
   server-ping-timeout: 10
   stop-sound: true
