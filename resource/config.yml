@@ -1,7 +1,9 @@
 # |------------------------------------------------------------------------
 # |                       CommandPanels Config File
-# |                           By RockyHawk v4.2
+# |                           By RockyHawk v4.3
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
+# |
+# |        auto-update and minor-updates-only is HEAVILY RECOMMENDED
 # |------------------------------------------------------------------------
 config:
   refresh-panels: true

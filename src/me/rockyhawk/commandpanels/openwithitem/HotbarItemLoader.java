@@ -39,7 +39,12 @@ public class HotbarItemLoader {
                 if(openPanel) {
                     String panelName = plugin.panelNames.get(temp[1])[0];
                     ConfigurationSection tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(plugin.panelNames.get(temp[1])[1])))).getConfigurationSection("panels." + panelName);
-                    //only open panel automatically if there are no commands
+                    //only open panel automatically if there are no commands and player world is not disabled
+                    if(tempFile.contains("disabled-worlds")){
+                        if(tempFile.getStringList("disabled-worlds").contains(p.getWorld().getName())){
+                            return false;
+                        }
+                    }
                     if(tempFile.contains("open-with-item.commands")){
                         for(String command : tempFile.getStringList("open-with-item.commands")){
                             plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
@@ -76,7 +81,12 @@ public class HotbarItemLoader {
                 }
                 if(panelItem.isSimilar(invItem)){
                     if(openPanel) {
-                        //only open panel automatically if there are no commands
+                        //only open panel automatically if there are no commands and if world is not disabled
+                        if(tempFile.contains("disabled-worlds")){
+                            if(tempFile.getStringList("disabled-worlds").contains(p.getWorld().getName())){
+                                return false;
+                            }
+                        }
                         if(tempFile.contains("open-with-item.commands")){
                             for(String command : tempFile.getStringList("open-with-item.commands")){
                                 plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
