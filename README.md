@@ -10,11 +10,11 @@ If you don't feel like scripting, Command Panels is one of the few free plugins 
   - Unlimited GUIs
   - Create complex panel systems
   
-###Command Panels Server 
+### Command Panels Server 
 This is the official Command Panels Server. Feel free to join in and be a part of the community! The server is survival 1.8-1.16.4. Test the plugin here too!
 `play.CommandPanels.org`
 
-###Partnered Servers
+### Partnered Servers
 These servers are running Command Panels. Feel free to join in and be a part of the community!
 
 - CrystalRPG | 1.16 play.crystalrpg.com
