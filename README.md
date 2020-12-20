@@ -1,6 +1,6 @@
 ![TitleLogo](https://www.spigotmc.org/attachments/cpbanner-theonly-png.553479/)
 
-## About
+### About
 Minecraft Servers use GUIs for many tasks from lobbies to shops. Command Panels takes a simple approach to YAML scripting to create a powerful yet simple design.
 If you don't feel like scripting, Command Panels is one of the few free plugins you will find that provides a powerful in-game editor. Almost every feature that is available when scripting is included in-game.
 
