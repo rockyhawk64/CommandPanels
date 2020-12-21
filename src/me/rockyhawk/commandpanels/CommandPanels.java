@@ -471,7 +471,7 @@ public class CommandPanels extends JavaPlugin {
             for (String[] key : userInputStrings) {
                 if (key[0].equals(p.getName())) {
                     userInputStrings.add(new String[]{p.getName(), str});
-                    return "commandpanels:commandpanelclose";
+                    return "cpc";
                 }
             }
             userInputStrings.add(new String[]{p.getName(), str});
@@ -480,7 +480,7 @@ public class CommandPanels extends JavaPlugin {
                 temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(config.getString("config.input-cancel")));
                 p.sendMessage(papi(p, temp));
             }
-            str = "commandpanels:commandpanelclose";
+            str = "cpc";
         }
         //end nodes with PlaceHolders
         return str;
