@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="MMOItems-6.5.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../Tools/Build Tools/Jar Libraries/MMOItems-6.5.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

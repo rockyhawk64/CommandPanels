@@ -59,8 +59,9 @@ public class OpenGUI {
                 }
                 ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(pconfig.getConfigurationSection("item." + item.split("\\s")[c] + section)), p, onOpen != 3, onOpen != 3);
 
-                //do itemType for placeable
+                //This is for CUSTOM ITEMS
                 if(pconfig.contains("item." + item.split("\\s")[c] + section + ".itemType")) {
+                    //this is for contents in the itemType section
                     if (pconfig.getStringList("item." + item.split("\\s")[c] + section + ".itemType").contains("placeable") && onOpen == 0) {
                         //keep item the same, onOpen == 0 meaning panel is refreshing
                         i.setItem(Integer.parseInt(item.split("\\s")[c]), p.getOpenInventory().getItem(Integer.parseInt(item.split("\\s")[c])));

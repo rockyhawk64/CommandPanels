@@ -2,6 +2,9 @@ package me.rockyhawk.commandpanels.classresources;
 
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
+import net.Indyuce.mmoitems.MMOItems;
+import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
+import net.Indyuce.mmoitems.manager.ItemManager;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
@@ -44,9 +47,9 @@ public class ItemCreation {
             p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " material: could not load material!"));
             return null;
         }
-        ItemStack s;
+        ItemStack s = null;
         String mat;
-        String matskull;
+        String matraw;
         String skullname;
         //this will convert the %cp-player-online-1-find% into cps= NAME
         if (material.contains("%cp-player-online-")) {
@@ -62,14 +65,19 @@ public class ItemCreation {
             }
         }
         try {
+            //can be changed
             mat = material.toUpperCase();
-            matskull = material;
+            //cannot be changed (raw)
+            matraw = material;
+            //generate item stack normally
+            boolean normalCreation = true;
+            //name of head/skull if used
             skullname = "no skull";
             short id = 0;
             if(itemSection.contains("ID")){
                 id = Short.parseShort(itemSection.getString("ID"));
             }
-            if (matskull.split("\\s")[0].toLowerCase().equals("cps=") || matskull.split("\\s")[0].toLowerCase().equals("cpo=")) {
+            if (matraw.split("\\s")[0].toLowerCase().equals("cps=") || matraw.split("\\s")[0].toLowerCase().equals("cpo=")) {
                 skullname = p.getUniqueId().toString();
                 mat = plugin.getHeads.playerHeadString();
                 if(plugin.legacy.isLegacy()){
@@ -77,7 +85,7 @@ public class ItemCreation {
                 }
             }
 
-            if (matskull.split("\\s")[0].toLowerCase().equals("hdb=")) {
+            if (matraw.split("\\s")[0].toLowerCase().equals("hdb=")) {
                 skullname = "hdb";
                 mat = plugin.getHeads.playerHeadString();
                 if(plugin.legacy.isLegacy()){
@@ -85,12 +93,24 @@ public class ItemCreation {
                 }
             }
 
-            s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(mat)), 1,id);
+            //create custom MMOItems item
+            if(matraw.split("\\s")[0].toLowerCase().equals("mmo=") && plugin.getServer().getPluginManager().isPluginEnabled("MMOItems")){
+                String itemType = matraw.split("\\s")[1];
+                String itemID = matraw.split("\\s")[2];
+                ItemManager itemManager = MMOItems.plugin.getItems();
+                MMOItem mmoitem = itemManager.getMMOItem(MMOItems.plugin.getTypes().get(itemType), itemID);
+                s = mmoitem.newBuilder().build();
+                normalCreation = false;
+            }
 
-            if (!skullname.equals("no skull") && !skullname.equals("hdb") && !matskull.split("\\s")[0].equalsIgnoreCase("cpo=")) {
+            if(normalCreation) {
+                s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(mat)), 1, id);
+            }
+
+            if (!skullname.equals("no skull") && !skullname.equals("hdb") && !matraw.split("\\s")[0].equalsIgnoreCase("cpo=")) {
                 try {
                     SkullMeta meta;
-                    if (matskull.split("\\s")[1].equalsIgnoreCase("self")) {
+                    if (matraw.split("\\s")[1].equalsIgnoreCase("self")) {
                         //if cps= self
                         meta = (SkullMeta) s.getItemMeta();
                         if(!plugin.legacy.isLegacy()) {
@@ -105,22 +125,22 @@ public class ItemCreation {
                             meta.setOwner(p.getName());
                         }
                         s.setItemMeta(meta);
-                    }else if (plugin.papiNoColour(p,matskull.split("\\s")[1]).length() <= 16) {
+                    }else if (plugin.papiNoColour(p,matraw.split("\\s")[1]).length() <= 16) {
                         //if cps= username
-                        s = plugin.customHeads.getPlayerHead(plugin.papiNoColour(p,matskull.split("\\s")[1]));
+                        s = plugin.customHeads.getPlayerHead(plugin.papiNoColour(p,matraw.split("\\s")[1]));
                     } else {
                         //custom data cps= base64
-                        s = plugin.customHeads.getCustomHead(plugin.papiNoColour(p,matskull.split("\\s")[1]));
+                        s = plugin.customHeads.getCustomHead(plugin.papiNoColour(p,matraw.split("\\s")[1]));
                     }
                 } catch (Exception var32) {
                     p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.error") + " head material: Could not load skull"));
                     plugin.debug(var32);
                 }
             }
-            if (!skullname.equals("no skull") && matskull.split("\\s")[0].equalsIgnoreCase("cpo=")) {
+            if (!skullname.equals("no skull") && matraw.split("\\s")[0].equalsIgnoreCase("cpo=")) {
                 SkullMeta cpoMeta = (SkullMeta) s.getItemMeta();
                 assert cpoMeta != null;
-                cpoMeta.setOwningPlayer(Bukkit.getOfflinePlayer(Objects.requireNonNull(Bukkit.getPlayer(matskull.split("\\s")[1])).getUniqueId()));
+                cpoMeta.setOwningPlayer(Bukkit.getOfflinePlayer(Objects.requireNonNull(Bukkit.getPlayer(matraw.split("\\s")[1])).getUniqueId()));
                 s.setItemMeta(cpoMeta);
             }
             if (skullname.equals("hdb")) {
@@ -129,7 +149,7 @@ public class ItemCreation {
                     api = new HeadDatabaseAPI();
 
                     try {
-                        s = api.getItemHead(matskull.split("\\s")[1].trim());
+                        s = api.getItemHead(matraw.split("\\s")[1].trim());
                     } catch (Exception var22) {
                         p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " hdb: could not load skull!"));
                         plugin.debug(var22);
@@ -138,6 +158,7 @@ public class ItemCreation {
                     p.sendMessage(plugin.papi(plugin.tag + "Download HeadDatabaseHook from Spigot to use this feature!"));
                 }
             }
+
             if (itemSection.contains("map")) {
                 /*
                 This will do maps from custom images

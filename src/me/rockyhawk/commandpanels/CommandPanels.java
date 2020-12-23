@@ -85,15 +85,13 @@ public class CommandPanels extends JavaPlugin {
     public File panelsf;
     public YamlConfiguration blockConfig; //where panel block locations are stored
 
-    public CommandPanels() {
-        this.panelsf = new File(this.getDataFolder() + File.separator + "panels");
-        this.blockConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "blocks.yml"));
-    }
-
     public void onEnable() {
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loading...");
 
+        this.panelsf = new File(this.getDataFolder() + File.separator + "panels");
+        this.blockConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "blocks.yml"));
         this.config = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + File.separator + "config.yml"));
+
         //save the config.yml file
         File configFile = new File(this.getDataFolder() + File.separator + "config.yml");
         if (!configFile.exists()) {
@@ -361,6 +359,7 @@ public class CommandPanels extends JavaPlugin {
         return setpapi;
     }
 
+    @SuppressWarnings("deprecation")
     public String setCpPlaceholders(Player p, String str) {
         //replace nodes with PlaceHolders
         str = str.replaceAll("%cp-player-displayname%", p.getDisplayName());
@@ -395,6 +394,7 @@ public class CommandPanels extends JavaPlugin {
             }
         }
 
+        //DO placeholders for detection of other items in a panel
         //get material value from slot in current open inventory (panel)
         while (str.contains("%cp-material-")) {
             try {
@@ -404,6 +404,10 @@ public class CommandPanels extends JavaPlugin {
                 String material;
                 try {
                     material = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().toString();
+                    if(legacy.isLegacy()){
+                        //add the ID to the end if it is legacy (eg, material:id)
+                        material = material + ":" + p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().getId();
+                    }
                 } catch (NullPointerException er) {
                     material = "AIR";
                 }
@@ -412,7 +416,6 @@ public class CommandPanels extends JavaPlugin {
                 debug(ex);
             }
         }
-
         //get stack amount from slot in current open inventory (panel)
         while (str.contains("%cp-stack-")) {
             try {
@@ -426,6 +429,31 @@ public class CommandPanels extends JavaPlugin {
                     amount = 0;
                 }
                 str = str.replace(str.substring(start, end) + "%", String.valueOf(amount));
+            }catch(Exception ex){
+                debug(ex);
+            }
+        }
+        //is an item damaged
+        while (str.contains("%cp-damaged-")) {
+            try {
+                int start = str.indexOf("%cp-damaged-");
+                int end = str.indexOf("%", str.indexOf("%cp-damaged-") + 1);
+                String matNumber = str.substring(start, end).replace("%cp-damaged-", "").replace("%", "");
+                boolean damaged = false;
+                ItemStack itm = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber));
+                try {
+                    if(legacy.isLegacy()){
+                        if(itm.getType().getMaxDurability() != 0) {
+                            damaged = (itm.getType().getMaxDurability() - itm.getDurability()) < itm.getType().getMaxDurability();
+                        }
+                    }else {
+                        Damageable itemDamage = (Damageable) itm.getItemMeta();
+                        damaged = itemDamage.hasDamage();
+                    }
+                } catch (NullPointerException er) {
+                    damaged = false;
+                }
+                str = str.replace(str.substring(start, end) + "%", String.valueOf(damaged));
             }catch(Exception ex){
                 debug(ex);
             }

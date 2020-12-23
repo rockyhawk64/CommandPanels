@@ -77,18 +77,24 @@ public class Commandpanelsreload implements CommandExecutor {
         for (String[] panelName : plugin.panelNames) {
             tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1])))).getConfigurationSection("panels." + panelName[0]);
 
+            if(tempFile.contains("panelType")){
+                if(tempFile.getStringList("panelType").contains("nocommandregister")){
+                    continue;
+                }
+            }
+
             if(tempFile.contains("commands")){
                 List<String> panelCommands = tempFile.getStringList("commands");
                 for(String command : panelCommands){
                     cmdCF.set("aliases." + command.split("\\s")[0],temp);
                 }
             }
+        }
 
-            try {
-                cmdCF.save(commandsLoc);
-            } catch (IOException var10) {
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not register custom commands!");
-            }
+        try {
+            cmdCF.save(commandsLoc);
+        } catch (IOException var10) {
+            Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not register custom commands!");
         }
     }
 }

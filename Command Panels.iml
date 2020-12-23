@@ -15,5 +15,6 @@
     <orderEntry type="library" name="spigot-1.13.2" level="project" />
     <orderEntry type="library" name="PlaceholderAPI-2.10.8" level="project" />
     <orderEntry type="library" name="VotingPlugin" level="project" />
+    <orderEntry type="library" name="MMOItems-6.5.1" level="project" />
   </component>
 </module>
