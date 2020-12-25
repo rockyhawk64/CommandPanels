@@ -16,5 +16,6 @@
     <orderEntry type="library" name="PlaceholderAPI-2.10.8" level="project" />
     <orderEntry type="library" name="VotingPlugin" level="project" />
     <orderEntry type="library" name="MMOItems-6.5.1" level="project" />
+    <orderEntry type="library" name="MMOLib" level="project" />
   </component>
 </module>

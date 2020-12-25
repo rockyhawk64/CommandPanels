@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
+import net.mmogroup.mmolib.api.item.NBTItem;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -95,6 +96,19 @@ public class CommandTags {
                         i = i+contents.length()-1;
                     }
                 }
+                break;
+            }
+            case "setitem=":{
+                //if player uses setitem= [custom item] [slot] it will change the item slot to something, used for placeable items
+                //make a section in the panel called "custom-item" then whatever the title of the item is, put that here
+                ConfigurationSection panelCF = plugin.openPanels.getOpenPanel(p.getName());
+                ItemStack s = plugin.itemCreate.makeItemFromConfig(panelCF.getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, true);
+                p.getOpenInventory().getTopInventory().setItem(Integer.parseInt(command.split("\\s")[2]), s);
+                break;
+            }
+            case "refresh":{
+                //this will just do a standard panel refresh, animate is set to 0
+                plugin.createGUI.openGui(null, p, plugin.openPanels.getOpenPanel(p.getName()), 0,0);
                 break;
             }
             case "op=":{
@@ -537,34 +551,72 @@ public class CommandTags {
             }
             case "item-paywall=": {
                 //if player uses item-paywall= [Material] [Amount] [Id]
+                //or player can use item-paywall= [custom-item]
                 try {
                     short id = 0;
                     if(command.split("\\s").length == 4){
                         id = Short.parseShort(command.split("\\s")[3]);
                     }
-                    ItemStack sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[1])),Integer.parseInt(command.split("\\s")[2]), id);
-                    int sellItemAmount = sellItem.getAmount();
-                    sellItem.setAmount(1);
+
+                    //create the item to be removed
+                    ItemStack sellItem;
+                    if(command.split("\\s").length == 2) {
+                        sellItem = plugin.itemCreate.makeItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, true);
+                    }else{
+                        sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[1])), Integer.parseInt(command.split("\\s")[2]), id);
+                    }
+                    //this is not a boolean because it needs to return an int
                     int removedItem = 0;
+
+                    //loop through items in the inventory
                     for(ItemStack content : p.getInventory().getContents()){
-                        int contentAmount;
-                        try {
-                            contentAmount = content.getAmount();
-                        }catch(NullPointerException skip){
-                            //item is air
+
+                        if(content == null){
+                            //skip slot if empty
                             continue;
                         }
-                        content.setAmount(1);
-                        if(content.isSimilar(sellItem)){
-                            if(sellItemAmount <= contentAmount){
-                                content.setAmount(contentAmount-sellItemAmount);
+
+                        if(command.split("\\s").length == 2){
+                            //if item paywall is custom item
+                            if(content.isSimilar(sellItem)){
+                                content.setAmount(content.getAmount() - sellItem.getAmount());
                                 p.updateInventory();
                                 removedItem = 1;
                                 break;
                             }
+
+                            //if custom item is an mmo item (1.14+ for the API)
+                            try {
+                                if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems")) {
+                                    String customItemMaterial = plugin.openPanels.getOpenPanel(p.getName()).getString("custom-item." + command.split("\\s")[1] + ".material");
+                                    String mmoType = customItemMaterial.split("\\s")[1];
+                                    String mmoID = customItemMaterial.split("\\s")[2];
+
+                                    if (plugin.isMMOItem(sellItem,mmoType,mmoID) && sellItem.getAmount() <= content.getAmount()) {
+                                        content.setAmount(content.getAmount() - sellItem.getAmount());
+                                        p.updateInventory();
+                                        removedItem = 1;
+                                        break;
+                                    }
+                                }
+                            }catch (Exception ex){
+                                plugin.debug(ex);
+                            }
+
+                        }else {
+                            //if the item is a standard material
+                            if (content.getType() == sellItem.getType()) {
+                                if (sellItem.getAmount() <= content.getAmount()) {
+                                    content.setAmount(content.getAmount() - sellItem.getAmount());
+                                    p.updateInventory();
+                                    removedItem = 1;
+                                    break;
+                                }
+                            }
                         }
-                        content.setAmount(contentAmount);
                     }
+
+                    //send message and return
                     if(removedItem == 0){
                         p.sendMessage(plugin.papi( tag + plugin.config.getString("config.format.needmoney")));
                     }else{

@@ -1,6 +1,6 @@
 # |------------------------------------------------------------------------
 # |                    CommandPanels Legacy Example File
-# |                            By RockyHawk v2.1
+# |                            By RockyHawk v2.2
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
 # |------------------------------------------------------------------------
 panels:
@@ -26,6 +26,21 @@ panels:
         name: '&d&lPURPLE'
         leatherarmor: PURPLE
         damage: 30
+      '1':
+        material: DIAMOND
+        name: '&fThis is a diamond'
+        lore: "&7Feel free to take me!"
+        itemType:
+          - placeable
+        '10':
+          material: REDSTONE_BLOCK
+          name: '&fTake the diamond'
+          hasvalue:
+            value: DIAMOND
+            output: false
+            compare: '%cp-material-1%'
+            name: '&fNice One!'
+            material: EMERALD_BLOCK
       '9':
         material: LEATHER_CHESTPLATE
         name: '&9&lBLUE'

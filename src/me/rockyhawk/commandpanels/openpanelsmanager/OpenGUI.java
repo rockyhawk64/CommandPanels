@@ -57,7 +57,7 @@ public class OpenGUI {
                         }
                     }
                 }
-                ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(pconfig.getConfigurationSection("item." + item.split("\\s")[c] + section)), p, onOpen != 3, onOpen != 3);
+                ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(pconfig.getConfigurationSection("item." + item.split("\\s")[c] + section)), p, onOpen != 3, onOpen != 3, true);
 
                 //This is for CUSTOM ITEMS
                 if(pconfig.contains("item." + item.split("\\s")[c] + section + ".itemType")) {

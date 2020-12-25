@@ -115,12 +115,12 @@ public class ExecuteOpenVoids {
             }
             ItemStack s;
             try {
-                s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(cf.getConfigurationSection("open-with-item")), p, false, true);
+                s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(cf.getConfigurationSection("open-with-item")), p, false, true, true);
             }catch(Exception n){
                 sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " open-with-item: material"));
                 return;
             }
-            plugin.setName(s, cf.getString("open-with-item.name"), cf.getStringList("open-with-item.lore"),p,false, true);
+            plugin.setName(s, cf.getString("open-with-item.name"), cf.getStringList("open-with-item.lore"),p,false, true, true);
             //if the sender has OTHER perms, or if sendGiveMessage is false, implying it is not for another person
             if(sender.hasPermission("commandpanel.other") || !sendGiveMessage) {
                 try {

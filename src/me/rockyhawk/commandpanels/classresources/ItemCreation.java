@@ -36,7 +36,7 @@ public class ItemCreation {
     }
 
     @SuppressWarnings("deprecation")
-    public ItemStack makeItemFromConfig(ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours){
+    public ItemStack makeItemFromConfig(ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours, boolean hideAttributes){
         String material = plugin.papiNoColour(p,itemSection.getString("material"));
         try {
             if (Objects.requireNonNull(material).equalsIgnoreCase("AIR")) {
@@ -156,6 +156,14 @@ public class ItemCreation {
                     }
                 } else {
                     p.sendMessage(plugin.papi(plugin.tag + "Download HeadDatabaseHook from Spigot to use this feature!"));
+                }
+            }
+
+            //itemType values
+            if(itemSection.contains("itemType")){
+                //if hidden, reverse
+                if(itemSection.getStringList("itemType").contains("attributes")){
+                    hideAttributes = !hideAttributes;
                 }
             }
 
@@ -309,7 +317,7 @@ public class ItemCreation {
             p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " material: " + itemSection.getString("material")));
             return null;
         }
-        plugin.setName(s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours);
+        plugin.setName(s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours, hideAttributes);
         return s;
     }
 

@@ -42,6 +42,7 @@ import me.rockyhawk.commandpanels.interactives.CommandpanelUserInput;
 import me.rockyhawk.commandpanels.interactives.Commandpanelrefresher;
 import me.rockyhawk.commandpanels.updater.Updater;
 import net.milkbowl.vault.economy.Economy;
+import net.mmogroup.mmolib.api.item.NBTItem;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -216,7 +217,7 @@ public class CommandPanels extends JavaPlugin {
         Bukkit.getLogger().info("RockyHawk's CommandPanels Plugin Disabled, aww man.");
     }
 
-    public void setName(ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours) {
+    public void setName(ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours, Boolean hideAttributes) {
         try {
             ItemMeta renamedMeta = renamed.getItemMeta();
             //set cp placeholders
@@ -228,7 +229,10 @@ public class CommandPanels extends JavaPlugin {
             }
 
             assert renamedMeta != null;
-            renamedMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            //hiding attributes will add an NBT tag
+            if(hideAttributes) {
+                renamedMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            }
             if (customName != null) {
                 renamedMeta.setDisplayName(customName);
             }
@@ -414,6 +418,7 @@ public class CommandPanels extends JavaPlugin {
                 str = str.replace(str.substring(start, end) + "%", material);
             }catch(Exception ex){
                 debug(ex);
+                break;
             }
         }
         //get stack amount from slot in current open inventory (panel)
@@ -431,6 +436,7 @@ public class CommandPanels extends JavaPlugin {
                 str = str.replace(str.substring(start, end) + "%", String.valueOf(amount));
             }catch(Exception ex){
                 debug(ex);
+                break;
             }
         }
         //is an item damaged
@@ -456,6 +462,45 @@ public class CommandPanels extends JavaPlugin {
                 str = str.replace(str.substring(start, end) + "%", String.valueOf(damaged));
             }catch(Exception ex){
                 debug(ex);
+                break;
+            }
+        }
+        //is an item identical, uses custom-items (custom item, slot)
+        while (str.contains("%cp-identical-")) {
+            try {
+                int start = str.indexOf("%cp-identical-");
+                int end = str.indexOf("%", str.indexOf("%cp-identical-") + 1);
+                String matLocSlot = str.substring(start, end).replace("%cp-identical-", "").replace("%", "");
+                String matLoc = matLocSlot.split(",")[0];
+                int matSlot = Integer.parseInt(matLocSlot.split(",")[1]);
+                boolean isIdentical = false;
+                ItemStack itm = p.getOpenInventory().getTopInventory().getItem(matSlot);
+
+                try {
+                    //if it is a regular custom item
+                    ItemStack confItm = itemCreate.makeItemFromConfig(openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + matLoc),p,true,true, true);
+                    if(itm.isSimilar(confItm) && itm.getAmount() == confItm.getAmount()){
+                        isIdentical = true;
+                    }
+
+                    //if custom item is an mmo item (1.14+ for the API)
+                    String customItemMaterial = openPanels.getOpenPanel(p.getName()).getString("custom-item." + matLoc + ".material");
+                    if (getServer().getPluginManager().isPluginEnabled("MMOItems") && customItemMaterial.startsWith("mmo=")) {
+                        String mmoType = customItemMaterial.split("\\s")[1];
+                        String mmoID = customItemMaterial.split("\\s")[2];
+
+                        if (isMMOItem(itm,mmoType,mmoID) && itm.getAmount() <= confItm.getAmount()) {
+                            isIdentical = true;
+                        }
+                    }
+                } catch (NullPointerException er) {
+                    isIdentical = false;
+                }
+
+                str = str.replace(str.substring(start, end) + "%", String.valueOf(isIdentical));
+            }catch(Exception ex){
+                debug(ex);
+                break;
             }
         }
 
@@ -671,5 +716,21 @@ public class CommandPanels extends JavaPlugin {
             );
         }
         return matcher.appendTail(buffer).toString();
+    }
+
+    //returns true if the item is the MMO Item
+    public boolean isMMOItem(ItemStack itm, String type, String id){
+        try {
+            if (getServer().getPluginManager().isPluginEnabled("MMOItems")) {
+                NBTItem nbt = NBTItem.get(itm);
+                if (nbt.getType().equalsIgnoreCase(type) && nbt.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(id)){
+                    return true;
+                }
+                itm.getType();
+            }
+        }catch (Exception ex){
+            debug(ex);
+        }
+        return false;
     }
 }
