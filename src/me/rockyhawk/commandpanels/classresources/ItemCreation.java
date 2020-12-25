@@ -331,8 +331,8 @@ public class ItemCreation {
                 //if output is true, and values match it will be this item, vice versa
                 outputValue = cf.getBoolean("hasvalue.output");
             }
-            String value = ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasvalue.value"))));
-            String compare = ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasvalue.compare"))));
+            String value = ChatColor.stripColor(plugin.papi(p,plugin.placeholders.setCpPlaceholders(p,cf.getString("hasvalue.value"))));
+            String compare = ChatColor.stripColor(plugin.papi(p,plugin.placeholders.setCpPlaceholders(p,cf.getString("hasvalue.compare"))));
             if (compare.equals(value) == outputValue) {
                 //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
                 String section = hasSection(Objects.requireNonNull(cf.getConfigurationSection("hasvalue")), p);
@@ -348,8 +348,8 @@ public class ItemCreation {
                         //if output is true, and values match it will be this item, vice versa
                         outputValue = cf.getBoolean("hasvalue" + count + ".output");
                     }
-                    value = ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasvalue" + count + ".value"))));
-                    compare = ChatColor.stripColor(plugin.papi(p,plugin.setCpPlaceholders(p,cf.getString("hasvalue" + count + ".compare"))));
+                    value = ChatColor.stripColor(plugin.papi(p,plugin.placeholders.setCpPlaceholders(p,cf.getString("hasvalue" + count + ".value"))));
+                    compare = ChatColor.stripColor(plugin.papi(p,plugin.placeholders.setCpPlaceholders(p,cf.getString("hasvalue" + count + ".compare"))));
                     if (compare.equals(value) == outputValue) {
                         //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
                         String section = hasSection(Objects.requireNonNull(cf.getConfigurationSection("hasvalue" + count)), p);
@@ -491,5 +491,40 @@ public class ItemCreation {
             }
         }
         return file;
+    }
+
+    /*
+    The ItemStack 'one' will be used, if it doesn't have a lore for example, it won't check to see if the other does have one
+    The isIdentical() function will check for the following
+    Material, Name, Lore, Enchanted
+     */
+    public boolean isIdentical(ItemStack one, ItemStack two){
+        //check material
+        if(one.getType() != two.getType()){
+            return false;
+        }
+        //check for name
+        try {
+            if (!one.getItemMeta().getDisplayName().equals(two.getItemMeta().getDisplayName())) {
+                if(one.getItemMeta().hasDisplayName()) {
+                    return false;
+                }
+            }
+        }catch(Exception ignore){}
+        //check for lore
+        try {
+            if (!one.getItemMeta().getLore().equals(two.getItemMeta().getLore())) {
+                if(one.getItemMeta().hasLore()) {
+                    return false;
+                }
+            }
+        }catch(Exception ignore){}
+        //check for enchantments
+        if(one.getEnchantments().equals(two.getEnchantments())){
+            if(!one.getEnchantments().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

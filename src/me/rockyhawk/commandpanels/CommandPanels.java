@@ -71,6 +71,7 @@ public class CommandPanels extends JavaPlugin {
 
     //get alternate classes
     public CommandTags commandTags = new CommandTags(this);
+    public Placeholders placeholders = new Placeholders(this);
     public OpenEditorGuis editorGuis = new OpenEditorGuis(this);
     public ExecuteOpenVoids openVoids = new ExecuteOpenVoids(this);
     public ItemCreation itemCreate = new ItemCreation(this);
@@ -278,7 +279,7 @@ public class CommandPanels extends JavaPlugin {
     //regular string papi
     public String papi(Player p, String setpapi) {
         try {
-            setpapi = setCpPlaceholders(p,setpapi);
+            setpapi = placeholders.setCpPlaceholders(p,setpapi);
             if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
                 OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
                 setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
@@ -293,7 +294,7 @@ public class CommandPanels extends JavaPlugin {
     //string papi with no colours
     public String papiNoColour(Player p, String setpapi) {
         try {
-            setpapi = setCpPlaceholders(p,setpapi);
+            setpapi = placeholders.setCpPlaceholders(p,setpapi);
             if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
                 OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
                 setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
@@ -315,12 +316,12 @@ public class CommandPanels extends JavaPlugin {
     }
 
     //papi except if it is a String List
-    public List<String> papi(Player p, List<String> setpapi, boolean placeholders) {
+    public List<String> papi(Player p, List<String> setpapi, boolean placeholder) {
         try {
-            if(placeholders) {
+            if(placeholder) {
                 int tempInt = 0;
                 for (String temp : setpapi) {
-                    setpapi.set(tempInt, setCpPlaceholders(p, temp));
+                    setpapi.set(tempInt, placeholders.setCpPlaceholders(p, temp));
                     tempInt += 1;
                 }
                 if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -349,7 +350,7 @@ public class CommandPanels extends JavaPlugin {
         try {
             int tempInt = 0;
             for (String temp : setpapi) {
-                setpapi.set(tempInt, setCpPlaceholders(p, temp));
+                setpapi.set(tempInt, placeholders.setCpPlaceholders(p, temp));
                 tempInt += 1;
             }
             if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -361,202 +362,6 @@ public class CommandPanels extends JavaPlugin {
             return null;
         }
         return setpapi;
-    }
-
-    @SuppressWarnings("deprecation")
-    public String setCpPlaceholders(Player p, String str) {
-        //replace nodes with PlaceHolders
-        str = str.replaceAll("%cp-player-displayname%", p.getDisplayName());
-        str = str.replaceAll("%cp-player-name%", p.getName());
-        str = str.replaceAll("%cp-player-world%", p.getWorld().getName());
-        str = str.replaceAll("%cp-player-x%", String.valueOf(Math.round(p.getLocation().getX())));
-        str = str.replaceAll("%cp-player-y%", String.valueOf(Math.round(p.getLocation().getY())));
-        str = str.replaceAll("%cp-player-z%", String.valueOf(Math.round(p.getLocation().getZ())));
-        str = str.replaceAll("%cp-online-players%", Integer.toString(Bukkit.getServer().getOnlinePlayers().size()));
-        str = str.replaceAll("%cp-tag%", papi(tag));
-        //placeholder to check for server availability %cp-server-IP:PORT%
-        while (str.contains("%cp-server-")) {
-            int start = str.indexOf("%cp-server-");
-            int end = str.indexOf("%", str.indexOf("%cp-server-")+1);
-            String ip_port = str.substring(start, end).replace("%cp-server-", "").replace("%","");
-            Socket s = new Socket();
-            try {
-                s.connect(new InetSocketAddress(ip_port.split(":")[0], Integer.parseInt(ip_port.split(":")[1])), config.getInt("config.server-ping-timeout"));
-                str = str.replace(str.substring(start, end) + "%", "true");
-                s.close();
-            }catch (IOException ex){
-                str = str.replace(str.substring(start, end) + "%", "false");
-            }
-        }
-
-        //set custom placeholders to their values
-        for(String[] placeholder : customCommand.getCCP(p.getName())){
-            while (str.contains(placeholder[0])) {
-                int start = str.indexOf(placeholder[0]);
-                int end = start+placeholder[0].length()-1;
-                str = str.replace(str.substring(start, end) + "%", placeholder[1]);
-            }
-        }
-
-        //DO placeholders for detection of other items in a panel
-        //get material value from slot in current open inventory (panel)
-        while (str.contains("%cp-material-")) {
-            try {
-                int start = str.indexOf("%cp-material-");
-                int end = str.indexOf("%", str.indexOf("%cp-material-") + 1);
-                String matNumber = str.substring(start, end).replace("%cp-material-", "").replace("%", "");
-                String material;
-                try {
-                    material = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().toString();
-                    if(legacy.isLegacy()){
-                        //add the ID to the end if it is legacy (eg, material:id)
-                        material = material + ":" + p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().getId();
-                    }
-                } catch (NullPointerException er) {
-                    material = "AIR";
-                }
-                str = str.replace(str.substring(start, end) + "%", material);
-            }catch(Exception ex){
-                debug(ex);
-                break;
-            }
-        }
-        //get stack amount from slot in current open inventory (panel)
-        while (str.contains("%cp-stack-")) {
-            try {
-                int start = str.indexOf("%cp-stack-");
-                int end = str.indexOf("%", str.indexOf("%cp-stack-") + 1);
-                String matNumber = str.substring(start, end).replace("%cp-stack-", "").replace("%", "");
-                int amount;
-                try {
-                    amount = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getAmount();
-                } catch (NullPointerException er) {
-                    amount = 0;
-                }
-                str = str.replace(str.substring(start, end) + "%", String.valueOf(amount));
-            }catch(Exception ex){
-                debug(ex);
-                break;
-            }
-        }
-        //is an item damaged
-        while (str.contains("%cp-damaged-")) {
-            try {
-                int start = str.indexOf("%cp-damaged-");
-                int end = str.indexOf("%", str.indexOf("%cp-damaged-") + 1);
-                String matNumber = str.substring(start, end).replace("%cp-damaged-", "").replace("%", "");
-                boolean damaged = false;
-                ItemStack itm = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber));
-                try {
-                    if(legacy.isLegacy()){
-                        if(itm.getType().getMaxDurability() != 0) {
-                            damaged = (itm.getType().getMaxDurability() - itm.getDurability()) < itm.getType().getMaxDurability();
-                        }
-                    }else {
-                        Damageable itemDamage = (Damageable) itm.getItemMeta();
-                        damaged = itemDamage.hasDamage();
-                    }
-                } catch (NullPointerException er) {
-                    damaged = false;
-                }
-                str = str.replace(str.substring(start, end) + "%", String.valueOf(damaged));
-            }catch(Exception ex){
-                debug(ex);
-                break;
-            }
-        }
-        //is an item identical, uses custom-items (custom item, slot)
-        while (str.contains("%cp-identical-")) {
-            try {
-                int start = str.indexOf("%cp-identical-");
-                int end = str.indexOf("%", str.indexOf("%cp-identical-") + 1);
-                String matLocSlot = str.substring(start, end).replace("%cp-identical-", "").replace("%", "");
-                String matLoc = matLocSlot.split(",")[0];
-                int matSlot = Integer.parseInt(matLocSlot.split(",")[1]);
-                boolean isIdentical = false;
-                ItemStack itm = p.getOpenInventory().getTopInventory().getItem(matSlot);
-
-                try {
-                    //if it is a regular custom item
-                    ItemStack confItm = itemCreate.makeItemFromConfig(openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + matLoc),p,true,true, true);
-                    if(itm.isSimilar(confItm) && itm.getAmount() == confItm.getAmount()){
-                        isIdentical = true;
-                    }
-
-                    //if custom item is an mmo item (1.14+ for the API)
-                    String customItemMaterial = openPanels.getOpenPanel(p.getName()).getString("custom-item." + matLoc + ".material");
-                    if (getServer().getPluginManager().isPluginEnabled("MMOItems") && customItemMaterial.startsWith("mmo=")) {
-                        String mmoType = customItemMaterial.split("\\s")[1];
-                        String mmoID = customItemMaterial.split("\\s")[2];
-
-                        if (isMMOItem(itm,mmoType,mmoID) && itm.getAmount() <= confItm.getAmount()) {
-                            isIdentical = true;
-                        }
-                    }
-                } catch (NullPointerException er) {
-                    isIdentical = false;
-                }
-
-                str = str.replace(str.substring(start, end) + "%", String.valueOf(isIdentical));
-            }catch(Exception ex){
-                debug(ex);
-                break;
-            }
-        }
-
-        //does %cp-random-MIN,MAX%
-        while (str.contains("%cp-random-")) {
-            int start = str.indexOf("%cp-random-");
-            int end = str.indexOf("%", str.indexOf("%cp-random-") + 1);
-            String min_max = str.substring(start, end).replace("%cp-random-", "").replace("%", "");
-            int min = Integer.parseInt(min_max.split(",")[0]);
-            int max = Integer.parseInt(min_max.split(",")[1]);
-            str = str.replace(str.substring(start, end) + "%", String.valueOf(getRandomNumberInRange(min, max)));
-        }
-        while (str.contains("%cp-player-online-")) {
-            int start = str.indexOf("%cp-player-online-");
-            int end = str.indexOf("-find%",str.indexOf("%cp-player-online-")+1);
-            String playerLocation = str.substring(start, end).replace("%cp-player-online-", "");
-            Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
-            if (Integer.parseInt(playerLocation) > playerFind.length) {
-                str = str.replace(str.substring(start, end) + "-find%", papi(Objects.requireNonNull(config.getString("config.format.offline"))));
-            } else {
-                str = str.replace(str.substring(start, end) + "-find%", playerFind[Integer.parseInt(playerLocation) - 1].getName());
-            }
-        }
-
-        try {
-            if (econ != null) {
-                str = str.replaceAll("%cp-player-balance%", String.valueOf(Math.round(econ.getBalance(p))));
-            }
-        } catch (Exception place) {
-            //skip
-        }
-        if (this.getServer().getPluginManager().isPluginEnabled("TokenManager")) {
-            TokenManager api = (TokenManager) Bukkit.getServer().getPluginManager().getPlugin("TokenManager");
-            assert api != null;
-            str = str.replaceAll("%cp-tokenmanager-balance%", Long.toString(api.getTokens(p).orElse(0)));
-        }
-        if (this.getServer().getPluginManager().isPluginEnabled("VotingPlugin")) {
-            str = str.replaceAll("%cp-votingplugin-points%", String.valueOf(UserManager.getInstance().getVotingPluginUser(p).getPoints()));
-        }
-        if (str.contains("%cp-player-input%")) {
-            for (String[] key : userInputStrings) {
-                if (key[0].equals(p.getName())) {
-                    userInputStrings.add(new String[]{p.getName(), str});
-                    return "cpc";
-                }
-            }
-            userInputStrings.add(new String[]{p.getName(), str});
-            List<String> inputMessages = new ArrayList<String>(config.getStringList("config.input-message"));
-            for (String temp : inputMessages) {
-                temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(config.getString("config.input-cancel")));
-                p.sendMessage(papi(p, temp));
-            }
-            str = "cpc";
-        }
-        //end nodes with PlaceHolders
-        return str;
     }
 
     //check for duplicate panel names
