@@ -1,21 +1,18 @@
 package me.rockyhawk.commandpanels;
 
 import java.io.*;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.bencodez.votingplugin.user.UserManager;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.classresources.*;
 import me.rockyhawk.commandpanels.commands.*;
 import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
 import me.rockyhawk.commandpanels.customcommands.CommandPlaceholderLoader;
 import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
+import me.rockyhawk.commandpanels.datamanager.PanelDataLoader;
 import me.rockyhawk.commandpanels.generatepanels.Commandpanelsgenerate;
 import me.rockyhawk.commandpanels.generatepanels.GenUtils;
 import me.rockyhawk.commandpanels.generatepanels.TabCompleteGenerate;
@@ -71,6 +68,7 @@ public class CommandPanels extends JavaPlugin {
 
     //get alternate classes
     public CommandTags commandTags = new CommandTags(this);
+    public PanelDataLoader panelData = new PanelDataLoader(this);
     public Placeholders placeholders = new Placeholders(this);
     public OpenEditorGuis editorGuis = new OpenEditorGuis(this);
     public ExecuteOpenVoids openVoids = new ExecuteOpenVoids(this);
@@ -86,12 +84,15 @@ public class CommandPanels extends JavaPlugin {
 
     public File panelsf;
     public YamlConfiguration blockConfig; //where panel block locations are stored
+    public YamlConfiguration dataConfig; //where arbitrary data is stored for players
 
     public void onEnable() {
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loading...");
 
+        //register config files
         this.panelsf = new File(this.getDataFolder() + File.separator + "panels");
         this.blockConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "blocks.yml"));
+        panelData.dataConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "data.yml"));
         this.config = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + File.separator + "config.yml"));
 
         //save the config.yml file
@@ -170,16 +171,18 @@ public class CommandPanels extends JavaPlugin {
             this.getServer().getPluginManager().registerEvents(new SwapItemEvent(this), this);
         }
 
-        //save the example.yml file
+        //save the example.yml file and the template.yml file
         if (!this.panelsf.exists() || Objects.requireNonNull(this.panelsf.list()).length == 0) {
             try {
                 FileConfiguration exampleFileConfiguration;
+                FileConfiguration templateFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("template.yml")));
                 if(legacy.isLegacy()){
                     exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("exampleLegacy.yml")));
                 }else {
                     exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example.yml")));
                 }
                 exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example.yml"));
+                templateFileConfiguration.save(new File(this.panelsf + File.separator + "template.yml"));
             } catch (IOException var11) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not save the example file!");
             }
@@ -212,6 +215,7 @@ public class CommandPanels extends JavaPlugin {
     }
 
     public void onDisable() {
+        panelData.saveDataFile();
         if (Objects.requireNonNull(this.config.getString("config.updater.auto-update")).equalsIgnoreCase("true")) {
             updater.autoUpdatePlugin(this.getFile().getName());
         }

@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.openpanelsmanager;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -136,6 +137,7 @@ public class OpenGUI {
                                 id = Short.parseShort(pconfig.getString("emptyID"));
                             }
                             empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(pconfig.getString("empty")).toUpperCase())), 1,id);
+                            empty = NBTEditor.set(empty,"CommandPanels","plugin");
                             if (empty.getType() == Material.AIR) {
                                 continue;
                             }

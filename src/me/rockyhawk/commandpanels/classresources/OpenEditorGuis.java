@@ -38,7 +38,7 @@ public class OpenEditorGuis {
                     panelNames.add(plugin.papi( key));
                     panelTitles.add(plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))));
                     if (temp.contains("panels." + key + ".open-with-item.material")) {
-                        panelItems.add(plugin.itemCreate.makeItemFromConfig(temp.getConfigurationSection("panels." + key + ".open-with-item"), p, false, true, true));
+                        panelItems.add(plugin.itemCreate.makeItemFromConfig(temp.getConfigurationSection("panels." + key + ".open-with-item"), p, false, true, false));
                     } else {
                         panelItems.add(new ItemStack(Material.PAPER));
                     }
@@ -268,7 +268,7 @@ public class OpenEditorGuis {
 
         if(cf.contains("open-with-item.material")){
             hotbarItems = true;
-            temp = plugin.itemCreate.makeItemFromConfig(cf.getConfigurationSection("open-with-item"), p, false, true, true);
+            temp = plugin.itemCreate.makeItemFromConfig(cf.getConfigurationSection("open-with-item"), p, false, true, false);
         }else{
             temp = new ItemStack(Material.REDSTONE_BLOCK, 1);
         }
@@ -505,7 +505,7 @@ public class OpenEditorGuis {
         plugin.setName(temp, ChatColor.RED + "Back", null, p, true, true, true);
         i.setItem(27, temp);
 
-        temp = plugin.itemCreate.makeItemFromConfig(cf,p,false,false, true);
+        temp = plugin.itemCreate.makeItemFromConfig(cf,p,false,false, false);
         lore.clear();
         lore.add(ChatColor.GRAY + "Click to set custom material");
         lore.add(ChatColor.GRAY + "typically for custom heads");
@@ -544,7 +544,7 @@ public class OpenEditorGuis {
                     lore.add(ChatColor.WHITE + "Compare: " + ChatColor.GRAY + cf.getString(section + ".compare"));
                 }
 
-                temp = plugin.itemCreate.makeItemFromConfig(cf.getConfigurationSection(section),p,false,false, true);
+                temp = plugin.itemCreate.makeItemFromConfig(cf.getConfigurationSection(section),p,false,false, false);
                 plugin.setName(temp, ChatColor.AQUA + section, lore, p,false, true, true);
                 i.setItem(slot, temp);
                 slot++;

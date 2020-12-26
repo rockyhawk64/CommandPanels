@@ -136,7 +136,7 @@ public class Placeholders {
 
                 try {
                     //if it is a regular custom item
-                    ItemStack confItm = plugin.itemCreate.makeItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + matLoc),p,true,true, true);
+                    ItemStack confItm = plugin.itemCreate.makeItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + matLoc),p,true,true, false);
                     if(plugin.itemCreate.isIdentical(confItm,itm)){
                         isIdentical = true;
                     }
@@ -176,6 +176,19 @@ public class Placeholders {
                 break;
             }
         }
+        //returns value of stored data
+        while (str.contains("%cp-data-")) {
+            try {
+                int start = str.indexOf("%cp-data-");
+                int end = str.indexOf("%", str.indexOf("%cp-data-") + 1);
+                String dataPoint = str.substring(start, end).replace("%cp-data-", "").replace("%", "");
+                str = str.replace(str.substring(start, end) + "%", plugin.panelData.getUserData(p.getUniqueId(),dataPoint));
+            }catch (Exception ex){
+                plugin.debug(ex);
+                break;
+            }
+        }
+        //checks for players online
         while (str.contains("%cp-player-online-")) {
             try {
                 int start = str.indexOf("%cp-player-online-");

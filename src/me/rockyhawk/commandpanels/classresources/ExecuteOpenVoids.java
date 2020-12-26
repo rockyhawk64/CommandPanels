@@ -115,7 +115,7 @@ public class ExecuteOpenVoids {
             }
             ItemStack s;
             try {
-                s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(cf.getConfigurationSection("open-with-item")), p, false, true, true);
+                s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(cf.getConfigurationSection("open-with-item")), p, false, true, false);
             }catch(Exception n){
                 sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " open-with-item: material"));
                 return;

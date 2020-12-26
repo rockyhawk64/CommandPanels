@@ -41,6 +41,21 @@ public class CommandTags {
                 p.closeInventory();
                 break;
             }
+            case "set-data=":{
+                //this will overwrite data. set-data= [data point] [data value]
+                plugin.panelData.setUserData(p.getUniqueId(),command.split("\\s")[1],command.split("\\s")[2],true);
+                break;
+            }
+            case "add-data=":{
+                //this will not overwrite existing data. add-data= [data point] [data value]
+                plugin.panelData.setUserData(p.getUniqueId(),command.split("\\s")[1],command.split("\\s")[2],false);
+                break;
+            }
+            case "del-data=":{
+                //this will remove data. del-data= [data point]
+                plugin.panelData.delUserData(p.getUniqueId(),command.split("\\s")[1]);
+                break;
+            }
             case "open=":{
                 //if player uses open= it will open the panel, with the option to add custom placeholders
                 String panelName = commandRAW.split("\\s")[1];
@@ -560,7 +575,7 @@ public class CommandTags {
                     //create the item to be removed
                     ItemStack sellItem;
                     if(command.split("\\s").length == 2) {
-                        sellItem = plugin.itemCreate.makeItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, true);
+                        sellItem = plugin.itemCreate.makeItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, false);
                     }else{
                         sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[1])), Integer.parseInt(command.split("\\s")[2]), id);
                     }

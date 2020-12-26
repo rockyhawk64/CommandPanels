@@ -40,10 +40,11 @@ public class Commandpanel implements CommandExecutor {
             sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.nopanel")));
             return true;
         }
+        boolean disableCommand = false;
         if(cf.contains("panelType")) {
             if (cf.getStringList("panelType").contains("nocommand")) {
                 //do not allow command with noCommand
-                return true;
+                disableCommand =  true;
             }
         }
         //below will start the command, once it got the right file and panel
@@ -55,7 +56,9 @@ public class Commandpanel implements CommandExecutor {
                         if(plugin.openPanels.hasPanelOpen(plugin.getServer().getPlayer(args[1]).getName())) {
                             plugin.openPanels.skipPanels.add(plugin.getServer().getPlayer(args[1]).getName());
                         }
-                        plugin.openVoids.openCommandPanel(sender,plugin.getServer().getPlayer(args[1]),panelName,cf,true);
+                        if(!disableCommand) {
+                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panelName, cf, true);
+                        }
                     }else{
                         sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cp <panel> [item] [player]"));
                     }
@@ -79,7 +82,9 @@ public class Commandpanel implements CommandExecutor {
                     if(plugin.openPanels.hasPanelOpen(p.getName())) {
                         plugin.openPanels.skipPanels.add(p.getName());
                     }
-                    plugin.openVoids.openCommandPanel(sender, p, panelName, cf,false);
+                    if(!disableCommand) {
+                        plugin.openVoids.openCommandPanel(sender, p, panelName, cf, false);
+                    }
                     return true;
                 }else if(args.length == 2){
                     if (args[1].equals("item")) {
@@ -88,7 +93,9 @@ public class Commandpanel implements CommandExecutor {
                         if(plugin.openPanels.hasPanelOpen(plugin.getServer().getPlayer(args[1]).getName())) {
                             plugin.openPanels.skipPanels.add(plugin.getServer().getPlayer(args[1]).getName());
                         }
-                        plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panelName, cf,true);
+                        if(!disableCommand) {
+                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panelName, cf, true);
+                        }
                     }
                     return true;
                 }else if(args.length == 3){

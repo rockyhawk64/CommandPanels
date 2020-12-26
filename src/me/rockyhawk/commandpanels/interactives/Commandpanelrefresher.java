@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interactives;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
@@ -26,13 +27,7 @@ public class Commandpanelrefresher implements Listener {
                 return;
             }
         }
-        HumanEntity h = e.getPlayer();
-        Player p;
-        if (h instanceof Player) {
-            p = Bukkit.getPlayer(h.getName());
-        }else{
-            return;
-        }
+        Player p = (Player) e.getPlayer();
 
         if(!plugin.openPanels.hasPanelOpen(p.getName())){
             return;
@@ -106,30 +101,11 @@ public class Commandpanelrefresher implements Listener {
                         p.updateInventory();
                         for (ItemStack playerContent : plugin.legacy.getStorageContents(p.getInventory())) {
                             //ensure the panel item is not a placeable item
-                            int itemSlot = 0;
-                            for (ItemStack panelContent : panelItemList) {
-                                if(cf.getStringList("item." + itemSlot + ".itemType").contains("placeable")){
-                                    continue;
+                            try {
+                                if (NBTEditor.getString(playerContent, "plugin").equalsIgnoreCase("CommandPanels")) {
+                                    p.getInventory().removeItem(playerContent);
                                 }
-                                if (playerContent != null && panelContent != null) {
-                                    if (!playerContent.getType().equals(Material.matchMaterial("AIR")) && !panelContent.getType().equals(Material.matchMaterial("AIR"))) {
-                                        if (playerContent.equals(panelContent)) {
-                                            boolean isOriginal = false;
-                                            for (ItemStack playerOriginalContent : playerItemList) {
-                                                if (playerOriginalContent != null && !playerOriginalContent.getType().equals(Material.matchMaterial("AIR"))) {
-                                                    if (playerContent.equals(playerOriginalContent)) {
-                                                        isOriginal = true;
-                                                    }
-                                                }
-                                            }
-                                            if(!isOriginal) {
-                                                p.getInventory().removeItem(playerContent);
-                                            }
-                                        }
-                                    }
-                                }
-                                itemSlot++;
-                            }
+                            }catch(Exception ignore){}
                         }
                     }catch(Exception e){
                         //oof

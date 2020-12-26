@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.classresources;
 
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
 import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
 import net.Indyuce.mmoitems.manager.ItemManager;
@@ -36,7 +37,7 @@ public class ItemCreation {
     }
 
     @SuppressWarnings("deprecation")
-    public ItemStack makeItemFromConfig(ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours, boolean hideAttributes){
+    public ItemStack makeItemFromConfig(ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours, boolean addNBT){
         String material = plugin.papiNoColour(p,itemSection.getString("material"));
         try {
             if (Objects.requireNonNull(material).equalsIgnoreCase("AIR")) {
@@ -48,6 +49,7 @@ public class ItemCreation {
             return null;
         }
         ItemStack s = null;
+        boolean hideAttributes = true;
         String mat;
         String matraw;
         String skullname;
@@ -162,9 +164,19 @@ public class ItemCreation {
             //itemType values
             if(itemSection.contains("itemType")){
                 //if hidden, reverse
-                if(itemSection.getStringList("itemType").contains("attributes")){
-                    hideAttributes = !hideAttributes;
+                if(itemSection.getStringList("itemType").contains("noAttributes")){
+                    hideAttributes = false;
                 }
+                if(itemSection.getStringList("itemType").contains("noNBT")){
+                    addNBT = false;
+                }
+                if(itemSection.getStringList("itemType").contains("placeable")){
+                    addNBT = false;
+                }
+            }
+
+            if(addNBT){
+                s = NBTEditor.set(s,"CommandPanels","plugin");
             }
 
             if (itemSection.contains("map")) {
