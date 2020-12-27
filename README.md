@@ -21,8 +21,7 @@ These servers are running Command Panels. Feel free to join in and be a part of 
 
 - GrindMC | 1.15 play.grind-mc.com
 
-- ArcticForestMC | 1.16
-arcticforestmc.net
+- ArcticForestMC | 1.16 arcticforestmc.net
 
 - TVHG Network | 1.16 play.tvhgmc.org
 

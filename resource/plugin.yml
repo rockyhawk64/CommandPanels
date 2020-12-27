@@ -30,10 +30,6 @@ commands:
       description: Display the current version.
       usage: /commandpanelversion
       aliases: [cpv, cpanelv]
-   commandpaneladdons:
-      description: Find downloadable panels online.
-      usage: /commandpaneladdons
-      aliases: [cpa, cpanela]
    commandpaneledit:
       description: Edit panels ingame.
       usage: /commandpaneledit [panel]
@@ -67,8 +63,6 @@ permissions:
       default: true
    commandpanel.update:
       default: op
-   commandpanel.addons:
-      default: true
    commandpanel.editor:
       default: true
    commandpanel.edit:
