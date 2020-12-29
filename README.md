@@ -36,7 +36,7 @@ You can find the CommandPanels Wiki page [here](https://rockyhawk99.gitbook.io/r
 The wiki page contains all the features and how to use them.
 
 ### Bug Reports
-Please report bugs, issues or request features [here](https://github.com/rockyhawk64/CommandPanels/issues)
+Please report bugs, issues or request features [here](https://github.com/rockyhawk64/CommandPanels/issues).
 
 ### Spigot Page
-You can find the spigot page for the plugin [here](https://www.spigotmc.org/resources/67788/)
+You can find the spigot page for the plugin [here](https://www.spigotmc.org/resources/67788/).
