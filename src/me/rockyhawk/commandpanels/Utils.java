@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
@@ -20,7 +21,7 @@ public class Utils implements Listener {
         //when clicked on a panel
         Player p = (Player)e.getWhoClicked();
         ItemStack clicked = e.getCurrentItem();
-        if(!plugin.openPanels.hasPanelOpen(p.getName()) || e.getSlotType() == InventoryType.SlotType.OUTSIDE){
+        if(!plugin.openPanels.hasPanelOpen(p.getName()) || e.getSlotType() == InventoryType.SlotType.OUTSIDE || e.getClick() == ClickType.DOUBLE_CLICK){
             return;
         }
         ConfigurationSection cf = plugin.openPanels.getOpenPanel(p.getName()); //this is the panel cf section

@@ -51,9 +51,25 @@ public class CommandTags {
                 plugin.panelData.setUserData(p.getUniqueId(),command.split("\\s")[1],command.split("\\s")[2],false);
                 break;
             }
+            case "math-data=":{
+                //only works if data is number, goes math-data= [data point] [operator:number] eg, math-data= -1 OR /3
+                plugin.panelData.doDataMath(p.getUniqueId(),command.split("\\s")[1],command.split("\\s")[2]);
+                break;
+            }
+            case "clear-data=":{
+                //will clear all data for player clear-data= [playerName]
+                plugin.panelData.clearData(p.getUniqueId());
+                break;
+            }
             case "del-data=":{
                 //this will remove data. del-data= [data point]
                 plugin.panelData.delUserData(p.getUniqueId(),command.split("\\s")[1]);
+                break;
+            }
+            case "give-item=":{
+                //this will remove data. give-item= [custom item]
+                ItemStack itm = plugin.itemCreate.makeItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, false);
+                p.getInventory().addItem(itm);
                 break;
             }
             case "open=":{
