@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.UUID;
 
 public class CommandTags {
     CommandPanels plugin;
@@ -42,17 +43,29 @@ public class CommandTags {
                 break;
             }
             case "set-data=":{
-                //this will overwrite data. set-data= [data point] [data value]
+                if(command.split("\\s").length == 4){
+                    plugin.panelData.setUserData(getOffline(command.split("\\s")[3]),command.split("\\s")[1],command.split("\\s")[2],true);
+                    break;
+                }
+                //this will overwrite data. set-data= [data point] [data value] [optional player]
                 plugin.panelData.setUserData(p.getUniqueId(),command.split("\\s")[1],command.split("\\s")[2],true);
                 break;
             }
             case "add-data=":{
-                //this will not overwrite existing data. add-data= [data point] [data value]
+                if(command.split("\\s").length == 4){
+                    plugin.panelData.setUserData(getOffline(command.split("\\s")[3]),command.split("\\s")[1],command.split("\\s")[2],true);
+                    break;
+                }
+                //this will not overwrite existing data. add-data= [data point] [data value] [optional player]
                 plugin.panelData.setUserData(p.getUniqueId(),command.split("\\s")[1],command.split("\\s")[2],false);
                 break;
             }
             case "math-data=":{
-                //only works if data is number, goes math-data= [data point] [operator:number] eg, math-data= -1 OR /3
+                if(command.split("\\s").length == 4){
+                    plugin.panelData.setUserData(getOffline(command.split("\\s")[3]),command.split("\\s")[1],command.split("\\s")[2],true);
+                    break;
+                }
+                //only works if data is number, goes math-data= [data point] [operator:number] [optional player] eg, math-data= -1 OR /3
                 plugin.panelData.doDataMath(p.getUniqueId(),command.split("\\s")[1],command.split("\\s")[2]);
                 break;
             }
@@ -62,7 +75,11 @@ public class CommandTags {
                 break;
             }
             case "del-data=":{
-                //this will remove data. del-data= [data point]
+                if(command.split("\\s").length == 3){
+                    plugin.panelData.setUserData(getOffline(command.split("\\s")[3]),command.split("\\s")[1],command.split("\\s")[2],true);
+                    break;
+                }
+                //this will remove data. del-data= [data point] [optional player]
                 plugin.panelData.delUserData(p.getUniqueId(),command.split("\\s")[1]);
                 break;
             }
@@ -520,6 +537,12 @@ public class CommandTags {
             default:
                 Bukkit.dispatchCommand(p, command);
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    private UUID getOffline(String playerName){
+        //making this a separate function as it is long and deprecated
+        return Bukkit.getOfflinePlayer(playerName).getUniqueId();
     }
 
     @SuppressWarnings("deprecation")

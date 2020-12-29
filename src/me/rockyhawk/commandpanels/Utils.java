@@ -79,38 +79,46 @@ public class Utils implements Listener {
                     commands = commandsAfterSequence;
                     for (int i = 0; commands.size() - 1 >= i; i++) {
                         try {
-                            if (commands.get(i).split("\\s")[0].equalsIgnoreCase("right=")) {
-                                //if commands is for right clicking, remove the 'right=' and continue
-                                commands.set(i, commands.get(i).replace("right=", "").trim());
-                                commands.set(i, commands.get(i).replace("RIGHT=", "").trim());
-                                if (e.isLeftClick() || (e.isShiftClick() && e.isLeftClick()) || (e.isShiftClick() && e.isRightClick())) {
-                                    continue;
+                            switch(commands.get(i).split("\\s")[0]){
+                                case "right=":{
+                                    //if commands is for right clicking, remove the 'right=' and continue
+                                    commands.set(i, commands.get(i).replace("right=", "").trim());
+                                    if (e.getClick() != ClickType.RIGHT) {
+                                        continue;
+                                    }
+                                    break;
                                 }
-                            } else if (commands.get(i).split("\\s")[0].equalsIgnoreCase("rightshift=")) {
-                                //if commands is for right clicking, remove the 'right=' and continue
-                                commands.set(i, commands.get(i).replace("rightshift=", "").trim());
-                                commands.set(i, commands.get(i).replace("RIGHTSHIFT=", "").trim());
-                                if (e.isLeftClick() || (!e.isShiftClick() && e.isRightClick())) {
-                                    continue;
+                                case "rightshift=":{
+                                    //if commands is for right clicking, remove the 'right=' and continue
+                                    commands.set(i, commands.get(i).replace("rightshift=", "").trim());
+                                    if (e.getClick() != ClickType.SHIFT_RIGHT) {
+                                        continue;
+                                    }
+                                    break;
                                 }
-                            }
-                            if (commands.get(i).split("\\s")[0].equalsIgnoreCase("left=")) {
-                                //if commands is for right clicking, remove the 'right=' and continue
-                                commands.set(i, commands.get(i).replace("left=", "").trim());
-                                commands.set(i, commands.get(i).replace("LEFT=", "").trim());
-                                if (e.isRightClick() || (e.isShiftClick() && e.isRightClick()) || (e.isShiftClick() && e.isLeftClick())) {
-                                    continue;
+                                case "left=":{
+                                    //if commands is for right clicking, remove the 'right=' and continue
+                                    commands.set(i, commands.get(i).replace("left=", "").trim());
+                                    if (e.getClick() != ClickType.LEFT) {
+                                        continue;
+                                    }
+                                    break;
                                 }
-                            } else if (commands.get(i).split("\\s")[0].equalsIgnoreCase("leftshift=")) {
-                                //if commands is for right clicking, remove the 'right=' and continue
-                                commands.set(i, commands.get(i).replace("leftshift=", "").trim());
-                                commands.set(i, commands.get(i).replace("LEFTSHIFT=", "").trim());
-                                if (e.isRightClick() || (!e.isShiftClick() && e.isLeftClick())) {
-                                    continue;
+                                case "leftshift=":{
+                                    //if commands is for right clicking, remove the 'right=' and continue
+                                    commands.set(i, commands.get(i).replace("leftshift=", "").trim());
+                                    if (e.getClick() != ClickType.SHIFT_LEFT) {
+                                        continue;
+                                    }
+                                    break;
                                 }
-                            }
-                            if (!e.isLeftClick() && !e.isRightClick()) {
-                                continue;
+                                case "middle=":{
+                                    commands.set(i, commands.get(i).replace("middle=", "").trim());
+                                    if (e.getClick() != ClickType.MIDDLE) {
+                                        continue;
+                                    }
+                                    break;
+                                }
                             }
                         } catch (Exception click) {
                             //skip if you can't do this
