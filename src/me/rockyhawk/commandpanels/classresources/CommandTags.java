@@ -179,7 +179,13 @@ public class CommandTags {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        commandTags(p, finalCommand, commandRAW);
+                        try {
+                            commandTags(p, finalCommand, commandRAW);
+                        }catch (Exception ex){
+                            //if there are any errors, cancel so that it doesn't loop errors
+                            plugin.debug(ex);
+                            this.cancel();
+                        }
                         this.cancel();
                     }
                 }.runTaskTimer(plugin, 20*delaySeconds, 20); //20 ticks == 1 second

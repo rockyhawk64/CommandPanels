@@ -17,5 +17,6 @@
     <orderEntry type="library" name="MMOLib" level="project" />
     <orderEntry type="library" name="spigot-1.16.4" level="project" />
     <orderEntry type="library" name="spigot-1.13.2" level="project" />
+    <orderEntry type="library" name="CustomItemsAPI_PLACEHOLDER" level="project" />
   </component>
 </module>

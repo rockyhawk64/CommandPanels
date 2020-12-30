@@ -1,10 +1,10 @@
-version: 3.14.4.4
+version: 3.14.4.5
 main: me.rockyhawk.commandpanels.CommandPanels
 name: CommandPanels
 author: RockyHawk
 api-version: '1.13'
 description: Fully Custom GUIs. Make your Server Professional.
-softdepend: [PlaceholderAPI, Vault, HeadDatabase, TokenManager, VotingPlugin, MMOItems]
+softdepend: [PlaceholderAPI, Vault, HeadDatabase, TokenManager, VotingPlugin, MMOItems, CustomItems]
 commands:
    commandpanel:
       description: Open a command panel.

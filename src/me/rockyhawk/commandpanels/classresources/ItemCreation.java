@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.classresources;
 
+import com.jojodmo.customitems.api.CustomItemsAPI;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
@@ -95,13 +96,19 @@ public class ItemCreation {
                 }
             }
 
-            //create custom MMOItems item
+            //creates custom MMOItems items
             if(matraw.split("\\s")[0].toLowerCase().equals("mmo=") && plugin.getServer().getPluginManager().isPluginEnabled("MMOItems")){
                 String itemType = matraw.split("\\s")[1];
                 String itemID = matraw.split("\\s")[2];
                 ItemManager itemManager = MMOItems.plugin.getItems();
                 MMOItem mmoitem = itemManager.getMMOItem(MMOItems.plugin.getTypes().get(itemType), itemID);
                 s = mmoitem.newBuilder().build();
+                normalCreation = false;
+            }
+
+            //creates Custom Items items
+            if(matraw.split("\\s")[0].toLowerCase().equals("cui=") && plugin.getServer().getPluginManager().isPluginEnabled("CustomItems")){
+                s = CustomItemsAPI.getCustomItem("cui:" + matraw.split("\\s")[1]);
                 normalCreation = false;
             }
 
