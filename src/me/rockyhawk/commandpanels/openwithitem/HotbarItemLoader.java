@@ -32,6 +32,14 @@ public class HotbarItemLoader {
         }
     }
 
+    public ArrayList<Integer> getStationaryItemSlots(){
+        ArrayList<Integer> tempItems = new ArrayList<>();
+        for(int[] tempItem : stationaryItems){
+            tempItems.add(tempItem[0]);
+        }
+        return tempItems;
+    }
+
     //return true if found
     public boolean stationaryExecute(int slot, Player p, boolean openPanel){
         for(int[] temp : stationaryItems){

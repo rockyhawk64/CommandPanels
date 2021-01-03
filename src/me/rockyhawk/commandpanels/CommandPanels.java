@@ -31,6 +31,7 @@ import me.rockyhawk.commandpanels.openpanelsmanager.OpenPanelsLoader;
 import me.rockyhawk.commandpanels.openpanelsmanager.UtilsPanelsLoader;
 import me.rockyhawk.commandpanels.openwithitem.HotbarItemLoader;
 import me.rockyhawk.commandpanels.openwithitem.SwapItemEvent;
+import me.rockyhawk.commandpanels.openwithitem.UtilsChestSortEvent;
 import me.rockyhawk.commandpanels.openwithitem.UtilsOpenWithItem;
 import me.rockyhawk.commandpanels.panelblocks.BlocksTabComplete;
 import me.rockyhawk.commandpanels.panelblocks.Commandpanelblocks;
@@ -84,7 +85,6 @@ public class CommandPanels extends JavaPlugin {
 
     public File panelsf;
     public YamlConfiguration blockConfig; //where panel block locations are stored
-    public YamlConfiguration dataConfig; //where arbitrary data is stored for players
 
     public void onEnable() {
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loading...");
@@ -168,6 +168,11 @@ public class CommandPanels extends JavaPlugin {
         //if 1.8 don't use this
         if (!Bukkit.getVersion().contains("1.8")) {
             this.getServer().getPluginManager().registerEvents(new SwapItemEvent(this), this);
+        }
+
+        //if plugin ChestSort is enabled
+        if(getServer().getPluginManager().isPluginEnabled("ChestSort")){
+            this.getServer().getPluginManager().registerEvents(new UtilsChestSortEvent(this), this);
         }
 
         //save the example.yml file and the template.yml file
