@@ -1,9 +1,13 @@
 package me.rockyhawk.commandpanels.openpanelsmanager;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Objects;
@@ -37,6 +41,16 @@ public class UtilsPanelsLoader implements Listener {
                     return;
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onInventoryItemClick(InventoryClickEvent e){
+        //this will check to ensure an item is not from CommandPanels on inventory open
+        try {
+            plugin.openPanels.checkNBTItems((Player) e.getWhoClicked());
+        }catch(Exception ex){
+            plugin.debug(ex);
         }
     }
 }

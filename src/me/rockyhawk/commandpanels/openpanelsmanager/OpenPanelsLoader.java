@@ -1,8 +1,12 @@
 package me.rockyhawk.commandpanels.openpanelsmanager;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,6 +93,7 @@ public class OpenPanelsLoader {
         for(int i = 0; i < openPanelsPN.size(); i++){
             if(openPanelsPN.get(i)[0].equals(playerName)){
                 panelCloseCommands(playerName,openPanelsPN.get(i)[1]);
+                checkNBTItems(Bukkit.getPlayer(playerName));
                 plugin.customCommand.removeCCP(openPanelsPN.get(i)[1], playerName);
                 openPanelsCF.remove(i);
                 openPanelsPN.remove(i);
@@ -102,6 +107,7 @@ public class OpenPanelsLoader {
         for(int i = 0; i < openPanelsPN.size(); i++){
             if(Arrays.equals(openPanelsPN.get(i), new String[]{playerName, panelName})){
                 panelCloseCommands(playerName,panelName);
+                checkNBTItems(Bukkit.getPlayer(playerName));
                 plugin.customCommand.removeCCP(panelName, playerName);
                 openPanelsCF.remove(i);
                 openPanelsPN.remove(i);
@@ -137,6 +143,22 @@ public class OpenPanelsLoader {
                 }
                 return;
             }
+        }
+    }
+
+    //ensure the player has not duplicated items
+    public void checkNBTItems(Player p){
+        try {
+            for(ItemStack playerItem : p.getInventory().getContents()){
+                //ensure the item is not a panel item
+                try {
+                    if (NBTEditor.getString(playerItem, "plugin").equalsIgnoreCase("CommandPanels")) {
+                        p.getInventory().removeItem(playerItem);
+                    }
+                }catch(Exception ignore){}
+            }
+        }catch(Exception e){
+            //oof
         }
     }
 }

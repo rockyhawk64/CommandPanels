@@ -96,20 +96,6 @@ public class Commandpanelrefresher implements Listener {
                         }
                     }
                     c = 0;
-                    //check to ensure players haven't duplicated items
-                    try {
-                        p.updateInventory();
-                        for (ItemStack playerContent : plugin.legacy.getStorageContents(p.getInventory())) {
-                            //ensure the panel item is not a placeable item
-                            try {
-                                if (NBTEditor.getString(playerContent, "plugin").equalsIgnoreCase("CommandPanels")) {
-                                    p.getInventory().removeItem(playerContent);
-                                }
-                            }catch(Exception ignore){}
-                        }
-                    }catch(Exception e){
-                        //oof
-                    }
                     this.cancel();
                 }
             }
