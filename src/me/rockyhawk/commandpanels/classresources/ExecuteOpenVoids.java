@@ -1,6 +1,8 @@
 package me.rockyhawk.commandpanels.classresources;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -43,12 +45,21 @@ public class ExecuteOpenVoids {
                     sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.notitem")));
                     return;
                 }
+
+                //fire PanelOpenedEvent
+                PanelOpenedEvent openedEvent = new PanelOpenedEvent(p,cf,panelName);
+                Bukkit.getPluginManager().callEvent(openedEvent);
+                if(openedEvent.isCancelled()){
+                    return;
+                }
+
                 //close the panel after the checks for permissions and worlds, so other panels can load
                 if(!plugin.openPanels.hasPanelOpen(p.getName()) && p.getOpenInventory().getType() != InventoryType.CRAFTING){
                     p.closeInventory();
                 }else{
                     plugin.openPanels.closePanelsForLoader(p.getName());
                 }
+
                 try {
                     if (cf.contains("sound-on-open")) {
                         //play sound when panel is opened
@@ -77,6 +88,8 @@ public class ExecuteOpenVoids {
                             p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands-on-open: " + cf.getString("commands-on-open")));
                         }
                     }
+
+                    //open the panel
                     plugin.openPanels.openPanelForLoader(p.getName(), panelName, cf);
                     plugin.createGUI.openGui(panelName, p, cf,1,0);
                     if(sendOpenedMessage) {

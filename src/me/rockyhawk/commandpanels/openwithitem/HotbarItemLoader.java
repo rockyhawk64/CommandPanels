@@ -16,7 +16,7 @@ public class HotbarItemLoader {
         this.plugin = pl;
     }
 
-    //stationary slots 0-8 are the hotbar, using 9-27 for inside the inventory
+    //stationary slots 0-8 are the hotbar, using 9-33 for inside the inventory
     ArrayList<int[]> stationaryItems = new ArrayList<>(); //{slot 0-33, index of panelNames}
 
     //will compile the ArrayList {slot 0-4, index of panelNames}

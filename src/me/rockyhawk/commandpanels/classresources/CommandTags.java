@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.PanelCommandEvent;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -40,6 +41,12 @@ public class CommandTags {
             case "cpc":{
                 //this will close the current inventory
                 p.closeInventory();
+                break;
+            }
+            case "event=":{
+                //this will broadcast an event, with args event= [args no space]
+                PanelCommandEvent commandEvent = new PanelCommandEvent(p,command.split("\\s")[1]);
+                Bukkit.getPluginManager().callEvent(commandEvent);
                 break;
             }
             case "set-data=":{

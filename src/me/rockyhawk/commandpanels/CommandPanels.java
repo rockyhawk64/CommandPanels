@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.rockyhawk.commandpanels.api.CommandPanelsAPI;
 import me.rockyhawk.commandpanels.classresources.*;
 import me.rockyhawk.commandpanels.commands.*;
 import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
@@ -68,6 +69,7 @@ public class CommandPanels extends JavaPlugin {
     public List<String[]> panelNames = new ArrayList<>(); //this will return something like {"mainMenuPanel","4"} which means the 4 is for panelFiles.get(4). So you know which file it is for
 
     //get alternate classes
+    public CommandPanelsAPI api = new CommandPanelsAPI(this);
     public CommandTags commandTags = new CommandTags(this);
     public PanelDataLoader panelData = new PanelDataLoader(this);
     public Placeholders placeholders = new Placeholders(this);
