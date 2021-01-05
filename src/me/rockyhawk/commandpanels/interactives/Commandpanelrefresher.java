@@ -1,10 +1,8 @@
 package me.rockyhawk.commandpanels.interactives;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -50,8 +48,6 @@ public class Commandpanelrefresher implements Listener {
         }
 
         final ConfigurationSection cfFinal = cf;
-        ItemStack[] panelItemList = plugin.createGUI.openGui(null, p, cf,2, -1).getContents();
-        ItemStack[] playerItemList = plugin.legacy.getStorageContents(p.getInventory());
         new BukkitRunnable(){
             int c = 0;
             int animatecount = 0;

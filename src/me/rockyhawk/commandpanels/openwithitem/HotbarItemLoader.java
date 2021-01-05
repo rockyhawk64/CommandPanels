@@ -48,6 +48,9 @@ public class HotbarItemLoader {
                     String panelName = plugin.panelNames.get(temp[1])[0];
                     ConfigurationSection tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(plugin.panelNames.get(temp[1])[1])))).getConfigurationSection("panels." + panelName);
                     //only open panel automatically if there are no commands and player world is not disabled
+                    if(!p.hasPermission(tempFile.getString("perm"))){
+                        return false;
+                    }
                     if(tempFile.contains("disabled-worlds")){
                         if(tempFile.getStringList("disabled-worlds").contains(p.getWorld().getName())){
                             return false;
