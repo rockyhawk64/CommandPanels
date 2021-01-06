@@ -644,7 +644,7 @@ public class CommandTags {
 
                         if(command.split("\\s").length == 2){
                             //if item paywall is custom item
-                            if(content.isSimilar(sellItem)){
+                            if(plugin.itemCreate.isIdentical(sellItem,content)){
                                 content.setAmount(content.getAmount() - sellItem.getAmount());
                                 p.updateInventory();
                                 removedItem = 1;
@@ -653,7 +653,7 @@ public class CommandTags {
 
                             //if custom item is an mmo item (1.14+ for the API)
                             try {
-                                if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems")) {
+                                if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems") && plugin.openPanels.getOpenPanel(p.getName()).getString("custom-item." + command.split("\\s")[1] + ".material").startsWith("mmo=")) {
                                     String customItemMaterial = plugin.openPanels.getOpenPanel(p.getName()).getString("custom-item." + command.split("\\s")[1] + ".material");
                                     String mmoType = customItemMaterial.split("\\s")[1];
                                     String mmoID = customItemMaterial.split("\\s")[2];

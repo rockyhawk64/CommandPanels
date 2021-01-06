@@ -517,6 +517,7 @@ public class ItemCreation {
     The isIdentical() function will check for the following
     Material, Name, Lore, Enchanted
      */
+    @SuppressWarnings("deprecation")
     public boolean isIdentical(ItemStack one, ItemStack two){
         //check material
         if(one.getType() != two.getType()){
@@ -538,6 +539,20 @@ public class ItemCreation {
                 }
             }
         }catch(Exception ignore){}
+        //check for damage
+        try {
+            if(plugin.legacy.isLegacy()){
+                if(one.getDurability() != two.getDurability()) {
+                    return false;
+                }
+            }else {
+                Damageable tempOne = (Damageable) one.getItemMeta();
+                Damageable tempTwo = (Damageable) two.getItemMeta();
+                if(tempOne.getDamage() != tempTwo.getDamage()){
+                    return false;
+                }
+            }
+        } catch (Exception ignore) {}
         //check for enchantments
         if(one.getEnchantments().equals(two.getEnchantments())){
             if(!one.getEnchantments().isEmpty()) {
