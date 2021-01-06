@@ -178,7 +178,7 @@ public class CommandPanels extends JavaPlugin {
         }
 
         //save the example.yml file and the template.yml file
-        if (!this.panelsf.exists() || Objects.requireNonNull(this.panelsf.list()).length == 0) {
+        if (!this.panelsf.exists()) {
             try {
                 FileConfiguration exampleFileConfiguration;
                 FileConfiguration templateFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("template.yml")));
