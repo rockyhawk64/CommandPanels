@@ -112,6 +112,12 @@ public class ItemCreation {
                 normalCreation = false;
             }
 
+            //creates item from custom-items section of panel
+            if(matraw.split("\\s")[0].toLowerCase().equals("cpi=")){
+                s = makeCustomItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + matraw.split("\\s")[1]), p, true, true, true);
+                normalCreation = false;
+            }
+
             if(normalCreation) {
                 s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(mat)), 1, id);
             }
@@ -339,6 +345,16 @@ public class ItemCreation {
         plugin.setName(s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours, hideAttributes);
         return s;
     }
+
+    //do custom-item items, they have an additional hasSection requirement
+    public ItemStack makeCustomItemFromConfig(ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours, boolean addNBT){
+        String section = plugin.itemCreate.hasSection(itemSection,p);
+        if(!section.equals("")){
+            itemSection = itemSection.getConfigurationSection(section.substring(1));
+        }
+        return plugin.itemCreate.makeItemFromConfig(itemSection, p, placeholders, colours, addNBT);
+    }
+
 
     //hasperm hasvalue, etc sections will be done here
     public String hasSection(ConfigurationSection cf, Player p){

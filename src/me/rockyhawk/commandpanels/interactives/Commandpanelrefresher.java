@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
@@ -40,6 +39,13 @@ public class Commandpanelrefresher implements Listener {
             }
         }
 
+        //if panel has custom refresh delay
+        int tempRefreshDelay = plugin.config.getInt("config.refresh-delay");
+        if(cf.contains("refresh-delay")){
+            tempRefreshDelay = cf.getInt("refresh-delay");
+        }
+        final int refreshDelay = tempRefreshDelay;
+
         if(cf.contains("panelType")) {
             if (cf.getStringList("panelType").contains("static")) {
                 //do not update temporary panels, only default panels
@@ -58,7 +64,7 @@ public class Commandpanelrefresher implements Listener {
                     animatevalue = cfFinal.getInt("animatevalue");
                 }
                 //counter counts to refresh delay (in seconds) then restarts
-                if(c < Double.parseDouble(Objects.requireNonNull(plugin.config.getString("config.refresh-delay")).trim())){
+                if(c < refreshDelay){
                     c+=1;
                 }else{
                     c=0;

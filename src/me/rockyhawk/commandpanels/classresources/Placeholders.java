@@ -22,7 +22,7 @@ public class Placeholders {
     }
 
     @SuppressWarnings("deprecation")
-    public String setCpPlaceholders(Player p, String str) {
+    public String setCpPlaceholders(Player p, String str){
         //replace nodes with PlaceHolders
         str = str.replaceAll("%cp-player-displayname%", p.getDisplayName());
         str = str.replaceAll("%cp-player-name%", p.getName());
@@ -50,9 +50,14 @@ public class Placeholders {
         //set custom placeholders to their values
         for(String[] placeholder : plugin.customCommand.getCCP(p.getName())){
             while (str.contains(placeholder[0])) {
-                int start = str.indexOf(placeholder[0]);
-                int end = start+placeholder[0].length()-1;
-                str = str.replace(str.substring(start, end) + "%", placeholder[1]);
+                try {
+                    int start = str.indexOf(placeholder[0]);
+                    int end = start + placeholder[0].length() - 1;
+                    str = str.replace(str.substring(start, end) + "%", placeholder[1]);
+                }catch (Exception ex){
+                    plugin.debug(ex);
+                    break;
+                }
             }
         }
 
@@ -66,7 +71,7 @@ public class Placeholders {
                 String material;
                 try {
                     material = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().toString();
-                    if(plugin.legacy.isLegacy()){
+                    if (plugin.legacy.isLegacy()) {
                         //add the ID to the end if it is legacy (eg, material:id)
                         material = material + ":" + p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().getId();
                     }
@@ -74,7 +79,7 @@ public class Placeholders {
                     material = "AIR";
                 }
                 str = str.replace(str.substring(start, end) + "%", material);
-            }catch(Exception ex){
+            } catch (Exception ex) {
                 plugin.debug(ex);
                 break;
             }
@@ -188,6 +193,35 @@ public class Placeholders {
                 break;
             }
         }
+        //edits data via placeholder execution (will return empty output)
+        while (str.contains("%cp-setdata-")) {
+            try {
+                int start = str.indexOf("%cp-setdata-");
+                int end = str.indexOf("%", str.indexOf("%cp-setdata-") + 1);
+                String point_value = str.substring(start, end).replace("%cp-setdata-", "").replace("%", "");
+                String command = "set-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
+                plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
+                str = str.replace(str.substring(start, end) + "%", "");
+            }catch (Exception ex){
+                plugin.debug(ex);
+                break;
+            }
+        }
+        //math data via placeholder execution (will return empty output)
+        while (str.contains("%cp-mathdata-")) {
+            try {
+                int start = str.indexOf("%cp-mathdata-");
+                int end = str.indexOf("%", str.indexOf("%cp-mathdata-") + 1);
+                String point_value = str.substring(start, end).replace("%cp-mathdata-", "").replace("%", "");
+                String command = "math-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
+                plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
+                str = str.replace(str.substring(start, end) + "%", "");
+            }catch (Exception ex){
+                plugin.debug(ex);
+                break;
+            }
+        }
+
         //checks for players online
         while (str.contains("%cp-player-online-")) {
             try {

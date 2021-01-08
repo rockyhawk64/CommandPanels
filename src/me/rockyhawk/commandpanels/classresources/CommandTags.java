@@ -91,8 +91,8 @@ public class CommandTags {
                 break;
             }
             case "give-item=":{
-                //this will remove data. give-item= [custom item]
-                ItemStack itm = plugin.itemCreate.makeItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, false);
+                //this will remove data. give-item= [custom item].
+                ItemStack itm = plugin.itemCreate.makeCustomItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, false);
                 p.getInventory().addItem(itm);
                 break;
             }
@@ -134,9 +134,17 @@ public class CommandTags {
             }
             case "placeholder=":{
                 //if player uses placeholder= it will only change the placeholders for the panel
-                String panelName = commandRAW.split("\\s")[1];
-                String cmd = commandRAW.replace("placeholder= " + panelName,"");
-                panelName = plugin.papi(p,panelName);
+                String panelName = plugin.openPanels.getOpenPanelName(p.getName());
+
+                //placeholder is now placeholder= [place]. Not placeholder= panel [place] which is why this is here
+                String cmd;
+                if(command.split("\\s").length == 3){
+                    cmd = commandRAW.replace("placeholder= " + panelName,"").trim();
+                    plugin.getServer().getConsoleSender().sendMessage(plugin.tag + ChatColor.RED + "placeholder= <panel> <placeholder> will be deprecated");
+                    plugin.getServer().getConsoleSender().sendMessage(plugin.tag + ChatColor.RED + "use " + ChatColor.WHITE + "placeholder= " + cmd + ChatColor.RED + " instead of " + ChatColor.GRAY + commandRAW + ChatColor.RED + "!");
+                }else{
+                    cmd = commandRAW.replace("placeholder= ","");
+                }
 
                 Character[] cm = ArrayUtils.toObject(cmd.toCharArray());
                 for(int i = 0; i < cm.length; i++){
@@ -627,7 +635,7 @@ public class CommandTags {
                     //create the item to be removed
                     ItemStack sellItem;
                     if(command.split("\\s").length == 2) {
-                        sellItem = plugin.itemCreate.makeItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, false);
+                        sellItem = plugin.itemCreate.makeCustomItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, false);
                     }else{
                         sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[1])), Integer.parseInt(command.split("\\s")[2]), id);
                     }

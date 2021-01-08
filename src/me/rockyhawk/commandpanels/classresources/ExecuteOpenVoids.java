@@ -71,8 +71,12 @@ public class ExecuteOpenVoids {
                             }
                         }
                     }
+
+                    //open the panel
+                    plugin.openPanels.openPanelForLoader(p.getName(), panelName, cf);
+
+                    //execute commands on panel open
                     if (cf.contains("commands-on-open")) {
-                        //execute commands on panel open
                         try {
                             List<String> commands = cf.getStringList("commands-on-open");
                             for (int i = 0; commands.size() - 1 >= i; i++) {
@@ -89,8 +93,7 @@ public class ExecuteOpenVoids {
                         }
                     }
 
-                    //open the panel
-                    plugin.openPanels.openPanelForLoader(p.getName(), panelName, cf);
+                    //create and open the GUI
                     plugin.createGUI.openGui(panelName, p, cf,1,0);
                     if(sendOpenedMessage) {
                         sender.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Panel Opened for " + p.getDisplayName()));
