@@ -1,12 +1,13 @@
 package me.rockyhawk.commandpanels.interactives;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
@@ -17,43 +18,39 @@ public class Commandpanelrefresher implements Listener {
         this.plugin = pl;
     }
     @EventHandler
-    public void onInventoryOpen(InventoryOpenEvent e){ //Handles when Players open inventory
+    public void onPanelOpen(PanelOpenedEvent e){ //Handles when Players open inventory
         //I have to convert HumanEntity to a player
         if (plugin.config.contains("config.refresh-panels")) {
             if (Objects.requireNonNull(plugin.config.getString("config.refresh-panels")).trim().equalsIgnoreCase("false")) {
                 return;
             }
         }
-        Player p = (Player) e.getPlayer();
 
-        if(!plugin.openPanels.hasPanelOpen(p.getName())){
-            return;
-        }
-        ConfigurationSection cf = plugin.openPanels.getOpenPanel(p.getName()); //this is the panel cf section
-        String panelName = plugin.openPanels.getOpenPanelName(p.getName()); //get panel name
+        Player p = e.getPlayer();
+        Panel pn = e.getPanel();
 
         //remove sound-on-open on 1.8 for those who do not read the wiki ;)
-        if(cf.contains("sound-on-open")){
+        if(pn.getConfig().contains("sound-on-open")){
             if(Bukkit.getVersion().contains("1.8")){
-                cf.set("sound-on-open", null);
+                pn.getConfig().set("sound-on-open", null);
             }
         }
 
         //if panel has custom refresh delay
         int tempRefreshDelay = plugin.config.getInt("config.refresh-delay");
-        if(cf.contains("refresh-delay")){
-            tempRefreshDelay = cf.getInt("refresh-delay");
+        if(pn.getConfig().contains("refresh-delay")){
+            tempRefreshDelay = pn.getConfig().getInt("refresh-delay");
         }
         final int refreshDelay = tempRefreshDelay;
 
-        if(cf.contains("panelType")) {
-            if (cf.getStringList("panelType").contains("static")) {
+        if(pn.getConfig().contains("panelType")) {
+            if (pn.getConfig().getStringList("panelType").contains("static")) {
                 //do not update temporary panels, only default panels
                 return;
             }
         }
 
-        final ConfigurationSection cfFinal = cf;
+        final ConfigurationSection cfFinal = pn.getConfig();
         new BukkitRunnable(){
             int c = 0;
             int animatecount = 0;
@@ -70,7 +67,7 @@ public class Commandpanelrefresher implements Listener {
                     c=0;
                 }
                 //refresh here
-                if(plugin.openPanels.hasPanelOpen(p.getName(),panelName)){
+                if(plugin.openPanels.hasPanelOpen(p.getName(),pn.getName())){
                     if(c == 0) {
                         //animation counter
                         if(animatevalue != -1) {
@@ -85,7 +82,7 @@ public class Commandpanelrefresher implements Listener {
                         } catch (Exception e) {
                             //error opening gui
                             p.closeInventory();
-                            plugin.openPanels.closePanelForLoader(p.getName(),panelName);
+                            plugin.openPanels.closePanelForLoader(p.getName(),pn.getName());
                             this.cancel();
                         }
                     }
@@ -101,7 +98,7 @@ public class Commandpanelrefresher implements Listener {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(this.plugin, 5, 5); //20 ticks == 1 second (5 ticks = 0.25 of a second)
+        }.runTaskTimer(this.plugin, 1,1); //20 ticks == 1 second (5 ticks = 0.25 of a second)
 
     }
 }

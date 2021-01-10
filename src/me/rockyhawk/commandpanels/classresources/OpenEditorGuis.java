@@ -1,16 +1,15 @@
 package me.rockyhawk.commandpanels.classresources;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,21 +26,13 @@ public class OpenEditorGuis {
         ArrayList<String> panelTitles = new ArrayList<>(); //all panels from ALL files (panel titles)
         ArrayList<ItemStack> panelItems = new ArrayList<>(); //all panels from ALL files (panel materials)
         try {
-            for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
-                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-                String key;
-                if (!plugin.checkPanels(temp)) {
-                    continue;
-                }
-                for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
-                    key = s;
-                    panelNames.add(plugin.papi( key));
-                    panelTitles.add(plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))));
-                    if (temp.contains("panels." + key + ".open-with-item.material")) {
-                        panelItems.add(plugin.itemCreate.makeItemFromConfig(temp.getConfigurationSection("panels." + key + ".open-with-item"), p, false, true, false));
-                    } else {
-                        panelItems.add(new ItemStack(Material.PAPER));
-                    }
+            for(Panel panel : plugin.panelList) { //will loop through all the files in folder
+                panelNames.add(plugin.papi(panel.getName()));
+                panelTitles.add(plugin.papi(panel.getConfig().getString("title")));
+                if (panel.getConfig().contains("open-with-item.material")) {
+                    panelItems.add(panel.getHotbarItem(p));
+                } else {
+                    panelItems.add(new ItemStack(Material.PAPER));
                 }
             }
         } catch (Exception fail) {

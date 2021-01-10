@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.generatepanels;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Chest;
@@ -64,9 +65,9 @@ public class GenUtils implements Listener {
     @SuppressWarnings("deprecation")
     void generatePanel(Player p, Inventory inv){
         ArrayList<String> apanels = new ArrayList();
-        for(String[] panelNames : plugin.panelNames){
+        for(Panel panel : plugin.panelList){
             //create list of names that aren't a String list
-            apanels.add(panelNames[0]);
+            apanels.add(panel.getName());
         }
         //this is done to make sure the inventories are not empty
         boolean foundItem = false;

@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.panelblocks;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -35,8 +36,8 @@ public class Commandpanelblocks implements CommandExecutor {
                             return true;
                         }
                         boolean foundPanel = false;
-                        for(String[] temp : plugin.panelNames){
-                            if(temp[0].equals(args[1])){
+                        for(Panel temp : plugin.panelList){
+                            if(temp.getName().equals(args[1])){
                                 foundPanel = true;
                                 break;
                             }

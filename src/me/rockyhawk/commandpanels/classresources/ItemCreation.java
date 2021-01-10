@@ -355,7 +355,6 @@ public class ItemCreation {
         return plugin.itemCreate.makeItemFromConfig(itemSection, p, placeholders, colours, addNBT);
     }
 
-
     //hasperm hasvalue, etc sections will be done here
     public String hasSection(ConfigurationSection cf, Player p){
         if (cf.contains("hasvalue")) {
@@ -536,7 +535,7 @@ public class ItemCreation {
     @SuppressWarnings("deprecation")
     public boolean isIdentical(ItemStack one, ItemStack two){
         //check material
-        if(one.getType() != two.getType()){
+        if (one.getType() != two.getType()) {
             return false;
         }
         //check for name
@@ -570,7 +569,7 @@ public class ItemCreation {
             }
         } catch (Exception ignore) {}
         //check for enchantments
-        if(one.getEnchantments().equals(two.getEnchantments())){
+        if(one.getEnchantments() == two.getEnchantments()){
             if(!one.getEnchantments().isEmpty()) {
                 return false;
             }

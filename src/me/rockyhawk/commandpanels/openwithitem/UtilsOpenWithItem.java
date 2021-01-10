@@ -1,11 +1,11 @@
 package me.rockyhawk.commandpanels.openwithitem;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.GetItemInHand;
 import me.rockyhawk.commandpanels.ioclasses.GetItemInHand_Legacy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,9 +17,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.File;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 
 public class UtilsOpenWithItem implements Listener {
@@ -86,37 +83,15 @@ public class UtilsOpenWithItem implements Listener {
             return;
         }
         Player p = e.getPlayer();
-        try {
-            if (plugin.panelFiles == null) {
-                return;
-            }
-        }catch(Exception b){
-            return;
-        }
-        String tpanels; //tpanels is the temp to check through the files
-        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
-            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-            String key;
-            tpanels = "";
-            if(!plugin.checkPanels(temp)){
+
+        for(Panel panel : plugin.panelList) { //will loop through all the files in folder
+            if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
                 continue;
             }
-            for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
-                key = (String) var10.next();
-                if(temp.contains("panels." + key + ".disabled-worlds")){
-                    List<String> disabledWorlds = temp.getStringList("panels." + key + ".disabled-worlds");
-                    assert disabledWorlds != null;
-                    if(disabledWorlds.contains(p.getWorld().getName())){
-                        continue;
-                    }
-                }
-                if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
-                    ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true, false);
-                    if(temp.contains("panels." + key + ".open-with-item.stationary")) {
-                        if (0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 33 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))) {
-                            p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
-                        }
-                    }
+            if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm")) && panel.hasHotbarItem()) {
+                ItemStack s = panel.getHotbarItem(p);
+                if(panel.getConfig().contains("open-with-item.stationary")) {
+                    p.getInventory().setItem(panel.getConfig().getInt("open-with-item.stationary"),s);
                 }
             }
         }
@@ -128,35 +103,14 @@ public class UtilsOpenWithItem implements Listener {
             return;
         }
         Player p = e.getPlayer();
-        try {
-            if (plugin.panelFiles == null) {
-                return;
-            }
-        }catch(Exception b){
-            return;
-        }
-        String tpanels; //tpanels is the temp to check through the files
-        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
-            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-            String key;
-            tpanels = "";
-            if(!plugin.checkPanels(temp)){
+        for(Panel panel : plugin.panelList) { //will loop through all the files in folder
+            if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
                 continue;
             }
-            for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
-                key = (String) var10.next();
-                if(temp.contains("panels." + key + ".disabled-worlds")){
-                    List<String> disabledWorlds = temp.getStringList("panels." + key + ".disabled-worlds");
-                    assert disabledWorlds != null;
-                    if(disabledWorlds.contains(p.getWorld().getName())){
-                        continue;
-                    }
-                }
-                if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
-                    ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true, false);
-                    if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 33 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
-                        p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
-                    }
+            if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm")) && panel.hasHotbarItem()) {
+                ItemStack s = panel.getHotbarItem(p);
+                if(panel.getConfig().contains("open-with-item.stationary")){
+                    p.getInventory().setItem(panel.getConfig().getInt("open-with-item.stationary"), s);
                 }
             }
         }
@@ -168,28 +122,11 @@ public class UtilsOpenWithItem implements Listener {
             return;
         }
         Player p = e.getEntity();
-        try {
-            if (plugin.panelFiles == null) {
-                return;
-            }
-        }catch(Exception b){
-            return;
-        }
-        String tpanels; //tpanels is the temp to check through the files
-        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
-            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-            String key;
-            tpanels = "";
-            if(!plugin.checkPanels(temp)){
-                continue;
-            }
-            for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
-                key = (String) var10.next();
-                if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
-                    if(temp.contains("panels." + key + ".open-with-item.stationary")){
-                        ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true, false);
-                        e.getDrops().remove(s);
-                    }
+        for(Panel panel : plugin.panelList) { //will loop through all the files in folder
+            if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm")) && panel.hasHotbarItem()) {
+                if(panel.getConfig().contains("open-with-item.stationary")){
+                    ItemStack s = panel.getHotbarItem(p);
+                    e.getDrops().remove(s);
                 }
             }
         }
@@ -201,52 +138,23 @@ public class UtilsOpenWithItem implements Listener {
             return;
         }
         Player p = e.getPlayer();
-        try {
-            if (plugin.panelFiles == null) {
+        String tpanels; //tpanels is the temp to check through the files
+        for(Panel panel : plugin.panelList) { //will loop through all the files in folder
+            if(!panel.getConfig().contains("open-with-item.stationary")){
                 return;
             }
-        }catch(Exception b){
-            return;
-        }
-        String tpanels; //tpanels is the temp to check through the files
-        for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
-            YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-            String key;
-            tpanels = "";
-            if(!plugin.checkPanels(temp)){
-                continue;
-            }
-            for (Iterator var10 = Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
-                key = (String) var10.next();
-                if (p.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm")) && temp.contains("panels." + key + ".open-with-item")) {
-                    if(temp.contains("panels." + key + ".disabled-worlds")){
-                        List<String> disabledWorlds = temp.getStringList("panels." + key + ".disabled-worlds");
-                        if(disabledWorlds.contains(p.getWorld().getName())){
-                            continue;
-                        }
-                    }
-                    ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(temp.getConfigurationSection("panels." + key + ".open-with-item")), p, false, true, false);
-                    if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 33 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
-                        p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), s);
-                    }
-                }else{
-                    //if the player has an item that they have no permission for, remove it
-                    ItemStack s;
-                    try {
-                        s = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.material")))), 1);
-                    }catch(Exception n){
-                        continue;
-                    }
-                    plugin.setName(s, temp.getString("panels." + key + ".open-with-item.name"), temp.getStringList("panels." + key + ".open-with-item.lore"),p,true, true,true);
-                    if(temp.contains("panels." + key + ".open-with-item.stationary") && 0 <= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))) && 33 >= Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary")))){
-                        try {
-                            if (Objects.requireNonNull(p.getInventory().getItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))))).isSimilar(s)) {
-                                p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(temp.getString("panels." + key + ".open-with-item.stationary"))), null);
-                            }
-                        }catch(NullPointerException nex){
-                            //skip as player has no item in slot
-                        }
-                    }
+            if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))){
+                if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
+                    continue;
+                }
+                ItemStack s = panel.getHotbarItem(p);
+                p.getInventory().setItem(panel.getConfig().getInt("open-with-item.stationary"), s);
+            }else{
+                //if the player has an item that they have no permission for, remove it
+                ItemStack s;
+                s = panel.getHotbarItem(p);
+                if (p.getInventory().getItem(panel.getConfig().getInt("open-with-item.stationary")).isSimilar(s)) {
+                    p.getInventory().setItem(panel.getConfig().getInt("open-with-item.stationary"), null);
                 }
             }
         }

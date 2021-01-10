@@ -21,28 +21,17 @@ public class ExecuteOpenVoids {
     }
 
     //this is the main method to open a panel
-    public void openCommandPanel(CommandSender sender, Player p, String panelName, ConfigurationSection cf, boolean sendOpenedMessage){
+    public void openCommandPanel(CommandSender sender, Player p, String panelName, ConfigurationSection cf, boolean openForOtherUser){
         if(p.isSleeping()){
             //avoid plugin glitches when sleeping
             return;
         }
         if (sender.hasPermission("commandpanel.panel." + cf.getString("perm"))) {
             //if the sender has OTHER perms, or if sendOpenedMessage is false, implying it is not for another person
-            if(sender.hasPermission("commandpanel.other") || !sendOpenedMessage) {
-                try {
-                    if (cf.contains("disabled-worlds")) {
-                        List<String> disabledWorlds = cf.getStringList("disabled-worlds");
-                        if (disabledWorlds.contains(p.getWorld().getName())) {
-                            //panel cannot be used in the players world!
-                            if (Objects.requireNonNull(plugin.config.getString("config.disabled-world-message")).equalsIgnoreCase("true")) {
-                                sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Panel is disabled in the world!"));
-                            }
-                            return;
-                        }
-                    }
-                }catch(NullPointerException offlinePlayer){
-                    //SKIP because player is offline
-                    sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.notitem")));
+            if(sender.hasPermission("commandpanel.other") || !openForOtherUser) {
+                //check for disabled worlds
+                if(!plugin.panelPerms.isPanelWorldEnabled(p,cf)){
+                    sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
                     return;
                 }
 
@@ -95,7 +84,7 @@ public class ExecuteOpenVoids {
 
                     //create and open the GUI
                     plugin.createGUI.openGui(panelName, p, cf,1,0);
-                    if(sendOpenedMessage) {
+                    if(openForOtherUser) {
                         sender.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Panel Opened for " + p.getDisplayName()));
                     }
                 } catch (Exception r) {
@@ -113,22 +102,12 @@ public class ExecuteOpenVoids {
     //this will give a hotbar item to a player
     public void giveHotbarItem(CommandSender sender, Player p, ConfigurationSection cf, boolean sendGiveMessage){
         if (sender.hasPermission("commandpanel.item." + cf.getString("perm")) && cf.contains("open-with-item")) {
-            try {
-                if (cf.contains("disabled-worlds")) {
-                    List<String> disabledWorlds = cf.getStringList("disabled-worlds");
-                    if (disabledWorlds.contains(p.getWorld().getName())) {
-                        //panel cannot be used in the players world!
-                        if (Objects.requireNonNull(plugin.config.getString("config.disabled-world-message")).equalsIgnoreCase("true")) {
-                            sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Panel is disabled in the world!"));
-                        }
-                        return;
-                    }
-                }
-            }catch(NullPointerException offlinePlayer){
-                //SKIP because player is offline
-                sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.notitem")));
+            //check for disabled worlds
+            if(!plugin.panelPerms.isPanelWorldEnabled(p,cf)){
+                sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
                 return;
             }
+
             ItemStack s;
             try {
                 s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(cf.getConfigurationSection("open-with-item")), p, false, true, false);

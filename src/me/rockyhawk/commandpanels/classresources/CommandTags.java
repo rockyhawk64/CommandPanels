@@ -4,17 +4,16 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelCommandEvent;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -115,13 +114,12 @@ public class CommandTags {
                     }
                 }
 
-                for(String[] tempName : plugin.panelNames){
-                    if(tempName[0].equals(panelName)){
-                        ConfigurationSection panelConfig = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(tempName[1])))).getConfigurationSection("panels." + panelName);
+                for(Panel panel : plugin.panelList){
+                    if(panel.getName().equals(panelName)){
                         if(plugin.openPanels.hasPanelOpen(p.getName())) {
                             plugin.openPanels.skipPanels.add(p.getName());
                         }
-                        plugin.openVoids.openCommandPanel(p,p,panelName,panelConfig,false);
+                        panel.open(p);
                         return;
                     }
                 }

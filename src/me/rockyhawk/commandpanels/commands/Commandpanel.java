@@ -1,16 +1,13 @@
 package me.rockyhawk.commandpanels.commands;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-
-import java.io.File;
 
 public class Commandpanel implements CommandExecutor {
     CommandPanels plugin;
@@ -21,14 +18,12 @@ public class Commandpanel implements CommandExecutor {
 
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        ConfigurationSection cf = null; //this is the file to use for any panel.* requests
-        String panelName = "";
         //below is going to go through the files and find the right one
+        Panel panel = null;
         if (args.length != 0) { //check to make sure the person hasn't just left it empty
-            for(String[] panels  : plugin.panelNames){
-                if(panels[0].equals(args[0])) {
-                    cf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panels[1])))).getConfigurationSection("panels." + panels[0]);
-                    panelName = panels[0];
+            for(Panel tempPanel  : plugin.panelList){
+                if(tempPanel.getName().equals(args[0])) {
+                    panel = tempPanel;
                     break;
                 }
             }
@@ -36,13 +31,13 @@ public class Commandpanel implements CommandExecutor {
             plugin.helpMessage(sender);
             return true;
         }
-        if(cf == null){
+        if(panel == null){
             sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.nopanel")));
             return true;
         }
         boolean disableCommand = false;
-        if(cf.contains("panelType")) {
-            if (cf.getStringList("panelType").contains("nocommand")) {
+        if(panel.getConfig().contains("panelType")) {
+            if (panel.getConfig().getStringList("panelType").contains("nocommand")) {
                 //do not allow command with noCommand
                 disableCommand =  true;
             }
@@ -57,7 +52,7 @@ public class Commandpanel implements CommandExecutor {
                             plugin.openPanels.skipPanels.add(plugin.getServer().getPlayer(args[1]).getName());
                         }
                         if(!disableCommand) {
-                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panelName, cf, true);
+                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.getName(), panel.getConfig(), true);
                         }
                     }else{
                         sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cp <panel> [item] [player]"));
@@ -65,7 +60,7 @@ public class Commandpanel implements CommandExecutor {
                     return true;
                 }else if(args.length == 3){
                     if (args[1].equals("item")) {
-                        plugin.openVoids.giveHotbarItem(sender,plugin.getServer().getPlayer(args[2]),cf,true);
+                        plugin.openVoids.giveHotbarItem(sender,plugin.getServer().getPlayer(args[2]),panel.getConfig(),true);
                     }else{
                         sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cp <panel> item [player]"));
                     }
@@ -83,23 +78,23 @@ public class Commandpanel implements CommandExecutor {
                         plugin.openPanels.skipPanels.add(p.getName());
                     }
                     if(!disableCommand) {
-                        plugin.openVoids.openCommandPanel(sender, p, panelName, cf, false);
+                        plugin.openVoids.openCommandPanel(sender, p, panel.getName(), panel.getConfig(), false);
                     }
                     return true;
                 }else if(args.length == 2){
                     if (args[1].equals("item")) {
-                        plugin.openVoids.giveHotbarItem(sender, p, cf, false);
+                        plugin.openVoids.giveHotbarItem(sender, p, panel.getConfig(), false);
                     }else{
                         if(plugin.openPanels.hasPanelOpen(plugin.getServer().getPlayer(args[1]).getName())) {
                             plugin.openPanels.skipPanels.add(plugin.getServer().getPlayer(args[1]).getName());
                         }
                         if(!disableCommand) {
-                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panelName, cf, true);
+                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.getName(), panel.getConfig(), true);
                         }
                     }
                     return true;
                 }else if(args.length == 3){
-                    plugin.openVoids.giveHotbarItem(sender, plugin.getServer().getPlayer(args[2]), cf,true);
+                    plugin.openVoids.giveHotbarItem(sender, plugin.getServer().getPlayer(args[2]), panel.getConfig(),true);
                     return true;
                 }
             }

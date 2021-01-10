@@ -1,16 +1,15 @@
 package me.rockyhawk.commandpanels.ingameeditor;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
-import java.io.File;
 import java.util.*;
 
 public class CpIngameEditCommand implements CommandExecutor {
@@ -36,29 +35,20 @@ public class CpIngameEditCommand implements CommandExecutor {
             return true;
         }
         ConfigurationSection cf = null; //this is the file to use for any panel.* requests
-        String panelName = "";
+        Player p = (Player)sender;
         //below is going to go through the files and find the right one
-        if (args.length != 0) { //check to make sure the person hasn't just left it empty
-            for(String[] panels  : plugin.panelNames){
-                if(panels[0].equals(args[0])) {
-                    cf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panels[1])))).getConfigurationSection("panels." + panels[0]);
-                    panelName = panels[0];
-                    break;
+        if (args.length == 1) { //check to make sure the person hasn't just left it empty
+            for(Panel panel  : plugin.panelList){
+                if(panel.getName().equals(args[0])) {
+                    //below will start the command, once it got the right file and panel
+                    plugin.createGUI.openGui(panel.getName(), p, cf,3,0);
+                    return true;
                 }
             }
         }
-        //below will start the command, once it got the right file and panel
-        if (cmd.getName().equalsIgnoreCase("cpe") || cmd.getName().equalsIgnoreCase("commandpaneledit") || cmd.getName().equalsIgnoreCase("cpanele")) {
-            Player p = (Player) sender;
-            if (args.length == 0) {
-                plugin.editorGuis.openEditorGui(p,0);
-                return true;
-            }
-            if (args.length == 1) {
-                //open editor window here
-                plugin.createGUI.openGui(panelName, p, cf,3,0);
-                return true;
-            }
+        if (args.length == 0) {
+            plugin.editorGuis.openEditorGui(p,0);
+            return true;
         }
         sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cpe <panel>"));
         return true;

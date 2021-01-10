@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.rockyhawk.commandpanels.api.CommandPanelsAPI;
+import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.classresources.*;
 import me.rockyhawk.commandpanels.commands.*;
 import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
@@ -29,6 +30,7 @@ import me.rockyhawk.commandpanels.legacy.LegacyVersion;
 import me.rockyhawk.commandpanels.legacy.PlayerHeads;
 import me.rockyhawk.commandpanels.openpanelsmanager.OpenGUI;
 import me.rockyhawk.commandpanels.openpanelsmanager.OpenPanelsLoader;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPermissions;
 import me.rockyhawk.commandpanels.openpanelsmanager.UtilsPanelsLoader;
 import me.rockyhawk.commandpanels.openwithitem.HotbarItemLoader;
 import me.rockyhawk.commandpanels.openwithitem.SwapItemEvent;
@@ -53,7 +55,7 @@ import org.bukkit.inventory.meta.*;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class CommandPanels extends JavaPlugin {
+public class CommandPanels extends JavaPlugin{
     public YamlConfiguration config;
     public Economy econ = null;
     public boolean debug = false;
@@ -65,14 +67,13 @@ public class CommandPanels extends JavaPlugin {
     public List<Player> generateMode = new ArrayList<>(); //players that are currently in generate mode
     public List<String[]> userInputStrings = new ArrayList<>();
     public List<String[]> editorInputStrings = new ArrayList<>();
-    public List<String> panelFiles = new ArrayList<>(); //names of all the files in the panels folder including extension
-    public List<String[]> panelNames = new ArrayList<>(); //this will return something like {"mainMenuPanel","4"} which means the 4 is for panelFiles.get(4). So you know which file it is for
+    public List<Panel> panelList = new ArrayList<>(); //contains all the panels that are included in the panels folder
 
     //get alternate classes
-    public CommandPanelsAPI api = new CommandPanelsAPI(this);
     public CommandTags commandTags = new CommandTags(this);
     public PanelDataLoader panelData = new PanelDataLoader(this);
     public Placeholders placeholders = new Placeholders(this);
+
     public OpenEditorGuis editorGuis = new OpenEditorGuis(this);
     public ExecuteOpenVoids openVoids = new ExecuteOpenVoids(this);
     public ItemCreation itemCreate = new ItemCreation(this);
@@ -80,8 +81,10 @@ public class CommandPanels extends JavaPlugin {
     public Updater updater = new Updater(this);
     public PlayerHeads getHeads = new PlayerHeads(this);
     public LegacyVersion legacy = new LegacyVersion(this);
+
     public OpenPanelsLoader openPanels = new OpenPanelsLoader(this);
     public OpenGUI createGUI = new OpenGUI(this);
+    public PanelPermissions panelPerms = new PanelPermissions(this);
     public CommandPlaceholderLoader customCommand = new CommandPlaceholderLoader(this);
     public HotbarItemLoader hotbar = new HotbarItemLoader(this);
 
@@ -210,7 +213,7 @@ public class CommandPanels extends JavaPlugin {
             @Override
             public Integer call() throws Exception {
                 //this is the total panels loaded
-                return panelNames.size();
+                return panelList.size();
             }
         }));
 
@@ -226,6 +229,10 @@ public class CommandPanels extends JavaPlugin {
             updater.autoUpdatePlugin(this.getFile().getName());
         }
         Bukkit.getLogger().info("RockyHawk's CommandPanels Plugin Disabled, aww man.");
+    }
+
+    public static CommandPanelsAPI getAPI(){
+        return new CommandPanelsAPI(JavaPlugin.getPlugin(CommandPanels.class));
     }
 
     public void setName(ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours, Boolean hideAttributes) {
@@ -377,8 +384,8 @@ public class CommandPanels extends JavaPlugin {
     //check for duplicate panel names
     public boolean checkDuplicatePanel(CommandSender sender){
         ArrayList<String> apanels = new ArrayList<>();
-        for(String[] panelName : panelNames){
-            apanels.add(panelName[0]);
+        for(Panel panel : panelList){
+            apanels.add(panel.getName());
         }
 
         //names is a list of the titles for the Panels
@@ -414,9 +421,8 @@ public class CommandPanels extends JavaPlugin {
                 this.getServer().getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error in: " + fileName);
                 continue;
             }
-            panelFiles.add((directory + File.separator + fileName).replace(panelsf.toString() + File.separator,""));
             for (String tempName : Objects.requireNonNull(YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)).getConfigurationSection("panels")).getKeys(false)) {
-                panelNames.add(new String[]{tempName, Integer.toString(panelFiles.size()-1)});
+                panelList.add(new Panel(new File((directory + File.separator + fileName)),tempName));
                 if(YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)).contains("panels." + tempName + ".open-with-item")) {
                     openWithItem = true;
                 }
@@ -425,8 +431,7 @@ public class CommandPanels extends JavaPlugin {
     }
 
     public void reloadPanelFiles() {
-        panelFiles.clear();
-        panelNames.clear();
+        panelList.clear();
         openWithItem = false;
         //load panel files
         fileNamesFromDirectory(panelsf);

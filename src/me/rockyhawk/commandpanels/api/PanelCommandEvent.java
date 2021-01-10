@@ -6,7 +6,6 @@ import org.bukkit.event.HandlerList;
 
 public class PanelCommandEvent extends Event {
 
-    private boolean isCancelled;
     private Player p;
     private String args;
 

@@ -1,16 +1,14 @@
 package me.rockyhawk.commandpanels.commands;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 
 public class Commandpanelslist implements CommandExecutor {
@@ -24,7 +22,7 @@ public class Commandpanelslist implements CommandExecutor {
                 //command /cpl
                 //check to make sure the panels isn't empty
                 try {
-                    if (plugin.panelFiles == null) {
+                    if (plugin.panelList == null) {
                         sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "No panels found!"));
                         return true;
                     }
@@ -32,52 +30,26 @@ public class Commandpanelslist implements CommandExecutor {
                     sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "No panels found!"));
                     return true;
                 }
-                ArrayList<String> apanels = new ArrayList<String>(); //all panels from all files (panel names)
-                String tpanels; //tpanels is the temp to check through the files
-                for (int f = 0; plugin.panelFiles.size() > f; f++) { //will loop through all the files in folder
-                    String key;
-                    YamlConfiguration temp;
-                    tpanels = "";
-                    temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(f)));
-                    apanels.add("%file%" + plugin.panelFiles.get(f));
-                    if(!plugin.checkPanels(temp)){
-                        apanels.add("Error Reading File!");
-                        continue;
-                    }
-                    for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
-                        key = (String) var10.next();
-                        apanels.add(key);
-                    }
-                }
+
+                ArrayList<Panel> panels = new ArrayList<>(plugin.panelList);
                 int page = 1;
                 int skip = 0;
                 if(args.length == 1){
                     try {
                         page = Integer.parseInt(args[0]);
-                        skip = page*9-9;
+                        skip = page*8-8;
                     }catch (Exception e){
                         sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Inaccessible Page"));
                     }
                 }
-                for (int f = skip; apanels.size() > f; f++) {
-                    if(!apanels.get(f).contains("%file%")){
-                        skip++;
-                    }else{
-                        break;
-                    }
-                }
                 sender.sendMessage(plugin.papi(plugin.tag + ChatColor.DARK_AQUA + "Panels: (Page " + page + ")"));
-                for (int f = skip; apanels.size() > f; f++) {
-                    if(apanels.get(f).contains("%file%")){
-                        if(skip+9 <= f){
-                            sender.sendMessage(ChatColor.AQUA + "Type /cpl " + (page+1) + " to read next page");
-                            break;
-                        }
-                        sender.sendMessage(ChatColor.DARK_GREEN + apanels.get(f).replaceAll("%file%",""));
-                    }else{
-                        sender.sendMessage(ChatColor.GREEN + "- " + apanels.get(f));
+                for (int f = skip; panels.size() > f && skip+8 > f; f++) {
+                    sender.sendMessage(ChatColor.DARK_GREEN + panels.get(f).getFile().getAbsolutePath().replace(plugin.panelsf.getAbsolutePath(),"") + ChatColor.GREEN + " " + panels.get(f).getName());
+                    if(panels.size()-1 == f){
+                        return true;
                     }
                 }
+                sender.sendMessage(ChatColor.AQUA + "Type /cpl " + (page+1) + " to read next page");
             }else{
                 sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
             }

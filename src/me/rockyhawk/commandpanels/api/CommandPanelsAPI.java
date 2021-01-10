@@ -1,12 +1,13 @@
 package me.rockyhawk.commandpanels.api;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 public class CommandPanelsAPI {
     CommandPanels plugin;
@@ -20,22 +21,46 @@ public class CommandPanelsAPI {
     }
 
     //get the name of a panel currently open, will return null if panel is not open
-    public String getPanelName(Player p){
-        return plugin.openPanels.getOpenPanelName(p.getName());
+    public Panel getOpenPanel(Player p){
+        return new Panel(plugin.openPanels.getOpenPanel(p.getName()),plugin.openPanels.getOpenPanelName(p.getName()));
+    }
+
+    //loaded panels in folder
+    public List<Panel> getPanelsLoaded(){
+        return plugin.panelList;
+    }
+
+    //import panel into folder
+    public void addPanel(Panel panel) throws IOException{
+        File addedFile = new File(plugin.panelsf + File.separator + panel.getFile().getName());
+        YamlConfiguration addedYaml = new YamlConfiguration();
+        addedYaml.set("panels." + panel.getName(), panel.getConfig());
+        addedYaml.save(addedFile);
+    }
+
+    //remove panel from folder
+    public void removePanel(Panel panel){
+        for(Panel panels : plugin.panelList){
+            if(panels.getName().equals(panel.getName())){
+                if(panels.getFile().delete()){
+                    plugin.reloadPanelFiles();
+                }
+            }
+        }
+    }
+
+    //get panel from folder
+    public Panel getPanel(String panelName){
+        for(Panel panel : plugin.panelList) {
+            if(panel.getName().equals(panelName)) {
+                return panel;
+            }
+        }
+        return null;
     }
 
     //will return item slots of hotbar stationary items
-    public ArrayList<Integer> getHotbarItems(){
+    public Set<Integer> getHotbarItems(){
         return plugin.hotbar.getStationaryItemSlots();
-    }
-
-    //open a panel using a custom file or configuration
-    public void openGUI(Player p, YamlConfiguration panelYaml, String panelName){
-        ConfigurationSection panelSection = panelYaml.getConfigurationSection("panels." + panelName);
-        plugin.openVoids.openCommandPanel(plugin.getServer().getConsoleSender(), p, panelName, panelSection, false);
-    }
-    public void openGUI(Player p, File panelFile, String panelName){
-        ConfigurationSection panelSection = YamlConfiguration.loadConfiguration(panelFile).getConfigurationSection("panels." + panelName);
-        plugin.openVoids.openCommandPanel(plugin.getServer().getConsoleSender(), p, panelName, panelSection, false);
     }
 }

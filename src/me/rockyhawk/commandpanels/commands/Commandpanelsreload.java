@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.commands;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -74,17 +75,15 @@ public class Commandpanelsreload implements CommandExecutor {
         ArrayList<String> temp = new ArrayList<>();
         temp.add("commandpanel");
 
-        for (String[] panelName : plugin.panelNames) {
-            tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1])))).getConfigurationSection("panels." + panelName[0]);
-
-            if(tempFile.contains("panelType")){
-                if(tempFile.getStringList("panelType").contains("nocommandregister")){
+        for (Panel panel : plugin.panelList) {
+            if(panel.getConfig().contains("panelType")){
+                if(panel.getConfig().getStringList("panelType").contains("nocommandregister")){
                     continue;
                 }
             }
 
-            if(tempFile.contains("commands")){
-                List<String> panelCommands = tempFile.getStringList("commands");
+            if(panel.getConfig().contains("commands")){
+                List<String> panelCommands = panel.getConfig().getStringList("commands");
                 for(String command : panelCommands){
                     cmdCF.set("aliases." + command.split("\\s")[0],temp);
                 }

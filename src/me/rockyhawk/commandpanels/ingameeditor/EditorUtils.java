@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.ingameeditor;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -45,18 +46,10 @@ public class EditorUtils implements Listener {
         ArrayList<String> panelTitles = new ArrayList<String>(); //all panels from ALL files (panel titles)
         ArrayList<ConfigurationSection> panelYaml = new ArrayList<ConfigurationSection>(); //all panels from ALL files (panel yaml files)
         try {
-            for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
-                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-                String key;
-                if(!plugin.checkPanels(temp)){
-                    continue;
-                }
-                for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
-                    key = s;
-                    panelNames.add(plugin.papi( key));
-                    panelTitles.add(plugin.papi( Objects.requireNonNull(temp.getString("panels." + key + ".title"))));
-                    panelYaml.add(temp.getConfigurationSection("panels." + key));
-                }
+            for(Panel panel : plugin.panelList) { //will loop through all the files in folder
+                panelNames.add(plugin.papi(panel.getName()));
+                panelTitles.add(plugin.papi( Objects.requireNonNull(panel.getConfig().getString("title"))));
+                panelYaml.add(panel.getConfig());
             }
         }catch(Exception fail){
             //could not fetch all panel names (probably no panels exist)
@@ -137,26 +130,18 @@ public class EditorUtils implements Listener {
             return;
         }
         String panelName = ""; //all panels from ALL files (panel names)
-        String fileName = ""; //all panels from ALL files (panel names)
-        YamlConfiguration file = new YamlConfiguration(); //all panels from ALL files (panel yaml files)
+        File file = null; //all panels from ALL files (panel names)
+        YamlConfiguration config = new YamlConfiguration(); //all panels from ALL files (panel yaml files)
         boolean found = false;
         try {
             //neew to loop through files to get file names
-            for(String fileTempName : plugin.panelFiles) { //will loop through all the files in folder
-                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-                String key;
-                if(!plugin.checkPanels(temp)){
-                    continue;
-                }
-                for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
-                    key = s;
-                    if (e.getView().getTitle().equals("Editing Panel: " + key)) {
-                        panelName = key;
-                        fileName = fileTempName;
-                        file = temp;
-                        found = true;
-                        break;
-                    }
+            for(Panel panel : plugin.panelList) { //will loop through all the files in folder
+                if (e.getView().getTitle().equals("Editing Panel: " + panel.getName())) {
+                    panelName = panel.getName();
+                    file = panel.getFile();
+                    config = YamlConfiguration.loadConfiguration(panel.getFile());
+                    found = true;
+                    break;
                 }
             }
         }catch(Exception fail){
@@ -182,12 +167,13 @@ public class EditorUtils implements Listener {
         if(tempEdit.contains("panels." + panelName + ".temp." + p.getName())){
             try {
                 for (int slot : e.getInventorySlots()) {
-                    file.set("panels." + panelName + ".item." + slot, tempEdit.get("panels." + panelName + ".temp." + p.getName()));
+                    config.set("panels." + panelName + ".item." + slot, tempEdit.get("panels." + panelName + ".temp." + p.getName()));
                     //stacks can't be saved to file because it is not accurate in drag drop cases
-                    if(file.contains("panels." + panelName + ".item." + slot + ".stack")){
-                        file.set("panels." + panelName + ".item." + slot + ".stack",null);
+                    if(config.contains("panels." + panelName + ".item." + slot + ".stack")){
+                        config.set("panels." + panelName + ".item." + slot + ".stack",null);
                     }
-                    saveFile(fileName, file, true);
+                    saveFile(file, config);
+                    saveFile(file, config);
                 }
             }catch(NullPointerException nu){
                 plugin.debug(nu);
@@ -204,24 +190,18 @@ public class EditorUtils implements Listener {
             return;
         }
         String panelName = "";
-        String fileName = "";
-        YamlConfiguration file = new YamlConfiguration();
+        File file = null;
+        YamlConfiguration config = new YamlConfiguration();
         boolean found = false;
         try {
             //neew to loop through files to get file names
-            for(String tempName : plugin.panelFiles) { //will loop through all the files in folder
-                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + tempName));
-                if(!plugin.checkPanels(temp)){
-                    continue;
-                }
-                for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
-                    if (e.getView().getTitle().equals("Editing Panel: " + s)) {
-                        panelName = s;
-                        fileName = tempName;
-                        file = temp;
-                        found = true;
-                        break;
-                    }
+            for(Panel panel : plugin.panelList) { //will loop through all the files in folder
+                if (e.getView().getTitle().equals("Editing Panel: " + panel.getName())) {
+                    panelName = panel.getName();
+                    file = panel.getFile();
+                    config = YamlConfiguration.loadConfiguration(panel.getFile());
+                    found = true;
+                    break;
                 }
             }
         }catch(Exception fail){
@@ -248,8 +228,8 @@ public class EditorUtils implements Listener {
             onEditPanelClose(p,e.getInventory(),e.getView());
             inventoryItemSettingsOpening.add(p.getName());
             //refresh the yaml config
-            file = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-            plugin.editorGuis.openItemSettings(p,panelName,file.getConfigurationSection("panels." + panelName + ".item." + e.getSlot()), String.valueOf(e.getSlot()));
+            config = YamlConfiguration.loadConfiguration(file);
+            plugin.editorGuis.openItemSettings(p,panelName,config.getConfigurationSection("panels." + panelName + ".item." + e.getSlot()), String.valueOf(e.getSlot()));
             p.updateInventory();
             return;
         }
@@ -272,16 +252,16 @@ public class EditorUtils implements Listener {
             return;
         }
         if(e.getAction() == InventoryAction.CLONE_STACK){
-            saveTempItem(e, p, file, panelName);
-            saveFile(fileName,file,true);
+            saveTempItem(e, p, config, panelName);
+            saveFile(file,config);
         }else if(e.getAction() == InventoryAction.PLACE_ALL){
-            loadTempItem(e, p, file, fileName, panelName);
+            loadTempItem(e, p, config, file, panelName);
             clearTemp(p, panelName);
-            saveFile(fileName,file,true);
+            saveFile(file,config);
         }else if(e.getAction() == InventoryAction.COLLECT_TO_CURSOR){
-            saveTempItem(e, p, file, panelName);
-            saveFile(fileName,file,true);
-            removeOldItem(e, p, file, fileName, panelName);
+            saveTempItem(e, p, config, panelName);
+            saveFile(file,config);
+            removeOldItem(e, p, config, file, panelName);
         }else if(e.getAction() == InventoryAction.DROP_ALL_CURSOR){
             e.setCancelled(true);
         }else if(e.getAction() == InventoryAction.DROP_ALL_SLOT){
@@ -297,26 +277,26 @@ public class EditorUtils implements Listener {
         }else if(e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY){
             e.setCancelled(true);
         }else if(e.getAction() == InventoryAction.PLACE_SOME){
-            loadTempItem(e, p, file, fileName, panelName);
-            saveFile(fileName,file,true);
+            loadTempItem(e, p, config, file, panelName);
+            saveFile(file,config);
         }else if(e.getAction() == InventoryAction.SWAP_WITH_CURSOR){
             e.setCancelled(true);
         }else if(e.getAction() == InventoryAction.PICKUP_ALL){
-            saveTempItem(e, p, file, panelName);
-            saveFile(fileName,file,true);
-            removeOldItem(e, p, file, fileName, panelName);
+            saveTempItem(e, p, config, panelName);
+            saveFile(file,config);
+            removeOldItem(e, p, config, file, panelName);
         }else if(e.getAction() == InventoryAction.PICKUP_HALF){
-            saveTempItem(e, p, file, panelName);
-            saveFile(fileName,file,true);
+            saveTempItem(e, p, config, panelName);
+            saveFile(file,config);
         }else if(e.getAction() == InventoryAction.PICKUP_ONE){
-            saveTempItem(e, p, file, panelName);
-            saveFile(fileName,file,true);
+            saveTempItem(e, p, config, panelName);
+            saveFile(file,config);
         }else if(e.getAction() == InventoryAction.PICKUP_SOME){
-            saveTempItem(e, p, file, panelName);
-            saveFile(fileName,file,true);
+            saveTempItem(e, p, config, panelName);
+            saveFile(file,config);
         }else if(e.getAction() == InventoryAction.PLACE_ONE){
-            loadTempItem(e, p, file, fileName, panelName);
-            saveFile(fileName,file,true);
+            loadTempItem(e, p, config, file, panelName);
+            saveFile(file,config);
         }
     }
 
@@ -361,20 +341,14 @@ public class EditorUtils implements Listener {
         boolean hotbarItems = false;
         try {
             //neew to loop through files to get file names
-            for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
-                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-                if(!plugin.checkPanels(temp)){
-                    continue;
-                }
-                for (String key : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)){
-                    if(e.getView().getTitle().equals("Panel Settings: " + key)){
-                        panelName = key;
-                        if(temp.contains("panels." + panelName + ".open-with-item")){
-                            hotbarItems = true;
-                        }
-                        found = true;
-                        break;
+            for(Panel panel : plugin.panelList) { //will loop through all the files in folder
+                if(e.getView().getTitle().equals("Panel Settings: " + panel.getName())){
+                    panelName = panel.getName();
+                    if(panel.getConfig().contains("open-with-item")){
+                        hotbarItems = true;
                     }
+                    found = true;
+                    break;
                 }
             }
         }catch(Exception fail){
@@ -522,24 +496,15 @@ public class EditorUtils implements Listener {
         }
         e.setCancelled(true);
         String panelName = ""; //all panels from ALL files (panel names)
-        YamlConfiguration panelYaml = null; //all panels from ALL files (panel names)
+        ConfigurationSection panelYaml = null; //all panels from ALL files (panel names)
         boolean found = false;
         try {
             //loop through files to get file names
-            for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
-                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-                if(!plugin.checkPanels(temp)){
-                    continue;
-                }
-                for (String key : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)){
-                    if(e.getView().getTitle().equals("Item Settings: " + key)){
-                        panelName = key;
-                        panelYaml = temp;
-                        found = true;
-                        break;
-                    }
-                }
-                if(found){
+            for(Panel panel : plugin.panelList) { //will loop through all the files in folder
+                if(e.getView().getTitle().equals("Item Settings: " + panel.getName())){
+                    panelName = panel.getName();
+                    panelYaml = panel.getConfig();
+                    found = true;
                     break;
                 }
             }
@@ -624,7 +589,7 @@ public class EditorUtils implements Listener {
         }
         if(e.getSlot() == 31){
             //section includes the slot number at the front
-            plugin.editorGuis.openItemSections(p,panelName,panelYaml.getConfigurationSection("panels." + panelName + ".item." + itemSlot), itemSlot);
+            plugin.editorGuis.openItemSections(p,panelName,panelYaml.getConfigurationSection("item." + itemSlot), itemSlot);
             p.updateInventory();
         }
         if(e.getSlot() == 35){
@@ -635,9 +600,9 @@ public class EditorUtils implements Listener {
         if(e.getSlot() == 27){
             if(itemSlot.contains(".")){
                 String newSection = itemSlot.substring(0, itemSlot.lastIndexOf("."));
-                plugin.editorGuis.openItemSections(p,panelName,panelYaml.getConfigurationSection("panels." + panelName + ".item." + newSection), newSection);
+                plugin.editorGuis.openItemSections(p,panelName,panelYaml.getConfigurationSection("item." + newSection), newSection);
             }else {
-                plugin.createGUI.openGui(panelName, p, panelYaml.getConfigurationSection("panels." + panelName), 3, 0);
+                plugin.createGUI.openGui(panelName, p, panelYaml, 3, 0);
             }
             p.updateInventory();
         }
@@ -660,26 +625,16 @@ public class EditorUtils implements Listener {
         }
         e.setCancelled(true);
         String panelName = ""; //all panels from ALL files (panel names)
-        YamlConfiguration panelYaml = null;
+        ConfigurationSection panelYaml = null;
         ConfigurationSection itemConfSection; //all panels from ALL files (panel names)
         boolean found = false;
         try {
             //loop through files to get file names
-            YamlConfiguration temp;
-            for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
-                temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-                if(!plugin.checkPanels(temp)){
-                    continue;
-                }
-                for (String key : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)){
-                    if(e.getView().getTitle().equals("Item Sections: " + key)){
-                        panelName = key;
-                        panelYaml = temp;
-                        found = true;
-                        break;
-                    }
-                }
-                if(found){
+            for(Panel panel : plugin.panelList) { //will loop through all the files in folder
+                if(e.getView().getTitle().equals("Item Sections: " + panel.getName())){
+                    panelName = panel.getName();
+                    panelYaml = panel.getConfig();
+                    found = true;
                     break;
                 }
             }
@@ -701,7 +656,7 @@ public class EditorUtils implements Listener {
             plugin.debug(ex);
             return;
         }
-        itemConfSection = panelYaml.getConfigurationSection("panels." + panelName + ".item." + section);
+        itemConfSection = panelYaml.getConfigurationSection("item." + section);
 
         if(e.getSlot() <= 35){
             if(e.getInventory().getItem(e.getSlot()) != null){
@@ -739,32 +694,35 @@ public class EditorUtils implements Listener {
     public void saveTempItem(InventoryClickEvent e, Player p, YamlConfiguration file, String panelName){
         //saves item to temp, using getslot
         tempEdit.set("panels." + panelName + ".temp." + p.getName(),file.get("panels." + panelName + ".item." + e.getSlot()));
-        saveFile("temp.yml", tempEdit, false);
+        saveFile("temp.yml", tempEdit);
     }
-    public void loadTempItem(InventoryClickEvent e, Player p, YamlConfiguration file,String fileName, String panelName){
+    public void loadTempItem(InventoryClickEvent e, Player p, YamlConfiguration config,File file, String panelName){
         //loads temp item to the current item
         if(tempEdit.contains("panels." + panelName + ".temp." + p.getName())){
-            file.set("panels." + panelName + ".item." + e.getSlot(),tempEdit.get("panels." + panelName + ".temp." + p.getName()));
-            saveFile(fileName, file, true);
+            config.set("panels." + panelName + ".item." + e.getSlot(),tempEdit.get("panels." + panelName + ".temp." + p.getName()));
+            saveFile(file, config);
         }
     }
-    public void removeOldItem(InventoryClickEvent e, Player p, YamlConfiguration file,String fileName, String panelName){
+    public void removeOldItem(InventoryClickEvent e, Player p, YamlConfiguration config,File file, String panelName){
         //removes the old item from config, if it has been picked up (use this only after saving)
-        file.set("panels." + panelName + ".item." + e.getSlot(),null);
-        saveFile(fileName, file, true);
+        config.set("panels." + panelName + ".item." + e.getSlot(),null);
+        saveFile(file, config);
     }
     public void clearTemp(Player p, String panelName){
         //empty temp item
         tempEdit.set("panels." + panelName + ".temp." + p.getName(),null);
-        saveFile("temp.yml", tempEdit, false);
+        saveFile("temp.yml", tempEdit);
     }
-    public void saveFile(String fileName, YamlConfiguration file, boolean inPanelsFolder){
+    public void saveFile(String fileName, YamlConfiguration file){
         try {
-            if(inPanelsFolder){
-                file.save(new File(plugin.panelsf + File.separator + fileName));
-            }else{
-                file.save(new File(plugin.getDataFolder() + File.separator + fileName));
-            }
+            file.save(new File(plugin.getDataFolder() + File.separator + fileName));
+        } catch (IOException s) {
+            plugin.debug(s);
+        }
+    }
+    public void saveFile(File file, YamlConfiguration config){
+        try {
+            config.save(file);
         } catch (IOException s) {
             plugin.debug(s);
         }
@@ -779,26 +737,18 @@ public class EditorUtils implements Listener {
             return;
         }
         String panelName = ""; //all panels from ALL files (panel names)
-        String fileName = ""; //all panels from ALL files (panel names)
-        YamlConfiguration file = new YamlConfiguration(); //all panels from ALL files (panel yaml files)
+        File file = null; //all panels from ALL files (panel names)
+        YamlConfiguration config = new YamlConfiguration(); //all panels from ALL files (panel yaml files)
         boolean found = false;
         try {
             //neew to loop through files to get file names
-            for(String tempFile : plugin.panelFiles) { //will loop through all the files in folder
-                YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + tempFile));
-                String key;
-                if(!plugin.checkPanels(temp)){
-                    continue;
-                }
-                for (String s : Objects.requireNonNull(temp.getConfigurationSection("panels")).getKeys(false)) {
-                    key = s;
-                    if (invView.getTitle().equals("Editing Panel: " + key)) {
-                        panelName = key;
-                        fileName = tempFile;
-                        file = temp;
-                        found = true;
-                        break;
-                    }
+            for(Panel panel : plugin.panelList) { //will loop through all the files in folder
+                if (invView.getTitle().equals("Editing Panel: " + panel.getName())) {
+                    panelName = panel.getName();
+                    file = panel.getFile();
+                    config = YamlConfiguration.loadConfiguration(panel.getFile());
+                    found = true;
+                    break;
                 }
             }
         }catch(Exception fail){
@@ -810,9 +760,9 @@ public class EditorUtils implements Listener {
             return;
         }
         //save items as they appear
-        file = plugin.itemCreate.generatePanelFile(panelName,inv,file);
+        config = plugin.itemCreate.generatePanelFile(panelName,inv,config);
         try {
-            file.save(new File(plugin.panelsf + File.separator + fileName));
+            config.save(file);
             p.sendMessage(plugin.papi(plugin.tag + ChatColor.GREEN + "Saved Changes!"));
         } catch (IOException s) {
             p.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Could Not Save Changes!"));

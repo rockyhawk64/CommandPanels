@@ -5,13 +5,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.Inventory;
 
 public class PanelOpenedEvent extends Event implements Cancellable {
 
     private boolean isCancelled;
     private Player p;
-    private ConfigurationSection cf;
-    private String name;
+    private Panel panel;
 
     public boolean isCancelled() {
         return this.isCancelled;
@@ -23,20 +23,19 @@ public class PanelOpenedEvent extends Event implements Cancellable {
 
     public PanelOpenedEvent(Player player, ConfigurationSection panelConfig, String panelName) {
         this.p = player;
-        this.cf = panelConfig;
-        this.name = panelName;
+        this.panel = new Panel(panelConfig,panelName);
     }
 
     public Player getPlayer(){
         return this.p;
     }
 
-    public ConfigurationSection getPanelConfig(){
-        return this.cf;
+    public Inventory getInventory(){
+        return this.p.getInventory();
     }
 
-    public String getPanelName(){
-        return this.name;
+    public Panel getPanel(){
+        return this.panel;
     }
 
     private static final HandlerList HANDLERS = new HandlerList();

@@ -1,13 +1,11 @@
 package me.rockyhawk.commandpanels.customcommands;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 
-import java.io.File;
 import java.util.*;
 
 public class Commandpanelcustom implements Listener {
@@ -18,26 +16,16 @@ public class Commandpanelcustom implements Listener {
     @EventHandler
     public void PlayerCommand(PlayerCommandPreprocessEvent e) {
         try {
-            if (plugin.panelsf.list() == null || Objects.requireNonNull(plugin.panelsf.list()).length == 0) {
-                return;
-            }
-        }catch(Exception b){
-            return;
-        }
-        ConfigurationSection tempFile;
-
-        try {
-            for (String[] panelName : plugin.panelNames) {
-                tempFile = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + plugin.panelFiles.get(Integer.parseInt(panelName[1])))).getConfigurationSection("panels." + panelName[0]);
-                if (tempFile.contains("commands")) {
-                    List<String> panelCommands = tempFile.getStringList("commands");
+            for (Panel panel : plugin.panelList) {
+                if (panel.getConfig().contains("commands")) {
+                    List<String> panelCommands = panel.getConfig().getStringList("commands");
                     for(String cmd : panelCommands){
                         if(cmd.equalsIgnoreCase(e.getMessage().replace("/", ""))){
                             e.setCancelled(true);
                             if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName())) {
                                 plugin.openPanels.skipPanels.add(e.getPlayer().getName());
                             }
-                            plugin.openVoids.openCommandPanel(e.getPlayer(), e.getPlayer(), panelName[0], tempFile, false);
+                            panel.open(e.getPlayer());
                             return;
                         }
 
@@ -60,12 +48,12 @@ public class Commandpanelcustom implements Listener {
                         if(correctCommand){
                             e.setCancelled(true);
                             for(String[] placeholder : placeholders){
-                                plugin.customCommand.addCCP(panelName[0],e.getPlayer().getName(),placeholder[0],placeholder[1]);
+                                plugin.customCommand.addCCP(panel.getName(),e.getPlayer().getName(),placeholder[0],placeholder[1]);
                             }
                             if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName())) {
                                 plugin.openPanels.skipPanels.add(e.getPlayer().getName());
                             }
-                            plugin.openVoids.openCommandPanel(e.getPlayer(), e.getPlayer(), panelName[0], tempFile, false);
+                            panel.open(e.getPlayer());
                             return;
                         }
                     }

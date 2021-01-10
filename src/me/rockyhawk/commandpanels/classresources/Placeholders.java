@@ -139,6 +139,12 @@ public class Placeholders {
                 boolean isIdentical = false;
                 ItemStack itm = p.getOpenInventory().getTopInventory().getItem(matSlot);
 
+                if(itm == null){
+                    //continue if material is null
+                    str = str.replace(str.substring(start, end) + "%", String.valueOf(false));
+                    continue;
+                }
+
                 try {
                     //if it is a regular custom item
                     ItemStack confItm = plugin.itemCreate.makeItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + matLoc),p,true,true, false);

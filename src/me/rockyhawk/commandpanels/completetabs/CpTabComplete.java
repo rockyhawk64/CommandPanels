@@ -1,15 +1,13 @@
 package me.rockyhawk.commandpanels.completetabs;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -22,43 +20,27 @@ public class CpTabComplete implements TabCompleter {
             Player p = ((Player) sender).getPlayer();
             if(label.equalsIgnoreCase("cp") || label.equalsIgnoreCase("cpanel") || label.equalsIgnoreCase("commandpanel")){
                 ArrayList<String> apanels = new ArrayList<String>(); //all panels
-                String tpanels; //tpanels is the temp to check through the files
-                for(String fileName : plugin.panelFiles) { //will loop through all the files in folder
+                for(Panel panel : plugin.panelList) { //will loop through all the files in folder
                     try {
-                        YamlConfiguration temp = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + fileName));
-                        String key;
-                        tpanels = "";
-                        if (!plugin.checkPanels(temp)) {
+                        if (!panel.getName().startsWith(args[0])) {
+                            //this will narrow down the panels to what the user types
                             continue;
                         }
-                        for (Iterator var10 = temp.getConfigurationSection("panels").getKeys(false).iterator(); var10.hasNext(); tpanels = tpanels + key + " ") {
-                            key = (String) var10.next();
-                            if (!key.startsWith(args[0])) {
-                                //this will narrow down the panels to what the user types
-                                continue;
+                        if (sender.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))) {
+                            if(panel.getConfig().contains("panelType")) {
+                                if (panel.getConfig().getStringList("panelType").contains("nocommand")) {
+                                    //do not allow command with noCommand
+                                    continue;
+                                }
                             }
-                            if (sender.hasPermission("commandpanel.panel." + temp.getString("panels." + key + ".perm"))) {
-                                if(temp.contains("panels." + key + ".panelType")) {
-                                    if (temp.getStringList("panels." + key + ".panelType").contains("nocommand")) {
-                                        //do not allow command with noCommand
-                                        continue;
-                                    }
-                                }
 
-                                if (temp.contains("panels." + key + ".disabled-worlds")) {
-                                    List<String> disabledWorlds = temp.getStringList("panels." + key + ".disabled-worlds");
-                                    if (!disabledWorlds.contains(p.getWorld().getName())) {
-                                        apanels.add(key);
-                                    }
-                                } else {
-                                    apanels.add(key);
-                                }
+                            if(plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
+                                apanels.add(panel.getName());
                             }
                         }
                     }catch(Exception skip){
                         //ignore panel
                     }
-                    //if file contains opened panel then start
                 }
                 return apanels;
             }

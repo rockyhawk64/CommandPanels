@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.ingameeditor;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -37,21 +38,13 @@ public class EditorUserInput implements Listener {
             YamlConfiguration cfile = null;
             ConfigurationSection cf = null;
             try {
-                for (String tempFile : plugin.panelFiles) { //will loop through all the files in folder
-                    YamlConfiguration tempConf = YamlConfiguration.loadConfiguration(new File(plugin.panelsf + File.separator + tempFile));
-                    if (!plugin.checkPanels(tempConf)) {
-                        continue;
+                for (Panel panel : plugin.panelList) { //will loop through all the files in folder
+                    if (panel.getName().equals(panelName)) {
+                        cf = panel.getConfig();
+                        panelFile = panel.getFile();
+                        panelTitle = plugin.papi(cf.getString("title"));
+                        break;
                     }
-                    for (String key : Objects.requireNonNull(tempConf.getConfigurationSection("panels")).getKeys(false)) {
-                        if (key.equals(panelName)) {
-                            cfile = tempConf;
-                            cf = tempConf.getConfigurationSection("panels." + key);
-                            panelFile = new File(plugin.panelsf + File.separator + tempFile);
-                            panelTitle = plugin.papi( Objects.requireNonNull(cf.getString("title")));
-                            break;
-                        }
-                    }
-                    //if file contains opened panel then start
                 }
             } catch (Exception fail) {
                 //could not fetch all panel names (probably no panels exist)
