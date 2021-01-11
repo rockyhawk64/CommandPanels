@@ -59,7 +59,7 @@ public class CommandTags {
             }
             case "add-data=":{
                 if(command.split("\\s").length == 4){
-                    plugin.panelData.setUserData(getOffline(command.split("\\s")[3]),command.split("\\s")[1],command.split("\\s")[2],true);
+                    plugin.panelData.setUserData(getOffline(command.split("\\s")[3]),command.split("\\s")[1],command.split("\\s")[2],false);
                     break;
                 }
                 //this will not overwrite existing data. add-data= [data point] [data value] [optional player]
@@ -68,7 +68,7 @@ public class CommandTags {
             }
             case "math-data=":{
                 if(command.split("\\s").length == 4){
-                    plugin.panelData.setUserData(getOffline(command.split("\\s")[3]),command.split("\\s")[1],command.split("\\s")[2],true);
+                    plugin.panelData.doDataMath(getOffline(command.split("\\s")[3]),command.split("\\s")[1],command.split("\\s")[2]);
                     break;
                 }
                 //only works if data is number, goes math-data= [data point] [operator:number] [optional player] eg, math-data= -1 OR /3
@@ -82,7 +82,7 @@ public class CommandTags {
             }
             case "del-data=":{
                 if(command.split("\\s").length == 3){
-                    plugin.panelData.setUserData(getOffline(command.split("\\s")[3]),command.split("\\s")[1],command.split("\\s")[2],true);
+                    plugin.panelData.delUserData(getOffline(command.split("\\s")[2]),command.split("\\s")[1]);
                     break;
                 }
                 //this will remove data. del-data= [data point] [optional player]

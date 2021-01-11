@@ -32,20 +32,6 @@ public class Placeholders {
         str = str.replaceAll("%cp-player-z%", String.valueOf(Math.round(p.getLocation().getZ())));
         str = str.replaceAll("%cp-online-players%", Integer.toString(Bukkit.getServer().getOnlinePlayers().size()));
         str = str.replaceAll("%cp-tag%", plugin.papi(plugin.tag));
-        //placeholder to check for server availability %cp-server-IP:PORT%
-        while (str.contains("%cp-server-")) {
-            int start = str.indexOf("%cp-server-");
-            int end = str.indexOf("%", str.indexOf("%cp-server-")+1);
-            String ip_port = str.substring(start, end).replace("%cp-server-", "").replace("%","");
-            Socket s = new Socket();
-            try {
-                s.connect(new InetSocketAddress(ip_port.split(":")[0], Integer.parseInt(ip_port.split(":")[1])), plugin.config.getInt("config.server-ping-timeout"));
-                str = str.replace(str.substring(start, end) + "%", "true");
-                s.close();
-            }catch (IOException ex){
-                str = str.replace(str.substring(start, end) + "%", "false");
-            }
-        }
 
         //set custom placeholders to their values
         for(String[] placeholder : plugin.customCommand.getCCP(p.getName())){
@@ -58,6 +44,21 @@ public class Placeholders {
                     plugin.debug(ex);
                     break;
                 }
+            }
+        }
+
+        //placeholder to check for server availability %cp-server-IP:PORT%
+        while (str.contains("%cp-server-")) {
+            int start = str.indexOf("%cp-server-");
+            int end = str.indexOf("%", str.indexOf("%cp-server-")+1);
+            String ip_port = str.substring(start, end).replace("%cp-server-", "").replace("%","");
+            Socket s = new Socket();
+            try {
+                s.connect(new InetSocketAddress(ip_port.split(":")[0], Integer.parseInt(ip_port.split(":")[1])), plugin.config.getInt("config.server-ping-timeout"));
+                str = str.replace(str.substring(start, end) + "%", "true");
+                s.close();
+            }catch (IOException ex){
+                str = str.replace(str.substring(start, end) + "%", "false");
             }
         }
 
@@ -193,7 +194,14 @@ public class Placeholders {
                 int start = str.indexOf("%cp-data-");
                 int end = str.indexOf("%", str.indexOf("%cp-data-") + 1);
                 String dataPoint = str.substring(start, end).replace("%cp-data-", "").replace("%", "");
-                str = str.replace(str.substring(start, end) + "%", plugin.panelData.getUserData(p.getUniqueId(),dataPoint));
+                //get data from other user
+                if(dataPoint.contains(",")){
+                    String dataName = dataPoint.split(",")[0];
+                    String playerName = dataPoint.split(",")[1];
+                    str = str.replace(str.substring(start, end) + "%", plugin.panelData.getUserData(Bukkit.getOfflinePlayer(playerName).getUniqueId(),dataName));
+                }else{
+                    str = str.replace(str.substring(start, end) + "%", plugin.panelData.getUserData(p.getUniqueId(),dataPoint));
+                }
             }catch (Exception ex){
                 plugin.debug(ex);
                 break;

@@ -33,9 +33,9 @@ public class CommandPanelsAPI {
     //import panel into folder
     public void addPanel(Panel panel) throws IOException{
         File addedFile = new File(plugin.panelsf + File.separator + panel.getFile().getName());
-        YamlConfiguration addedYaml = new YamlConfiguration();
-        addedYaml.set("panels." + panel.getName(), panel.getConfig());
+        YamlConfiguration addedYaml = YamlConfiguration.loadConfiguration(panel.getFile());
         addedYaml.save(addedFile);
+        plugin.reloadPanelFiles();
     }
 
     //remove panel from folder
