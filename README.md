@@ -1,4 +1,4 @@
-![TitleLogo](https://www.spigotmc.org/attachments/cpbanner-theonly-png.553479/)
+![TitleLogo](https://i.imgur.com/YQMXkoi.png)
 
 ### About
 Minecraft Servers use GUIs for many tasks from lobbies to shops. Command Panels takes a simple approach to YAML scripting to create a powerful yet simple design.
