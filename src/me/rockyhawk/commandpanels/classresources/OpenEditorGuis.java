@@ -308,7 +308,7 @@ public class OpenEditorGuis {
             lore.add(ChatColor.GRAY + "choose a number from 0 to 33");
             if (cf.contains("open-with-item.stationary")) {
                 lore.add(ChatColor.WHITE + "-------------------------");
-                int location = cf.getInt("open-with-item.stationary") + 1;
+                int location = cf.getInt("open-with-item.stationary");
                 lore.add(ChatColor.WHITE + String.valueOf(location));
             }
             plugin.setName(temp, ChatColor.WHITE + "Hotbar Item Location", lore, p, true, true, true);

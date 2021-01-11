@@ -138,10 +138,9 @@ public class UtilsOpenWithItem implements Listener {
             return;
         }
         Player p = e.getPlayer();
-        String tpanels; //tpanels is the temp to check through the files
         for(Panel panel : plugin.panelList) { //will loop through all the files in folder
             if(!panel.getConfig().contains("open-with-item.stationary")){
-                return;
+                continue;
             }
             if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))){
                 if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){

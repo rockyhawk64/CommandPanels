@@ -91,7 +91,7 @@ public class CommandTags {
             }
             case "give-item=":{
                 //this will remove data. give-item= [custom item].
-                ItemStack itm = plugin.itemCreate.makeCustomItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, false);
+                ItemStack itm = plugin.itemCreate.makeCustomItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfig().getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, false);
                 p.getInventory().addItem(itm);
                 break;
             }
@@ -116,9 +116,6 @@ public class CommandTags {
 
                 for(Panel panel : plugin.panelList){
                     if(panel.getName().equals(panelName)){
-                        if(plugin.openPanels.hasPanelOpen(p.getName())) {
-                            plugin.openPanels.skipPanels.add(p.getName());
-                        }
                         panel.open(p);
                         return;
                     }
@@ -161,14 +158,14 @@ public class CommandTags {
             case "setitem=":{
                 //if player uses setitem= [custom item] [slot] it will change the item slot to something, used for placeable items
                 //make a section in the panel called "custom-item" then whatever the title of the item is, put that here
-                ConfigurationSection panelCF = plugin.openPanels.getOpenPanel(p.getName());
+                ConfigurationSection panelCF = plugin.openPanels.getOpenPanel(p.getName()).getConfig();
                 ItemStack s = plugin.itemCreate.makeItemFromConfig(panelCF.getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, true);
                 p.getOpenInventory().getTopInventory().setItem(Integer.parseInt(command.split("\\s")[2]), s);
                 break;
             }
             case "refresh":{
                 //this will just do a standard panel refresh, animate is set to 0
-                plugin.createGUI.openGui(null, p, plugin.openPanels.getOpenPanel(p.getName()), 0,0);
+                plugin.createGUI.openGui(plugin.openPanels.getOpenPanel(p.getName()), p, 0,0);
                 break;
             }
             case "op=":{
@@ -633,7 +630,7 @@ public class CommandTags {
                     //create the item to be removed
                     ItemStack sellItem;
                     if(command.split("\\s").length == 2) {
-                        sellItem = plugin.itemCreate.makeCustomItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, false);
+                        sellItem = plugin.itemCreate.makeCustomItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfig().getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, false);
                     }else{
                         sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[1])), Integer.parseInt(command.split("\\s")[2]), id);
                     }
@@ -659,8 +656,8 @@ public class CommandTags {
 
                             //if custom item is an mmo item (1.14+ for the API)
                             try {
-                                if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems") && plugin.openPanels.getOpenPanel(p.getName()).getString("custom-item." + command.split("\\s")[1] + ".material").startsWith("mmo=")) {
-                                    String customItemMaterial = plugin.openPanels.getOpenPanel(p.getName()).getString("custom-item." + command.split("\\s")[1] + ".material");
+                                if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems") && plugin.openPanels.getOpenPanel(p.getName()).getConfig().getString("custom-item." + command.split("\\s")[1] + ".material").startsWith("mmo=")) {
+                                    String customItemMaterial = plugin.openPanels.getOpenPanel(p.getName()).getConfig().getString("custom-item." + command.split("\\s")[1] + ".material");
                                     String mmoType = customItemMaterial.split("\\s")[1];
                                     String mmoID = customItemMaterial.split("\\s")[2];
 

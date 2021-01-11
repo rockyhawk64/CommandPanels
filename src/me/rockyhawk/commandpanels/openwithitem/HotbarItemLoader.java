@@ -50,9 +50,6 @@ public class HotbarItemLoader {
                         }
                         return true;
                     }
-                    if (plugin.openPanels.hasPanelOpen(p.getName())) {
-                        plugin.openPanels.skipPanels.add(p.getName());
-                    }
                     panel.open(p);
                 }
                 return true;
@@ -87,9 +84,6 @@ public class HotbarItemLoader {
                                 plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
                             }
                             return true;
-                        }
-                        if (plugin.openPanels.hasPanelOpen(p.getName())) {
-                            plugin.openPanels.skipPanels.add(p.getName());
                         }
                         panel.open(p);
                     }

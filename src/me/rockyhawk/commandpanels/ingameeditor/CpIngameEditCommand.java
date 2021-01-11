@@ -41,7 +41,7 @@ public class CpIngameEditCommand implements CommandExecutor {
             for(Panel panel  : plugin.panelList){
                 if(panel.getName().equals(args[0])) {
                     //below will start the command, once it got the right file and panel
-                    plugin.createGUI.openGui(panel.getName(), p, cf,3,0);
+                    plugin.createGUI.openGui(panel, p,3,0);
                     return true;
                 }
             }

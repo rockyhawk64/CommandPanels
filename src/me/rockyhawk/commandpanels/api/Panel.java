@@ -83,6 +83,6 @@ public class Panel{
 
     //open the panel for the player
     public void open(Player p){
-        plugin.openVoids.openCommandPanel(p, p, this.panelName, this.panelConfig, false);
+        plugin.openVoids.openCommandPanel(p, p, this, false);
     }
 }

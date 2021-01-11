@@ -148,13 +148,13 @@ public class Placeholders {
 
                 try {
                     //if it is a regular custom item
-                    ItemStack confItm = plugin.itemCreate.makeItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + matLoc),p,true,true, false);
+                    ItemStack confItm = plugin.itemCreate.makeItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfig().getConfigurationSection("custom-item." + matLoc),p,true,true, false);
                     if(plugin.itemCreate.isIdentical(confItm,itm)){
                         isIdentical = true;
                     }
 
                     //if custom item is an mmo item (1.14+ for the API)
-                    String customItemMaterial = plugin.openPanels.getOpenPanel(p.getName()).getString("custom-item." + matLoc + ".material");
+                    String customItemMaterial = plugin.openPanels.getOpenPanel(p.getName()).getConfig().getString("custom-item." + matLoc + ".material");
                     if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems") && customItemMaterial.startsWith("mmo=")) {
                         String mmoType = customItemMaterial.split("\\s")[1];
                         String mmoID = customItemMaterial.split("\\s")[2];

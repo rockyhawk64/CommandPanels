@@ -19,7 +19,7 @@ public class UtilsPanelsLoader implements Listener {
     //tell panel loader that player has opened panel
     @EventHandler
     public void onPlayerClosePanel(PlayerQuitEvent e){
-        plugin.openPanels.closePanelsForLoader(e.getPlayer().getName());
+        plugin.openPanels.closePanelForLoader(e.getPlayer().getName());
     }
 
     //tell panel loader that player has closed the panel (there is also one of these in EditorUtils)
@@ -28,17 +28,7 @@ public class UtilsPanelsLoader implements Listener {
         //only do this if editor is disabled as it will disabled this code
         if(!Objects.requireNonNull(plugin.config.getString("config.ingame-editor")).equalsIgnoreCase("true")) {
             //this is put here to avoid conflicts, close panel if it is closed
-            if(plugin.openPanels.skipPanels.contains(e.getPlayer().getName())){
-                plugin.openPanels.skipPanels.remove(e.getPlayer().getName());
-                return;
-            }
-            //loop panels
-            for (int i = 0; i < plugin.openPanels.openPanelsPN.size(); i++) {
-                if (plugin.openPanels.openPanelsPN.get(i)[0].equals(e.getPlayer().getName())) {
-                    plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),plugin.openPanels.openPanelsPN.get(i)[1]);
-                    return;
-                }
-            }
+            plugin.openPanels.closePanelForLoader(e.getPlayer().getName());
         }
     }
 

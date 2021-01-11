@@ -1,6 +1,5 @@
 package me.rockyhawk.commandpanels.api;
 
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -10,8 +9,8 @@ import org.bukkit.inventory.Inventory;
 public class PanelOpenedEvent extends Event implements Cancellable {
 
     private boolean isCancelled;
-    private Player p;
-    private Panel panel;
+    private final Player p;
+    private final Panel panel;
 
     public boolean isCancelled() {
         return this.isCancelled;
@@ -21,9 +20,9 @@ public class PanelOpenedEvent extends Event implements Cancellable {
         this.isCancelled = isCancelled;
     }
 
-    public PanelOpenedEvent(Player player, ConfigurationSection panelConfig, String panelName) {
+    public PanelOpenedEvent(Player player, Panel panel) {
         this.p = player;
-        this.panel = new Panel(panelConfig,panelName);
+        this.panel = panel;
     }
 
     public Player getPlayer(){

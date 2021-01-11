@@ -26,10 +26,8 @@ import org.bukkit.potion.PotionType;
 
 import javax.swing.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ItemCreation {
     CommandPanels plugin;
@@ -112,9 +110,22 @@ public class ItemCreation {
                 normalCreation = false;
             }
 
+            //creates a written book item
+            if(matraw.split("\\s")[0].toLowerCase().equals("book=")){
+                s = new ItemStack(Material.WRITTEN_BOOK);
+                BookMeta bookMeta = (BookMeta) s.getItemMeta();
+                bookMeta.setTitle(matraw.split("\\s")[1]);
+                bookMeta.setAuthor(matraw.split("\\s")[1]);
+                List<String> bookLines = plugin.papi(p,itemSection.getStringList("write"),true);
+                String result = bookLines.stream().map(String::valueOf).collect(Collectors.joining("\n" + ChatColor.RESET, "", ""));
+                bookMeta.setPages(result);
+                s.setItemMeta(bookMeta);
+                normalCreation = false;
+            }
+
             //creates item from custom-items section of panel
             if(matraw.split("\\s")[0].toLowerCase().equals("cpi=")){
-                s = makeCustomItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfigurationSection("custom-item." + matraw.split("\\s")[1]), p, true, true, true);
+                s = makeCustomItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfig().getConfigurationSection("custom-item." + matraw.split("\\s")[1]), p, true, true, true);
                 normalCreation = false;
             }
 
@@ -297,6 +308,7 @@ public class ItemCreation {
                     p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " leatherarmor: " + itemSection.getString("leatherarmor")));
                 }
             }
+
             if (itemSection.contains("potion")) {
                 //if the item is a potion, give it an effect
                 try {

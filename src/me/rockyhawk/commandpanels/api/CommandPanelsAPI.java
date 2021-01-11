@@ -22,7 +22,7 @@ public class CommandPanelsAPI {
 
     //get the name of a panel currently open, will return null if panel is not open
     public Panel getOpenPanel(Player p){
-        return new Panel(plugin.openPanels.getOpenPanel(p.getName()),plugin.openPanels.getOpenPanelName(p.getName()));
+        return plugin.openPanels.getOpenPanel(p.getName());
     }
 
     //loaded panels in folder

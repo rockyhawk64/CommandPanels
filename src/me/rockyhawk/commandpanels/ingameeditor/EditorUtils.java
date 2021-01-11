@@ -98,7 +98,7 @@ public class EditorUtils implements Listener {
                         int count = 0;
                         for(String panelName : panelNames){
                             if(panelName.equals(ChatColor.stripColor(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getDisplayName()))){
-                                plugin.createGUI.openGui(panelName, p, panelYaml.get(count),3,0);
+                                plugin.createGUI.openGui(new Panel(panelYaml.get(count), panelName), p,3,0);
                                 return;
                             }
                             count +=1;
@@ -123,9 +123,6 @@ public class EditorUtils implements Listener {
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent e) {
         Player p = (Player)e.getWhoClicked();
-        if(e.getInventory().getType() != InventoryType.CHEST){
-            return;
-        }
         if(!p.getOpenInventory().getTitle().contains("Editing Panel:") || plugin.openPanels.hasPanelOpen(p.getName())){
             return;
         }
@@ -183,9 +180,6 @@ public class EditorUtils implements Listener {
     @EventHandler
     public void onInventoryEdit(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
-        if(e.getInventory().getType() != InventoryType.CHEST){
-            return;
-        }
         if(!p.getOpenInventory().getTitle().contains("Editing Panel:") || plugin.openPanels.hasPanelOpen(p.getName())){
             return;
         }
@@ -247,10 +241,6 @@ public class EditorUtils implements Listener {
             }
             return;
         }
-        if(e.getClickedInventory().getType() != InventoryType.CHEST){
-            clearTemp(p, panelName);
-            return;
-        }
         if(e.getAction() == InventoryAction.CLONE_STACK){
             saveTempItem(e, p, config, panelName);
             saveFile(file,config);
@@ -302,16 +292,10 @@ public class EditorUtils implements Listener {
 
     @EventHandler
     public void onPlayerClosePanel(InventoryCloseEvent e){
-        //this is put here to avoid conflicts, close panel if it is closed
-        for(int i = 0; i < plugin.openPanels.openPanelsPN.size(); i++){
-            if(plugin.openPanels.skipPanels.contains(e.getPlayer().getName())){
-                plugin.openPanels.skipPanels.remove(e.getPlayer().getName());
-                break;
-            }
-            if(plugin.openPanels.openPanelsPN.get(i)[0].equals(e.getPlayer().getName())){
-                plugin.openPanels.closePanelForLoader(e.getPlayer().getName(), plugin.openPanels.openPanelsPN.get(i)[1]);
-                return;
-            }
+        //this is put here to avoid conflicts, close panel if it is open
+        if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName())){
+            plugin.openPanels.closePanelForLoader(e.getPlayer().getName());
+            return;
         }
         //do editor settings if it is not a regular panel
         if(inventoryItemSettingsOpening.contains(e.getPlayer().getName())) {
@@ -324,14 +308,6 @@ public class EditorUtils implements Listener {
     @EventHandler
     public void onPanelSettings(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
-        try {
-            if (Objects.requireNonNull(e.getClickedInventory()).getType() != InventoryType.CHEST) {
-                return;
-            }
-        }catch(Exception outOf){
-            //skip as player clicked outside the inventory
-            return;
-        }
         if(!p.getOpenInventory().getTitle().contains("Panel Settings:") || plugin.openPanels.hasPanelOpen(p.getName())){
             return;
         }
@@ -483,14 +459,6 @@ public class EditorUtils implements Listener {
     @EventHandler
     public void onItemSettings(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
-        try {
-            if (Objects.requireNonNull(e.getClickedInventory()).getType() != InventoryType.CHEST) {
-                return;
-            }
-        }catch(Exception outOf){
-            //skip as player clicked outside the inventory
-            return;
-        }
         if(!p.getOpenInventory().getTitle().contains("Item Settings:") || plugin.openPanels.hasPanelOpen(p.getName())){
             return;
         }
@@ -602,7 +570,7 @@ public class EditorUtils implements Listener {
                 String newSection = itemSlot.substring(0, itemSlot.lastIndexOf("."));
                 plugin.editorGuis.openItemSections(p,panelName,panelYaml.getConfigurationSection("item." + newSection), newSection);
             }else {
-                plugin.createGUI.openGui(panelName, p, panelYaml, 3, 0);
+                plugin.createGUI.openGui(new Panel(panelYaml, panelName), p, 3, 0);
             }
             p.updateInventory();
         }
@@ -612,14 +580,6 @@ public class EditorUtils implements Listener {
     @EventHandler
     public void onItemSection(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
-        try {
-            if (Objects.requireNonNull(e.getClickedInventory()).getType() != InventoryType.CHEST) {
-                return;
-            }
-        }catch(Exception outOf){
-            //skip as player clicked outside the inventory
-            return;
-        }
         if(!p.getOpenInventory().getTitle().contains("Item Sections:") || plugin.openPanels.hasPanelOpen(p.getName())){
             return;
         }
@@ -730,9 +690,6 @@ public class EditorUtils implements Listener {
 
     @SuppressWarnings("deprecation")
     public void onEditPanelClose(Player p, Inventory inv, InventoryView invView) {
-        if(inv.getType() != InventoryType.CHEST){
-            return;
-        }
         if(!p.getOpenInventory().getTitle().contains("Editing Panel:")){
             return;
         }

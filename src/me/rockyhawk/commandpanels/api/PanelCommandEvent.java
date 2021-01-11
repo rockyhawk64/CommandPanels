@@ -6,8 +6,8 @@ import org.bukkit.event.HandlerList;
 
 public class PanelCommandEvent extends Event {
 
-    private Player p;
-    private String args;
+    private final Player p;
+    private final String args;
 
     public PanelCommandEvent(Player player, String message) {
         this.p = player;

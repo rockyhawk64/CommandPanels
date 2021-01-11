@@ -77,7 +77,7 @@ public class EditorUserInput implements Listener {
                 final ConfigurationSection finalCF = cf;
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-                        plugin.createGUI.openGui(panelName, p, finalCF, 3,0); //I have to do this to run regular Bukkit voids in an ASYNC Event
+                        plugin.createGUI.openGui(new Panel(finalCF, panelName), p, 3,0); //I have to do this to run regular Bukkit voids in an ASYNC Event
                     }
                 });
             }else if(section.startsWith("section.")){

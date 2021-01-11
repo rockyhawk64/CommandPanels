@@ -1,6 +1,6 @@
 # |------------------------------------------------------------------------
 # |                       CommandPanels Config File
-# |                           By RockyHawk v4.4
+# |                           By RockyHawk v4.5
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
 # |
 # |        auto-update and minor-updates-only is HEAVILY RECOMMENDED
@@ -33,7 +33,7 @@ config:
     nopanel: '&cPanel not found.'
     noitem: '&cPanel doesn''t have clickable item.'
     notitem: '&cPlayer not found.'
-    error: '&cError found in config at'
+    error: '&cError found in config.'
     needmoney: '&cInsufficient Funds!'
     needmoney-token: '&cInsufficient Funds!'
     needitems: '&cInsufficient Items!'

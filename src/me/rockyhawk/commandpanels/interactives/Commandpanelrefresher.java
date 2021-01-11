@@ -4,10 +4,10 @@ import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
 import org.bukkit.*;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
@@ -50,15 +50,14 @@ public class Commandpanelrefresher implements Listener {
             }
         }
 
-        final ConfigurationSection cfFinal = pn.getConfig();
         new BukkitRunnable(){
             int c = 0;
             int animatecount = 0;
             @Override
             public void run() {
                 int animatevalue = -1;
-                if(cfFinal.contains("animatevalue")){
-                    animatevalue = cfFinal.getInt("animatevalue");
+                if(pn.getConfig().contains("animatevalue")){
+                    animatevalue = pn.getConfig().getInt("animatevalue");
                 }
                 //counter counts to refresh delay (in seconds) then restarts
                 if(c < refreshDelay){
@@ -78,18 +77,18 @@ public class Commandpanelrefresher implements Listener {
                             }
                         }
                         try {
-                            plugin.createGUI.openGui(null, p, cfFinal, 0,animatecount);
+                            plugin.createGUI.openGui(pn, p, 0,animatecount);
                         } catch (Exception e) {
                             //error opening gui
                             p.closeInventory();
-                            plugin.openPanels.closePanelForLoader(p.getName(),pn.getName());
+                            plugin.openPanels.closePanelForLoader(p.getName());
                             this.cancel();
                         }
                     }
                 }else{
                     if(Objects.requireNonNull(plugin.config.getString("config.stop-sound")).trim().equalsIgnoreCase("true")){
                         try {
-                            p.stopSound(Sound.valueOf(Objects.requireNonNull(cfFinal.getString("sound-on-open")).toUpperCase()));
+                            p.stopSound(Sound.valueOf(Objects.requireNonNull(pn.getConfig().getString("sound-on-open")).toUpperCase()));
                         }catch(Exception sou){
                             //skip
                         }

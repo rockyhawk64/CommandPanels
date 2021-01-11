@@ -48,11 +48,8 @@ public class Commandpanel implements CommandExecutor {
                 //do console command command
                 if(args.length == 2){
                     if(!args[1].equals("item")){
-                        if(plugin.openPanels.hasPanelOpen(plugin.getServer().getPlayer(args[1]).getName())) {
-                            plugin.openPanels.skipPanels.add(plugin.getServer().getPlayer(args[1]).getName());
-                        }
                         if(!disableCommand) {
-                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.getName(), panel.getConfig(), true);
+                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel, true);
                         }
                     }else{
                         sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cp <panel> [item] [player]"));
@@ -74,22 +71,16 @@ public class Commandpanel implements CommandExecutor {
                 Player p = (Player) sender;
                 //do player command
                 if (args.length == 1) {
-                    if(plugin.openPanels.hasPanelOpen(p.getName())) {
-                        plugin.openPanels.skipPanels.add(p.getName());
-                    }
                     if(!disableCommand) {
-                        plugin.openVoids.openCommandPanel(sender, p, panel.getName(), panel.getConfig(), false);
+                        plugin.openVoids.openCommandPanel(sender, p, panel, false);
                     }
                     return true;
                 }else if(args.length == 2){
                     if (args[1].equals("item")) {
                         plugin.openVoids.giveHotbarItem(sender, p, panel.getConfig(), false);
                     }else{
-                        if(plugin.openPanels.hasPanelOpen(plugin.getServer().getPlayer(args[1]).getName())) {
-                            plugin.openPanels.skipPanels.add(plugin.getServer().getPlayer(args[1]).getName());
-                        }
                         if(!disableCommand) {
-                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.getName(), panel.getConfig(), true);
+                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel, true);
                         }
                     }
                     return true;
