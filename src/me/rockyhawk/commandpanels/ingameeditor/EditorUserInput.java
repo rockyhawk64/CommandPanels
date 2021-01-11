@@ -41,6 +41,7 @@ public class EditorUserInput implements Listener {
                 for (Panel panel : plugin.panelList) { //will loop through all the files in folder
                     if (panel.getName().equals(panelName)) {
                         cf = panel.getConfig();
+                        cfile = YamlConfiguration.loadConfiguration(panel.getFile());
                         panelFile = panel.getFile();
                         panelTitle = plugin.papi(cf.getString("title"));
                         break;

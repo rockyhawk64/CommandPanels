@@ -6,7 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
@@ -34,7 +33,6 @@ public class CpIngameEditCommand implements CommandExecutor {
             sender.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Please execute command as a Player!"));
             return true;
         }
-        ConfigurationSection cf = null; //this is the file to use for any panel.* requests
         Player p = (Player)sender;
         //below is going to go through the files and find the right one
         if (args.length == 1) { //check to make sure the person hasn't just left it empty

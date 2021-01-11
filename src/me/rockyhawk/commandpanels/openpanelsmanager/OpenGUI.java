@@ -41,15 +41,6 @@ public class OpenGUI {
         }else{
             i = Bukkit.createInventory(null, InventoryType.valueOf(pconfig.getString("rows")), title);
         }
-
-        /*Inventory i;
-            if (onOpen != 3) {
-                //use the regular inventory
-                i = Bukkit.createInventory(null, Integer.parseInt(Objects.requireNonNull(pconfig.getString("rows"))) * 9, plugin.papi(p, Objects.requireNonNull(pconfig.getString("title"))));
-            } else {
-                //this means it is the Editor window
-                i = Bukkit.createInventory(null, Integer.parseInt(Objects.requireNonNull(pconfig.getString("rows"))) * 9, "Editing Panel: " + panels);
-            }*/
             
         Set<String> itemList = pconfig.getConfigurationSection("item").getKeys(false);
         for (String item : itemList) {

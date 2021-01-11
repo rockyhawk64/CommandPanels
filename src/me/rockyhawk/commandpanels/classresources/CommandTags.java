@@ -133,13 +133,7 @@ public class CommandTags {
 
                 //placeholder is now placeholder= [place]. Not placeholder= panel [place] which is why this is here
                 String cmd;
-                if(command.split("\\s").length == 3){
-                    cmd = commandRAW.replace("placeholder= " + panelName,"").trim();
-                    plugin.getServer().getConsoleSender().sendMessage(plugin.tag + ChatColor.RED + "placeholder= <panel> <placeholder> will be deprecated");
-                    plugin.getServer().getConsoleSender().sendMessage(plugin.tag + ChatColor.RED + "use " + ChatColor.WHITE + "placeholder= " + cmd + ChatColor.RED + " instead of " + ChatColor.GRAY + commandRAW + ChatColor.RED + "!");
-                }else{
-                    cmd = commandRAW.replace("placeholder= ","");
-                }
+                cmd = commandRAW.replace("placeholder= ","");
 
                 Character[] cm = ArrayUtils.toObject(cmd.toCharArray());
                 for(int i = 0; i < cm.length; i++){
