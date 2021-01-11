@@ -17,15 +17,20 @@ This is the official Command Panels Server. Feel free to join in and be a part o
 ### Partnered Servers
 These servers are running Command Panels. Feel free to join in and be a part of the community!
 
-- CrystalRPG | 1.16 play.crystalrpg.com
+ArcticForestMC | 1.16
+arcticforestmc.net
 
-- GrindMC | 1.15 play.grind-mc.com
+Emerald Earth | 1.16
+emeraldearth.us.to
 
-- ArcticForestMC | 1.16 arcticforestmc.net
+CrystalRPG | 1.16
+play.crystalrpg.com
 
-- TVHG Network | 1.16 play.tvhgmc.org
+GrindMC | 1.15
+play.grind-mc.com
 
-- Zuligen | 1.16 p.zuligen.com
+Zuligen | 1.16
+p.zuligen.com
 
 ### Discord Support
 You can join the discord server for support [here](https://discord.gg/eUWBWh7).
