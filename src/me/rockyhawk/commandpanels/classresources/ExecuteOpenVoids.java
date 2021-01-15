@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
@@ -26,6 +27,10 @@ public class ExecuteOpenVoids {
         if(p.isSleeping()){
             //avoid plugin glitches when sleeping
             return;
+        }
+        if(plugin.debug || plugin.config.getBoolean("config.auto-update-panels")){
+            //reload the panel is debug is enabled
+            panel.setConfig(YamlConfiguration.loadConfiguration(panel.getFile()));
         }
         if (!sender.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))) {
             sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));

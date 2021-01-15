@@ -1,8 +1,10 @@
 package me.rockyhawk.commandpanels.api;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +59,11 @@ public class CommandPanelsAPI {
             }
         }
         return null;
+    }
+
+    //make custom item using items section
+    public ItemStack makeItem(Player p, ConfigurationSection itemSection){
+        return plugin.itemCreate.makeCustomItemFromConfig(itemSection, p, true, true, false);
     }
 
     //will return item slots of hotbar stationary items

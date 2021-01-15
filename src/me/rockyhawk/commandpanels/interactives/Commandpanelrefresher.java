@@ -3,11 +3,13 @@ package me.rockyhawk.commandpanels.interactives;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
+import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
 import org.bukkit.*;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
@@ -77,6 +79,10 @@ public class Commandpanelrefresher implements Listener {
                             }
                         }
                         try {
+                            if(plugin.debug){
+                                //reload the panel is debug is enabled
+                                pn.setConfig(YamlConfiguration.loadConfiguration(pn.getFile()));
+                            }
                             plugin.createGUI.openGui(pn, p, 0,animatecount);
                         } catch (Exception e) {
                             //error opening gui
@@ -95,9 +101,17 @@ public class Commandpanelrefresher implements Listener {
                     }
                     c = 0;
                     this.cancel();
+                    //remove duplicate items here
+                    p.updateInventory();
+                    for(ItemStack itm : p.getInventory().getContents()){
+                        if(itm != null){
+                            if (NBTEditor.contains(itm, "CommandPanels")) {
+                                p.getInventory().remove(itm);
+                            }
+                        }
+                    }
                 }
             }
         }.runTaskTimer(this.plugin, 1,1); //20 ticks == 1 second (5 ticks = 0.25 of a second)
-
     }
 }

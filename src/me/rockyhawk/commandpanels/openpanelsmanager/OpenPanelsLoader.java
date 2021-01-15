@@ -2,9 +2,9 @@ package me.rockyhawk.commandpanels.openpanelsmanager;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.api.PanelClosedEvent;
 import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -78,13 +78,17 @@ public class OpenPanelsLoader {
             return;
         }
         panelCloseCommands(playerName,openPanels.get(playerName));
-        checkNBTItems(Bukkit.getPlayer(playerName));
         plugin.customCommand.removeCCP(openPanels.get(playerName).getName(), playerName);
         if (plugin.config.contains("config.panel-snooper")) {
             if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).equalsIgnoreCase("true")) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + playerName + " Closed " + openPanels.get(playerName).getName());
             }
         }
+
+        //fire PanelClosedEvent
+        PanelClosedEvent closedEvent = new PanelClosedEvent(Bukkit.getPlayer(playerName),openPanels.get(playerName));
+        Bukkit.getPluginManager().callEvent(closedEvent);
+
         openPanels.remove(playerName);
     }
 
@@ -108,19 +112,12 @@ public class OpenPanelsLoader {
         }
     }
 
-    //ensure the player has not duplicated items
-    public void checkNBTItems(Player p){
-        try {
-            for(ItemStack playerItem : p.getInventory().getContents()){
-                //ensure the item is not a panel item
-                try {
-                    if (NBTEditor.getString(playerItem, "plugin").equalsIgnoreCase("CommandPanels")) {
-                        p.getInventory().removeItem(playerItem);
-                    }
-                }catch(Exception ignore){}
+    public boolean isNBTInjected(ItemStack itm){
+        if(itm != null){
+            if (NBTEditor.contains(itm, "CommandPanels")) {
+                return true;
             }
-        }catch(Exception e){
-            //oof
         }
+        return false;
     }
 }

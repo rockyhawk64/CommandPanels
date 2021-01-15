@@ -200,7 +200,7 @@ public class ItemCreation {
             }
 
             if(addNBT){
-                s = NBTEditor.set(s,"CommandPanels","plugin");
+                s = NBTEditor.set(s,"CommandPanels","CommandPanels");
             }
 
             if (itemSection.contains("map")) {

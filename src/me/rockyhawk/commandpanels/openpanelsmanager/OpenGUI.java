@@ -132,7 +132,7 @@ public class OpenGUI {
                             id = Short.parseShort(pconfig.getString("emptyID"));
                         }
                         empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(pconfig.getString("empty")).toUpperCase())), 1,id);
-                        empty = NBTEditor.set(empty,"CommandPanels","plugin");
+                        empty = NBTEditor.set(empty,"CommandPanels","CommandPanels");
                         if (empty.getType() == Material.AIR) {
                             continue;
                         }

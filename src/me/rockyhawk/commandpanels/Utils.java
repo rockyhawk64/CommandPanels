@@ -26,6 +26,11 @@ public class Utils implements Listener {
         }
         Panel panel = plugin.openPanels.getOpenPanel(p.getName()); //this is the panel cf section
 
+        if(e.getSlot() == -999){return;}
+        if(e.getClickedInventory().getType() == InventoryType.PLAYER){
+            return;
+        }
+
         //loop through possible hasvalue/hasperm 1,2,3,etc
 
         //this loops through all the items in the panel
@@ -37,7 +42,6 @@ public class Utils implements Listener {
         }
         if(!foundSlot){
             e.setCancelled(true);
-            p.updateInventory();
             return;
         }
 
