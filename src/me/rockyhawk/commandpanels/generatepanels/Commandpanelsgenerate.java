@@ -29,7 +29,7 @@ public class Commandpanelsgenerate implements CommandExecutor {
                     //command /cpg
                     try {
                         if (Integer.parseInt(args[0]) >= 1 && Integer.parseInt(args[0]) <= 6) {
-                            Inventory i = Bukkit.createInventory((InventoryHolder) null, Integer.parseInt(args[0]) * 9, "Generate New Panel");
+                            Inventory i = Bukkit.createInventory(null, Integer.parseInt(args[0]) * 9, "Generate New Panel");
                             p.openInventory(i);
                         } else {
                             p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Please use integer from 1-6."));

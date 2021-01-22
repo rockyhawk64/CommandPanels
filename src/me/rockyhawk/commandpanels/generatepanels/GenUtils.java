@@ -32,7 +32,7 @@ public class GenUtils implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
         Player p = (Player)e.getPlayer();
-        if (!ChatColor.stripColor(e.getView().getTitle()).equals("Generate New Panel")){
+        if(!ChatColor.stripColor(e.getView().getTitle()).equals("Generate New Panel")){
             return;
         }
         //reload panel files to avoid conflicts
@@ -56,7 +56,7 @@ public class GenUtils implements Listener {
     public void onInventoryOpenEvent(InventoryOpenEvent e) {
         HumanEntity h = e.getPlayer();
         Player p = Bukkit.getPlayer(h.getName());
-        if ((e.getInventory().getHolder() instanceof Chest || e.getInventory().getHolder() instanceof DoubleChest) && this.plugin.generateMode.contains(p)) {
+        if (this.plugin.generateMode.contains(p)) {
             this.plugin.generateMode.remove(p);
             generatePanel(p,e.getInventory());
         }
@@ -91,7 +91,13 @@ public class GenUtils implements Listener {
         File folder = new File(plugin.getDataFolder() + File.separator + "panels");
         file = YamlConfiguration.loadConfiguration(new File(folder + File.separator + date + ".yml"));
         file.set("panels." + date + ".perm", "default");
-        file.set("panels." + date + ".rows", inv.getSize()/9);
+
+        if(inv.getHolder() instanceof Chest || inv.getHolder() instanceof DoubleChest){
+            file.set("panels." + date + ".rows", inv.getSize()/9);
+        }else{
+            file.set("panels." + date + ".rows", inv.getType().toString());
+        }
+
         file.set("panels." + date + ".title", "&8Generated " + date);
         file.addDefault("panels." + date + ".command", date);
         if(plugin.legacy.isLegacy()) {

@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels;
 
 import me.rockyhawk.commandpanels.api.Panel;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -132,8 +133,19 @@ public class Utils implements Listener {
                     } catch (Exception mate) {
                         commands.set(i, commands.get(i).replaceAll("%cp-clicked%", "Air"));
                     }
+
                     //end custom command PlaceHolders
-                    String command = plugin.papi(p,commands.get(i));
+
+                    //do placeholders
+                    String command;
+                    if(commands.get(i).split("\\s")[0].equalsIgnoreCase("nopapi=")){
+                        //won't parse PAPI placeholders
+                        command = plugin.papi(plugin.placeholders.setCpPlaceholders(p,commands.get(i))).replace("nopapi=","").trim();
+                    }else{
+                        //will parse every placeholder
+                        command = plugin.papi(p,commands.get(i));
+                    }
+
                     int val = plugin.commandTags.commandPayWall(p,command);
                     if(val == 0){
                         return;

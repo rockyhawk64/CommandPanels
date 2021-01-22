@@ -35,11 +35,12 @@ public class UtilsOpenWithItem implements Listener {
         //get the item clicked, then loop through panel names after action isn't nothing
         if(e.getAction() == InventoryAction.NOTHING){return;}
         if(e.getSlot() == -999){return;}
-        if(e.getClickedInventory().getType() != InventoryType.PLAYER){return;}
-        if(plugin.hotbar.stationaryExecute(e.getSlot(),p,true)){
-            e.setCancelled(true);
-            p.updateInventory();
-            return;
+        if(e.getClickedInventory().getType() == InventoryType.PLAYER) {
+            if (plugin.hotbar.stationaryExecute(e.getSlot(), p, true)) {
+                e.setCancelled(true);
+                p.updateInventory();
+                return;
+            }
         }
         if (plugin.hotbar.itemCheckExecute(e.getCurrentItem(), p, false,true) || plugin.hotbar.itemCheckExecute(e.getCursor(), p, false,true) || plugin.hotbar.stationaryExecute(e.getHotbarButton(), p, false)) {
             e.setCancelled(true);
