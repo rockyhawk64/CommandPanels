@@ -107,7 +107,7 @@ public class OpenPanelsLoader {
                     }
                 }
             }catch(Exception s){
-                plugin.debug(s);
+                plugin.debug(s,null);
             }
         }
     }

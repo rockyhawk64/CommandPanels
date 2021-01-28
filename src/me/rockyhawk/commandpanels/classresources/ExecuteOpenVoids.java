@@ -28,7 +28,7 @@ public class ExecuteOpenVoids {
             //avoid plugin glitches when sleeping
             return;
         }
-        if(plugin.debug || plugin.config.getBoolean("config.auto-update-panels")){
+        if(plugin.debug.isEnabled(sender) || plugin.config.getBoolean("config.auto-update-panels")){
             //reload the panel is debug is enabled
             panel.setConfig(YamlConfiguration.loadConfiguration(panel.getFile()));
         }
@@ -95,7 +95,7 @@ public class ExecuteOpenVoids {
                     sender.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Panel Opened for " + p.getDisplayName()));
                 }
             } catch (Exception r) {
-                plugin.debug(r);
+                plugin.debug(r,null);
                 sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error")));
                 plugin.openPanels.closePanelForLoader(p.getName());
                 p.closeInventory();

@@ -43,7 +43,7 @@ public class ItemCreation {
                 return null;
             }
         }catch(NullPointerException e){
-            plugin.debug(e);
+            plugin.debug(e,p);
             p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " material: could not load material!"));
             return null;
         }
@@ -145,7 +145,7 @@ public class ItemCreation {
                                 meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(skullname)));
                             } catch (Exception var23) {
                                 p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " material: cps= self"));
-                                plugin.debug(var23);
+                                plugin.debug(var23,p);
                             }
                         }else{
                             meta.setOwner(p.getName());
@@ -160,7 +160,7 @@ public class ItemCreation {
                     }
                 } catch (Exception var32) {
                     p.sendMessage(plugin.papi( plugin.tag + plugin.config.getString("config.format.error") + " head material: Could not load skull"));
-                    plugin.debug(var32);
+                    plugin.debug(var32,p);
                 }
             }
             if (!skullname.equals("no skull") && matraw.split("\\s")[0].equalsIgnoreCase("cpo=")) {
@@ -178,7 +178,7 @@ public class ItemCreation {
                         s = api.getItemHead(matraw.split("\\s")[1].trim());
                     } catch (Exception var22) {
                         p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " hdb: could not load skull!"));
-                        plugin.debug(var22);
+                        plugin.debug(var22,p);
                     }
                 } else {
                     p.sendMessage(plugin.papi(plugin.tag + "Download HeadDatabaseHook from Spigot to use this feature!"));
@@ -235,7 +235,7 @@ public class ItemCreation {
                     }
                 }catch(Exception map){
                     p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " map: " + itemSection.getString("map")));
-                    plugin.debug(map);
+                    plugin.debug(map,p);
                 }
             }
             if (itemSection.contains("enchanted")) {
@@ -255,7 +255,7 @@ public class ItemCreation {
                     }
                 } catch (Exception ench) {
                     p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " enchanted: " + itemSection.getString("enchanted")));
-                    plugin.debug(ench);
+                    plugin.debug(ench,p);
                 }
             }
             if (itemSection.contains("customdata")) {
@@ -304,7 +304,7 @@ public class ItemCreation {
                     }
                 } catch (Exception er) {
                     //don't colour the armor
-                    plugin.debug(er);
+                    plugin.debug(er,p);
                     p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " leatherarmor: " + itemSection.getString("leatherarmor")));
                 }
             }
@@ -321,7 +321,7 @@ public class ItemCreation {
                     s.setItemMeta(potionMeta);
                 } catch (Exception er) {
                     //don't add the effect
-                    plugin.debug(er);
+                    plugin.debug(er,p);
                     p.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + plugin.config.getString("config.format.error") + " potion: " + itemSection.getString("potion")));
                 }
             }
@@ -331,7 +331,7 @@ public class ItemCreation {
                     try {
                         s.setDurability(Short.parseShort(Objects.requireNonNull(plugin.papi(p, itemSection.getString("damage")))));
                     }catch(Exception e){
-                        plugin.debug(e);
+                        plugin.debug(e,p);
                         p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
                     }
                 }else {
@@ -340,7 +340,7 @@ public class ItemCreation {
                         itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(plugin.papi(p, itemSection.getString("damage")))));
                         s.setItemMeta((ItemMeta) itemDamage);
                     } catch (Exception e) {
-                        plugin.debug(e);
+                        plugin.debug(e,p);
                         p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
                     }
                 }
@@ -350,7 +350,7 @@ public class ItemCreation {
                 s.setAmount((int)Double.parseDouble(Objects.requireNonNull(plugin.papi(p,itemSection.getString("stack")))));
             }
         } catch (IllegalArgumentException | NullPointerException var33) {
-            plugin.debug(var33);
+            plugin.debug(var33,p);
             p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " material: " + itemSection.getString("material")));
             return null;
         }

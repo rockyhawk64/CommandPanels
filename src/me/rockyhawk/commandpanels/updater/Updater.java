@@ -60,7 +60,7 @@ public class Updater {
             if(sendMessages) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error checking for updates online.");
             }
-            plugin.debug(e);
+            plugin.debug(e,null);
         }
         return null;
     }
@@ -83,7 +83,7 @@ public class Updater {
             //no need to update or running custom version
             return;
         }
-        if(Objects.equals(plugin.config.getString("config.updater.minor-updates-only"), "true")){
+        if(Objects.equals(plugin.config.getString("updater.minor-updates-only"), "true")){
             //only update versions that will not break
             if(thisVersion.split("\\.")[1].equals(latestVersion.split("\\.")[1]) && thisVersion.split("\\.")[0].equals(latestVersion.split("\\.")[0])){
                 //the first and second number of the version is the same, updates: [major.major.minor.minor]

@@ -59,7 +59,7 @@ public class Commandpanelblocks implements CommandExecutor {
                         try {
                             plugin.blockConfig.save(new File(plugin.getDataFolder() + File.separator + "blocks.yml"));
                         } catch (IOException e) {
-                            plugin.debug(e);
+                            plugin.debug(e,p);
                             sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Could not save to file!"));
                             return true;
                         }
@@ -94,7 +94,7 @@ public class Commandpanelblocks implements CommandExecutor {
                             try {
                                 plugin.blockConfig.save(new File(plugin.getDataFolder() + File.separator + "blocks.yml"));
                             } catch (IOException e) {
-                                plugin.debug(e);
+                                plugin.debug(e,p);
                                 sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Could not save to file!"));
                                 return true;
                             }

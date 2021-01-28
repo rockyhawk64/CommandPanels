@@ -79,8 +79,8 @@ public class Commandpanelrefresher implements Listener {
                             }
                         }
                         try {
-                            if(plugin.debug){
-                                //reload the panel is debug is enabled
+                            if(plugin.debug.isEnabled(p)){
+                                //reload the panel is debug is enabled (only personal debug)
                                 pn.setConfig(YamlConfiguration.loadConfiguration(pn.getFile()));
                             }
                             plugin.createGUI.openGui(pn, p, 0,animatecount);

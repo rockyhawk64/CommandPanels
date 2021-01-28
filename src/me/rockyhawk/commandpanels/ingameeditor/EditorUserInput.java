@@ -49,7 +49,7 @@ public class EditorUserInput implements Listener {
                 }
             } catch (Exception fail) {
                 //could not fetch all panel names (probably no panels exist)
-                plugin.debug(fail);
+                plugin.debug(fail,p);
                 plugin.editorInputStrings.remove(temp);
                 return;
             }
@@ -109,7 +109,7 @@ public class EditorUserInput implements Listener {
             cfile.save(panelFile);
             return true;
         } catch (Exception io) {
-            plugin.debug(io);
+            plugin.debug(io,null);
             return false;
         }
     }
@@ -156,7 +156,7 @@ public class EditorUserInput implements Listener {
                     savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Set Panel to " + rows + " rows!"));
                 } catch (Exception io) {
-                    plugin.debug(io);
+                    plugin.debug(io,p);
                 }
                 break;
             case "panel.title":
@@ -383,7 +383,7 @@ public class EditorUserInput implements Listener {
                     cf.set("open-with-item.stationary", loc);
                     savePanelFile(cf, cfile, panelName, panelFile);
                 } catch (Exception io) {
-                    plugin.debug(io);
+                    plugin.debug(io,p);
                 }
                 break;
             case "panel.hotbar.name":
@@ -508,7 +508,7 @@ public class EditorUserInput implements Listener {
                     savePanelFile(cf, cfile, panelName, panelFile);
                     p.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Set stack to " + rows + "!"));
                 } catch (Exception io) {
-                    plugin.debug(io);
+                    plugin.debug(io,p);
                 }
                 break;
             case "enchanted":
@@ -577,7 +577,7 @@ public class EditorUserInput implements Listener {
                     commandsOnOpenRemove.remove(Integer.parseInt(e.getMessage())-1);
                 }catch (Exception ex){
                     p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Could not find command!"));
-                    plugin.debug(ex);
+                    plugin.debug(ex,p);
                     break;
                 }
                 if(commandsOnOpenRemove.size() == 0){
@@ -610,7 +610,7 @@ public class EditorUserInput implements Listener {
                     loreOnOpenRemove.remove(Integer.parseInt(e.getMessage())-1);
                 }catch (Exception ex){
                     p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Could not find lore!"));
-                    plugin.debug(ex);
+                    plugin.debug(ex,p);
                     break;
                 }
                 if(loreOnOpenRemove.size() == 0){
@@ -645,7 +645,7 @@ public class EditorUserInput implements Listener {
                             cf.set("item." + itemSlot + ".duplicate", items.toString());
                         } catch (Exception ex) {
                             p.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Could not delete or find item!"));
-                            plugin.debug(ex);
+                            plugin.debug(ex,p);
                             break;
                         }
                         if(cf.getString("item." + itemSlot + ".duplicate").equals("")){

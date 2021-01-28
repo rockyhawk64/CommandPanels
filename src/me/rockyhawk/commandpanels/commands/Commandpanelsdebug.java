@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
 public class Commandpanelsdebug implements CommandExecutor {
@@ -17,11 +18,19 @@ public class Commandpanelsdebug implements CommandExecutor {
             if (sender.hasPermission("commandpanel.debug")) {
                 if (args.length == 0) {
                     //command /cpd
-                    plugin.debug = !plugin.debug;
-                    if(plugin.debug){
-                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.GREEN + "Debug Mode Enabled!"));
+                    if(!(sender instanceof Player)) {
+                        plugin.debug.consoleDebug = !plugin.debug.consoleDebug;
+                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.GREEN + "Global Debug Mode: " + plugin.debug.consoleDebug));
+                        return true;
+                    }
+
+                    Player p = (Player)sender;
+                    if(plugin.debug.isEnabled(p)){
+                        plugin.debug.debugSet.remove(p);
+                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.GREEN + "Personal Debug Mode Disabled!"));
                     }else{
-                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.GREEN + "Debug Mode Disabled!"));
+                        plugin.debug.debugSet.add(p);
+                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.GREEN + "Personal Debug Mode Enabled!"));
                     }
                 }else{
                     sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cpd"));

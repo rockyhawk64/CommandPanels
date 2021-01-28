@@ -49,7 +49,7 @@ public class PanelDataLoader {
             dataConfig.save(plugin.getDataFolder() + File.separator + "data.yml");
         } catch (IOException s) {
             s.printStackTrace();
-            plugin.debug(s);
+            plugin.debug(s,null);
         }
     }
 
@@ -59,7 +59,7 @@ public class PanelDataLoader {
         try {
             originalValue = new BigDecimal(dataConfig.getString("playerData." + playerUUID + "." + dataPoint));
         }catch(Exception ex){
-            plugin.debug(ex);
+            plugin.debug(ex,null);
             originalValue = BigDecimal.ONE;
         }
 
@@ -85,7 +85,7 @@ public class PanelDataLoader {
                 try {
                     output = originalValue.divide(newValue);
                 }catch (ArithmeticException ex){
-                    plugin.debug(ex);
+                    plugin.debug(ex,null);
                     output = originalValue;
                 }
                 break;

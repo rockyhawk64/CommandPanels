@@ -62,15 +62,19 @@ public class Commandpanelsreload implements CommandExecutor {
             cmdCF = YamlConfiguration.loadConfiguration(commandsLoc);
         }catch(Exception e){
             //could not access the commands.yml file
-            plugin.debug(e);
+            plugin.debug(e,null);
             return;
         }
+
         //remove old commandpanels commands
         for(String existingCommands : cmdCF.getConfigurationSection("aliases").getKeys(false)){
-            if(cmdCF.getStringList("aliases." + existingCommands).get(0).equals("commandpanel")){
-                cmdCF.set("aliases." + existingCommands,null);
-            }
+            try {
+                if (cmdCF.getStringList("aliases." + existingCommands).get(0).equals("commandpanel")) {
+                    cmdCF.set("aliases." + existingCommands, null);
+                }
+            }catch(Exception ignore){}
         }
+
         //make the command 'commandpanels' to identify it
         ArrayList<String> temp = new ArrayList<>();
         temp.add("commandpanel");

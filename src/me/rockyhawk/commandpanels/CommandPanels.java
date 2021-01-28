@@ -14,6 +14,7 @@ import me.rockyhawk.commandpanels.commands.*;
 import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
 import me.rockyhawk.commandpanels.customcommands.CommandPlaceholderLoader;
 import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
+import me.rockyhawk.commandpanels.datamanager.DebugManager;
 import me.rockyhawk.commandpanels.datamanager.PanelDataLoader;
 import me.rockyhawk.commandpanels.generatepanels.Commandpanelsgenerate;
 import me.rockyhawk.commandpanels.generatepanels.GenUtils;
@@ -58,7 +59,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class CommandPanels extends JavaPlugin{
     public YamlConfiguration config;
     public Economy econ = null;
-    public boolean debug = false;
     public boolean openWithItem = false; //this will be true if there is a panel with open-with-item
 
     //initialise the tag
@@ -73,6 +73,7 @@ public class CommandPanels extends JavaPlugin{
     public CommandTags commandTags = new CommandTags(this);
     public PanelDataLoader panelData = new PanelDataLoader(this);
     public Placeholders placeholders = new Placeholders(this);
+    public DebugManager debug = new DebugManager(this);
 
     public OpenEditorGuis editorGuis = new OpenEditorGuis(this);
     public ExecuteOpenVoids openVoids = new ExecuteOpenVoids(this);
@@ -225,7 +226,7 @@ public class CommandPanels extends JavaPlugin{
 
     public void onDisable() {
         panelData.saveDataFile();
-        if (Objects.requireNonNull(this.config.getString("config.updater.auto-update")).equalsIgnoreCase("true")) {
+        if (Objects.requireNonNull(this.config.getString("updater.auto-update")).equalsIgnoreCase("true")) {
             updater.autoUpdatePlugin(this.getFile().getName());
         }
         Bukkit.getLogger().info("RockyHawk's CommandPanels Plugin Disabled, aww man.");
@@ -437,10 +438,18 @@ public class CommandPanels extends JavaPlugin{
         fileNamesFromDirectory(panelsf);
     }
 
-    public void debug(Exception e) {
-        if (debug) {
-            getServer().getConsoleSender().sendMessage(ChatColor.DARK_RED + "[CommandPanels] The plugin has generated a debug error, find the error below");
-            e.printStackTrace();
+    public void debug(Exception e, Player p) {
+        if (p == null) {
+            if(debug.consoleDebug){
+                getServer().getConsoleSender().sendMessage(ChatColor.DARK_RED + "[CommandPanels] The plugin has generated a debug error, find the error below");
+                e.printStackTrace();
+            }
+        }else{
+            if(debug.isEnabled(p)){
+                p.sendMessage(tag + ChatColor.DARK_RED + "Check the console for a detailed error.");
+                getServer().getConsoleSender().sendMessage(ChatColor.DARK_RED + "[CommandPanels] The plugin has generated a debug error, find the error below");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -546,7 +555,7 @@ public class CommandPanels extends JavaPlugin{
                 itm.getType();
             }
         }catch (Exception ex){
-            debug(ex);
+            debug(ex,null);
         }
         return false;
     }

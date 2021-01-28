@@ -37,7 +37,7 @@ public class OpenEditorGuis {
             }
         } catch (Exception fail) {
             //could not fetch all panel names (probably no panels exist)
-            plugin.debug(fail);
+            plugin.debug(fail,p);
             return;
         }
 

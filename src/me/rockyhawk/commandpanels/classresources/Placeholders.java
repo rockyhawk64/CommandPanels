@@ -41,7 +41,7 @@ public class Placeholders {
                     int end = start + placeholder[0].length() - 1;
                     str = str.replace(str.substring(start, end) + "%", placeholder[1]);
                 }catch (Exception ex){
-                    plugin.debug(ex);
+                    plugin.debug(ex,p);
                     break;
                 }
             }
@@ -81,7 +81,7 @@ public class Placeholders {
                 }
                 str = str.replace(str.substring(start, end) + "%", material);
             } catch (Exception ex) {
-                plugin.debug(ex);
+                plugin.debug(ex,p);
                 break;
             }
         }
@@ -99,7 +99,7 @@ public class Placeholders {
                 }
                 str = str.replace(str.substring(start, end) + "%", String.valueOf(amount));
             }catch(Exception ex){
-                plugin.debug(ex);
+                plugin.debug(ex,p);
                 break;
             }
         }
@@ -125,7 +125,7 @@ public class Placeholders {
                 }
                 str = str.replace(str.substring(start, end) + "%", String.valueOf(damaged));
             }catch(Exception ex){
-                plugin.debug(ex);
+                plugin.debug(ex,p);
                 break;
             }
         }
@@ -169,7 +169,7 @@ public class Placeholders {
 
                 str = str.replace(str.substring(start, end) + "%", String.valueOf(isIdentical));
             }catch(Exception ex){
-                plugin.debug(ex);
+                plugin.debug(ex,p);
                 break;
             }
         }
@@ -184,7 +184,7 @@ public class Placeholders {
                 int max = Integer.parseInt(min_max.split(",")[1]);
                 str = str.replace(str.substring(start, end) + "%", String.valueOf(plugin.getRandomNumberInRange(min, max)));
             }catch (Exception ex){
-                plugin.debug(ex);
+                plugin.debug(ex,p);
                 break;
             }
         }
@@ -203,7 +203,7 @@ public class Placeholders {
                     str = str.replace(str.substring(start, end) + "%", plugin.panelData.getUserData(p.getUniqueId(),dataPoint));
                 }
             }catch (Exception ex){
-                plugin.debug(ex);
+                plugin.debug(ex,p);
                 break;
             }
         }
@@ -217,7 +217,7 @@ public class Placeholders {
                 plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
                 str = str.replace(str.substring(start, end) + "%", "");
             }catch (Exception ex){
-                plugin.debug(ex);
+                plugin.debug(ex,p);
                 break;
             }
         }
@@ -231,7 +231,7 @@ public class Placeholders {
                 plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
                 str = str.replace(str.substring(start, end) + "%", "");
             }catch (Exception ex){
-                plugin.debug(ex);
+                plugin.debug(ex,p);
                 break;
             }
         }
@@ -249,7 +249,7 @@ public class Placeholders {
                     str = str.replace(str.substring(start, end) + "-find%", playerFind[Integer.parseInt(playerLocation) - 1].getName());
                 }
             }catch (Exception ex){
-                plugin.debug(ex);
+                plugin.debug(ex,p);
                 break;
             }
         }

@@ -81,8 +81,11 @@ public class Panel{
         return this.panelConfig.contains("open-with-item");
     }
 
-    //open the panel for the player
+    //open the panel for the player, it will disable debug mode
     public void open(Player p){
+        if(plugin.debug.isEnabled(p)){
+            plugin.debug.debugSet.remove(p);
+        }
         plugin.openVoids.openCommandPanel(p, p, this, false);
     }
 }

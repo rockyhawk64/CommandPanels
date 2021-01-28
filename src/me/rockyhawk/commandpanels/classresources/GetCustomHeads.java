@@ -74,7 +74,7 @@ public class GetCustomHeads {
             try {
                 getField(headMetaClass, "profile", GameProfile.class, 0).set(headMeta, profile);
             } catch (IllegalArgumentException | IllegalAccessException var10) {
-                plugin.debug(var10);
+                plugin.debug(var10,null);
             }
 
             head.setItemMeta(headMeta);

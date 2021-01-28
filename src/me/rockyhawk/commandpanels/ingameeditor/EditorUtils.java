@@ -53,7 +53,7 @@ public class EditorUtils implements Listener {
             }
         }catch(Exception fail){
             //could not fetch all panel names (probably no panels exist)
-            plugin.debug(fail);
+            plugin.debug(fail,p);
             return;
         }
         if(e.getSlot() == 48){
@@ -143,7 +143,7 @@ public class EditorUtils implements Listener {
             }
         }catch(Exception fail){
             //could not fetch all panel names (probably no panels exist)
-            plugin.debug(fail);
+            plugin.debug(fail,p);
             return;
         }
         if(!found){
@@ -173,7 +173,7 @@ public class EditorUtils implements Listener {
                     saveFile(file, config);
                 }
             }catch(NullPointerException nu){
-                plugin.debug(nu);
+                plugin.debug(nu,p);
             }
         }
     }
@@ -200,7 +200,7 @@ public class EditorUtils implements Listener {
             }
         }catch(Exception fail){
             //could not fetch all panel names (probably no panels exist)
-            plugin.debug(fail);
+            plugin.debug(fail,p);
             return;
         }
         if(!found){
@@ -329,7 +329,7 @@ public class EditorUtils implements Listener {
             }
         }catch(Exception fail){
             //could not fetch all panel names (probably no panels exist)
-            plugin.debug(fail);
+            plugin.debug(fail,p);
             return;
         }
         if(!found){
@@ -478,7 +478,7 @@ public class EditorUtils implements Listener {
             }
         }catch(Exception fail){
             //could not fetch all panel names (probably no panels exist)
-            plugin.debug(fail);
+            plugin.debug(fail,p);
             return;
         }
         if(!found){
@@ -489,7 +489,7 @@ public class EditorUtils implements Listener {
             itemSlot = ChatColor.stripColor(e.getView().getTopInventory().getItem(35).getItemMeta().getDisplayName().split("\\s")[2]);
         }catch(Exception ex){
             plugin.getServer().getConsoleSender().sendMessage("[CommandPanels] Could not get item slot");
-            plugin.debug(ex);
+            plugin.debug(ex,p);
             return;
         }
         if(e.getSlot() == 1){
@@ -600,7 +600,7 @@ public class EditorUtils implements Listener {
             }
         }catch(Exception fail){
             //could not fetch all panel names (probably no panels exist)
-            plugin.debug(fail);
+            plugin.debug(fail,p);
             return;
         }
         if(!found){
@@ -613,7 +613,7 @@ public class EditorUtils implements Listener {
             section = ChatColor.stripColor(Objects.requireNonNull(Objects.requireNonNull(e.getView().getTopInventory().getItem(44)).getItemMeta()).getDisplayName().split("\\s")[2]);
         }catch(Exception ex){
             plugin.getServer().getConsoleSender().sendMessage("[CommandPanels] Could not get item slot");
-            plugin.debug(ex);
+            plugin.debug(ex,p);
             return;
         }
         itemConfSection = panelYaml.getConfigurationSection("item." + section);
@@ -677,14 +677,14 @@ public class EditorUtils implements Listener {
         try {
             file.save(new File(plugin.getDataFolder() + File.separator + fileName));
         } catch (IOException s) {
-            plugin.debug(s);
+            plugin.debug(s,null);
         }
     }
     public void saveFile(File file, YamlConfiguration config){
         try {
             config.save(file);
         } catch (IOException s) {
-            plugin.debug(s);
+            plugin.debug(s,null);
         }
     }
 
@@ -710,7 +710,7 @@ public class EditorUtils implements Listener {
             }
         }catch(Exception fail){
             //could not fetch all panel names (probably no panels exist)
-            plugin.debug(fail);
+            plugin.debug(fail,p);
             return;
         }
         if(!found){
@@ -723,7 +723,7 @@ public class EditorUtils implements Listener {
             p.sendMessage(plugin.papi(plugin.tag + ChatColor.GREEN + "Saved Changes!"));
         } catch (IOException s) {
             p.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Could Not Save Changes!"));
-            plugin.debug(s);
+            plugin.debug(s,p);
         }
         plugin.reloadPanelFiles();
     }

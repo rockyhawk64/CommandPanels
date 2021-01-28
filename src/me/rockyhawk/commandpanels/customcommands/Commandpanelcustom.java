@@ -55,7 +55,7 @@ public class Commandpanelcustom implements Listener {
             }
         }catch(NullPointerException exc){
             //this is placed to prevent null exceptions if the commandpanels reload command has file changes
-            plugin.debug(exc);
+            plugin.debug(exc,e.getPlayer());
         }
     }
 }
