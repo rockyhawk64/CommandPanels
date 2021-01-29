@@ -58,7 +58,9 @@ public class OpenGUI {
                     }
                 }
             }
-            ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(pconfig.getConfigurationSection("item." + item + section)), p, onOpen != 3, onOpen != 3, true);
+
+            //will only add NBT if not an editor GUI
+            ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(pconfig.getConfigurationSection("item." + item + section)), p, onOpen != 3, onOpen != 3, onOpen != 3);
 
             //This is for CUSTOM ITEMS
             if(pconfig.contains("item." + item + section + ".itemType")) {
