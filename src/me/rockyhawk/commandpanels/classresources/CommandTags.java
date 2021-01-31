@@ -633,7 +633,7 @@ public class CommandTags {
                                     String mmoType = customItemMaterial.split("\\s")[1];
                                     String mmoID = customItemMaterial.split("\\s")[2];
 
-                                    if (plugin.isMMOItem(sellItem,mmoType,mmoID) && sellItem.getAmount() <= content.getAmount()) {
+                                    if (plugin.isMMOItem(content,mmoType,mmoID) && sellItem.getAmount() <= content.getAmount()) {
                                         content.setAmount(content.getAmount() - sellItem.getAmount());
                                         p.updateInventory();
                                         removedItem = 1;
