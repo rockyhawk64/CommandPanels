@@ -29,9 +29,6 @@ play.crystalrpg.com
 GrindMC | 1.15
 play.grind-mc.com
 
-Zuligen | 1.16
-p.zuligen.com
-
 ### Discord Support
 You can join the discord server for support [here](https://discord.gg/eUWBWh7).
 This is the main and fastest way to receive support for the plugin.
