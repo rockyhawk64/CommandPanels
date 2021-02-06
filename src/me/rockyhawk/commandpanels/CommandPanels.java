@@ -413,10 +413,16 @@ public class CommandPanels extends JavaPlugin{
                 fileNamesFromDirectory(new File(directory + File.separator + fileName));
                 continue;
             }
-            int ind = fileName.lastIndexOf(".");
-            if(!fileName.substring(ind).equalsIgnoreCase(".yml") && !fileName.substring(ind).equalsIgnoreCase(".yaml")){
+
+            try {
+                int ind = fileName.lastIndexOf(".");
+                if (!fileName.substring(ind).equalsIgnoreCase(".yml") && !fileName.substring(ind).equalsIgnoreCase(".yaml")) {
+                    continue;
+                }
+            }catch (Exception ex){
                 continue;
             }
+
             //check before adding the file to commandpanels
             if(!checkPanels(YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)))){
                 this.getServer().getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error in: " + fileName);

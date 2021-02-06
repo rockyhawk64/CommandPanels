@@ -19,7 +19,6 @@ panels:
       name: '&6[&bExample Panel&6]'
       lore:
         - '&3Click me to open the panel!'
-      stationary: 4
     item:
       '0':
         material: LEATHER_HELMET
