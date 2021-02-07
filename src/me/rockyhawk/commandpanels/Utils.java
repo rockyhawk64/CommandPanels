@@ -1,13 +1,10 @@
 package me.rockyhawk.commandpanels;
 
 import me.rockyhawk.commandpanels.api.Panel;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -17,6 +14,18 @@ public class Utils implements Listener {
     public Utils(CommandPanels pl) {
         this.plugin = pl;
     }
+
+    @EventHandler
+    public void onItemDrag(InventoryDragEvent e) {
+        Player p = (Player)e.getWhoClicked();
+        if(!plugin.openPanels.hasPanelOpen(p.getName())){
+            return;
+        }
+        if(e.getInventory().getType() != InventoryType.PLAYER){
+            e.setCancelled(true);
+        }
+    }
+
     @EventHandler
     public void onPanelClick(InventoryClickEvent e) {
         //when clicked on a panel
@@ -28,6 +37,10 @@ public class Utils implements Listener {
         Panel panel = plugin.openPanels.getOpenPanel(p.getName()); //this is the panel cf section
 
         if(e.getSlot() == -999){return;}
+        if(e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY){
+            e.setCancelled(true);
+            return;
+        }
         if(e.getClickedInventory().getType() == InventoryType.PLAYER){
             return;
         }
