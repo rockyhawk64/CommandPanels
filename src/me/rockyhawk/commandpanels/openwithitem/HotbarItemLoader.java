@@ -44,6 +44,9 @@ public class HotbarItemLoader {
                     if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
                         return false;
                     }
+                    if(!itemCheckExecute(p.getInventory().getItem(slot),p,false,false)){
+                        return false;
+                    }
                     if(panel.getConfig().contains("open-with-item.commands")){
                         for(String command : panel.getConfig().getStringList("open-with-item.commands")){
                             plugin.commandTags.commandTags(p,plugin.papi(p,command),command);

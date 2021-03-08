@@ -273,6 +273,7 @@ public class ItemCreation {
                         patterns.add(new Pattern(DyeColor.valueOf(dyePattern[0]), PatternType.valueOf(dyePattern[1]))); //load patterns in config: RED:STRIPE_TOP
                     }
                     bannerMeta.setPatterns(patterns);
+                    bannerMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
                     s.setItemMeta(bannerMeta);
                 }
             }catch(Exception ignore){
@@ -327,20 +328,28 @@ public class ItemCreation {
             }
             if (itemSection.contains("damage")) {
                 //change the damage amount (placeholders accepted)
-                if(plugin.legacy.isLegacy()){
+                //if the damage is not unbreakable and should be a value
+                if (plugin.legacy.isLegacy()) {
                     try {
                         s.setDurability(Short.parseShort(Objects.requireNonNull(plugin.papi(p, itemSection.getString("damage")))));
-                    }catch(Exception e){
-                        plugin.debug(e,p);
+                    } catch (Exception e) {
+                        plugin.debug(e, p);
                         p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
                     }
-                }else {
+                } else {
+                    if(itemSection.getString("damage").equalsIgnoreCase("-1")){
+                        //if the player wants the item to be unbreakable. Only works in non legacy versions
+                        ItemMeta unbreak = s.getItemMeta();
+                        unbreak.setUnbreakable(true);
+                        s.setItemMeta(unbreak);
+                    }
+
                     try {
                         Damageable itemDamage = (Damageable) s.getItemMeta();
                         itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(plugin.papi(p, itemSection.getString("damage")))));
                         s.setItemMeta((ItemMeta) itemDamage);
                     } catch (Exception e) {
-                        plugin.debug(e,p);
+                        plugin.debug(e, p);
                         p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
                     }
                 }
@@ -369,7 +378,7 @@ public class ItemCreation {
 
     //hasperm hasvalue, etc sections will be done here
     public String hasSection(ConfigurationSection cf, Player p){
-        if (cf.contains("hasvalue")) {
+        if (cf.isSet("hasvalue")) {
             //this will do the hasvalue without any numbers
             boolean outputValue = true;
             //outputValue will default to true

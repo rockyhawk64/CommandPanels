@@ -10,6 +10,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.rockyhawk.commandpanels.api.CommandPanelsAPI;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.classresources.*;
+import me.rockyhawk.commandpanels.classresources.item_fall.ItemFallManager;
 import me.rockyhawk.commandpanels.commands.*;
 import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
 import me.rockyhawk.commandpanels.customcommands.CommandPlaceholderLoader;
@@ -140,6 +141,7 @@ public class CommandPanels extends JavaPlugin{
         this.getServer().getPluginManager().registerEvents(new UtilsPanelsLoader(this), this);
         this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
         this.getServer().getPluginManager().registerEvents(new CommandpanelUserInput(this), this);
+        this.getServer().getPluginManager().registerEvents(new ItemFallManager(this), this);
 
         //if refresh-panels set to false, don't load this
         if(Objects.requireNonNull(config.getString("config.refresh-panels")).equalsIgnoreCase("true")){
