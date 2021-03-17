@@ -36,10 +36,9 @@ public class OpenGUI {
 
         Inventory i;
         if(isNumeric(pconfig.getString("rows"))){
-            i = Bukkit.createInventory(null, pconfig.getInt("rows") * 9, title);
-
+            i = Bukkit.createInventory(p, pconfig.getInt("rows") * 9, title);
         }else{
-            i = Bukkit.createInventory(null, InventoryType.valueOf(pconfig.getString("rows")), title);
+            i = Bukkit.createInventory(p, InventoryType.valueOf(pconfig.getString("rows")), title);
         }
             
         Set<String> itemList = pconfig.getConfigurationSection("item").getKeys(false);

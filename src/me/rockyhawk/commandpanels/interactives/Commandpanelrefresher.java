@@ -69,6 +69,12 @@ public class Commandpanelrefresher implements Listener {
                 }
                 //refresh here
                 if(plugin.openPanels.hasPanelOpen(p.getName(),pn.getName())){
+                    if(p.getOpenInventory().getTopInventory().getHolder() != p){
+                        //if open inventory is not a panel (owned by the player holder), cancel
+                        this.cancel();
+                        return;
+                    }
+
                     if(c == 0) {
                         //animation counter
                         if(animatevalue != -1) {

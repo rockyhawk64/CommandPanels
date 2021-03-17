@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="MMOLib">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../Tools/Build Tools/Jar Libraries/MMOLib.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

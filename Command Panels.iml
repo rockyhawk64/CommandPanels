@@ -14,10 +14,10 @@
     <orderEntry type="library" name="PlaceholderAPI-2.10.8" level="project" />
     <orderEntry type="library" name="VotingPlugin" level="project" />
     <orderEntry type="library" name="MMOItems-6.5.1" level="project" />
-    <orderEntry type="library" name="MMOLib" level="project" />
     <orderEntry type="library" name="spigot-1.16.4" level="project" />
     <orderEntry type="library" name="spigot-1.13.2" level="project" />
     <orderEntry type="library" name="CustomItemsAPI_PLACEHOLDER" level="project" />
     <orderEntry type="library" name="ChestSort" level="project" />
+    <orderEntry type="library" name="MythicLib-1.0.16" level="project" />
   </component>
 </module>

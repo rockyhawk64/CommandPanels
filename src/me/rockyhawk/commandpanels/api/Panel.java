@@ -4,6 +4,7 @@ import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -38,12 +39,14 @@ public class Panel{
     public void setName(String name){
         this.panelName = name;
     }
+
     public void setConfig(ConfigurationSection config){
         if(config.contains("panels")){
             config = config.getConfigurationSection("panels." + this.panelName);
         }
         this.panelConfig = config;
     }
+
     public void setFile(File file){
         this.panelFile = file;
         this.panelConfig = YamlConfiguration.loadConfiguration(file).getConfigurationSection("panels." + this.getName());
@@ -79,6 +82,11 @@ public class Panel{
 
     public boolean hasHotbarItem(){
         return this.panelConfig.contains("open-with-item");
+    }
+
+    //this will make a preview of the inventory using a certain player
+    public Inventory getInventory(Player p){
+        return plugin.createGUI.openGui(this,p,2,0);
     }
 
     //open the panel for the player, it will disable debug mode
