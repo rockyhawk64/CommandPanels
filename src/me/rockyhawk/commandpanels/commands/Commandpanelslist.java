@@ -23,11 +23,11 @@ public class Commandpanelslist implements CommandExecutor {
                 //check to make sure the panels isn't empty
                 try {
                     if (plugin.panelList == null) {
-                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "No panels found!"));
+                        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "No panels found!"));
                         return true;
                     }
                 }catch(Exception b){
-                    sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "No panels found!"));
+                    sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "No panels found!"));
                     return true;
                 }
 
@@ -39,10 +39,10 @@ public class Commandpanelslist implements CommandExecutor {
                         page = Integer.parseInt(args[0]);
                         skip = page*8-8;
                     }catch (Exception e){
-                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Inaccessible Page"));
+                        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Inaccessible Page"));
                     }
                 }
-                sender.sendMessage(plugin.papi(plugin.tag + ChatColor.DARK_AQUA + "Panels: (Page " + page + ")"));
+                sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.DARK_AQUA + "Panels: (Page " + page + ")"));
                 for (int f = skip; panels.size() > f && skip+8 > f; f++) {
                     sender.sendMessage(ChatColor.DARK_GREEN + panels.get(f).getFile().getAbsolutePath().replace(plugin.panelsf.getAbsolutePath(),"") + ChatColor.GREEN + " " + panels.get(f).getName());
                     if(panels.size()-1 == f){
@@ -51,11 +51,11 @@ public class Commandpanelslist implements CommandExecutor {
                 }
                 sender.sendMessage(ChatColor.AQUA + "Type /cpl " + (page+1) + " to read next page");
             }else{
-                sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
             }
             return true;
         }
-        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cpl"));
+        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Usage: /cpl"));
         return true;
     }
 }

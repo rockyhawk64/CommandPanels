@@ -60,7 +60,7 @@ public class PanelDataLoader {
             originalValue = new BigDecimal(dataConfig.getString("playerData." + playerUUID + "." + dataPoint));
         }catch(Exception ex){
             plugin.debug(ex,null);
-            originalValue = BigDecimal.ONE;
+            originalValue = new BigDecimal("1");
         }
 
         BigDecimal output;

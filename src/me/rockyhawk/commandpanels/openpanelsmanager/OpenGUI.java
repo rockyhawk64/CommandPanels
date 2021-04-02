@@ -28,7 +28,7 @@ public class OpenGUI {
         String title;
         if (onOpen != 3) {
             //regular inventory
-            title = plugin.papi(p,pconfig.getString("title"));
+            title = plugin.tex.papi(panel,p,pconfig.getString("title"));
         } else {
             //editor inventory
             title = "Editing Panel: " + panel.getName();
@@ -46,7 +46,7 @@ public class OpenGUI {
             String section = "";
             //onOpen needs to not be 3 so the editor won't include hasperm and hasvalue, etc items
             if (onOpen != 3) {
-                section = plugin.itemCreate.hasSection(pconfig.getConfigurationSection("item." + Integer.parseInt(item)), p);
+                section = plugin.itemCreate.hasSection(panel,pconfig.getConfigurationSection("item." + Integer.parseInt(item)), p);
                 //This section is for animations below here: VISUAL ONLY
 
                 //check for if there is animations inside the items section
@@ -59,7 +59,7 @@ public class OpenGUI {
             }
 
             //will only add NBT if not an editor GUI
-            ItemStack s = plugin.itemCreate.makeItemFromConfig(Objects.requireNonNull(pconfig.getConfigurationSection("item." + item + section)), p, onOpen != 3, onOpen != 3, onOpen != 3);
+            ItemStack s = plugin.itemCreate.makeItemFromConfig(panel,Objects.requireNonNull(pconfig.getConfigurationSection("item." + item + section)), p, onOpen != 3, onOpen != 3, onOpen != 3);
 
             //This is for CUSTOM ITEMS
             if(pconfig.contains("item." + item + section + ".itemType")) {
@@ -111,7 +111,7 @@ public class OpenGUI {
             } catch (ArrayIndexOutOfBoundsException var24) {
                 plugin.debug(var24,p);
                 if (plugin.debug.isEnabled(p)) {
-                    p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!"));
+                    p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!"));
                     p.closeInventory();
                     plugin.openPanels.closePanelForLoader(p.getName());
                 }
@@ -139,7 +139,7 @@ public class OpenGUI {
                         }
                     } catch (IllegalArgumentException | NullPointerException var26) {
                         plugin.debug(var26,p);
-                        p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.error") + " empty: " + pconfig.getString("empty")));
+                        p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " empty: " + pconfig.getString("empty")));
                         p.closeInventory();
                         plugin.openPanels.closePanelForLoader(p.getName());
                         return null;

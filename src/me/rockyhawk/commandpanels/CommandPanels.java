@@ -7,14 +7,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.lumine.mythic.lib.api.item.NBTItem;
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.rockyhawk.commandpanels.api.CommandPanelsAPI;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.classresources.*;
 import me.rockyhawk.commandpanels.classresources.item_fall.ItemFallManager;
+import me.rockyhawk.commandpanels.classresources.placeholders.CreateText;
+import me.rockyhawk.commandpanels.classresources.placeholders.Placeholders;
 import me.rockyhawk.commandpanels.commands.*;
 import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
-import me.rockyhawk.commandpanels.customcommands.CommandPlaceholderLoader;
 import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
 import me.rockyhawk.commandpanels.datamanager.DebugManager;
 import me.rockyhawk.commandpanels.datamanager.PanelDataLoader;
@@ -75,6 +75,7 @@ public class CommandPanels extends JavaPlugin{
     public PanelDataLoader panelData = new PanelDataLoader(this);
     public Placeholders placeholders = new Placeholders(this);
     public DebugManager debug = new DebugManager(this);
+    public CreateText tex = new CreateText(this);
 
     public OpenEditorGuis editorGuis = new OpenEditorGuis(this);
     public ExecuteOpenVoids openVoids = new ExecuteOpenVoids(this);
@@ -87,7 +88,6 @@ public class CommandPanels extends JavaPlugin{
     public OpenPanelsLoader openPanels = new OpenPanelsLoader(this);
     public OpenGUI createGUI = new OpenGUI(this);
     public PanelPermissions panelPerms = new PanelPermissions(this);
-    public CommandPlaceholderLoader customCommand = new CommandPlaceholderLoader(this);
     public HotbarItemLoader hotbar = new HotbarItemLoader(this);
 
     public File panelsf;
@@ -221,7 +221,10 @@ public class CommandPanels extends JavaPlugin{
         }));
 
         //get tag
-        tag = papi(config.getString("config.format.tag") + " ");
+        tag = tex.papi(config.getString("config.format.tag") + " ");
+
+        //set version to latest version
+        updater.githubNewUpdate(false);
 
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loaded!");
     }
@@ -238,15 +241,15 @@ public class CommandPanels extends JavaPlugin{
         return new CommandPanelsAPI(JavaPlugin.getPlugin(CommandPanels.class));
     }
 
-    public void setName(ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours, Boolean hideAttributes) {
+    public void setName(Panel panel, ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours, Boolean hideAttributes) {
         try {
             ItemMeta renamedMeta = renamed.getItemMeta();
             //set cp placeholders
             if(usePlaceholders){
-                customName = papiNoColour(p,customName);
+                customName = tex.papiNoColour(panel,p,customName);
             }
             if(useColours){
-                customName = papi(customName);
+                customName = tex.papi(customName);
             }
 
             assert renamedMeta != null;
@@ -261,11 +264,11 @@ public class CommandPanels extends JavaPlugin{
             List<String> clore;
             if (lore != null) {
                 if(usePlaceholders && useColours){
-                    clore = papi(p, lore, true);
+                    clore = tex.papi(panel, p, lore, true);
                 }else if(usePlaceholders){
-                    clore = papiNoColour(p, lore);
+                    clore = tex.papiNoColour(panel,p, lore);
                 }else if(useColours){
-                    clore = papi(p, lore, false);
+                    clore = tex.papi(panel, p, lore, false);
                 }else{
                     clore = lore;
                 }
@@ -296,94 +299,6 @@ public class CommandPanels extends JavaPlugin{
         }
     }
 
-    //regular string papi
-    public String papi(Player p, String setpapi) {
-        try {
-            setpapi = placeholders.setCpPlaceholders(p,setpapi);
-            if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
-                setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
-            }
-            setpapi = translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
-            return setpapi;
-        }catch(NullPointerException e){
-            return setpapi;
-        }
-    }
-
-    //string papi with no colours
-    public String papiNoColour(Player p, String setpapi) {
-        try {
-            setpapi = placeholders.setCpPlaceholders(p,setpapi);
-            if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
-                setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
-            }
-            return setpapi;
-        }catch(NullPointerException e){
-            return setpapi;
-        }
-    }
-
-    //regular string papi, but only colours so Player doesn't need to be there
-    public String papi(String setpapi) {
-        try {
-            setpapi = translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
-            return setpapi;
-        }catch(NullPointerException e){
-            return setpapi;
-        }
-    }
-
-    //papi except if it is a String List
-    public List<String> papi(Player p, List<String> setpapi, boolean placeholder) {
-        try {
-            if(placeholder) {
-                int tempInt = 0;
-                for (String temp : setpapi) {
-                    setpapi.set(tempInt, placeholders.setCpPlaceholders(p, temp));
-                    tempInt += 1;
-                }
-                if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
-                    setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
-                }
-            }
-        }catch(Exception ignore){
-            //this will be ignored as it is probably a null
-            return null;
-        }
-        int tempInt = 0;
-        //change colour
-        for(String temp : setpapi){
-            try {
-                setpapi.set(tempInt, translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', temp)));
-            }catch(NullPointerException ignore){
-            }
-            tempInt += 1;
-        }
-        return setpapi;
-    }
-
-    //papi except if it is a String List
-    public List<String> papiNoColour(Player p, List<String> setpapi) {
-        try {
-            int tempInt = 0;
-            for (String temp : setpapi) {
-                setpapi.set(tempInt, placeholders.setCpPlaceholders(p, temp));
-                tempInt += 1;
-            }
-            if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                OfflinePlayer offp = getServer().getOfflinePlayer(p.getUniqueId());
-                setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
-            }
-        }catch(Exception ignore){
-            //this will be ignored as it is probably a null
-            return null;
-        }
-        return setpapi;
-    }
-
     //check for duplicate panel names
     public boolean checkDuplicatePanel(CommandSender sender){
         ArrayList<String> apanels = new ArrayList<>();
@@ -398,7 +313,7 @@ public class CommandPanels extends JavaPlugin{
             ArrayList<String> opanelsTemp = new ArrayList<String>();
             for(String tempName : apanels){
                 if(opanelsTemp.contains(tempName)){
-                    sender.sendMessage(papi(tag) + ChatColor.RED + " Error duplicate panel name: " + tempName);
+                    sender.sendMessage(tex.papi(tag) + ChatColor.RED + " Error duplicate panel name: " + tempName);
                     return false;
                 }
                 opanelsTemp.add(tempName);
@@ -462,7 +377,7 @@ public class CommandPanels extends JavaPlugin{
     }
 
     public void helpMessage(CommandSender p) {
-        p.sendMessage(papi( tag + ChatColor.GREEN + "Commands:"));
+        p.sendMessage(tex.papi( tag + ChatColor.GREEN + "Commands:"));
         p.sendMessage(ChatColor.GOLD + "/cp <panel> [player:item] [player] " + ChatColor.WHITE + "Open a command panel.");
         if (p.hasPermission("commandpanel.reload")) {
             p.sendMessage(ChatColor.GOLD + "/cpr " + ChatColor.WHITE + "Reloads plugin config.");

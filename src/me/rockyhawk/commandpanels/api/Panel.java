@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.api;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.customcommands.PanelPlaceholders;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -17,6 +18,7 @@ public class Panel{
     private ConfigurationSection panelConfig;
     private String panelName;
     private File panelFile;
+    public PanelPlaceholders placeholders = new PanelPlaceholders();
 
     //make the object, using a file is recommended
     public Panel(File file, String name){
@@ -67,17 +69,17 @@ public class Panel{
 
     public ItemStack getItem(Player p, int slot){
         ConfigurationSection itemSection = panelConfig.getConfigurationSection("item." + slot);
-        return plugin.itemCreate.makeItemFromConfig(itemSection, p, true, true, false);
+        return plugin.itemCreate.makeItemFromConfig(this,itemSection, p, true, true, false);
     }
 
     public ItemStack getCustomItem(Player p, String itemName){
         ConfigurationSection itemSection = panelConfig.getConfigurationSection("custom-item." + itemName);
-        return plugin.itemCreate.makeCustomItemFromConfig(itemSection, p, true, true, false);
+        return plugin.itemCreate.makeCustomItemFromConfig(this,itemSection, p, true, true, false);
     }
 
     public ItemStack getHotbarItem(Player p){
         ConfigurationSection itemSection = panelConfig.getConfigurationSection("open-with-item");
-        return plugin.itemCreate.makeItemFromConfig(itemSection, p, true, true, false);
+        return plugin.itemCreate.makeItemFromConfig(this,itemSection, p, true, true, false);
     }
 
     public boolean hasHotbarItem(){
@@ -95,5 +97,13 @@ public class Panel{
             plugin.debug.debugSet.remove(p);
         }
         plugin.openVoids.openCommandPanel(p, p, this, false);
+    }
+
+    //create blank clone
+    public Panel copy(){
+        if(panelFile != null){
+            return new Panel(panelFile, panelName);
+        }
+        return new Panel(panelConfig, panelName);
     }
 }

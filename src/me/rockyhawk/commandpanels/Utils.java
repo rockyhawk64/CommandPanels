@@ -59,7 +59,7 @@ public class Utils implements Listener {
             return;
         }
 
-        String section = plugin.itemCreate.hasSection(panel.getConfig().getConfigurationSection("item." + e.getSlot()), p);
+        String section = plugin.itemCreate.hasSection(panel,panel.getConfig().getConfigurationSection("item." + e.getSlot()), p);
 
         if(panel.getConfig().contains("item." + e.getSlot() + section + ".itemType")){
             if(panel.getConfig().getStringList("item." + e.getSlot() + section + ".itemType").contains("placeable")){
@@ -153,10 +153,10 @@ public class Utils implements Listener {
                     String command;
                     if(commands.get(i).split("\\s")[0].equalsIgnoreCase("nopapi=")){
                         //won't parse PAPI placeholders
-                        command = plugin.papi(plugin.placeholders.setCpPlaceholders(p,commands.get(i))).replace("nopapi=","").trim();
+                        command = plugin.tex.papi(plugin.placeholders.setCpPlaceholders(panel,p,commands.get(i))).replace("nopapi=","").trim();
                     }else{
                         //will parse every placeholder
-                        command = plugin.papi(p,commands.get(i));
+                        command = plugin.tex.papi(panel,p,commands.get(i));
                     }
 
                     int val = plugin.commandTags.commandPayWall(p,command);
@@ -164,7 +164,7 @@ public class Utils implements Listener {
                         return;
                     }
                     if(val == 2){
-                        plugin.commandTags.commandTags(p, command, commands.get(i));
+                        plugin.commandTags.commandTags(panel, p, command, commands.get(i));
                     }
                 }
             }

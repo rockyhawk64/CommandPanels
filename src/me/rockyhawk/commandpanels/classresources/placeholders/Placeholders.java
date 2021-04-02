@@ -1,8 +1,9 @@
-package me.rockyhawk.commandpanels.classresources;
+package me.rockyhawk.commandpanels.classresources.placeholders;
 
 import com.bencodez.votingplugin.user.UserManager;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +23,7 @@ public class Placeholders {
     }
 
     @SuppressWarnings("deprecation")
-    public String setCpPlaceholders(Player p, String str){
+    public String setCpPlaceholders(Panel panel, Player p, String str){
         //replace nodes with PlaceHolders
         str = str.replaceAll("%cp-player-displayname%", p.getDisplayName());
         str = str.replaceAll("%cp-player-name%", p.getName());
@@ -31,18 +32,20 @@ public class Placeholders {
         str = str.replaceAll("%cp-player-y%", String.valueOf(Math.round(p.getLocation().getY())));
         str = str.replaceAll("%cp-player-z%", String.valueOf(Math.round(p.getLocation().getZ())));
         str = str.replaceAll("%cp-online-players%", Integer.toString(Bukkit.getServer().getOnlinePlayers().size()));
-        str = str.replaceAll("%cp-tag%", plugin.papi(plugin.tag));
+        str = str.replaceAll("%cp-tag%", plugin.tex.papi(plugin.tag));
 
         //set custom placeholders to their values
-        for(String[] placeholder : plugin.customCommand.getCCP(p.getName())){
-            while (str.contains(placeholder[0])) {
-                try {
-                    int start = str.indexOf(placeholder[0]);
-                    int end = start + placeholder[0].length() - 1;
-                    str = str.replace(str.substring(start, end) + "%", placeholder[1]);
-                }catch (Exception ex){
-                    plugin.debug(ex,p);
-                    break;
+        if(panel != null) {
+            for (String placeholder : panel.placeholders.keys.keySet()) {
+                while (str.contains(placeholder)) {
+                    try {
+                        int start = str.indexOf(placeholder);
+                        int end = start + placeholder.length() - 1;
+                        str = str.replace(str.substring(start, end) + "%", panel.placeholders.keys.get(placeholder));
+                    } catch (Exception ex) {
+                        plugin.debug(ex, p);
+                        break;
+                    }
                 }
             }
         }
@@ -103,6 +106,24 @@ public class Placeholders {
                 break;
             }
         }
+        //get stack amount from slot in current open inventory (panel)
+        while (str.contains("%cp-modeldata-")) {
+            try {
+                int start = str.indexOf("%cp-modeldata-");
+                int end = str.indexOf("%", str.indexOf("%cp-modeldata-") + 1);
+                String matNumber = str.substring(start, end).replace("%cp-modeldata-", "").replace("%", "");
+                int modelData;
+                try {
+                    modelData = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getItemMeta().getCustomModelData();
+                } catch (NullPointerException er) {
+                    modelData = 0;
+                }
+                str = str.replace(str.substring(start, end) + "%", String.valueOf(modelData));
+            }catch(Exception ex){
+                plugin.debug(ex,p);
+                break;
+            }
+        }
         //is an item damaged
         while (str.contains("%cp-damaged-")) {
             try {
@@ -148,7 +169,7 @@ public class Placeholders {
 
                 try {
                     //if it is a regular custom item
-                    ItemStack confItm = plugin.itemCreate.makeItemFromConfig(plugin.openPanels.getOpenPanel(p.getName()).getConfig().getConfigurationSection("custom-item." + matLoc),p,true,true, false);
+                    ItemStack confItm = plugin.itemCreate.makeItemFromConfig(panel,plugin.openPanels.getOpenPanel(p.getName()).getConfig().getConfigurationSection("custom-item." + matLoc),p,true,true, false);
                     if(plugin.itemCreate.isIdentical(confItm,itm)){
                         isIdentical = true;
                     }
@@ -214,7 +235,7 @@ public class Placeholders {
                 int end = str.indexOf("%", str.indexOf("%cp-setdata-") + 1);
                 String point_value = str.substring(start, end).replace("%cp-setdata-", "").replace("%", "");
                 String command = "set-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
-                plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
+                plugin.commandTags.commandTags(panel,p, plugin.tex.papi(panel,p,command),command);
                 str = str.replace(str.substring(start, end) + "%", "");
             }catch (Exception ex){
                 plugin.debug(ex,p);
@@ -228,7 +249,7 @@ public class Placeholders {
                 int end = str.indexOf("%", str.indexOf("%cp-mathdata-") + 1);
                 String point_value = str.substring(start, end).replace("%cp-mathdata-", "").replace("%", "");
                 String command = "math-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
-                plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
+                plugin.commandTags.commandTags(panel,p, plugin.tex.papi(panel,p,command),command);
                 str = str.replace(str.substring(start, end) + "%", "");
             }catch (Exception ex){
                 plugin.debug(ex,p);
@@ -244,7 +265,7 @@ public class Placeholders {
                 String playerLocation = str.substring(start, end).replace("%cp-player-online-", "");
                 Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
                 if (Integer.parseInt(playerLocation) > playerFind.length) {
-                    str = str.replace(str.substring(start, end) + "-find%", plugin.papi(Objects.requireNonNull(plugin.config.getString("config.format.offline"))));
+                    str = str.replace(str.substring(start, end) + "-find%", plugin.tex.papi(Objects.requireNonNull(plugin.config.getString("config.format.offline"))));
                 } else {
                     str = str.replace(str.substring(start, end) + "-find%", playerFind[Integer.parseInt(playerLocation) - 1].getName());
                 }
@@ -280,7 +301,7 @@ public class Placeholders {
             List<String> inputMessages = new ArrayList<String>(plugin.config.getStringList("config.input-message"));
             for (String temp : inputMessages) {
                 temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(plugin.config.getString("config.input-cancel")));
-                p.sendMessage(plugin.papi(p, temp));
+                p.sendMessage(plugin.tex.papi(panel,p, temp));
             }
             str = "cpc";
         }

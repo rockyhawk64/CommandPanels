@@ -19,7 +19,7 @@ public class CommandpanelUserInput implements Listener {
             if(plugin.userInputStrings.get(o)[0].equals(e.getPlayer().getName())){
                 if(e.getMessage().equalsIgnoreCase(plugin.config.getString("config.input-cancel"))){
                     e.setCancelled(true);
-                    e.getPlayer().sendMessage(plugin.papi( Objects.requireNonNull(plugin.config.getString("config.input-cancelled"))));
+                    e.getPlayer().sendMessage(plugin.tex.papi( Objects.requireNonNull(plugin.config.getString("config.input-cancelled"))));
                     for(int i = 0; plugin.userInputStrings.size() > i; i++){
                         if(plugin.userInputStrings.get(i)[0].equals(e.getPlayer().getName())){
                             plugin.userInputStrings.remove(i);
@@ -35,7 +35,7 @@ public class CommandpanelUserInput implements Listener {
                 e.setCancelled(true);
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-                        new CommandTags(plugin).commandTags(e.getPlayer(), plugin.papi(e.getPlayer(),command), command); //I have to do this to run regular Bukkit voids in an ASYNC Event
+                        new CommandTags(plugin).commandTags(null,e.getPlayer(), plugin.tex.papi(null,e.getPlayer(),command), command); //I have to do this to run regular Bukkit voids in an ASYNC Event
                     }
                 });
             }

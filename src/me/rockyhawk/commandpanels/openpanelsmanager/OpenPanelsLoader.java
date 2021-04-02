@@ -78,7 +78,6 @@ public class OpenPanelsLoader {
             return;
         }
         panelCloseCommands(playerName,openPanels.get(playerName));
-        plugin.customCommand.removeCCP(openPanels.get(playerName).getName(), playerName);
         if (plugin.config.contains("config.panel-snooper")) {
             if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).equalsIgnoreCase("true")) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + playerName + " Closed " + openPanels.get(playerName).getName());
@@ -103,7 +102,7 @@ public class OpenPanelsLoader {
                         break;
                     }
                     if(val == 2){
-                        plugin.commandTags.commandTags(Bukkit.getPlayer(playerName), plugin.papi(Bukkit.getPlayer(playerName),command), command);
+                        plugin.commandTags.commandTags(panel,Bukkit.getPlayer(playerName), plugin.tex.papi(panel,Bukkit.getPlayer(playerName),command), command);
                     }
                 }
             }catch(Exception s){

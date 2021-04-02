@@ -19,29 +19,29 @@ public class Commandpanelversion implements CommandExecutor {
                 if (sender.hasPermission("commandpanel.version")) {
                     //version command
                     String latestVersion = plugin.updater.githubNewUpdate(false);
-                    sender.sendMessage(plugin.papi(plugin.tag));
+                    sender.sendMessage(plugin.tex.papi(plugin.tag));
                     sender.sendMessage(ChatColor.GREEN + "This Version " + ChatColor.GRAY + plugin.getDescription().getVersion());
                     sender.sendMessage(ChatColor.GREEN + "Latest Version " + ChatColor.GRAY + latestVersion);
                     sender.sendMessage(ChatColor.GRAY + "-------------------");
                     sender.sendMessage(ChatColor.GREEN + "Developer " + ChatColor.GRAY + "RockyHawk");
                     sender.sendMessage(ChatColor.GREEN + "Command " + ChatColor.GRAY + "/cp");
                 } else {
-                    sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+                    sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
                 }
             }else if(args.length == 1){
                 if (sender.hasPermission("commandpanel.update")) {
                     if (args[0].equals("cancel")) {
                         plugin.updater.downloadVersionManually = null;
-                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.GREEN + "Will not download a new version on restart."));
+                        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.GREEN + "Will not download a new version on restart."));
                     } else {
                         plugin.updater.downloadVersionManually = args[0];
-                        sender.sendMessage(plugin.papi(plugin.tag + ChatColor.GREEN + "Downloading version " + ChatColor.GRAY + args[0] + ChatColor.GREEN + " upon server restart."));
+                        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.GREEN + "Downloading version " + ChatColor.GRAY + args[0] + ChatColor.GREEN + " upon server restart."));
                     }
                 }else{
-                    sender.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+                    sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
                 }
             }else{
-                sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cpv [update:latest:cancel]"));
+                sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Usage: /cpv [update:latest:cancel]"));
             }
             return true;
         }

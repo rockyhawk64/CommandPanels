@@ -22,7 +22,7 @@ public class HotbarItemLoader {
         stationaryItems.clear();
         for (Panel panel : plugin.panelList) {
             if(panel.getConfig().contains("open-with-item.stationary")){
-                stationaryItems.put(panel.getConfig().getInt("open-with-item.stationary"), panel);
+                stationaryItems.put(panel.getConfig().getInt("open-with-item.stationary"), panel.copy());
             }
         }
     }
@@ -49,7 +49,7 @@ public class HotbarItemLoader {
                     }
                     if(panel.getConfig().contains("open-with-item.commands")){
                         for(String command : panel.getConfig().getStringList("open-with-item.commands")){
-                            plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
+                            plugin.commandTags.commandTags(panel,p, plugin.tex.papi(null,p,command),command);
                         }
                         return true;
                     }
@@ -84,7 +84,7 @@ public class HotbarItemLoader {
                         }
                         if(panel.getConfig().contains("open-with-item.commands")){
                             for(String command : panel.getConfig().getStringList("open-with-item.commands")){
-                                plugin.commandTags.commandTags(p,plugin.papi(p,command),command);
+                                plugin.commandTags.commandTags(panel,p, plugin.tex.papi(null,p,command),command);
                             }
                             return true;
                         }

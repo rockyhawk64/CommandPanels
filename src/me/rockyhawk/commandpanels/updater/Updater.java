@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.updater;
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -19,50 +20,58 @@ public class Updater {
     //if this is set to something, it will download that version on restart
     //can be a version number, 'latest' or 'cancel'
     public String downloadVersionManually = null;
+    public String catchedLatestVersion = "null";
 
     public String githubNewUpdate(boolean sendMessages){
-        HttpURLConnection connection;
-        String gitVersion;
+        //refresh latest version
+        getLatestVersion(sendMessages);
+
         if(plugin.getDescription().getVersion().contains("-")){
             if(sendMessages) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Running a custom version.");
             }
             return null;
         }
-        try{
-            connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/rockyhawk64/CommandPanels/master/resource/plugin.yml").openConnection();
-            connection.connect();
-            gitVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine().split("\\s")[1];
-            if(gitVersion.contains("-")){
-                if(sendMessages) {
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Cannot check for update.");
-                }
-                return null;
-            }
 
-            //if update is true there is a new update
-            boolean update = false;
-            if(!gitVersion.equals(plugin.getDescription().getVersion())){
-                update = true;
-            }
-
-            if(update){
-                if(sendMessages) {
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GOLD + " ================================================");
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.AQUA + " An update for CommandPanels is available.");
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " Download CommandPanels " + ChatColor.GOLD + gitVersion + ChatColor.WHITE + " using the");
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.WHITE + " following command:" + ChatColor.AQUA + " /cpv latest" + ChatColor.WHITE + " and restart the server");
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GOLD + " ================================================");
-                }
-            }
-            return gitVersion;
-        }catch(IOException e){
-            if(sendMessages) {
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error checking for updates online.");
-            }
-            plugin.debug(e,null);
+        //if update is true there is a new update
+        boolean update = false;
+        if(!catchedLatestVersion.equals(plugin.getDescription().getVersion())){
+            update = true;
         }
-        return null;
+
+        if(update){
+            if(sendMessages) {
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GOLD + " ================================================");
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.AQUA + " An update for CommandPanels is available.");
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + " Download CommandPanels " + ChatColor.GOLD + catchedLatestVersion + ChatColor.WHITE + " using the");
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.WHITE + " following command:" + ChatColor.AQUA + " /cpv latest" + ChatColor.WHITE + " and restart the server");
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GOLD + " ================================================");
+            }
+        }
+        return catchedLatestVersion;
+    }
+
+    public void getLatestVersion(boolean sendMessages){
+        //using an array allows editing while still being final
+        new BukkitRunnable(){
+          public void run(){
+              HttpURLConnection connection;
+              try {
+                  connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/rockyhawk64/CommandPanels/master/resource/plugin.yml").openConnection();
+                  connection.connect();
+                  catchedLatestVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine().split("\\s")[1];
+                  connection.disconnect();
+              } catch (IOException ignore) {
+                  Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Could not access github.");
+              }
+          }
+        }.runTask(plugin);
+
+        if(catchedLatestVersion.contains("-")){
+            if(sendMessages) {
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Cannot check for update.");
+            }
+        }
     }
 
     //the pluginFileName can only be obtained from the main class

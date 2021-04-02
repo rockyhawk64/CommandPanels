@@ -27,8 +27,8 @@ public class OpenEditorGuis {
         ArrayList<ItemStack> panelItems = new ArrayList<>(); //all panels from ALL files (panel materials)
         try {
             for(Panel panel : plugin.panelList) { //will loop through all the files in folder
-                panelNames.add(plugin.papi(panel.getName()));
-                panelTitles.add(plugin.papi(panel.getConfig().getString("title")));
+                panelNames.add(plugin.tex.papi(panel.getName()));
+                panelTitles.add(plugin.tex.papi(panel.getConfig().getString("title")));
                 if (panel.getConfig().contains("open-with-item.material")) {
                     panelItems.add(panel.getHotbarItem(p));
                 } else {
@@ -56,10 +56,10 @@ public class OpenEditorGuis {
         //make all the bottom bar items
         ItemStack temp;
         temp = new ItemStack(Material.SLIME_BALL, 1);
-        plugin.setName(temp, ChatColor.WHITE + "Page " + pageNumber, null, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Page " + pageNumber, null, p, true, true, true);
         i.setItem(49, temp);
         temp = new ItemStack(Material.BARRIER, 1);
-        plugin.setName(temp, ChatColor.RED + "Exit Menu", null, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.RED + "Exit Menu", null, p, true, true, true);
         i.setItem(45, temp);
         temp = new ItemStack(Material.BOOK, 1);
         List<String> lore = new ArrayList();
@@ -71,18 +71,18 @@ public class OpenEditorGuis {
         lore.add(ChatColor.GRAY + "  type 'remove' to set a");
         lore.add(ChatColor.GRAY + "  value to default, and use");
         lore.add(ChatColor.GRAY + "  '" + plugin.config.getString("config.input-cancel") + "' to cancel.");
-        plugin.setName(temp, ChatColor.WHITE + "Panel Editor Tips", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Panel Editor Tips", lore, p, true, true, true);
         i.setItem(53, temp);
         if (pageNumber != 1) {
             //only show previous page button if number is not one
             temp = new ItemStack(Material.PAPER, 1);
-            plugin.setName(temp, ChatColor.WHITE + "Previous Page", null, p, true, true, true);
+            plugin.setName(null,temp, ChatColor.WHITE + "Previous Page", null, p, true, true, true);
             i.setItem(48, temp);
         }
         if (pageNumber < pagesAmount) {
             //if page number is under pages amount
             temp = new ItemStack(Material.PAPER, 1);
-            plugin.setName(temp, ChatColor.WHITE + "Next Page", null, p, true, true, true);
+            plugin.setName(null,temp, ChatColor.WHITE + "Next Page", null, p, true, true, true);
             i.setItem(50, temp);
         }
         int count = 0;
@@ -92,7 +92,7 @@ public class OpenEditorGuis {
             //count is +1 because count starts at 0 not 1
             if ((pageNumber * 45 - 45) < (count + 1) && (pageNumber * 45) > (count)) {
                 temp = panelItems.get(count);
-                plugin.setName(temp, ChatColor.WHITE + panelName, lore, p, false, true, true);
+                plugin.setName(null,temp, ChatColor.WHITE + panelName, lore, p, false, true, true);
                 i.setItem(slot, temp);
                 slot += 1;
             }
@@ -121,7 +121,7 @@ public class OpenEditorGuis {
             lore.add(ChatColor.WHITE + "--------------------------------");
             lore.add(ChatColor.WHITE + "commandpanel.panel." + cf.getString("perm"));
         }
-        plugin.setName(temp, ChatColor.WHITE + "Panel Permission", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Panel Permission", lore, p, true, true, true);
         i.setItem(1, temp);
 
         temp = new ItemStack(Material.NAME_TAG, 1);
@@ -131,7 +131,7 @@ public class OpenEditorGuis {
             lore.add(ChatColor.WHITE + "------------------");
             lore.add(ChatColor.WHITE + cf.getString("title"));
         }
-        plugin.setName(temp, ChatColor.WHITE + "Panel Title", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Panel Title", lore, p, true, true, true);
         i.setItem(3, temp);
 
         temp = new ItemStack(Material.JUKEBOX, 1);
@@ -141,7 +141,7 @@ public class OpenEditorGuis {
             lore.add(ChatColor.WHITE + "------------------------");
             lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("sound-on-open")).toUpperCase());
         }
-        plugin.setName(temp, ChatColor.WHITE + "Panel Sound", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Panel Sound", lore, p, true, true, true);
         i.setItem(5, temp);
 
         temp = new ItemStack(Material.IRON_DOOR, 1);
@@ -157,20 +157,20 @@ public class OpenEditorGuis {
                 count += 1;
             }
         }
-        plugin.setName(temp, ChatColor.WHITE + "Panel Command", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Panel Command", lore, p, true, true, true);
         i.setItem(7, temp);
 
         temp = new ItemStack(Material.LAVA_BUCKET, 1);
         lore.clear();
         lore.add(ChatColor.DARK_RED + "Permanently delete Panel");
-        plugin.setName(temp, ChatColor.RED + "Delete Panel", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.RED + "Delete Panel", lore, p, true, true, true);
         i.setItem(21, temp);
 
         temp = new ItemStack(Material.LADDER, 1);
         lore.clear();
         lore.add(ChatColor.GRAY + "How many rows the panel will be");
         lore.add(ChatColor.GRAY + "choose an integer from 1 to 6");
-        plugin.setName(temp, ChatColor.WHITE + "Panel Rows", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Panel Rows", lore, p, true, true, true);
         i.setItem(23, temp);
 
         temp = new ItemStack(Material.STONE, 1);
@@ -186,7 +186,7 @@ public class OpenEditorGuis {
                 count += 1;
             }
         }
-        plugin.setName(temp, ChatColor.WHITE + "Disabled Worlds", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Disabled Worlds", lore, p, true, true, true);
         i.setItem(25, temp);
 
         temp = new ItemStack(Material.GLASS, 1);
@@ -196,7 +196,7 @@ public class OpenEditorGuis {
             lore.add(ChatColor.WHITE + "-----------------------");
             lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("empty")).toUpperCase());
         }
-        plugin.setName(temp, ChatColor.WHITE + "Panel Empty Item", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Panel Empty Item", lore, p, true, true, true);
         i.setItem(13, temp);
 
         temp = new ItemStack(Material.ANVIL, 1);
@@ -212,7 +212,7 @@ public class OpenEditorGuis {
                 count += 1;
             }
         }
-        plugin.setName(temp, ChatColor.WHITE + "Panel Commands", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Panel Commands", lore, p, true, true, true);
         i.setItem(15, temp);
 
         temp = new ItemStack(Material.STRING, 1);
@@ -228,7 +228,7 @@ public class OpenEditorGuis {
                 count += 1;
             }
         }
-        plugin.setName(temp, ChatColor.WHITE + "Panel Types", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Panel Types", lore, p, true, true, true);
         i.setItem(17, temp);
 
         temp = new ItemStack(Material.ITEM_FRAME, 1);
@@ -237,11 +237,11 @@ public class OpenEditorGuis {
         lore.add(ChatColor.GRAY + "/cp [name]");
         lore.add(ChatColor.WHITE + "-----------------------");
         lore.add(ChatColor.WHITE + panelName);
-        plugin.setName(temp, ChatColor.WHITE + "Panel Name", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Panel Name", lore, p, true, true, true);
         i.setItem(11, temp);
 
         temp = new ItemStack(Material.BARRIER, 1);
-        plugin.setName(temp, ChatColor.RED + "Back", null, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.RED + "Back", null, p, true, true, true);
         i.setItem(18, temp);
 
         //This will create a wall of glass panes, separating panel settings with hotbar settings
@@ -250,7 +250,7 @@ public class OpenEditorGuis {
         }else{
             temp = new ItemStack(Material.matchMaterial("BLACK_STAINED_GLASS_PANE"), 1);
         }
-        plugin.setName(temp, ChatColor.WHITE + "", null, p,false, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "", null, p,false, true, true);
         for(int d = 27; d < 36; d++){
             i.setItem(d, temp);
         }
@@ -259,7 +259,7 @@ public class OpenEditorGuis {
 
         if(cf.contains("open-with-item.material")){
             hotbarItems = true;
-            temp = plugin.itemCreate.makeItemFromConfig(cf.getConfigurationSection("open-with-item"), p, false, true, false);
+            temp = plugin.itemCreate.makeItemFromConfig(null,cf.getConfigurationSection("open-with-item"), p, false, true, false);
         }else{
             temp = new ItemStack(Material.REDSTONE_BLOCK, 1);
         }
@@ -272,7 +272,7 @@ public class OpenEditorGuis {
             lore.add(ChatColor.WHITE + "-----------------------");
             lore.add(ChatColor.RED + "DISABLED");
         }
-        plugin.setName(temp, ChatColor.WHITE + "Panel Hotbar Item", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Panel Hotbar Item", lore, p, true, true, true);
         i.setItem(40, temp);
 
         if(hotbarItems) {
@@ -283,7 +283,7 @@ public class OpenEditorGuis {
                 lore.add(ChatColor.WHITE + "----------");
                 lore.add(ChatColor.WHITE + Objects.requireNonNull(cf.getString("open-with-item.name")));
             }
-            plugin.setName(temp, ChatColor.WHITE + "Hotbar Item Name", lore, p, true, true, true);
+            plugin.setName(null,temp, ChatColor.WHITE + "Hotbar Item Name", lore, p, true, true, true);
             i.setItem(38, temp);
 
             temp = new ItemStack(Material.FEATHER, 1);
@@ -299,7 +299,7 @@ public class OpenEditorGuis {
                     count += 1;
                 }
             }
-            plugin.setName(temp, ChatColor.WHITE + "Hotbar Lore", lore, p, true, true, true);
+            plugin.setName(null,temp, ChatColor.WHITE + "Hotbar Lore", lore, p, true, true, true);
             i.setItem(36, temp);
 
             temp = new ItemStack(Material.BEDROCK, 1);
@@ -311,7 +311,7 @@ public class OpenEditorGuis {
                 int location = cf.getInt("open-with-item.stationary");
                 lore.add(ChatColor.WHITE + String.valueOf(location));
             }
-            plugin.setName(temp, ChatColor.WHITE + "Hotbar Item Location", lore, p, true, true, true);
+            plugin.setName(null,temp, ChatColor.WHITE + "Hotbar Item Location", lore, p, true, true, true);
             i.setItem(42, temp);
 
             temp = new ItemStack(Material.BOOK, 1);
@@ -329,7 +329,7 @@ public class OpenEditorGuis {
                     count += 1;
                 }
             }
-            plugin.setName(temp, ChatColor.WHITE + "Hotbar Item Commands", lore, p, true, true,true);
+            plugin.setName(null,temp, ChatColor.WHITE + "Hotbar Item Commands", lore, p, true, true,true);
             i.setItem(44, temp);
         }
 
@@ -357,7 +357,7 @@ public class OpenEditorGuis {
                 lore.add(ChatColor.WHITE + cf.getString("name"));
             }
         }
-        plugin.setName(temp, ChatColor.WHITE + "Item Name", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Item Name", lore, p, true, true, true);
         i.setItem(1, temp);
 
         temp = new ItemStack(Material.ANVIL, 1);
@@ -373,7 +373,7 @@ public class OpenEditorGuis {
                 count += 1;
             }
         }
-        plugin.setName(temp, ChatColor.WHITE + "Item Commands", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Item Commands", lore, p, true, true, true);
         i.setItem(3, temp);
 
         temp = new ItemStack(Material.ENCHANTED_BOOK, 1);
@@ -388,7 +388,7 @@ public class OpenEditorGuis {
             lore.add(ChatColor.WHITE + "--------------------------------");
             lore.add(ChatColor.WHITE + "false");
         }
-        plugin.setName(temp, ChatColor.WHITE + "Item Enchantment", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Item Enchantment", lore, p, true, true, true);
         i.setItem(5, temp);
 
         temp = new ItemStack(Material.POTION, 1);
@@ -400,7 +400,7 @@ public class OpenEditorGuis {
                 lore.add(ChatColor.WHITE + cf.getString("potion"));
             }
         }
-        plugin.setName(temp, ChatColor.WHITE + "Item Potion Effect", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Item Potion Effect", lore, p, true, true, true);
         i.setItem(7, temp);
 
         temp = new ItemStack(Material.PAPER, 1);
@@ -416,7 +416,7 @@ public class OpenEditorGuis {
                 count += 1;
             }
         }
-        plugin.setName(temp, ChatColor.WHITE + "Item Duplicates", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Item Duplicates", lore, p, true, true, true);
         i.setItem(13, temp);
 
         temp = new ItemStack(Material.FEATHER, 1);
@@ -432,7 +432,7 @@ public class OpenEditorGuis {
                 count += 1;
             }
         }
-        plugin.setName(temp, ChatColor.WHITE + "Item Lores", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Item Lores", lore, p, true, true, true);
         i.setItem(19, temp);
 
         temp = new ItemStack(Material.ITEM_FRAME, 2);
@@ -448,7 +448,7 @@ public class OpenEditorGuis {
                 lore.add(ChatColor.WHITE + cf.getString("stack"));
             }
         }
-        plugin.setName(temp, ChatColor.WHITE + "Item Stack Size", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Item Stack Size", lore, p, true, true, true);
         i.setItem(21, temp);
 
         if(!plugin.legacy.isLegacy()) {
@@ -461,7 +461,7 @@ public class OpenEditorGuis {
                     lore.add(ChatColor.WHITE + cf.getString("customdata"));
                 }
             }
-            plugin.setName(temp, ChatColor.WHITE + "Custom Model Data", lore, p, true, true, true);
+            plugin.setName(null,temp, ChatColor.WHITE + "Custom Model Data", lore, p, true, true, true);
             i.setItem(23, temp);
         }
 
@@ -476,7 +476,7 @@ public class OpenEditorGuis {
         lore.add(ChatColor.GRAY + "Sections and add complex values.");
         lore.add(ChatColor.WHITE + "--------------------------------");
         lore.add(ChatColor.WHITE + section);
-        plugin.setName(temp, ChatColor.WHITE + "Item Sections", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Item Sections", lore, p, true, true, true);
         i.setItem(31, temp);
 
         temp = new ItemStack(Material.LEATHER_HELMET, 1);
@@ -489,18 +489,18 @@ public class OpenEditorGuis {
                 lore.add(ChatColor.WHITE + cf.getString("leatherarmor"));
             }
         }
-        plugin.setName(temp, ChatColor.WHITE + "Leather Armor Colour", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Leather Armor Colour", lore, p, true, true, true);
         i.setItem(25, temp);
 
         temp = new ItemStack(Material.BARRIER, 1);
-        plugin.setName(temp, ChatColor.RED + "Back", null, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.RED + "Back", null, p, true, true, true);
         i.setItem(27, temp);
 
-        temp = plugin.itemCreate.makeItemFromConfig(cf,p,false,false, false);
+        temp = plugin.itemCreate.makeItemFromConfig(null,cf,p,false,false, false);
         lore.clear();
         lore.add(ChatColor.GRAY + "Click to set custom material");
         lore.add(ChatColor.GRAY + "typically for custom heads");
-        plugin.setName(temp, ChatColor.WHITE + "Item Section " + section + " Preview", lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Item Section " + section + " Preview", lore, p, true, true, true);
         i.setItem(35, temp);
 
         p.openInventory(i);
@@ -535,23 +535,23 @@ public class OpenEditorGuis {
                     lore.add(ChatColor.WHITE + "Compare: " + ChatColor.GRAY + cf.getString(section + ".compare"));
                 }
 
-                temp = plugin.itemCreate.makeItemFromConfig(cf.getConfigurationSection(section),p,false,false, false);
-                plugin.setName(temp, ChatColor.AQUA + section, lore, p,false, true, true);
+                temp = plugin.itemCreate.makeItemFromConfig(null,cf.getConfigurationSection(section),p,false,false, false);
+                plugin.setName(null,temp, ChatColor.AQUA + section, lore, p,false, true, true);
                 i.setItem(slot, temp);
                 slot++;
             }
         }
 
         temp = new ItemStack(Material.REDSTONE, 1);
-        plugin.setName(temp, ChatColor.WHITE + "Remove Section", null, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Remove Section", null, p, true, true, true);
         i.setItem(38, temp);
 
         temp = new ItemStack(Material.SLIME_BALL, 1);
-        plugin.setName(temp, ChatColor.WHITE + "Add Section", null, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Add Section", null, p, true, true, true);
         i.setItem(42, temp);
 
         temp = new ItemStack(Material.BARRIER, 1);
-        plugin.setName(temp, ChatColor.RED + "Back", null, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.RED + "Back", null, p, true, true, true);
         i.setItem(36, temp);
 
         temp = new ItemStack(Material.BOOK, 1);
@@ -560,7 +560,7 @@ public class OpenEditorGuis {
         lore.add(ChatColor.GRAY + "- hasperm");
         lore.add(ChatColor.GRAY + "- hasvalue");
         lore.add(ChatColor.GRAY + "- hasgreater");
-        plugin.setName(temp, ChatColor.WHITE + "Item Section " + itemSection, lore, p, true, true, true);
+        plugin.setName(null,temp, ChatColor.WHITE + "Item Section " + itemSection, lore, p, true, true, true);
         i.setItem(44, temp);
 
         p.openInventory(i);

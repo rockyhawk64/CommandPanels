@@ -44,10 +44,11 @@ public class Commandpanelcustom implements Listener {
 
                         if(correctCommand){
                             e.setCancelled(true);
+                            Panel openPanel = panel.copy();
                             for(String[] placeholder : placeholders){
-                                plugin.customCommand.addCCP(panel.getName(),e.getPlayer().getName(),placeholder[0],placeholder[1]);
+                                openPanel.placeholders.addPlaceholder(placeholder[0],placeholder[1]);
                             }
-                            panel.open(e.getPlayer());
+                            openPanel.open(e.getPlayer());
                             return;
                         }
                     }

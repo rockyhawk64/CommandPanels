@@ -18,7 +18,7 @@ public class Commandpanelsgenerate implements CommandExecutor {
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(!(sender instanceof Player)) {
-            sender.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Please execute command as a Player!"));
+            sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Please execute command as a Player!"));
             return true;
         }
         Player p = (Player) sender;
@@ -31,30 +31,30 @@ public class Commandpanelsgenerate implements CommandExecutor {
                             Inventory i = Bukkit.createInventory(null, Integer.parseInt(args[0]) * 9, "Generate New Panel");
                             p.openInventory(i);
                         } else {
-                            p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Please use integer from 1-6."));
+                            p.sendMessage(plugin.tex.papi( plugin.tag + ChatColor.RED + "Please use integer from 1-6."));
                         }
                     }catch(Exception exc){
-                        p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Please use integer from 1-6."));
+                        p.sendMessage(plugin.tex.papi( plugin.tag + ChatColor.RED + "Please use integer from 1-6."));
                     }
                     return true;
                 }else if (args.length == 0) {
                     if (this.plugin.generateMode.contains(p)) {
                         this.plugin.generateMode.remove(p);
-                        p.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Generate Mode Disabled!"));
+                        p.sendMessage(plugin.tex.papi( plugin.tag + ChatColor.GREEN + "Generate Mode Disabled!"));
                     } else {
                         this.plugin.generateMode.add(p);
-                        p.sendMessage(plugin.papi( plugin.tag + ChatColor.GREEN + "Generate Mode Enabled!"));
+                        p.sendMessage(plugin.tex.papi( plugin.tag + ChatColor.GREEN + "Generate Mode Enabled!"));
                     }
                     return true;
                 }
-                p.sendMessage(plugin.papi( plugin.tag + ChatColor.RED + "Usage: /cpg [rows]"));
+                p.sendMessage(plugin.tex.papi( plugin.tag + ChatColor.RED + "Usage: /cpg [rows]"));
                 return true;
             }else{
-                p.sendMessage(plugin.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+                p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
                 return true;
             }
         }
-        p.sendMessage(plugin.papi(plugin.tag + ChatColor.RED + "Usage: /cpg [rows]"));
+        p.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Usage: /cpg [rows]"));
         return true;
     }
 }
