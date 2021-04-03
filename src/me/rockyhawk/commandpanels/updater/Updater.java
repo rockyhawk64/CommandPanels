@@ -52,6 +52,11 @@ public class Updater {
     }
 
     public void getLatestVersion(boolean sendMessages){
+        //check for null
+        if(catchedLatestVersion.equals("null")){
+            catchedLatestVersion = plugin.getDescription().getVersion();
+        }
+
         //using an array allows editing while still being final
         new BukkitRunnable(){
           public void run(){
@@ -76,7 +81,7 @@ public class Updater {
 
     //the pluginFileName can only be obtained from the main class
     public void autoUpdatePlugin(String pluginFileName){
-        String latestVersion = githubNewUpdate(false);
+        String latestVersion = catchedLatestVersion;
         String thisVersion = plugin.getDescription().getVersion();
 
         if(downloadVersionManually != null) {

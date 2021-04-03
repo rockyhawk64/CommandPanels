@@ -96,6 +96,9 @@ public class CommandPanels extends JavaPlugin{
     public void onEnable() {
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loading...");
 
+        //set version to latest version
+        updater.githubNewUpdate(false);
+
         //register config files
         this.panelsf = new File(this.getDataFolder() + File.separator + "panels");
         this.blockConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "blocks.yml"));
@@ -222,9 +225,6 @@ public class CommandPanels extends JavaPlugin{
 
         //get tag
         tag = tex.papi(config.getString("config.format.tag") + " ");
-
-        //set version to latest version
-        updater.githubNewUpdate(false);
 
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loaded!");
     }
