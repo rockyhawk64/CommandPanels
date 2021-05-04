@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
-import java.util.*;
+import java.util.Objects;
 
 public class CpIngameEditCommand implements CommandExecutor {
     CommandPanels plugin;

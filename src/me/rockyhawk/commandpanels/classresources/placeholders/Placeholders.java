@@ -24,6 +24,23 @@ public class Placeholders {
 
     @SuppressWarnings("deprecation")
     public String setCpPlaceholders(Panel panel, Player p, String str){
+        //do player input placeholder first
+        if (str.contains("%cp-player-input%")) {
+            for (String[] key : plugin.userInputStrings) {
+                if (key[0].equals(p.getName())) {
+                    plugin.userInputStrings.add(new String[]{p.getName(), str});
+                    return "cpc";
+                }
+            }
+            plugin.userInputStrings.add(new String[]{p.getName(), str});
+            List<String> inputMessages = new ArrayList<String>(plugin.config.getStringList("config.input-message"));
+            for (String temp : inputMessages) {
+                temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(plugin.config.getString("config.input-cancel")));
+                p.sendMessage(plugin.tex.papi(panel,p, temp));
+            }
+            return "cpc";
+        }
+
         //replace nodes with PlaceHolders
         str = str.replaceAll("%cp-player-displayname%", p.getDisplayName());
         str = str.replaceAll("%cp-player-name%", p.getName());
@@ -235,7 +252,7 @@ public class Placeholders {
                 int end = str.indexOf("%", str.indexOf("%cp-setdata-") + 1);
                 String point_value = str.substring(start, end).replace("%cp-setdata-", "").replace("%", "");
                 String command = "set-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
-                plugin.commandTags.commandTags(panel,p, plugin.tex.papi(panel,p,command),command);
+                plugin.commandTags.runCommand(panel,p, command);
                 str = str.replace(str.substring(start, end) + "%", "");
             }catch (Exception ex){
                 plugin.debug(ex,p);
@@ -249,7 +266,7 @@ public class Placeholders {
                 int end = str.indexOf("%", str.indexOf("%cp-mathdata-") + 1);
                 String point_value = str.substring(start, end).replace("%cp-mathdata-", "").replace("%", "");
                 String command = "math-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
-                plugin.commandTags.commandTags(panel,p, plugin.tex.papi(panel,p,command),command);
+                plugin.commandTags.runCommand(panel,p,command);
                 str = str.replace(str.substring(start, end) + "%", "");
             }catch (Exception ex){
                 plugin.debug(ex,p);
@@ -289,21 +306,6 @@ public class Placeholders {
         }
         if (plugin.getServer().getPluginManager().isPluginEnabled("VotingPlugin")) {
             str = str.replaceAll("%cp-votingplugin-points%", String.valueOf(UserManager.getInstance().getVotingPluginUser(p).getPoints()));
-        }
-        if (str.contains("%cp-player-input%")) {
-            for (String[] key : plugin.userInputStrings) {
-                if (key[0].equals(p.getName())) {
-                    plugin.userInputStrings.add(new String[]{p.getName(), str});
-                    return "cpc";
-                }
-            }
-            plugin.userInputStrings.add(new String[]{p.getName(), str});
-            List<String> inputMessages = new ArrayList<String>(plugin.config.getStringList("config.input-message"));
-            for (String temp : inputMessages) {
-                temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(plugin.config.getString("config.input-cancel")));
-                p.sendMessage(plugin.tex.papi(panel,p, temp));
-            }
-            str = "cpc";
         }
         //end nodes with PlaceHolders
         return str;

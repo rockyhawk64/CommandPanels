@@ -1,19 +1,17 @@
 package me.rockyhawk.commandpanels;
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import io.lumine.mythic.lib.api.item.NBTItem;
 import me.rockyhawk.commandpanels.api.CommandPanelsAPI;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.classresources.*;
+import me.rockyhawk.commandpanels.classresources.ExecuteOpenVoids;
+import me.rockyhawk.commandpanels.classresources.GetCustomHeads;
+import me.rockyhawk.commandpanels.classresources.ItemCreation;
+import me.rockyhawk.commandpanels.classresources.OpenEditorGuis;
 import me.rockyhawk.commandpanels.classresources.item_fall.ItemFallManager;
 import me.rockyhawk.commandpanels.classresources.placeholders.CreateText;
 import me.rockyhawk.commandpanels.classresources.placeholders.Placeholders;
 import me.rockyhawk.commandpanels.commands.*;
+import me.rockyhawk.commandpanels.commandtags.CommandTags;
 import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
 import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
 import me.rockyhawk.commandpanels.datamanager.DebugManager;
@@ -25,10 +23,11 @@ import me.rockyhawk.commandpanels.ingameeditor.CpIngameEditCommand;
 import me.rockyhawk.commandpanels.ingameeditor.CpTabCompleteIngame;
 import me.rockyhawk.commandpanels.ingameeditor.EditorUserInput;
 import me.rockyhawk.commandpanels.ingameeditor.EditorUtils;
-
+import me.rockyhawk.commandpanels.interactives.CommandpanelUserInput;
+import me.rockyhawk.commandpanels.interactives.Commandpanelrefresher;
+import me.rockyhawk.commandpanels.interactives.OpenOnJoin;
 import me.rockyhawk.commandpanels.ioclasses.Sequence_1_13;
 import me.rockyhawk.commandpanels.ioclasses.Sequence_1_14;
-
 import me.rockyhawk.commandpanels.legacy.LegacyVersion;
 import me.rockyhawk.commandpanels.legacy.PlayerHeads;
 import me.rockyhawk.commandpanels.openpanelsmanager.OpenGUI;
@@ -42,20 +41,29 @@ import me.rockyhawk.commandpanels.openwithitem.UtilsOpenWithItem;
 import me.rockyhawk.commandpanels.panelblocks.BlocksTabComplete;
 import me.rockyhawk.commandpanels.panelblocks.Commandpanelblocks;
 import me.rockyhawk.commandpanels.panelblocks.PanelBlockOnClick;
-import me.rockyhawk.commandpanels.interactives.CommandpanelUserInput;
-import me.rockyhawk.commandpanels.interactives.Commandpanelrefresher;
 import me.rockyhawk.commandpanels.updater.Updater;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.*;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommandPanels extends JavaPlugin{
     public YamlConfiguration config;
@@ -145,6 +153,10 @@ public class CommandPanels extends JavaPlugin{
         this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
         this.getServer().getPluginManager().registerEvents(new CommandpanelUserInput(this), this);
         this.getServer().getPluginManager().registerEvents(new ItemFallManager(this), this);
+        this.getServer().getPluginManager().registerEvents(new OpenOnJoin(this), this);
+
+        //load in all built in command tags
+        commandTags.registerBuiltInTags();
 
         //if refresh-panels set to false, don't load this
         if(Objects.requireNonNull(config.getString("config.refresh-panels")).equalsIgnoreCase("true")){

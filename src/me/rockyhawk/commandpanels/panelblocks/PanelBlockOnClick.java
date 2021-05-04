@@ -43,13 +43,13 @@ public class PanelBlockOnClick implements Listener {
                 e.setCancelled(true);
                 if(plugin.blockConfig.contains("blocks." + configLocation + ".commands")){
                     for(String command : plugin.blockConfig.getStringList("blocks." + configLocation + ".commands")){
-                        plugin.commandTags.commandTags(null,p, plugin.tex.papi(null,p,command),command);
+                        plugin.commandTags.runCommand(null,p, command);
                     }
                     return;
                 }
                 //uses the open= tag because it will open a panel with panel names, but also works with open= features like placeholders
                 String command = "open= " + plugin.blockConfig.getString("blocks." + configLocation + ".panel");
-                plugin.commandTags.commandTags(null,p, plugin.tex.papi(null,p, command), command);
+                plugin.commandTags.runCommand(null,p, command);
             }
         }
     }

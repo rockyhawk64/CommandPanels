@@ -1,7 +1,7 @@
 package me.rockyhawk.commandpanels.interactives;
 
-import me.rockyhawk.commandpanels.classresources.CommandTags;
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.commandtags.CommandTags;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -35,7 +35,7 @@ public class CommandpanelUserInput implements Listener {
                 e.setCancelled(true);
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-                        new CommandTags(plugin).commandTags(null,e.getPlayer(), plugin.tex.papi(null,e.getPlayer(),command), command); //I have to do this to run regular Bukkit voids in an ASYNC Event
+                        new CommandTags(plugin).runCommand(null,e.getPlayer(), command); //I have to do this to run regular Bukkit voids in an ASYNC Event
                     }
                 });
             }

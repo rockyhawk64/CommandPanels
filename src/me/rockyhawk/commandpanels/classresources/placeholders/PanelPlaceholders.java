@@ -1,4 +1,4 @@
-package me.rockyhawk.commandpanels.customcommands;
+package me.rockyhawk.commandpanels.classresources.placeholders;
 
 import java.util.HashMap;
 

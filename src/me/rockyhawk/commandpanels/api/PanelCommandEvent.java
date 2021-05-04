@@ -8,14 +8,20 @@ public class PanelCommandEvent extends Event {
 
     private final Player p;
     private final String args;
+    private final Panel panel;
 
-    public PanelCommandEvent(Player player, String message) {
+    public PanelCommandEvent(Player player, String message, Panel panel1) {
         this.p = player;
         this.args = message;
+        this.panel = panel1;
     }
 
     public Player getPlayer(){
         return this.p;
+    }
+
+    public Panel getPanel(){
+        return this.panel;
     }
 
     public String getMessage(){

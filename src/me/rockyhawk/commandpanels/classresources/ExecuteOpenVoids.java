@@ -75,7 +75,7 @@ public class ExecuteOpenVoids {
                                 break;
                             }
                             if (val == 2) {
-                                plugin.commandTags.commandTags(panel,p, plugin.tex.papi(panel,p, command), command);
+                                plugin.commandTags.runCommand(panel,p, command);
                             }
                         }
                     }catch(Exception s){
@@ -161,7 +161,7 @@ public class ExecuteOpenVoids {
                         break;
                     }
                     if (val == 2) {
-                        plugin.commandTags.commandTags(panel,p, plugin.tex.papi(panel,p, command), command);
+                        plugin.commandTags.runCommand(panel,p, command);
                     }
                 }
             }catch(Exception s){

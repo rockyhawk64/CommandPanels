@@ -4,9 +4,10 @@ import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Commandpanelcustom implements Listener {
     CommandPanels plugin;

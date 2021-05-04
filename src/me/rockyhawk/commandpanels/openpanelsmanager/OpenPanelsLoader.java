@@ -7,7 +7,10 @@ import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class OpenPanelsLoader {
     CommandPanels plugin;
@@ -102,7 +105,7 @@ public class OpenPanelsLoader {
                         break;
                     }
                     if(val == 2){
-                        plugin.commandTags.commandTags(panel,Bukkit.getPlayer(playerName), plugin.tex.papi(panel,Bukkit.getPlayer(playerName),command), command);
+                        plugin.commandTags.runCommand(panel,Bukkit.getPlayer(playerName), command);
                     }
                 }
             }catch(Exception s){

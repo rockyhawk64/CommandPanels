@@ -7,7 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 public class Utils implements Listener {
     CommandPanels plugin;
@@ -149,22 +150,15 @@ public class Utils implements Listener {
 
                     //end custom command PlaceHolders
 
-                    //do placeholders
-                    String command;
-                    if(commands.get(i).split("\\s")[0].equalsIgnoreCase("nopapi=")){
-                        //won't parse PAPI placeholders
-                        command = plugin.tex.papi(plugin.placeholders.setCpPlaceholders(panel,p,commands.get(i))).replace("nopapi=","").trim();
-                    }else{
-                        //will parse every placeholder
-                        command = plugin.tex.papi(panel,p,commands.get(i));
-                    }
+                    //do commands
+                    String command = plugin.tex.papi(panel,p,commands.get(i));
 
                     int val = plugin.commandTags.commandPayWall(p,command);
                     if(val == 0){
                         return;
                     }
                     if(val == 2){
-                        plugin.commandTags.commandTags(panel, p, command, commands.get(i));
+                        plugin.commandTags.runCommand(panel, p, commands.get(i));
                     }
                 }
             }

@@ -1,8 +1,8 @@
 package me.rockyhawk.commandpanels.legacy;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.ioclasses.GetStorageContents_Legacy;
 import me.rockyhawk.commandpanels.ioclasses.GetStorageContents;
+import me.rockyhawk.commandpanels.ioclasses.GetStorageContents_Legacy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

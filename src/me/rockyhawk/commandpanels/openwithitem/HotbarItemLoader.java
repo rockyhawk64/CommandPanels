@@ -49,7 +49,7 @@ public class HotbarItemLoader {
                     }
                     if(panel.getConfig().contains("open-with-item.commands")){
                         for(String command : panel.getConfig().getStringList("open-with-item.commands")){
-                            plugin.commandTags.commandTags(panel,p, plugin.tex.papi(null,p,command),command);
+                            plugin.commandTags.runCommand(panel,p, command);
                         }
                         return true;
                     }
@@ -84,7 +84,7 @@ public class HotbarItemLoader {
                         }
                         if(panel.getConfig().contains("open-with-item.commands")){
                             for(String command : panel.getConfig().getStringList("open-with-item.commands")){
-                                plugin.commandTags.commandTags(panel,p, plugin.tex.papi(null,p,command),command);
+                                plugin.commandTags.runCommand(panel,p, command);
                             }
                             return true;
                         }

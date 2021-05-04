@@ -1,7 +1,7 @@
 package me.rockyhawk.commandpanels.api;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.customcommands.PanelPlaceholders;
+import me.rockyhawk.commandpanels.classresources.placeholders.PanelPlaceholders;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

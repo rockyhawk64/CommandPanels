@@ -15,6 +15,19 @@ public class CreateText {
         this.plugin = pl;
     }
 
+    //CommandPanels send message function
+    public void sendMessage(Player p, String message){
+        if(!message.equals("")) {
+            p.sendMessage(papi(plugin.tag + message));
+        }
+    }
+
+    //CommandPanels send message function without the tag
+    public void sendString(Player p, String message){
+        if(!message.equals("")) {
+            p.sendMessage(papi(message));
+        }
+    }
 
     //papi except if it is a String List
     public List<String> papiNoColour(Panel panel, Player p, List<String> setpapi) {

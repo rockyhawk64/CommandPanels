@@ -67,11 +67,10 @@ public class Commandpanelblocks implements CommandExecutor {
                         String materialNameFormatted = blockType.getType().toString().substring(0, 1).toUpperCase() + blockType.getType().toString().substring(1).toLowerCase();
                         materialNameFormatted = materialNameFormatted.replaceAll("_"," ");
                         sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.WHITE + args[1] + ChatColor.GREEN + " will now open when right clicking " + ChatColor.WHITE + materialNameFormatted));
-                        return true;
                     }else{
                         sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
-                        return true;
                     }
+                    return true;
                 }
             }
             if(args.length == 1){
@@ -102,11 +101,10 @@ public class Commandpanelblocks implements CommandExecutor {
                         }else{
                             sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.nopanel")));
                         }
-                        return true;
                     }else{
                         sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
-                        return true;
                     }
+                    return true;
                 }
                 if (args[0].equalsIgnoreCase("list")) {
                     if(sender.hasPermission("commandpanel.block.list")){
@@ -126,11 +124,10 @@ public class Commandpanelblocks implements CommandExecutor {
                         }else{
                             sender.sendMessage(plugin.tex.papi(plugin.tag) + ChatColor.RED + "No panel blocks found.");
                         }
-                        return true;
                     }else{
                         sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
-                        return true;
                     }
+                    return true;
                 }
             }
         }
