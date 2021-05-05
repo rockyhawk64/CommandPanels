@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class BuyCommandTags implements Listener {
@@ -27,7 +28,8 @@ public class BuyCommandTags implements Listener {
                         plugin.econ.withdrawPlayer(e.p, Double.parseDouble(e.args[0]));
                         //execute command under here
                         String price = e.args[0];
-                        plugin.commandTags.runCommand(e.panel,e.p,String.join(" ",e.raw));
+                        String command = String.join(" ",Arrays.copyOfRange(e.raw, 1, e.raw.length));
+                        plugin.commandTags.runCommand(e.panel,e.p,command);
                         plugin.tex.sendMessage(e.p,plugin.config.getString("purchase.currency.success").replaceAll("%cp-args%", price));
                     } else {
                         plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.currency.failure"));
@@ -53,7 +55,8 @@ public class BuyCommandTags implements Listener {
                         api.removeTokens(e.p, Long.parseLong(e.args[0]));
                         //execute command under here
                         String price = e.args[0];
-                        plugin.commandTags.runCommand(e.panel,e.p,String.join(" ",e.raw));
+                        String command = String.join(" ",Arrays.copyOfRange(e.raw, 1, e.raw.length));
+                        plugin.commandTags.runCommand(e.panel,e.p,command);
                         plugin.tex.sendMessage(e.p, Objects.requireNonNull(plugin.config.getString("purchase.token.success")).replaceAll("%cp-args%", price));
                     } else {
                         plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.token.failure"));
