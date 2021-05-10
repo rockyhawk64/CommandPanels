@@ -93,7 +93,7 @@ public class GenUtils implements Listener {
         file = YamlConfiguration.loadConfiguration(new File(folder + File.separator + date + ".yml"));
         file.set("panels." + date + ".perm", "default");
 
-        if(inv.getHolder() instanceof Chest || inv.getHolder() instanceof DoubleChest){
+        if(inv.getType().toString().contains("CHEST")){
             file.set("panels." + date + ".rows", inv.getSize()/9);
         }else{
             file.set("panels." + date + ".rows", inv.getType().toString());
