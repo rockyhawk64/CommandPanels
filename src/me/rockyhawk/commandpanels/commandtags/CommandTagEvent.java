@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.commandtags;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -19,6 +20,13 @@ public class CommandTagEvent extends Event {
         this.p = player;
         this.panel = panel1;
 
+        //do nopapi= tag (donation feature) which will stop PlaceholderAPI placeholders from executing
+        boolean doApiPlaceholders = true;
+        if(rawCommand1.startsWith("nopapi= ")){
+            rawCommand1 = rawCommand1.replace("nopapi= ","");
+            doApiPlaceholders = false;
+        }
+
         String[] split = rawCommand1.split(" ", 2);
         if(split.length == 1){
             split = new String[]{split[0],""};
@@ -31,7 +39,11 @@ public class CommandTagEvent extends Event {
 
         this.name = split[0].trim();
         this.raw = split[1].trim().split("\\s");
-        this.args = plugin.tex.papi(panel1,player,split[1].trim()).split("\\s");
+        if(doApiPlaceholders) {
+            this.args = plugin.tex.papi(panel1, player, split[1].trim()).split("\\s");
+        }else{
+            this.args = ChatColor.translateAlternateColorCodes('&',plugin.placeholders.setCpPlaceholders(panel, p,split[1].trim())).split("\\s");
+        }
     }
 
     public void commandTagUsed(){

@@ -1,7 +1,10 @@
 package me.rockyhawk.commandpanels.openpanelsmanager;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.api.PanelClosedEvent;
 import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -63,7 +66,21 @@ public class UtilsPanelsLoader implements Listener {
     public void vanillaOpenedEvent(InventoryOpenEvent e){
         if(e.isCancelled()) {
             if (plugin.openPanels.hasPanelOpen(e.getPlayer().getName())) {
-                plugin.openPanels.closePanelForLoader(e.getPlayer().getName());
+                Panel closedPanel = plugin.openPanels.getOpenPanel(e.getPlayer().getName());
+
+                //manually remove player with no skip checks
+                plugin.openPanels.openPanels.remove(e.getPlayer().getName());
+
+                //fire PanelClosedEvent
+                PanelClosedEvent closedEvent = new PanelClosedEvent(Bukkit.getPlayer(e.getPlayer().getName()),closedPanel);
+                Bukkit.getPluginManager().callEvent(closedEvent);
+
+                //do message
+                if (plugin.config.contains("config.panel-snooper")) {
+                    if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).equalsIgnoreCase("true")) {
+                        Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + e.getPlayer().getName() + "'s Panel was Force Closed");
+                    }
+                }
             }
         }
     }

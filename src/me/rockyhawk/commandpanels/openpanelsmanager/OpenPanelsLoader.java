@@ -7,10 +7,7 @@ import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class OpenPanelsLoader {
     CommandPanels plugin;
@@ -24,6 +21,7 @@ public class OpenPanelsLoader {
     into the correct panel, so there is no need for the panel name
     */
     public HashMap<String, Panel> openPanels = new HashMap<>(); //player name and panel
+    public HashSet<String> skipPanelClose = new HashSet<>(); //don't remove the player if they are in this list
 
     //this will return the panel CF based on the player, if it isn't there it returns null
     public Panel getOpenPanel(String playerName){
@@ -77,7 +75,7 @@ public class OpenPanelsLoader {
 
     //close all of the panels for a player currently open
     public void closePanelForLoader(String playerName){
-        if(!openPanels.containsKey(playerName)){
+        if(!openPanels.containsKey(playerName) || skipPanelClose.contains(playerName)){
             return;
         }
         panelCloseCommands(playerName,openPanels.get(playerName));
