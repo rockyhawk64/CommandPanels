@@ -160,6 +160,8 @@ public class OpenGUI {
         }
         if (onOpen == 1 || onOpen == 3) {
             //onOpen 1 is default and 3 is for the editor
+            //open the panel
+            plugin.openPanels.openPanelForLoader(p.getName(), panel);
             p.openInventory(i);
         } else if (onOpen == 0) {
             //onOpen 0 will just refresh the panel

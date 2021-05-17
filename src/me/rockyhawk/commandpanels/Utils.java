@@ -150,8 +150,15 @@ public class Utils implements Listener {
 
                     //end custom command PlaceHolders
 
-                    //do commands
-                    String command = plugin.tex.papi(panel,p,commands.get(i));
+                    //make the command
+                    String command;
+                    if(commands.get(i).split("\\s")[0].equalsIgnoreCase("nopapi=")){
+                        //won't parse PAPI placeholders
+                        command = plugin.tex.papi(plugin.placeholders.setCpPlaceholders(panel,p,commands.get(i))).replace("nopapi=","").trim();
+                    }else{
+                        //will parse every placeholder
+                        command = plugin.tex.papi(panel,p,commands.get(i));
+                    }
 
                     int val = plugin.commandTags.commandPayWall(p,command);
                     if(val == 0){

@@ -4,9 +4,11 @@ import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -52,6 +54,16 @@ public class UtilsPanelsLoader implements Listener {
                 if(plugin.openPanels.isNBTInjected(itm)){
                     p.getInventory().remove(itm);
                 }
+            }
+        }
+    }
+
+    //if the regular InventoryOpenEvent is called
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void vanillaOpenedEvent(InventoryOpenEvent e){
+        if(e.isCancelled()) {
+            if (plugin.openPanels.hasPanelOpen(e.getPlayer().getName())) {
+                plugin.openPanels.closePanelForLoader(e.getPlayer().getName());
             }
         }
     }

@@ -62,8 +62,6 @@ public class ExecuteOpenVoids {
             try {
                 //create and open the GUI
                 plugin.createGUI.openGui(panel, p,1,0);
-                //open the panel
-                plugin.openPanels.openPanelForLoader(p.getName(), panel);
 
                 //execute commands once the panel opens
                 if (panel.getConfig().contains("commands-on-open")) {
