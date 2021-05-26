@@ -112,7 +112,6 @@ public class SellItemTags implements Listener {
                     int amt = itm.getAmount() - new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2])).getAmount();
                     itm.setAmount(amt);
                     p.getInventory().setItem(f, amt > 0 ? itm : null);
-                    plugin.econ.depositPlayer(p, Double.parseDouble(args[0]));
                     p.updateInventory();
                     return true;
                 }

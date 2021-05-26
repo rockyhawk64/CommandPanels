@@ -128,12 +128,22 @@ public class OpenGUI {
                 if (!found) {
                     ItemStack empty;
                     try {
+                        //emptyID for older versions of minecraft (might be deprecated later on)
                         short id = 0;
                         if(pconfig.contains("emptyID")){
                             id = Short.parseShort(pconfig.getString("emptyID"));
                         }
-                        empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(Objects.requireNonNull(pconfig.getString("empty")).toUpperCase())), 1,id);
-                        empty = NBTEditor.set(empty,"CommandPanels","CommandPanels");
+                        //either use custom item or just material type
+                        if(pconfig.contains("custom-item." + pconfig.getString("empty"))){
+                            empty = plugin.itemCreate.makeItemFromConfig(panel,pconfig.getConfigurationSection("custom-item." + pconfig.getString("empty")),p,true,true,true);
+                        }else{
+                            empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(pconfig.getString("empty").toUpperCase())), 1,id);
+                            empty = NBTEditor.set(empty,"CommandPanels","CommandPanels");
+                            ItemMeta renamedMeta = empty.getItemMeta();
+                            assert renamedMeta != null;
+                            renamedMeta.setDisplayName(" ");
+                            empty.setItemMeta(renamedMeta);
+                        }
                         if (empty.getType() == Material.AIR) {
                             continue;
                         }
@@ -144,11 +154,6 @@ public class OpenGUI {
                         plugin.openPanels.closePanelForLoader(p.getName());
                         return null;
                     }
-
-                    ItemMeta renamedMeta = empty.getItemMeta();
-                    assert renamedMeta != null;
-                    renamedMeta.setDisplayName(" ");
-                    empty.setItemMeta(renamedMeta);
                     if (onOpen != 3) {
                         //only place empty items if not editing
                         if(i.getItem(c) == null && !pconfig.contains("item." + c)) {
@@ -158,12 +163,15 @@ public class OpenGUI {
                 }
             }
         }
-        if (onOpen == 1 || onOpen == 3) {
-            //onOpen 1 is default and 3 is for the editor
+        if (onOpen == 1) {
+            //onOpen 1 is default
             plugin.openPanels.skipPanelClose.add(p.getName());
             plugin.openPanels.openPanelForLoader(p.getName(),panel);
             p.openInventory(i);
             plugin.openPanels.skipPanelClose.remove(p.getName());
+        } else if (onOpen == 3) {
+            //onOpen 3 will open the editor panel
+            p.openInventory(i);
         } else if (onOpen == 0) {
             //onOpen 0 will just refresh the panel
             plugin.legacy.setStorageContents(p,plugin.legacy.getStorageContents(i));
