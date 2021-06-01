@@ -40,7 +40,6 @@ public class Utils implements Listener {
         if(e.getSlot() == -999){return;}
         if(e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY){
             e.setCancelled(true);
-            return;
         }
         if(e.getClickedInventory().getType() == InventoryType.PLAYER){
             return;

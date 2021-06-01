@@ -9,25 +9,6 @@ If you don't feel like scripting, Command Panels is one of the few free plugins 
   - Comes with a built in editor
   - Unlimited GUIs
   - Create complex panel systems
-  
-### Command Panels Server 
-This is the official Command Panels Server. Feel free to join in and be a part of the community! The server is survival 1.8-1.16.4. Test the plugin here too!
-`play.CommandPanels.org`
-
-### Partnered Servers
-These servers are running Command Panels. Feel free to join in and be a part of the community!
-
-ArcticForestMC | 1.16
-arcticforestmc.net
-
-Emerald Earth | 1.16
-emeraldearth.us.to
-
-CrystalRPG | 1.16
-play.crystalrpg.com
-
-GrindMC | 1.15
-play.grind-mc.com
 
 ### Discord Support
 You can join the discord server for support [here](https://discord.gg/eUWBWh7).
