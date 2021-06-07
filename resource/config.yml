@@ -34,6 +34,9 @@ config:
     error: '&cError found in config.'
     offline: 'Offline'
     offlineHeadValue: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU1Mjg2YzQ3MGY2NmZmYTFhMTgzMzFjYmZmYjlhM2MyYTQ0MjRhOGM3MjU5YzQ0MzZmZDJlMzU1ODJhNTIyIn19fQ=='
+hexcodes:
+  start_tag: '#'
+  end_tag: ''
 updater:
   auto-update: true
   minor-updates-only: true

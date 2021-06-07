@@ -70,7 +70,7 @@ public class CreateText {
         //change colour
         for(String temp : setpapi){
             try {
-                setpapi.set(tempInt, plugin.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', temp)));
+                setpapi.set(tempInt, plugin.hex.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', temp)));
             }catch(NullPointerException ignore){
             }
             tempInt += 1;
@@ -81,7 +81,7 @@ public class CreateText {
     //regular string papi, but only colours so Player doesn't need to be there
     public String papi(String setpapi) {
         try {
-            setpapi = plugin.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
+            setpapi = plugin.hex.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
             return setpapi;
         }catch(NullPointerException e){
             return setpapi;
@@ -110,7 +110,7 @@ public class CreateText {
                 OfflinePlayer offp = plugin.getServer().getOfflinePlayer(p.getUniqueId());
                 setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
             }
-            setpapi = plugin.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
+            setpapi = plugin.hex.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
             return setpapi;
         }catch(NullPointerException e){
             return setpapi;

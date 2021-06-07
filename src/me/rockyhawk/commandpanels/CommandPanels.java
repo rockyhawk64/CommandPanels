@@ -9,6 +9,7 @@ import me.rockyhawk.commandpanels.classresources.ItemCreation;
 import me.rockyhawk.commandpanels.classresources.OpenEditorGuis;
 import me.rockyhawk.commandpanels.classresources.item_fall.ItemFallManager;
 import me.rockyhawk.commandpanels.classresources.placeholders.CreateText;
+import me.rockyhawk.commandpanels.classresources.placeholders.HexColours;
 import me.rockyhawk.commandpanels.classresources.placeholders.Placeholders;
 import me.rockyhawk.commandpanels.commands.*;
 import me.rockyhawk.commandpanels.commandtags.CommandTags;
@@ -62,8 +63,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CommandPanels extends JavaPlugin{
     public YamlConfiguration config;
@@ -84,6 +83,7 @@ public class CommandPanels extends JavaPlugin{
     public Placeholders placeholders = new Placeholders(this);
     public DebugManager debug = new DebugManager(this);
     public CreateText tex = new CreateText(this);
+    public HexColours hex = new HexColours(this);
 
     public OpenEditorGuis editorGuis = new OpenEditorGuis(this);
     public ExecuteOpenVoids openVoids = new ExecuteOpenVoids(this);
@@ -461,22 +461,6 @@ public class CommandPanels extends JavaPlugin{
 
         Random r = new Random();
         return r.nextInt((max - min) + 1) + min;
-    }
-
-    //used to translate hex colours into ChatColors
-    public String translateHexColorCodes(String message) {
-        final Pattern hexPattern = Pattern.compile("#" + "([A-Fa-f0-9]{6})");
-        Matcher matcher = hexPattern.matcher(message);
-        StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
-        while (matcher.find()) {
-            String group = matcher.group(1);
-            matcher.appendReplacement(buffer, ChatColor.COLOR_CHAR + "x"
-                    + ChatColor.COLOR_CHAR + group.charAt(0) + ChatColor.COLOR_CHAR + group.charAt(1)
-                    + ChatColor.COLOR_CHAR + group.charAt(2) + ChatColor.COLOR_CHAR + group.charAt(3)
-                    + ChatColor.COLOR_CHAR + group.charAt(4) + ChatColor.COLOR_CHAR + group.charAt(5)
-            );
-        }
-        return matcher.appendTail(buffer).toString();
     }
 
     //returns true if the item is the MMO Item
