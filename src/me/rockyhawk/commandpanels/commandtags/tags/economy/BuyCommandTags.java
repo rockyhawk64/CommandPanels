@@ -57,9 +57,9 @@ public class BuyCommandTags implements Listener {
                         String price = e.args[0];
                         String command = String.join(" ",Arrays.copyOfRange(e.raw, 1, e.raw.length));
                         plugin.commandTags.runCommand(e.panel,e.p,command);
-                        plugin.tex.sendMessage(e.p, Objects.requireNonNull(plugin.config.getString("purchase.token.success")).replaceAll("%cp-args%", price));
+                        plugin.tex.sendMessage(e.p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", price));
                     } else {
-                        plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.token.failure"));
+                        plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.tokens.failure"));
                     }
                 } else {
                     plugin.tex.sendMessage(e.p, ChatColor.RED + "Buying Requires Vault and an Economy to work!");
