@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.classresources;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -245,7 +246,7 @@ public class OpenEditorGuis {
         i.setItem(18, temp);
 
         //This will create a wall of glass panes, separating panel settings with hotbar settings
-        if(plugin.legacy.isLegacy()) {
+        if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
             temp = new ItemStack(Material.matchMaterial("STAINED_GLASS_PANE"), 1,(short)15);
         }else{
             temp = new ItemStack(Material.matchMaterial("BLACK_STAINED_GLASS_PANE"), 1);
@@ -451,7 +452,7 @@ public class OpenEditorGuis {
         plugin.setName(null,temp, ChatColor.WHITE + "Item Stack Size", lore, p, true, true, true);
         i.setItem(21, temp);
 
-        if(!plugin.legacy.isLegacy()) {
+        if(!plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
             temp = new ItemStack(Material.PAINTING, 1);
             lore.clear();
             lore.add(ChatColor.GRAY + "Add Custom Model Data here");

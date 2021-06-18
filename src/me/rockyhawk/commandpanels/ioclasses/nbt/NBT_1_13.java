@@ -1,4 +1,4 @@
-package me.rockyhawk.commandpanels.ioclasses;
+package me.rockyhawk.commandpanels.ioclasses.nbt;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -31,18 +31,18 @@ import org.bukkit.inventory.meta.ItemMeta;
  * @version 7.17.0
  * @author BananaPuncher714
  */
-public final class NBTEditor {
-    private static final Map< String, Class< ? > > classCache;
-    private static final Map< String, Method > methodCache;
-    private static final Map< Class< ? >, Constructor< ? > > constructorCache;
-    private static final Map< Class< ? >, Class< ? > > NBTClasses;
-    private static final Map< Class< ? >, Field > NBTTagFieldCache;
-    private static Field NBTListData;
-    private static Field NBTCompoundMap;
-    private static final String VERSION;
-    private static final MinecraftVersion LOCAL_VERSION;
+public final class NBT_1_13 {
+    private final Map< String, Class< ? > > classCache;
+    private final Map< String, Method > methodCache;
+    private final Map< Class< ? >, Constructor< ? > > constructorCache;
+    private final Map< Class< ? >, Class< ? > > NBTClasses;
+    private final Map< Class< ? >, Field > NBTTagFieldCache;
+    private Field NBTListData;
+    private Field NBTCompoundMap;
+    private final String VERSION;
+    private final MinecraftVersion LOCAL_VERSION;
 
-    static {
+    {
         VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         LOCAL_VERSION = MinecraftVersion.get( VERSION );
 
@@ -293,13 +293,13 @@ public final class NBTEditor {
         }
     }
 
-    private static Class< ? > getNBTTag( Class< ? > primitiveType ) {
+    private Class< ? > getNBTTag( Class< ? > primitiveType ) {
         if ( NBTClasses.containsKey( primitiveType ) )
             return NBTClasses.get( primitiveType );
         return primitiveType;
     }
 
-    private static Object getNBTVar( Object object ) {
+    private Object getNBTVar( Object object ) {
         if ( object == null ) {
             return null;
         }
@@ -314,15 +314,15 @@ public final class NBTEditor {
         return null;
     }
 
-    private static Method getMethod( String name ) {
+    private Method getMethod( String name ) {
         return methodCache.containsKey( name ) ? methodCache.get( name ) : null;
     }
 
-    private static Constructor< ? > getConstructor( Class< ? > clazz ) {
+    private Constructor< ? > getConstructor( Class< ? > clazz ) {
         return constructorCache.containsKey( clazz ) ? constructorCache.get( clazz ) : null;
     }
 
-    private static Class<?> getNMSClass(String name) {
+    private Class<?> getNMSClass(String name) {
         if ( classCache.containsKey( name ) ) {
             return classCache.get( name );
         }
@@ -335,7 +335,7 @@ public final class NBTEditor {
         }
     }
 
-    private static String getMatch( String string, String regex ) {
+    private String getMatch( String string, String regex ) {
         Pattern pattern = Pattern.compile( regex );
         Matcher matcher = pattern.matcher( string );
         if ( matcher.find() ) {
@@ -345,7 +345,7 @@ public final class NBTEditor {
         }
     }
 
-    private static Object createItemStack( Object compound ) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
+    private Object createItemStack( Object compound ) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
         if ( LOCAL_VERSION == MinecraftVersion.v1_11 || LOCAL_VERSION == MinecraftVersion.v1_12 ) {
             return getConstructor( getNMSClass( "ItemStack" ) ).newInstance( compound );
         }
@@ -358,11 +358,11 @@ public final class NBTEditor {
      * @return
      * The Bukkit version in standard package format
      */
-    public static String getVersion() {
+    public String getVersion() {
         return VERSION;
     }
 
-    public static MinecraftVersion getMinecraftVersion() {
+    public MinecraftVersion getMinecraftVersion() {
         return LOCAL_VERSION;
     }
 
@@ -374,7 +374,7 @@ public final class NBTEditor {
      * @return
      * An item stack with count of 1
      */
-    public static ItemStack getHead( String skinURL ) {
+    public ItemStack getHead( String skinURL ) {
         Material material = Material.getMaterial( "SKULL_ITEM" );
         if ( material == null ) {
             // Most likely 1.13 materials
@@ -427,7 +427,7 @@ public final class NBTEditor {
      * @return
      * The URL of the texture
      */
-    public static String getTexture( ItemStack head ) {
+    public String getTexture( ItemStack head ) {
         ItemMeta meta = head.getItemMeta();
         Field profileField = null;
         try {
@@ -468,7 +468,7 @@ public final class NBTEditor {
      * @return
      * The item represented by the keys, and an integer if it is showing how long a list is.
      */
-    private static Object getItemTag( ItemStack item, Object... keys ) {
+    private Object getItemTag( ItemStack item, Object... keys ) {
         try {
             return getTag( getCompound( item ), keys );
         } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
@@ -478,7 +478,7 @@ public final class NBTEditor {
     }
 
     // Gets the NBTTagCompound
-    private static Object getCompound( ItemStack item ) {
+    private Object getCompound( ItemStack item ) {
         if ( item == null ) {
             return null;
         }
@@ -511,7 +511,7 @@ public final class NBTEditor {
      * @return
      * An NBTCompound
      */
-    private static NBTCompound getItemNBTTag( ItemStack item, Object... keys ) {
+    private NBTCompound getItemNBTTag( ItemStack item, Object... keys ) {
         if ( item == null ) {
             return null;
         }
@@ -543,7 +543,7 @@ public final class NBTEditor {
      * @return
      * A new ItemStack with the updated NBT tags
      */
-    private static ItemStack setItemTag( ItemStack item, Object value, Object... keys ) {
+    private ItemStack setItemTag( ItemStack item, Object value, Object... keys ) {
         if ( item == null ) {
             return null;
         }
@@ -580,7 +580,7 @@ public final class NBTEditor {
      * @return
      * A new ItemStack
      */
-    public static ItemStack getItemFromTag( NBTCompound compound ) {
+    public ItemStack getItemFromTag( NBTCompound compound ) {
         if ( compound == null ) {
             return null;
         }
@@ -612,7 +612,7 @@ public final class NBTEditor {
      * @return
      * The item represented by the keys, and an integer if it is showing how long a list is.
      */
-    private static Object getEntityTag( Entity entity, Object... keys ) {
+    private Object getEntityTag( Entity entity, Object... keys ) {
         try {
             return getTag( getCompound( entity ), keys );
         } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
@@ -622,7 +622,7 @@ public final class NBTEditor {
     }
 
     // Gets the NBTTagCompound
-    private static Object getCompound( Entity entity ) {
+    private Object getCompound( Entity entity ) {
         if ( entity == null ) {
             return entity;
         }
@@ -650,7 +650,7 @@ public final class NBTEditor {
      * @return
      * An NBTCompound
      */
-    private static NBTCompound getEntityNBTTag( Entity entity, Object...keys ) {
+    private NBTCompound getEntityNBTTag( Entity entity, Object...keys ) {
         if ( entity == null ) {
             return null;
         }
@@ -679,7 +679,7 @@ public final class NBTEditor {
      * @param keys
      * The keys to set, String for NBTCompound, int or null for an NBTTagList
      */
-    private static void setEntityTag( Entity entity, Object value, Object... keys ) {
+    private void setEntityTag( Entity entity, Object value, Object... keys ) {
         if ( entity == null ) {
             return;
         }
@@ -714,7 +714,7 @@ public final class NBTEditor {
      * @return
      * The item represented by the keys, and an integer if it is showing how long a list is.
      */
-    private static Object getBlockTag( Block block, Object... keys ) {
+    private Object getBlockTag( Block block, Object... keys ) {
         try {
             return getTag( getCompound( block ), keys );
         } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
@@ -724,7 +724,7 @@ public final class NBTEditor {
     }
 
     // Gets the NBTTagCompound
-    private static Object getCompound( Block block ) {
+    private Object getCompound( Block block ) {
         try {
             if ( block == null || !getNMSClass( "CraftBlockState" ).isInstance( block.getState() ) ) {
                 return null;
@@ -758,7 +758,7 @@ public final class NBTEditor {
      * @return
      * An NBTCompound
      */
-    private static NBTCompound getBlockNBTTag( Block block, Object... keys ) {
+    private NBTCompound getBlockNBTTag( Block block, Object... keys ) {
         try {
             if ( block == null || !getNMSClass( "CraftBlockState" ).isInstance( block.getState() ) ) {
                 return null;
@@ -793,7 +793,7 @@ public final class NBTEditor {
      * @param keys
      * The keys to set, String for NBTCompound, int or null for an NBTTagList
      */
-    private static void setBlockTag( Block block, Object value, Object... keys ) {
+    private void setBlockTag( Block block, Object value, Object... keys ) {
         try {
             if ( block == null || !getNMSClass( "CraftBlockState" ).isInstance( block.getState() ) ) {
                 return;
@@ -835,7 +835,7 @@ public final class NBTEditor {
      * @param texture
      * The URL of the skin
      */
-    public static void setSkullTexture( Block block, String texture ) {
+    public void setSkullTexture( Block block, String texture ) {
         try {
             Object profile = getConstructor( getNMSClass( "GameProfile" ) ).newInstance( UUID.randomUUID(), null );
             Object propertyMap = getMethod( "getProperties" ).invoke( profile );
@@ -856,7 +856,7 @@ public final class NBTEditor {
         }
     }
 
-    private static Object getValue( Object object, Object... keys ) {
+    private Object getValue( Object object, Object... keys ) {
         if ( object instanceof ItemStack ) {
             return getItemTag( ( ItemStack ) object, keys );
         } else if ( object instanceof Entity ) {
@@ -885,7 +885,7 @@ public final class NBTEditor {
      * @return
      * An NBTCompound, or null if none is stored at the provided location
      */
-    public static NBTCompound getNBTCompound( Object object, Object... keys ) {
+    public NBTCompound getNBTCompound( Object object, Object... keys ) {
         if ( object instanceof ItemStack ) {
             return getItemNBTTag( ( ItemStack ) object, keys );
         } else if ( object instanceof Entity ) {
@@ -921,7 +921,7 @@ public final class NBTEditor {
      * @return
      * A string, or null if none is stored at the provided location
      */
-    public static String getString( Object object, Object... keys ) {
+    public String getString( Object object, Object... keys ) {
         Object result = getValue( object, keys );
         return result instanceof String ? ( String ) result : null;
     }
@@ -936,7 +936,7 @@ public final class NBTEditor {
      * @return
      * An integer, or 0 if none is stored at the provided location
      */
-    public static int getInt( Object object, Object... keys ) {
+    public int getInt( Object object, Object... keys ) {
         Object result = getValue( object, keys );
         return result instanceof Integer ? ( int ) result : 0;
     }
@@ -951,7 +951,7 @@ public final class NBTEditor {
      * @return
      * A double, or 0 if none is stored at the provided location
      */
-    public static double getDouble( Object object, Object... keys ) {
+    public double getDouble( Object object, Object... keys ) {
         Object result = getValue( object, keys );
         return result instanceof Double ? ( double ) result : 0;
     }
@@ -966,7 +966,7 @@ public final class NBTEditor {
      * @return
      * A long, or 0 if none is stored at the provided location
      */
-    public static long getLong( Object object, Object... keys ) {
+    public long getLong( Object object, Object... keys ) {
         Object result = getValue( object, keys );
         return result instanceof Long ? ( long ) result : 0;
     }
@@ -981,7 +981,7 @@ public final class NBTEditor {
      * @return
      * A float, or 0 if none is stored at the provided location
      */
-    public static float getFloat( Object object, Object... keys ) {
+    public float getFloat( Object object, Object... keys ) {
         Object result = getValue( object, keys );
         return result instanceof Float ? ( float ) result : 0;
     }
@@ -996,7 +996,7 @@ public final class NBTEditor {
      * @return
      * A short, or 0 if none is stored at the provided location
      */
-    public static short getShort( Object object, Object... keys ) {
+    public short getShort( Object object, Object... keys ) {
         Object result = getValue( object, keys );
         return result instanceof Short ? ( short ) result : 0;
     }
@@ -1011,7 +1011,7 @@ public final class NBTEditor {
      * @return
      * A byte, or 0 if none is stored at the provided location
      */
-    public static byte getByte( Object object, Object... keys ) {
+    public byte getByte( Object object, Object... keys ) {
         Object result = getValue( object, keys );
         return result instanceof Byte ? ( byte ) result : 0;
     }
@@ -1026,7 +1026,7 @@ public final class NBTEditor {
      * @return
      * A boolean or false if none is stored at the provided location
      */
-    public static boolean getBoolean( Object object, Object... keys ) {
+    public boolean getBoolean( Object object, Object... keys ) {
         return getByte( object, keys ) == 1;
     }
 
@@ -1040,7 +1040,7 @@ public final class NBTEditor {
      * @return
      * A byte array, or null if none is stored at the provided location
      */
-    public static byte[] getByteArray( Object object, Object... keys ) {
+    public byte[] getByteArray( Object object, Object... keys ) {
         Object result = getValue( object, keys );
         return result instanceof byte[] ? ( byte[] ) result : null;
     }
@@ -1055,7 +1055,7 @@ public final class NBTEditor {
      * @return
      * An int array, or null if none is stored at the provided location
      */
-    public static int[] getIntArray( Object object, Object... keys ) {
+    public int[] getIntArray( Object object, Object... keys ) {
         Object result = getValue( object, keys );
         return result instanceof int[] ? ( int[] ) result : null;
     }
@@ -1070,7 +1070,7 @@ public final class NBTEditor {
      * @return
      * Whether or not the particular tag exists, may not be a primitive
      */
-    public static boolean contains( Object object, Object... keys ) {
+    public boolean contains( Object object, Object... keys ) {
         Object result = getValue( object, keys );
         return result != null;
     }
@@ -1085,7 +1085,7 @@ public final class NBTEditor {
      * @return
      * A set of keys
      */
-    public static Collection< String > getKeys( Object object, Object... keys ) {
+    public Collection< String > getKeys( Object object, Object... keys ) {
         Object compound;
         if ( object instanceof ItemStack ) {
             compound = getCompound( ( ItemStack ) object );
@@ -1126,7 +1126,7 @@ public final class NBTEditor {
      * @return
      * The size of the list or compound at the given location.
      */
-    public static int getSize( Object object, Object... keys ) {
+    public int getSize( Object object, Object... keys ) {
         Object compound;
         if ( object instanceof ItemStack ) {
             compound = getCompound( ( ItemStack ) object );
@@ -1169,7 +1169,7 @@ public final class NBTEditor {
      * @return
      * The new item stack if the object provided is an item, else original object
      */
-    public static < T > T set( T object, Object value, Object... keys ) {
+    public < T > T set( T object, Object value, Object... keys ) {
         if ( object instanceof ItemStack ) {
             return ( T ) setItemTag( ( ItemStack ) object, value, keys );
         } else if ( object instanceof Entity ) {
@@ -1196,7 +1196,7 @@ public final class NBTEditor {
      * @return
      * An NBTCompound from the String provided. May or may not be a valid ItemStack.
      */
-    public static NBTCompound getNBTCompound( String json ) {
+    public NBTCompound getNBTCompound( String json ) {
         return NBTCompound.fromJson( json );
     }
 
@@ -1206,7 +1206,7 @@ public final class NBTEditor {
      * @return
      * A new NBTCompound that contains a NBTTagCompound object.
      */
-    public static NBTCompound getEmptyNBTCompound() {
+    public NBTCompound getEmptyNBTCompound() {
         try {
             return new NBTCompound( getNMSClass( "NBTTagCompound" ).newInstance() );
         } catch ( InstantiationException | IllegalAccessException e ) {
@@ -1215,7 +1215,7 @@ public final class NBTEditor {
         }
     }
 
-    private static void setTag( Object tag, Object value, Object... keys ) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    private void setTag( Object tag, Object value, Object... keys ) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Object notCompound;
         // Get the real value of what we want to set here
         if ( value != null ) {
@@ -1297,7 +1297,7 @@ public final class NBTEditor {
         }
     }
 
-    private static NBTCompound getNBTTag( Object tag, Object...keys ) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    private NBTCompound getNBTTag( Object tag, Object...keys ) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Object compound = tag;
 
         for ( Object key : keys ) {
@@ -1312,7 +1312,7 @@ public final class NBTEditor {
         return new NBTCompound( compound );
     }
 
-    private static Object getTag( Object tag, Object... keys ) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    private Object getTag( Object tag, Object... keys ) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         if ( keys.length == 0 ) {
             return getTags( tag );
         }
@@ -1342,7 +1342,7 @@ public final class NBTEditor {
     }
 
     @SuppressWarnings( "unchecked" )
-    private static Object getTags( Object tag ) {
+    private Object getTags( Object tag ) {
         Map< Object, Object > tags = new HashMap< Object, Object >();
         try {
             if ( getNMSClass( "NBTTagCompound" ).isInstance( tag ) ) {
@@ -1385,7 +1385,7 @@ public final class NBTEditor {
 
         public void set( Object value, Object... keys ) {
             try {
-                setTag( tag, value, keys );
+                new NBT_1_13().setTag( tag, value, keys );
             } catch ( Exception e ) {
                 e.printStackTrace();
             }
@@ -1401,9 +1401,9 @@ public final class NBTEditor {
             return tag.toString();
         }
 
-        public static NBTCompound fromJson( String json ) {
+        public static NBTCompound fromJson(String json) {
             try {
-                return new NBTCompound( getMethod( "loadNBTTagCompound" ).invoke( null, json ) );
+                return new NBTCompound( new NBT_1_13().getMethod( "loadNBTTagCompound" ).invoke( null, json ) );
             } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
                 e.printStackTrace();
                 return null;
@@ -1474,7 +1474,7 @@ public final class NBTEditor {
             return order <= other.order;
         }
 
-        public static MinecraftVersion get( String v ) {
+        public static MinecraftVersion get(String v) {
             for ( MinecraftVersion k : MinecraftVersion.values() ) {
                 if ( v.contains( k.key ) ) {
                     return k;

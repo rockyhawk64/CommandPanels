@@ -29,8 +29,10 @@ import me.rockyhawk.commandpanels.interactives.Commandpanelrefresher;
 import me.rockyhawk.commandpanels.interactives.OpenOnJoin;
 import me.rockyhawk.commandpanels.ioclasses.Sequence_1_13;
 import me.rockyhawk.commandpanels.ioclasses.Sequence_1_14;
-import me.rockyhawk.commandpanels.legacy.LegacyVersion;
-import me.rockyhawk.commandpanels.legacy.PlayerHeads;
+import me.rockyhawk.commandpanels.ioclasses.nbt.NBTManager;
+import me.rockyhawk.commandpanels.ioclasses.legacy.LegacyVersion;
+import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
+import me.rockyhawk.commandpanels.ioclasses.legacy.PlayerHeads;
 import me.rockyhawk.commandpanels.openpanelsmanager.OpenGUI;
 import me.rockyhawk.commandpanels.openpanelsmanager.OpenPanelsLoader;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPermissions;
@@ -97,6 +99,7 @@ public class CommandPanels extends JavaPlugin{
     public OpenGUI createGUI = new OpenGUI(this);
     public PanelPermissions panelPerms = new PanelPermissions(this);
     public HotbarItemLoader hotbar = new HotbarItemLoader(this);
+    public NBTManager nbt = new NBTManager(this);
 
     public File panelsf;
     public YamlConfiguration blockConfig; //where panel block locations are stored
@@ -203,7 +206,7 @@ public class CommandPanels extends JavaPlugin{
             try {
                 FileConfiguration exampleFileConfiguration;
                 FileConfiguration templateFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("template.yml")));
-                if(legacy.isLegacy()){
+                if(legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                     exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("exampleLegacy.yml")));
                 }else {
                     exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example.yml")));
@@ -446,7 +449,7 @@ public class CommandPanels extends JavaPlugin{
 
     public Reader getReaderFromStream(InputStream initialStream) throws IOException {
         //this reads the encrypted resource files in the jar file
-        if(Bukkit.getVersion().contains("1.13") || legacy.isLegacy()){
+        if(legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_13)){
             return new Sequence_1_13(this).getReaderFromStream(initialStream);
         }else{
             return new Sequence_1_14(this).getReaderFromStream(initialStream);

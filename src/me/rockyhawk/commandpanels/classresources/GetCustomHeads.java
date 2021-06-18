@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -43,7 +44,7 @@ public class GetCustomHeads {
     @SuppressWarnings("deprecation")
     public ItemStack getPlayerHead(String name) {
         byte id = 0;
-        if(plugin.legacy.isLegacy()){
+        if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
             id = 3;
         }
         ItemStack itemStack = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1,id);
@@ -63,7 +64,7 @@ public class GetCustomHeads {
         } else {
             propertyMap.put("textures", new Property("textures", b64stringtexture));
             byte id = 0;
-            if(plugin.legacy.isLegacy()){
+            if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
                 id = 3;
             }
             ItemStack head = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1,id);

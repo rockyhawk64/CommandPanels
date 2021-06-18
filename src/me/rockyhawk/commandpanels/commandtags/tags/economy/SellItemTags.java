@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.commandtags.tags.economy;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
+import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -81,7 +82,7 @@ public class SellItemTags implements Listener {
                 }
                 //legacy ID
                 byte id = -1;
-                if(plugin.legacy.isLegacy()) {
+                if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
                     for (String argsTemp : args) {
                         if (argsTemp.startsWith("id:")) {
                             id = Byte.parseByte(argsTemp.replace("id:", ""));

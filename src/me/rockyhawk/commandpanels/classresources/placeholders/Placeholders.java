@@ -4,6 +4,7 @@ import com.bencodez.votingplugin.user.UserManager;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -92,7 +93,7 @@ public class Placeholders {
                 String material;
                 try {
                     material = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().toString();
-                    if (plugin.legacy.isLegacy()) {
+                    if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
                         //add the ID to the end if it is legacy (eg, material:id)
                         material = material + ":" + p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().getId();
                     }
@@ -150,7 +151,7 @@ public class Placeholders {
                 boolean damaged = false;
                 ItemStack itm = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber));
                 try {
-                    if(plugin.legacy.isLegacy()){
+                    if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
                         if(itm.getType().getMaxDurability() != 0) {
                             damaged = (itm.getType().getMaxDurability() - itm.getDurability()) < itm.getType().getMaxDurability();
                         }

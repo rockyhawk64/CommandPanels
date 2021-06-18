@@ -1,4 +1,4 @@
-package me.rockyhawk.commandpanels.legacy;
+package me.rockyhawk.commandpanels.ioclasses.legacy;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 
@@ -13,7 +13,7 @@ public class PlayerHeads {
     }
 
     public String playerHeadString() {
-        if(plugin.legacy.isLegacy()){
+        if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
             return "SKULL_ITEM";
         }else{
             return "PLAYER_HEAD";

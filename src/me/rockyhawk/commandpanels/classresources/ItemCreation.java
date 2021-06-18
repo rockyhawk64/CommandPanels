@@ -4,7 +4,7 @@ import com.jojodmo.customitems.api.CustomItemsAPI;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
+import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
 import net.Indyuce.mmoitems.manager.ItemManager;
@@ -85,7 +85,7 @@ public class ItemCreation {
             if (matraw.split("\\s")[0].equalsIgnoreCase("cps=") || matraw.split("\\s")[0].toLowerCase().equals("cpo=")) {
                 skullname = p.getUniqueId().toString();
                 mat = plugin.getHeads.playerHeadString();
-                if(plugin.legacy.isLegacy()){
+                if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                     id = 3;
                 }
             }
@@ -93,7 +93,7 @@ public class ItemCreation {
             if (matraw.split("\\s")[0].equalsIgnoreCase("hdb=")) {
                 skullname = "hdb";
                 mat = plugin.getHeads.playerHeadString();
-                if(plugin.legacy.isLegacy()){
+                if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                     id = 3;
                 }
             }
@@ -143,7 +143,7 @@ public class ItemCreation {
                     if (matraw.split("\\s")[1].equalsIgnoreCase("self")) {
                         //if cps= self
                         meta = (SkullMeta) s.getItemMeta();
-                        if(!plugin.legacy.isLegacy()) {
+                        if(!plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                             try {
                                 assert meta != null;
                                 meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(skullname)));
@@ -204,7 +204,7 @@ public class ItemCreation {
             }
 
             if(addNBT){
-                s = NBTEditor.set(s,"CommandPanels","CommandPanels");
+                s = plugin.nbt.setNBT(s);
             }
 
             if (itemSection.contains("map")) {
@@ -333,7 +333,7 @@ public class ItemCreation {
             if (itemSection.contains("damage")) {
                 //change the damage amount (placeholders accepted)
                 //if the damage is not unbreakable and should be a value
-                if (plugin.legacy.isLegacy()) {
+                if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                     try {
                         s.setDurability(Short.parseShort(Objects.requireNonNull(plugin.tex.papi(panel,p, itemSection.getString("damage")))));
                     } catch (Exception e) {
@@ -500,7 +500,7 @@ public class ItemCreation {
                         }
                     }
                 }
-                if(plugin.legacy.isLegacy()){
+                if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                     if (cont.getDurability() != 0 && !cont.getType().toString().equals("SKULL_ITEM")) {
                         file.set("panels." + panelName + ".item." + i + ".ID", cont.getDurability());
                     }
@@ -519,7 +519,7 @@ public class ItemCreation {
                 if(plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
                     if(!Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("%") && !Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("=")) {
                         SkullMeta meta = (SkullMeta) cont.getItemMeta();
-                        if (plugin.customHeads.getHeadBase64(cont) != null && !plugin.legacy.isLegacy()) {
+                        if (plugin.customHeads.getHeadBase64(cont) != null && !plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                             //inject base64 here, disable for legacy as is not working
                             file.set("panels." + panelName + ".item." + i + ".material", "cps= " + plugin.customHeads.getHeadBase64(cont));
                         } else if (meta.hasOwner()) {
@@ -581,7 +581,7 @@ public class ItemCreation {
         }catch(Exception ignore){}
         //check for damage
         try {
-            if(plugin.legacy.isLegacy()){
+            if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                 if(one.getDurability() != two.getDurability()) {
                     return false;
                 }

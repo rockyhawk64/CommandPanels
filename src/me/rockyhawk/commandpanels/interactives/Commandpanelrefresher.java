@@ -3,7 +3,7 @@ package me.rockyhawk.commandpanels.interactives;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
-import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
+import me.rockyhawk.commandpanels.ioclasses.nbt.NBT_1_13;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -112,7 +112,7 @@ public class Commandpanelrefresher implements Listener {
                     p.updateInventory();
                     for(ItemStack itm : p.getInventory().getContents()){
                         if(itm != null){
-                            if (NBTEditor.contains(itm, "CommandPanels")) {
+                            if (plugin.nbt.hasNBT(itm)) {
                                 p.getInventory().remove(itm);
                             }
                         }

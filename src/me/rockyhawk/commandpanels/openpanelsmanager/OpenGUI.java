@@ -2,7 +2,7 @@ package me.rockyhawk.commandpanels.openpanelsmanager;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.ioclasses.NBTEditor;
+import me.rockyhawk.commandpanels.ioclasses.nbt.NBT_1_13;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -138,7 +138,7 @@ public class OpenGUI {
                             empty = plugin.itemCreate.makeItemFromConfig(panel,pconfig.getConfigurationSection("custom-item." + pconfig.getString("empty")),p,true,true,true);
                         }else{
                             empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(pconfig.getString("empty").toUpperCase())), 1,id);
-                            empty = NBTEditor.set(empty,"CommandPanels","CommandPanels");
+                            empty = plugin.nbt.setNBT(empty);
                             ItemMeta renamedMeta = empty.getItemMeta();
                             assert renamedMeta != null;
                             renamedMeta.setDisplayName(" ");
