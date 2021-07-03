@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.openwithitem;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -63,7 +64,11 @@ public class HotbarItemLoader {
 
     //return true if found
     public boolean itemCheckExecute(ItemStack invItem, Player p, boolean openPanel, boolean stationaryOnly){
-        if(plugin.nbt.getNBT(invItem,"CommandPanelsHotbar") == null){
+        try {
+            if (plugin.nbt.getNBT(invItem, "CommandPanelsHotbar") == null) {
+                return false;
+            }
+        }catch(NullPointerException nu){
             return false;
         }
         for(Panel panel : plugin.panelList) {
