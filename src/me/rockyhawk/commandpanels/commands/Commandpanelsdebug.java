@@ -20,27 +20,27 @@ public class Commandpanelsdebug implements CommandExecutor {
                     //command /cpd
                     if(!(sender instanceof Player)) {
                         plugin.debug.consoleDebug = !plugin.debug.consoleDebug;
-                        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.GREEN + "Global Debug Mode: " + plugin.debug.consoleDebug));
+                        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.GREEN + "Global Debug Mode: " + plugin.debug.consoleDebug));
                         return true;
                     }
 
                     Player p = (Player)sender;
                     if(plugin.debug.isEnabled(p)){
                         plugin.debug.debugSet.remove(p);
-                        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.GREEN + "Personal Debug Mode Disabled!"));
+                        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.GREEN + "Personal Debug Mode Disabled!"));
                     }else{
                         plugin.debug.debugSet.add(p);
-                        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.GREEN + "Personal Debug Mode Enabled!"));
+                        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.GREEN + "Personal Debug Mode Enabled!"));
                     }
                 }else{
-                    sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Usage: /cpd"));
+                    sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cpd"));
                 }
             }else{
-                sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
             }
             return true;
         }
-        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Usage: /cpd"));
+        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cpd"));
         return true;
     }
 }

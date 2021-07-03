@@ -28,8 +28,8 @@ public class OpenEditorGuis {
         ArrayList<ItemStack> panelItems = new ArrayList<>(); //all panels from ALL files (panel materials)
         try {
             for(Panel panel : plugin.panelList) { //will loop through all the files in folder
-                panelNames.add(plugin.tex.papi(panel.getName()));
-                panelTitles.add(plugin.tex.papi(panel.getConfig().getString("title")));
+                panelNames.add(plugin.tex.colour(panel.getName()));
+                panelTitles.add(plugin.tex.colour(panel.getConfig().getString("title")));
                 if (panel.getConfig().contains("open-with-item.material")) {
                     panelItems.add(panel.getHotbarItem(p));
                 } else {

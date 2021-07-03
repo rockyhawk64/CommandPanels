@@ -2,7 +2,6 @@ package me.rockyhawk.commandpanels.openpanelsmanager;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.ioclasses.nbt.NBT_1_13;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -28,7 +27,7 @@ public class OpenGUI {
         String title;
         if (onOpen != 3) {
             //regular inventory
-            title = plugin.tex.papi(panel,p,pconfig.getString("title"));
+            title = plugin.tex.placeholders(panel,p,pconfig.getString("title"));
         } else {
             //editor inventory
             title = "Editing Panel: " + panel.getName();
@@ -111,7 +110,7 @@ public class OpenGUI {
             } catch (ArrayIndexOutOfBoundsException var24) {
                 plugin.debug(var24,p);
                 if (plugin.debug.isEnabled(p)) {
-                    p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!"));
+                    p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!"));
                     p.closeInventory();
                     plugin.openPanels.closePanelForLoader(p.getName());
                 }
@@ -149,7 +148,7 @@ public class OpenGUI {
                         }
                     } catch (IllegalArgumentException | NullPointerException var26) {
                         plugin.debug(var26,p);
-                        p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " empty: " + pconfig.getString("empty")));
+                        p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " empty: " + pconfig.getString("empty")));
                         p.closeInventory();
                         plugin.openPanels.closePanelForLoader(p.getName());
                         return null;

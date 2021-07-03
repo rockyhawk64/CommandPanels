@@ -42,14 +42,14 @@ public class Commandpanelsreload implements CommandExecutor {
                     registerCommands();
                 }
 
-                plugin.tag = plugin.tex.papi(plugin.config.getString("config.format.tag") + " ");
-                sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.reload")));
+                plugin.tag = plugin.tex.colour(plugin.config.getString("config.format.tag") + " ");
+                sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.reload")));
             }else{
-                sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
             }
             return true;
         }
-        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Usage: /cpr"));
+        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cpr"));
         return true;
     }
 

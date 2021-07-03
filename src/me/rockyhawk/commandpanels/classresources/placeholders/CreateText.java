@@ -15,22 +15,29 @@ public class CreateText {
         this.plugin = pl;
     }
 
+    //CommandPanels send message function with all placeholders
+    public void sendMessage(Panel panel, Player p, String message){
+        if(!message.equals("")) {
+            p.sendMessage(placeholders(panel, p,plugin.tag + message));
+        }
+    }
+
     //CommandPanels send message function
     public void sendMessage(Player p, String message){
         if(!message.equals("")) {
-            p.sendMessage(papi(plugin.tag + message));
+            p.sendMessage(colour(plugin.tag + message));
         }
     }
 
     //CommandPanels send message function without the tag
     public void sendString(Player p, String message){
         if(!message.equals("")) {
-            p.sendMessage(papi(message));
+            p.sendMessage(colour(message));
         }
     }
 
     //papi except if it is a String List
-    public List<String> papiNoColour(Panel panel, Player p, List<String> setpapi) {
+    public List<String> placeholdersNoColour(Panel panel, Player p, List<String> setpapi) {
         try {
             int tempInt = 0;
             for (String temp : setpapi) {
@@ -49,7 +56,7 @@ public class CreateText {
     }
 
     //papi except if it is a String List
-    public List<String> papi(Panel panel, Player p, List<String> setpapi, boolean placeholder) {
+    public List<String> placeholdersList(Panel panel, Player p, List<String> setpapi, boolean placeholder) {
         try {
             if(placeholder) {
                 int tempInt = 0;
@@ -79,7 +86,7 @@ public class CreateText {
     }
 
     //regular string papi, but only colours so Player doesn't need to be there
-    public String papi(String setpapi) {
+    public String colour(String setpapi) {
         try {
             setpapi = plugin.hex.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
             return setpapi;
@@ -89,7 +96,7 @@ public class CreateText {
     }
 
     //string papi with no colours
-    public String papiNoColour(Panel panel, Player p, String setpapi) {
+    public String placeholdersNoColour(Panel panel, Player p, String setpapi) {
         try {
             setpapi = plugin.placeholders.setCpPlaceholders(panel, p,setpapi);
             if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -103,7 +110,7 @@ public class CreateText {
     }
 
     //regular string papi
-    public String papi(Panel panel, Player p, String setpapi) {
+    public String placeholders(Panel panel, Player p, String setpapi) {
         try {
             setpapi = plugin.placeholders.setCpPlaceholders(panel, p,setpapi);
             if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {

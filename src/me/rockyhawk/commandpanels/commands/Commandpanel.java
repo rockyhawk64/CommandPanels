@@ -32,7 +32,7 @@ public class Commandpanel implements CommandExecutor {
             return true;
         }
         if(panel == null){
-            sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.nopanel")));
+            sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.nopanel")));
             return true;
         }
         boolean disableCommand = false;
@@ -52,18 +52,18 @@ public class Commandpanel implements CommandExecutor {
                             plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.copy(), true);
                         }
                     }else{
-                        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Usage: /cp <panel> [item] [player]"));
+                        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cp <panel> [item] [player]"));
                     }
                     return true;
                 }else if(args.length == 3){
                     if (args[1].equals("item")) {
-                        plugin.openVoids.giveHotbarItem(sender,plugin.getServer().getPlayer(args[2]),panel.getConfig(),true);
+                        plugin.openVoids.giveHotbarItem(sender,plugin.getServer().getPlayer(args[2]),panel,true);
                     }else{
-                        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Usage: /cp <panel> item [player]"));
+                        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cp <panel> item [player]"));
                     }
                     return true;
                 } else {
-                    sender.sendMessage(plugin.tex.papi( plugin.tag + ChatColor.RED + "Please execute command directed to a Player!"));
+                    sender.sendMessage(plugin.tex.colour( plugin.tag + ChatColor.RED + "Please execute command directed to a Player!"));
                     return true;
                 }
             }else{
@@ -77,7 +77,7 @@ public class Commandpanel implements CommandExecutor {
                     return true;
                 }else if(args.length == 2){
                     if (args[1].equals("item")) {
-                        plugin.openVoids.giveHotbarItem(sender, p, panel.getConfig(), false);
+                        plugin.openVoids.giveHotbarItem(sender, p, panel, false);
                     }else{
                         if(!disableCommand) {
                             plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.copy(), true);
@@ -85,12 +85,12 @@ public class Commandpanel implements CommandExecutor {
                     }
                     return true;
                 }else if(args.length == 3){
-                    plugin.openVoids.giveHotbarItem(sender, plugin.getServer().getPlayer(args[2]), panel.getConfig(),true);
+                    plugin.openVoids.giveHotbarItem(sender, plugin.getServer().getPlayer(args[2]), panel,true);
                     return true;
                 }
             }
         }
-        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Usage: /cp <panel> [player:item] [player]"));
+        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cp <panel> [player:item] [player]"));
         return true;
     }
 }

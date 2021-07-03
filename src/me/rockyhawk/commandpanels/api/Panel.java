@@ -79,7 +79,8 @@ public class Panel{
 
     public ItemStack getHotbarItem(Player p){
         ConfigurationSection itemSection = panelConfig.getConfigurationSection("open-with-item");
-        return plugin.itemCreate.makeItemFromConfig(this,itemSection, p, true, true, false);
+        ItemStack s = plugin.itemCreate.makeItemFromConfig(this,itemSection, p, true, true, false);
+        return plugin.nbt.setNBT(s,"CommandPanelsHotbar",panelName);
     }
 
     public boolean hasHotbarItem(){

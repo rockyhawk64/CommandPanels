@@ -21,16 +21,16 @@ public class CpIngameEditCommand implements CommandExecutor {
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(!sender.hasPermission("commandpanel.edit")){
-            sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+            sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
             return true;
         }
         if(Objects.requireNonNull(plugin.config.getString("config.ingame-editor")).equalsIgnoreCase("false")){
             //this will cancel every /cpe command if ingame-editor is set to false
-            sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Editor disabled!"));
+            sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Editor disabled!"));
             return true;
         }
         if(!(sender instanceof Player)) {
-            sender.sendMessage(plugin.tex.papi( plugin.tag + ChatColor.RED + "Please execute command as a Player!"));
+            sender.sendMessage(plugin.tex.colour( plugin.tag + ChatColor.RED + "Please execute command as a Player!"));
             return true;
         }
         Player p = (Player)sender;
@@ -48,7 +48,7 @@ public class CpIngameEditCommand implements CommandExecutor {
             plugin.editorGuis.openEditorGui(p,0);
             return true;
         }
-        sender.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + "Usage: /cpe <panel>"));
+        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cpe <panel>"));
         return true;
     }
 }

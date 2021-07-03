@@ -58,7 +58,7 @@ public class BasicTags implements Listener {
             } catch (Exception exc) {
                 e.p.setOp(isop);
                 plugin.debug(exc,e.p);
-                e.p.sendMessage(plugin.tag + plugin.tex.papi( plugin.config.getString("config.format.error") + " op=: Error in op command!"));
+                e.p.sendMessage(plugin.tag + plugin.tex.colour( plugin.config.getString("config.format.error") + " op=: Error in op command!"));
             }
             return;
         }

@@ -63,6 +63,9 @@ public class HotbarItemLoader {
 
     //return true if found
     public boolean itemCheckExecute(ItemStack invItem, Player p, boolean openPanel, boolean stationaryOnly){
+        if(plugin.nbt.getNBT(invItem,"CommandPanelsHotbar") == null){
+            return false;
+        }
         for(Panel panel : plugin.panelList) {
             if(stationaryOnly){
                 if(!panel.getConfig().contains("open-with-item.stationary")){
@@ -70,13 +73,7 @@ public class HotbarItemLoader {
                 }
             }
             if(panel.hasHotbarItem()){
-                ItemStack panelItem = panel.getHotbarItem(p);
-                if(invItem != null && panelItem != null) {
-                    panelItem.setAmount(invItem.getAmount());
-                }else{
-                    return false;
-                }
-                if(panelItem.isSimilar(invItem)){
+                if(plugin.nbt.getNBT(invItem,"CommandPanelsHotbar").equals(panel.getName())){
                     if(openPanel) {
                         //only open panel automatically if there are no commands and if world is not disabled
                         if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){

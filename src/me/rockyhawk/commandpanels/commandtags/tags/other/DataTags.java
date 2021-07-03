@@ -19,31 +19,31 @@ public class DataTags implements Listener {
         if(e.name.equalsIgnoreCase("set-data=")){
             e.commandTagUsed();
             if(e.args.length == 3){
-                plugin.panelData.setUserData(getOffline(e.args[2]),e.args[0],plugin.tex.papiNoColour(e.panel,e.p,e.args[1]),true);
+                plugin.panelData.setUserData(getOffline(e.args[2]),e.args[0],plugin.tex.placeholdersNoColour(e.panel,e.p,e.args[1]),true);
                 return;
             }
             //this will overwrite data. set-data= [data point] [data value] [optional player]
-            plugin.panelData.setUserData(e.p.getUniqueId(),e.args[0],plugin.tex.papiNoColour(e.panel,e.p,e.args[1]),true);
+            plugin.panelData.setUserData(e.p.getUniqueId(),e.args[0],plugin.tex.placeholdersNoColour(e.panel,e.p,e.args[1]),true);
             return;
         }
         if(e.name.equalsIgnoreCase("add-data=")){
             e.commandTagUsed();
             if(e.args.length == 3){
-                plugin.panelData.setUserData(getOffline(e.args[2]),e.args[0],plugin.tex.papiNoColour(e.panel,e.p,e.args[1]),false);
+                plugin.panelData.setUserData(getOffline(e.args[2]),e.args[0],plugin.tex.placeholdersNoColour(e.panel,e.p,e.args[1]),false);
                 return;
             }
             //this will not overwrite existing data. add-data= [data point] [data value] [optional player]
-            plugin.panelData.setUserData(e.p.getUniqueId(),e.args[0],plugin.tex.papiNoColour(e.panel,e.p,e.args[1]),false);
+            plugin.panelData.setUserData(e.p.getUniqueId(),e.args[0],plugin.tex.placeholdersNoColour(e.panel,e.p,e.args[1]),false);
             return;
         }
         if(e.name.equalsIgnoreCase("math-data=")){
             e.commandTagUsed();
             if(e.args.length == 3){
-                plugin.panelData.doDataMath(getOffline(e.args[2]),e.args[0],plugin.tex.papiNoColour(e.panel,e.p,e.args[1]));
+                plugin.panelData.doDataMath(getOffline(e.args[2]),e.args[0],plugin.tex.placeholdersNoColour(e.panel,e.p,e.args[1]));
                 return;
             }
             //only works if data is number, goes math-data= [data point] [operator:number] [optional player] eg, math-data= -1 OR /3
-            plugin.panelData.doDataMath(e.p.getUniqueId(),e.args[0],plugin.tex.papiNoColour(e.panel,e.p,e.args[1]));
+            plugin.panelData.doDataMath(e.p.getUniqueId(),e.args[0],plugin.tex.placeholdersNoColour(e.panel,e.p,e.args[1]));
             return;
         }
         if(e.name.equalsIgnoreCase("clear-data=")){

@@ -10,11 +10,12 @@ public class NBTManager {
         this.plugin = pl;
     }
 
+    //commandpanel item NBT
     public boolean hasNBT(ItemStack item){
         if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_13)){
             return new NBT_1_13().contains(item, "CommandPanelsItem");
         }else{
-            return new NBT_1_14(plugin).hasNBT(item);
+            return new NBT_1_14(plugin).hasNBT(item,"CommandPanelsItem");
         }
     }
 
@@ -22,7 +23,28 @@ public class NBTManager {
         if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_13)){
             return new NBT_1_13().set(item,1,"CommandPanelsItem");
         }else{
-            return new NBT_1_14(plugin).addNBT(item);
+            return new NBT_1_14(plugin).addNBT(item,"CommandPanelsItem","1");
+        }
+    }
+
+    //custom key NBT
+    public String getNBT(ItemStack item, String key){
+        String output = "";
+        if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_13)){
+            try{
+                output = new NBT_1_13().getString(item, key);
+            }catch(NullPointerException ignore){}
+        }else{
+            output = new NBT_1_14(plugin).getNBT(item, key);
+        }
+        return output;
+    }
+
+    public ItemStack setNBT(ItemStack item, String key, String value){
+        if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_13)){
+            return new NBT_1_13().set(item,value,key);
+        }else{
+            return new NBT_1_14(plugin).addNBT(item,key,value);
         }
     }
 }

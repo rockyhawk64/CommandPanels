@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.interactives;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
-import me.rockyhawk.commandpanels.ioclasses.nbt.NBT_1_13;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,13 +21,13 @@ public class Commandpanelrefresher implements Listener {
     }
     @EventHandler
     public void onPanelOpen(PanelOpenedEvent e){ //Handles when Players open inventory
-        //I have to convert HumanEntity to a player
         if (plugin.config.contains("config.refresh-panels")) {
             if (Objects.requireNonNull(plugin.config.getString("config.refresh-panels")).trim().equalsIgnoreCase("false")) {
                 return;
             }
         }
 
+        //I have to convert HumanEntity to a player
         Player p = e.getPlayer();
         Panel pn = e.getPanel();
 

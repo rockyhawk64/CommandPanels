@@ -239,7 +239,7 @@ public class CommandPanels extends JavaPlugin{
         }));
 
         //get tag
-        tag = tex.papi(config.getString("config.format.tag") + " ");
+        tag = tex.colour(config.getString("config.format.tag") + " ");
 
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loaded!");
     }
@@ -261,10 +261,10 @@ public class CommandPanels extends JavaPlugin{
             ItemMeta renamedMeta = renamed.getItemMeta();
             //set cp placeholders
             if(usePlaceholders){
-                customName = tex.papiNoColour(panel,p,customName);
+                customName = tex.placeholdersNoColour(panel,p,customName);
             }
             if(useColours){
-                customName = tex.papi(customName);
+                customName = tex.colour(customName);
             }
 
             assert renamedMeta != null;
@@ -279,11 +279,11 @@ public class CommandPanels extends JavaPlugin{
             List<String> clore;
             if (lore != null) {
                 if(usePlaceholders && useColours){
-                    clore = tex.papi(panel, p, lore, true);
+                    clore = tex.placeholdersList(panel, p, lore, true);
                 }else if(usePlaceholders){
-                    clore = tex.papiNoColour(panel,p, lore);
+                    clore = tex.placeholdersNoColour(panel,p, lore);
                 }else if(useColours){
-                    clore = tex.papi(panel, p, lore, false);
+                    clore = tex.placeholdersList(panel, p, lore, false);
                 }else{
                     clore = lore;
                 }
@@ -328,7 +328,7 @@ public class CommandPanels extends JavaPlugin{
             ArrayList<String> opanelsTemp = new ArrayList<String>();
             for(String tempName : apanels){
                 if(opanelsTemp.contains(tempName)){
-                    sender.sendMessage(tex.papi(tag) + ChatColor.RED + " Error duplicate panel name: " + tempName);
+                    sender.sendMessage(tex.colour(tag) + ChatColor.RED + " Error duplicate panel name: " + tempName);
                     return false;
                 }
                 opanelsTemp.add(tempName);
@@ -392,7 +392,7 @@ public class CommandPanels extends JavaPlugin{
     }
 
     public void helpMessage(CommandSender p) {
-        p.sendMessage(tex.papi( tag + ChatColor.GREEN + "Commands:"));
+        p.sendMessage(tex.colour( tag + ChatColor.GREEN + "Commands:"));
         p.sendMessage(ChatColor.GOLD + "/cp <panel> [player:item] [player] " + ChatColor.WHITE + "Open a command panel.");
         if (p.hasPermission("commandpanel.reload")) {
             p.sendMessage(ChatColor.GOLD + "/cpr " + ChatColor.WHITE + "Reloads plugin config.");

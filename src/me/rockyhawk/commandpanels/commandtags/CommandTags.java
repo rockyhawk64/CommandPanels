@@ -30,7 +30,7 @@ public class CommandTags {
         CommandTagEvent tags = new CommandTagEvent(plugin,panel,p,commandRAW);
         Bukkit.getPluginManager().callEvent(tags);
         if(!tags.commandTagUsed){
-            Bukkit.dispatchCommand(p, plugin.tex.papi(panel,p,commandRAW.trim()));
+            Bukkit.dispatchCommand(p, plugin.tex.placeholders(panel,p,commandRAW.trim()));
         }
     }
 

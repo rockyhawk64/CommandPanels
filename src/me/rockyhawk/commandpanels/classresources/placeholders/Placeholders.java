@@ -37,7 +37,7 @@ public class Placeholders {
             List<String> inputMessages = new ArrayList<String>(plugin.config.getStringList("config.input-message"));
             for (String temp : inputMessages) {
                 temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(plugin.config.getString("config.input-cancel")));
-                p.sendMessage(plugin.tex.papi(panel,p, temp));
+                p.sendMessage(plugin.tex.placeholders(panel,p, temp));
             }
             return "cpc";
         }
@@ -50,7 +50,7 @@ public class Placeholders {
         str = str.replaceAll("%cp-player-y%", String.valueOf(Math.round(p.getLocation().getY())));
         str = str.replaceAll("%cp-player-z%", String.valueOf(Math.round(p.getLocation().getZ())));
         str = str.replaceAll("%cp-online-players%", Integer.toString(Bukkit.getServer().getOnlinePlayers().size()));
-        str = str.replaceAll("%cp-tag%", plugin.tex.papi(plugin.tag));
+        str = str.replaceAll("%cp-tag%", plugin.tex.colour(plugin.tag));
 
         //set custom placeholders to their values
         if(panel != null) {
@@ -80,6 +80,24 @@ public class Placeholders {
                 s.close();
             }catch (IOException ex){
                 str = str.replace(str.substring(start, end) + "%", "false");
+            }
+        }
+
+        //placeholder to check if an item has NBT %cp-nbt-slot:key%
+        while (str.contains("%cp-nbt-")) {
+            try {
+                int start = str.indexOf("%cp-nbt-");
+                int end = str.indexOf("%", str.indexOf("%cp-nbt-")+1);
+                String slot_key = str.substring(start, end).replace("%cp-nbt-", "").replace("%","");
+                String value;
+                value = plugin.nbt.getNBT(p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(slot_key.split(":")[0])),slot_key.split(":")[1]);
+                if(value == null){
+                    value = "empty";
+                }
+                str = str.replace(str.substring(start, end) + "%", value);
+            }catch (Exception ex){
+                plugin.debug(ex,p);
+                break;
             }
         }
 
@@ -283,7 +301,7 @@ public class Placeholders {
                 String playerLocation = str.substring(start, end).replace("%cp-player-online-", "");
                 Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
                 if (Integer.parseInt(playerLocation) > playerFind.length) {
-                    str = str.replace(str.substring(start, end) + "-find%", plugin.tex.papi(Objects.requireNonNull(plugin.config.getString("config.format.offline"))));
+                    str = str.replace(str.substring(start, end) + "-find%", plugin.tex.colour(Objects.requireNonNull(plugin.config.getString("config.format.offline"))));
                 } else {
                     str = str.replace(str.substring(start, end) + "-find%", playerFind[Integer.parseInt(playerLocation) - 1].getName());
                 }

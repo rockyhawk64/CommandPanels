@@ -43,12 +43,7 @@ public class UtilsOpenWithItem implements Listener {
             if (plugin.hotbar.stationaryExecute(e.getSlot(), p, true)) {
                 e.setCancelled(true);
                 p.updateInventory();
-                return;
             }
-        }
-        if (plugin.hotbar.itemCheckExecute(e.getCurrentItem(), p, false,true) || plugin.hotbar.itemCheckExecute(e.getCursor(), p, false,true) || plugin.hotbar.stationaryExecute(e.getHotbarButton(), p, false)) {
-            e.setCancelled(true);
-            p.updateInventory();
         }
     }
     @EventHandler

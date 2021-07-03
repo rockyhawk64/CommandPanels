@@ -7,11 +7,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,14 +31,14 @@ public class ExecuteOpenVoids {
             panel.setConfig(YamlConfiguration.loadConfiguration(panel.getFile()));
         }
         if (!sender.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))) {
-            sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+            sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
             return;
         }
         //if the sender has OTHER perms, or if sendOpenedMessage is false, implying it is not for another person
         if(sender.hasPermission("commandpanel.other") || !openForOtherUser) {
             //check for disabled worlds
             if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
-                sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
                 return;
             }
 
@@ -77,7 +75,7 @@ public class ExecuteOpenVoids {
                             }
                         }
                     }catch(Exception s){
-                        p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands-on-open: " + panel.getConfig().getString("commands-on-open")));
+                        p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands-on-open: " + panel.getConfig().getString("commands-on-open")));
                     }
                 }
 
@@ -87,66 +85,58 @@ public class ExecuteOpenVoids {
                         try {
                             p.playSound(p.getLocation(), Sound.valueOf(Objects.requireNonNull(panel.getConfig().getString("sound-on-open")).toUpperCase()), 1F, 1F);
                         } catch (Exception s) {
-                            p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "sound-on-open: " + panel.getConfig().getString("sound-on-open")));
+                            p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " " + "sound-on-open: " + panel.getConfig().getString("sound-on-open")));
                         }
                     }
                 }
 
                 if(openForOtherUser) {
-                    sender.sendMessage(plugin.tex.papi( plugin.tag + ChatColor.GREEN + "Panel Opened for " + p.getDisplayName()));
+                    sender.sendMessage(plugin.tex.colour( plugin.tag + ChatColor.GREEN + "Panel Opened for " + p.getDisplayName()));
                 }
             } catch (Exception r) {
                 plugin.debug(r,null);
-                sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error")));
+                sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error")));
                 plugin.openPanels.closePanelForLoader(p.getName());
                 p.closeInventory();
             }
         }else{
-            sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+            sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
         }
     }
 
     //this will give a hotbar item to a player
-    public void giveHotbarItem(CommandSender sender, Player p, ConfigurationSection cf, boolean sendGiveMessage){
-        if (sender.hasPermission("commandpanel.item." + cf.getString("perm")) && cf.contains("open-with-item")) {
+    public void giveHotbarItem(CommandSender sender, Player p, Panel panel, boolean sendGiveMessage){
+        if (sender.hasPermission("commandpanel.item." + panel.getConfig().getString("perm")) && panel.getConfig().contains("open-with-item")) {
             //check for disabled worlds
-            if(!plugin.panelPerms.isPanelWorldEnabled(p,cf)){
-                sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+            if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
+                sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
                 return;
             }
 
-            ItemStack s;
-            try {
-                s = plugin.itemCreate.makeItemFromConfig(null,Objects.requireNonNull(cf.getConfigurationSection("open-with-item")), p, false, true, false);
-            }catch(Exception n){
-                sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " open-with-item: material"));
-                return;
-            }
-            plugin.setName(null,s, cf.getString("open-with-item.name"), cf.getStringList("open-with-item.lore"),p,false, true, true);
             //if the sender has OTHER perms, or if sendGiveMessage is false, implying it is not for another person
             if(sender.hasPermission("commandpanel.other") || !sendGiveMessage) {
                 try {
-                    if(cf.contains("open-with-item.stationary")) {
-                        p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(cf.getString("open-with-item.stationary"))), s);
+                    if(panel.getConfig().contains("open-with-item.stationary")) {
+                        p.getInventory().setItem(Integer.parseInt(Objects.requireNonNull(panel.getConfig().getString("open-with-item.stationary"))), panel.getHotbarItem(p));
                     }else{
-                        p.getInventory().addItem(s);
+                        p.getInventory().addItem(panel.getHotbarItem(p));
                     }
                     if(sendGiveMessage) {
-                        sender.sendMessage(plugin.tex.papi( plugin.tag + ChatColor.GREEN + "Item Given to " + p.getDisplayName()));
+                        sender.sendMessage(plugin.tex.colour( plugin.tag + ChatColor.GREEN + "Item Given to " + p.getDisplayName()));
                     }
                 } catch (Exception r) {
-                    sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.notitem")));
+                    sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.notitem")));
                 }
             }else{
-                sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
             }
             return;
         }
-        if (!cf.contains("open-with-item")) {
-            sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.noitem")));
+        if (!panel.getConfig().contains("open-with-item")) {
+            sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.noitem")));
             return;
         }
-        sender.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.perms")));
+        sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
     }
 
     public void beforeLoadCommands(Panel panel, Player p){
@@ -163,7 +153,7 @@ public class ExecuteOpenVoids {
                     }
                 }
             }catch(Exception s){
-                p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " " + "pre-load-commands: " + panel.getConfig().getString("pre-load-commands")));
+                p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " " + "pre-load-commands: " + panel.getConfig().getString("pre-load-commands")));
                 plugin.debug(s,p);
             }
         }

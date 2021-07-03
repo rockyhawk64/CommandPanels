@@ -42,7 +42,7 @@ public class SpecialTags implements Listener {
                     //do not change the placeholder
                     String placeholder = contents.substring(0,contents.indexOf(':'));
                     //only convert placeholders for the value
-                    String value = plugin.tex.papi(e.panel,e.p,contents.substring(contents.indexOf(':')+1));
+                    String value = plugin.tex.placeholders(e.panel,e.p,contents.substring(contents.indexOf(':')+1));
                     openPanel.placeholders.addPlaceholder(placeholder,value);
                     i = i+contents.length()-1;
                 }

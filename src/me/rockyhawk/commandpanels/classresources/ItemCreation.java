@@ -41,14 +41,14 @@ public class ItemCreation {
 
     @SuppressWarnings("deprecation")
     public ItemStack makeItemFromConfig(Panel panel, ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours, boolean addNBT){
-        String material = plugin.tex.papiNoColour(panel,p,itemSection.getString("material"));
+        String material = plugin.tex.placeholdersNoColour(panel,p,itemSection.getString("material"));
         try {
             if (Objects.requireNonNull(material).equalsIgnoreCase("AIR")) {
                 return null;
             }
         }catch(NullPointerException e){
             plugin.debug(e,p);
-            p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " material: could not load material!"));
+            p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " material: could not load material!"));
             return null;
         }
         ItemStack s = null;
@@ -120,7 +120,7 @@ public class ItemCreation {
                 BookMeta bookMeta = (BookMeta) s.getItemMeta();
                 bookMeta.setTitle(matraw.split("\\s")[1]);
                 bookMeta.setAuthor(matraw.split("\\s")[1]);
-                List<String> bookLines = plugin.tex.papi(panel,p,itemSection.getStringList("write"),true);
+                List<String> bookLines = plugin.tex.placeholdersList(panel,p,itemSection.getStringList("write"),true);
                 String result = bookLines.stream().map(String::valueOf).collect(Collectors.joining("\n" + ChatColor.RESET, "", ""));
                 bookMeta.setPages(result);
                 s.setItemMeta(bookMeta);
@@ -148,22 +148,22 @@ public class ItemCreation {
                                 assert meta != null;
                                 meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(skullname)));
                             } catch (Exception var23) {
-                                p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " material: cps= self"));
+                                p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " material: cps= self"));
                                 plugin.debug(var23,p);
                             }
                         }else{
                             meta.setOwner(p.getName());
                         }
                         s.setItemMeta(meta);
-                    }else if (plugin.tex.papiNoColour(panel,p,matraw.split("\\s")[1]).length() <= 16) {
+                    }else if (plugin.tex.placeholdersNoColour(panel,p,matraw.split("\\s")[1]).length() <= 16) {
                         //if cps= username
-                        s = plugin.customHeads.getPlayerHead(plugin.tex.papiNoColour(panel,p,matraw.split("\\s")[1]));
+                        s = plugin.customHeads.getPlayerHead(plugin.tex.placeholdersNoColour(panel,p,matraw.split("\\s")[1]));
                     } else {
                         //custom data cps= base64
-                        s = plugin.customHeads.getCustomHead(plugin.tex.papiNoColour(panel,p,matraw.split("\\s")[1]));
+                        s = plugin.customHeads.getCustomHead(plugin.tex.placeholdersNoColour(panel,p,matraw.split("\\s")[1]));
                     }
                 } catch (Exception var32) {
-                    p.sendMessage(plugin.tex.papi( plugin.tag + plugin.config.getString("config.format.error") + " head material: Could not load skull"));
+                    p.sendMessage(plugin.tex.colour( plugin.tag + plugin.config.getString("config.format.error") + " head material: Could not load skull"));
                     plugin.debug(var32,p);
                 }
             }
@@ -181,11 +181,11 @@ public class ItemCreation {
                     try {
                         s = api.getItemHead(matraw.split("\\s")[1].trim());
                     } catch (Exception var22) {
-                        p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " hdb: could not load skull!"));
+                        p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " hdb: could not load skull!"));
                         plugin.debug(var22,p);
                     }
                 } else {
-                    p.sendMessage(plugin.tex.papi(plugin.tag + "Download HeadDatabaseHook from Spigot to use this feature!"));
+                    p.sendMessage(plugin.tex.colour(plugin.tag + "Download HeadDatabaseHook from Spigot to use this feature!"));
                 }
             }
 
@@ -212,7 +212,7 @@ public class ItemCreation {
                 This will do maps from custom images
                 the maps will be in the 'maps' folder, so
                 CommandPanels/maps/image.png <-- here
-                Commandpanels/panels/example.yml
+                CommandPanels/panels/example.yml
                 The images should be 128x128
                  */
                 try{
@@ -235,10 +235,10 @@ public class ItemCreation {
                         meta.setMapView(map);
                         s.setItemMeta(meta);
                     }else{
-                        p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " map: File not found."));
+                        p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " map: File not found."));
                     }
                 }catch(Exception map){
-                    p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " map: " + itemSection.getString("map")));
+                    p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " map: " + itemSection.getString("map")));
                     plugin.debug(map,p);
                 }
             }
@@ -258,7 +258,7 @@ public class ItemCreation {
                         s.setItemMeta(EnchantMeta);
                     }
                 } catch (Exception ench) {
-                    p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " enchanted: " + itemSection.getString("enchanted")));
+                    p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " enchanted: " + itemSection.getString("enchanted")));
                     plugin.debug(ench,p);
                 }
             }
@@ -310,7 +310,7 @@ public class ItemCreation {
                 } catch (Exception er) {
                     //don't colour the armor
                     plugin.debug(er,p);
-                    p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " leatherarmor: " + itemSection.getString("leatherarmor")));
+                    p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " leatherarmor: " + itemSection.getString("leatherarmor")));
                 }
             }
 
@@ -327,7 +327,7 @@ public class ItemCreation {
                 } catch (Exception er) {
                     //don't add the effect
                     plugin.debug(er,p);
-                    p.sendMessage(plugin.tex.papi(plugin.tag + ChatColor.RED + plugin.config.getString("config.format.error") + " potion: " + itemSection.getString("potion")));
+                    p.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + plugin.config.getString("config.format.error") + " potion: " + itemSection.getString("potion")));
                 }
             }
             if (itemSection.contains("damage")) {
@@ -335,10 +335,10 @@ public class ItemCreation {
                 //if the damage is not unbreakable and should be a value
                 if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                     try {
-                        s.setDurability(Short.parseShort(Objects.requireNonNull(plugin.tex.papi(panel,p, itemSection.getString("damage")))));
+                        s.setDurability(Short.parseShort(Objects.requireNonNull(plugin.tex.placeholders(panel,p, itemSection.getString("damage")))));
                     } catch (Exception e) {
                         plugin.debug(e, p);
-                        p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
+                        p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
                     }
                 } else {
                     if(itemSection.getString("damage").equalsIgnoreCase("-1")){
@@ -350,21 +350,26 @@ public class ItemCreation {
 
                     try {
                         Damageable itemDamage = (Damageable) s.getItemMeta();
-                        itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(plugin.tex.papi(panel,p, itemSection.getString("damage")))));
+                        itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(plugin.tex.placeholders(panel,p, itemSection.getString("damage")))));
                         s.setItemMeta((ItemMeta) itemDamage);
                     } catch (Exception e) {
                         plugin.debug(e, p);
-                        p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
+                        p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
                     }
+                }
+            }
+            if (itemSection.contains("nbt")) {
+                for(String key : itemSection.getConfigurationSection("nbt").getKeys(false)){
+                    s = plugin.nbt.setNBT(s,key,itemSection.getString("nbt." + key));
                 }
             }
             if (itemSection.contains("stack")) {
                 //change the stack amount (placeholders accepted)
-                s.setAmount((int)Double.parseDouble(Objects.requireNonNull(plugin.tex.papi(panel,p,itemSection.getString("stack")))));
+                s.setAmount((int)Double.parseDouble(Objects.requireNonNull(plugin.tex.placeholders(panel,p,itemSection.getString("stack")))));
             }
         } catch (IllegalArgumentException | NullPointerException var33) {
             plugin.debug(var33,p);
-            p.sendMessage(plugin.tex.papi(plugin.tag + plugin.config.getString("config.format.error") + " material: " + itemSection.getString("material")));
+            p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " material: " + itemSection.getString("material")));
             return null;
         }
         plugin.setName(panel,s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours, hideAttributes);
@@ -390,8 +395,8 @@ public class ItemCreation {
                 //if output is true, and values match it will be this item, vice versa
                 outputValue = cf.getBoolean("hasvalue.output");
             }
-            String value = ChatColor.stripColor(plugin.tex.papi(panel,p,cf.getString("hasvalue.value")));
-            String compare = ChatColor.stripColor(plugin.tex.papi(panel,p,cf.getString("hasvalue.compare")));
+            String value = ChatColor.stripColor(plugin.tex.placeholders(panel,p,cf.getString("hasvalue.value")));
+            String compare = ChatColor.stripColor(plugin.tex.placeholders(panel,p,cf.getString("hasvalue.compare")));
             if (compare.equals(value) == outputValue) {
                 //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
                 String section = hasSection(panel,Objects.requireNonNull(cf.getConfigurationSection("hasvalue")), p);
@@ -407,8 +412,8 @@ public class ItemCreation {
                         //if output is true, and values match it will be this item, vice versa
                         outputValue = cf.getBoolean("hasvalue" + count + ".output");
                     }
-                    value = ChatColor.stripColor(plugin.tex.papi(panel,p,cf.getString("hasvalue" + count + ".value")));
-                    compare = ChatColor.stripColor(plugin.tex.papi(panel,p,cf.getString("hasvalue" + count + ".compare")));
+                    value = ChatColor.stripColor(plugin.tex.placeholders(panel,p,cf.getString("hasvalue" + count + ".value")));
+                    compare = ChatColor.stripColor(plugin.tex.placeholders(panel,p,cf.getString("hasvalue" + count + ".compare")));
                     if (compare.equals(value) == outputValue) {
                         //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
                         String section = hasSection(panel,Objects.requireNonNull(cf.getConfigurationSection("hasvalue" + count)), p);
@@ -426,8 +431,8 @@ public class ItemCreation {
                 //if output is true, and values match it will be this item, vice versa
                 outputValue = cf.getBoolean("hasgreater.output");
             }
-            double value = Double.parseDouble(ChatColor.stripColor(plugin.tex.papiNoColour(panel,p,cf.getString("hasgreater.value"))));
-            double compare = Double.parseDouble(ChatColor.stripColor(plugin.tex.papiNoColour(panel,p,cf.getString("hasgreater.compare"))));
+            double value = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,p,cf.getString("hasgreater.value"))));
+            double compare = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,p,cf.getString("hasgreater.compare"))));
             if ((compare >= value) == outputValue) {
                 //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
                 String section = hasSection(panel,Objects.requireNonNull(cf.getConfigurationSection("hasgreater")), p);
@@ -442,8 +447,8 @@ public class ItemCreation {
                         //if output is true, and values match it will be this item, vice versa
                         outputValue = cf.getBoolean("hasgreater" + count + ".output");
                     }
-                    value = Double.parseDouble(ChatColor.stripColor(plugin.tex.papiNoColour(panel,p,cf.getString("hasgreater" + count + ".value"))));
-                    compare = Double.parseDouble(ChatColor.stripColor(plugin.tex.papiNoColour(panel,p,cf.getString("hasgreater" + count + ".compare"))));
+                    value = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,p,cf.getString("hasgreater" + count + ".value"))));
+                    compare = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,p,cf.getString("hasgreater" + count + ".compare"))));
                     if ((compare >= value) == outputValue) {
                         //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
                         String section = hasSection(panel,Objects.requireNonNull(cf.getConfigurationSection("hasgreater" + count)), p);

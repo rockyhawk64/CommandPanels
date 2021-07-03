@@ -150,7 +150,7 @@ public class Utils implements Listener {
                     //end custom command PlaceHolders
 
                     //make the command
-                    String command = plugin.tex.papi(panel,p,commands.get(i));
+                    String command = plugin.tex.placeholders(panel,p,commands.get(i));
 
                     int val = plugin.commandTags.commandPayWall(p,command);
                     if(val == 0){

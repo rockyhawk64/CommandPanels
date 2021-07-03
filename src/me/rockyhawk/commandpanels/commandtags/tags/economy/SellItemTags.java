@@ -56,7 +56,7 @@ public class SellItemTags implements Listener {
                     } else {
                         assert api != null;
                         api.addTokens(e.p, Long.parseLong(e.args[0]));
-                        plugin.tex.sendMessage(e.p, Objects.requireNonNull(plugin.config.getString("purchase.item.success")).replaceAll("%cp-args%", e.args[1]));
+                        plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.item.success").replaceAll("%cp-args%", e.args[1]));
                     }
                 } else {
                     plugin.tex.sendMessage(e.p, ChatColor.RED + "Selling Requires TokenManager to work!");
@@ -96,7 +96,7 @@ public class SellItemTags implements Listener {
                         PotionMeta potionMeta = (PotionMeta) itm.getItemMeta();
                         assert potionMeta != null;
                         if (!potionMeta.getBasePotionData().getType().name().equalsIgnoreCase(potion)) {
-                            p.sendMessage(plugin.tex.papi( plugin.tag + ChatColor.RED + "Your item has the wrong potion effect"));
+                            p.sendMessage(plugin.tex.colour( plugin.tag + ChatColor.RED + "Your item has the wrong potion effect"));
                             return false;
                         }
                     }
