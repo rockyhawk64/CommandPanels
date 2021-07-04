@@ -68,52 +68,11 @@ public class UtilsOpenWithItem implements Listener {
     }
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e){
-        /*
-        This world change event is added so if the player is using disabled-worlds
-        and they change worlds, it will check if the player can have the item
-        and if they can, it gives the item. This is because onRespawn doesn't
-        give the item to the player in all the worlds that it could automatically.
-
-        The player will of course need a plugin to split inventories between worlds
-        for this to take effect. I don't want to delete the item on the wrong world
-        because then it might overwrite one of their actual slots upon rejoining the enabled world.
-         */
-        if(!plugin.openWithItem){
-            //if none of the panels have open-with-item
-            return;
-        }
-        Player p = e.getPlayer();
-
-        for(Panel panel : plugin.panelList) { //will loop through all the files in folder
-            if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
-                continue;
-            }
-            if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm")) && panel.hasHotbarItem()) {
-                ItemStack s = panel.getHotbarItem(p);
-                if(panel.getConfig().contains("open-with-item.stationary")) {
-                    p.getInventory().setItem(panel.getConfig().getInt("open-with-item.stationary"),s);
-                }
-            }
-        }
+        plugin.hotbar.updateHotbarItems(e.getPlayer());
     }
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e){
-        if(!plugin.openWithItem){
-            //if none of the panels have open-with-item
-            return;
-        }
-        Player p = e.getPlayer();
-        for(Panel panel : plugin.panelList) { //will loop through all the files in folder
-            if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
-                continue;
-            }
-            if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm")) && panel.hasHotbarItem()) {
-                ItemStack s = panel.getHotbarItem(p);
-                if(panel.getConfig().contains("open-with-item.stationary")){
-                    p.getInventory().setItem(panel.getConfig().getInt("open-with-item.stationary"), s);
-                }
-            }
-        }
+        plugin.hotbar.updateHotbarItems(e.getPlayer());
     }
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e){
@@ -133,30 +92,7 @@ public class UtilsOpenWithItem implements Listener {
     }
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e){
-        if(!plugin.openWithItem){
-            //if none of the panels have open-with-item
-            return;
-        }
-        Player p = e.getPlayer();
-        for(Panel panel : plugin.panelList) { //will loop through all the files in folder
-            if(!panel.getConfig().contains("open-with-item.stationary")){
-                continue;
-            }
-            if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))){
-                if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
-                    continue;
-                }
-                ItemStack s = panel.getHotbarItem(p);
-                p.getInventory().setItem(panel.getConfig().getInt("open-with-item.stationary"), s);
-            }else{
-                //if the player has an item that they have no permission for, remove it
-                ItemStack s;
-                s = panel.getHotbarItem(p);
-                if (p.getInventory().getItem(panel.getConfig().getInt("open-with-item.stationary")).isSimilar(s)) {
-                    p.getInventory().setItem(panel.getConfig().getInt("open-with-item.stationary"), null);
-                }
-            }
-        }
+        plugin.hotbar.updateHotbarItems(e.getPlayer());
     }
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent e){

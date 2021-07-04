@@ -1,4 +1,4 @@
-package me.rockyhawk.commandpanels.classresources;
+package me.rockyhawk.commandpanels.ingameeditor;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
@@ -306,7 +306,7 @@ public class OpenEditorGuis {
             temp = new ItemStack(Material.BEDROCK, 1);
             lore.clear();
             lore.add(ChatColor.GRAY + "Hotbar location for the item");
-            lore.add(ChatColor.GRAY + "choose a number from 0 to 33");
+            lore.add(ChatColor.GRAY + "choose a number from 0 to 35");
             if (cf.contains("open-with-item.stationary")) {
                 lore.add(ChatColor.WHITE + "-------------------------");
                 int location = cf.getInt("open-with-item.stationary");

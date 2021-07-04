@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.ingameeditor;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -372,19 +373,18 @@ public class EditorUserInput implements Listener {
                 }
                 try {
                     int loc = Integer.parseInt(e.getMessage());
-                    if (loc >= 34 || loc <= -1) {
-                        //if the number isn't between 1-9
-                        p.sendMessage(plugin.tex.colour( plugin.tag + ChatColor.GREEN + "Choose an integer between 0 to 33!"));
+                    if (loc >= 36 || loc <= -1) {
+                        //if the number isn't between the numbers
+                        p.sendMessage(plugin.tex.colour( plugin.tag + ChatColor.GREEN + "Choose an integer between 0 to 35!"));
                         return;
                     }
                     p.sendMessage(plugin.tex.colour( plugin.tag + ChatColor.GREEN + "Set Hotbar Location to " + loc + "!"));
-                    //because it needs to convert 1-9 to 0-8 for in the panel
-                    loc -= 1;
                     cf.set("open-with-item.stationary", loc);
                     savePanelFile(cf, cfile, panelName, panelFile);
                 } catch (Exception io) {
                     plugin.debug(io,p);
                 }
+                plugin.hotbar.reloadHotbarSlots();
                 break;
             case "panel.hotbar.name":
                 cf.set("open-with-item.name",e.getMessage());

@@ -6,7 +6,7 @@ import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.classresources.ExecuteOpenVoids;
 import me.rockyhawk.commandpanels.classresources.GetCustomHeads;
 import me.rockyhawk.commandpanels.classresources.ItemCreation;
-import me.rockyhawk.commandpanels.classresources.OpenEditorGuis;
+import me.rockyhawk.commandpanels.ingameeditor.OpenEditorGuis;
 import me.rockyhawk.commandpanels.classresources.item_fall.ItemFallManager;
 import me.rockyhawk.commandpanels.classresources.placeholders.CreateText;
 import me.rockyhawk.commandpanels.classresources.placeholders.HexColours;

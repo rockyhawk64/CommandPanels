@@ -316,7 +316,7 @@ public class EditorUtils implements Listener {
         boolean found = false;
         boolean hotbarItems = false;
         try {
-            //neew to loop through files to get file names
+            //need to loop through files to get file names
             for(Panel panel : plugin.panelList) { //will loop through all the files in folder
                 if(e.getView().getTitle().equals("Panel Settings: " + panel.getName())){
                     panelName = panel.getName();
@@ -440,7 +440,7 @@ public class EditorUtils implements Listener {
         }
         if(e.getSlot() == 42 && hotbarItems){
             plugin.editorInputStrings.add(new String[]{p.getName(),panelName,"panel.hotbar.stationary"});
-            p.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.WHITE + "Enter Location (1 to 9)"));
+            p.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.WHITE + "Enter Location (0 to 35)"));
             p.closeInventory();
         }
         if(e.getSlot() == 44 && hotbarItems){
