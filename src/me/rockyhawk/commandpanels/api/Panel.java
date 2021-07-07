@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.stream.Collectors;
 
 public class Panel{
     CommandPanels plugin = JavaPlugin.getPlugin(CommandPanels.class);
@@ -68,19 +69,28 @@ public class Panel{
     }
 
     public ItemStack getItem(Player p, int slot){
-        ConfigurationSection itemSection = panelConfig.getConfigurationSection("item." + slot);
+        String section = plugin.itemCreate.hasSection(this,panelConfig.getConfigurationSection("item." + slot), p);
+        ConfigurationSection itemSection = panelConfig.getConfigurationSection("item." + slot + section);
         return plugin.itemCreate.makeItemFromConfig(this,itemSection, p, true, true, false);
     }
 
     public ItemStack getCustomItem(Player p, String itemName){
-        ConfigurationSection itemSection = panelConfig.getConfigurationSection("custom-item." + itemName);
+        String section = plugin.itemCreate.hasSection(this,panelConfig.getConfigurationSection("custom-item." + itemName), p);
+        ConfigurationSection itemSection = panelConfig.getConfigurationSection("custom-item." + itemName + section);
         return plugin.itemCreate.makeCustomItemFromConfig(this,itemSection, p, true, true, false);
     }
 
     public ItemStack getHotbarItem(Player p){
-        ConfigurationSection itemSection = panelConfig.getConfigurationSection("open-with-item");
-        ItemStack s = plugin.itemCreate.makeItemFromConfig(this,itemSection, p, true, true, false);
-        return plugin.nbt.setNBT(s,"CommandPanelsHotbar",panelName);
+        ItemStack s = plugin.itemCreate.makeItemFromConfig(this,getHotbarSection(p), p, true, true, false);
+        int slot = -1;
+        if(getHotbarSection(p).isSet("stationary")){
+            slot = getHotbarSection(p).getInt("stationary");
+        }
+        return plugin.nbt.setNBT(s,"CommandPanelsHotbar",panelName + ":" + slot);
+    }
+    public ConfigurationSection getHotbarSection(Player p){
+        String section = plugin.itemCreate.hasSection(this,panelConfig.getConfigurationSection("open-with-item"), p);
+        return panelConfig.getConfigurationSection("open-with-item" + section);
     }
 
     public boolean hasHotbarItem(){

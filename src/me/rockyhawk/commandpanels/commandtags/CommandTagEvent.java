@@ -40,9 +40,10 @@ public class CommandTagEvent extends Event {
         this.name = split[0].trim();
         this.raw = split[1].trim().split("\\s");
         if(doApiPlaceholders) {
-            this.args = plugin.tex.placeholders(panel1, player, split[1].trim()).split("\\s");
+            this.args = plugin.tex.attachPlaceholders(panel1, player, split[1].trim()).split("\\s");
         }else{
-            this.args = ChatColor.translateAlternateColorCodes('&',plugin.placeholders.setCpPlaceholders(panel, p,split[1].trim())).split("\\s");
+            this.args = ChatColor.translateAlternateColorCodes('&',plugin.placeholders.setPlaceholders(panel, p,split[1].trim(),false)).split("\\s");
+            this.args = ChatColor.translateAlternateColorCodes('&',plugin.placeholders.setPlaceholders(panel, p,split[1].trim(),true)).split("\\s");
         }
     }
 

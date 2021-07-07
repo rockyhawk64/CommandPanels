@@ -41,12 +41,8 @@ public class CreateText {
         try {
             int tempInt = 0;
             for (String temp : setpapi) {
-                setpapi.set(tempInt, plugin.placeholders.setCpPlaceholders(panel, p, temp));
+                setpapi.set(tempInt, attachPlaceholders(panel, p, temp));
                 tempInt += 1;
-            }
-            if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                OfflinePlayer offp = plugin.getServer().getOfflinePlayer(p.getUniqueId());
-                setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
             }
         }catch(Exception ignore){
             //this will be ignored as it is probably a null
@@ -61,12 +57,8 @@ public class CreateText {
             if(placeholder) {
                 int tempInt = 0;
                 for (String temp : setpapi) {
-                    setpapi.set(tempInt, plugin.placeholders.setCpPlaceholders(panel, p, temp));
+                    setpapi.set(tempInt, attachPlaceholders(panel, p, temp));
                     tempInt += 1;
-                }
-                if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                    OfflinePlayer offp = plugin.getServer().getOfflinePlayer(p.getUniqueId());
-                    setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
                 }
             }
         }catch(Exception ignore){
@@ -98,11 +90,7 @@ public class CreateText {
     //string papi with no colours
     public String placeholdersNoColour(Panel panel, Player p, String setpapi) {
         try {
-            setpapi = plugin.placeholders.setCpPlaceholders(panel, p,setpapi);
-            if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                OfflinePlayer offp = plugin.getServer().getOfflinePlayer(p.getUniqueId());
-                setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
-            }
+            setpapi = attachPlaceholders(panel, p,setpapi);
             return setpapi;
         }catch(NullPointerException e){
             return setpapi;
@@ -112,15 +100,22 @@ public class CreateText {
     //regular string papi
     public String placeholders(Panel panel, Player p, String setpapi) {
         try {
-            setpapi = plugin.placeholders.setCpPlaceholders(panel, p,setpapi);
-            if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-                OfflinePlayer offp = plugin.getServer().getOfflinePlayer(p.getUniqueId());
-                setpapi = PlaceholderAPI.setPlaceholders(offp, setpapi);
-            }
+            setpapi = attachPlaceholders(panel, p,setpapi);
             setpapi = plugin.hex.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
             return setpapi;
         }catch(NullPointerException e){
             return setpapi;
         }
+    }
+
+    public String attachPlaceholders(Panel panel, Player p, String input){
+        //do all the placeholders in order to fill into text
+        input = plugin.placeholders.setPlaceholders(panel, p, input, false);
+        if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            OfflinePlayer offp = plugin.getServer().getOfflinePlayer(p.getUniqueId());
+            input = PlaceholderAPI.setPlaceholders(offp, input);
+        }
+        input = plugin.placeholders.setPlaceholders(panel, p, input, true);
+        return input;
     }
 }

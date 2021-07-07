@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
-import java.util.Set;
+import java.util.UUID;
 
 public class HotbarItemLoader {
     CommandPanels plugin;
@@ -17,52 +17,45 @@ public class HotbarItemLoader {
     }
 
     //stationary slots 0-8 are the hotbar, using 9-35 for inside the inventory
-    HashMap<Integer,Panel> stationaryItems = new HashMap<>();
+    HashMap<UUID,HotbarPlayerManager> stationaryItems = new HashMap<>();
 
     //will compile the ArrayList {slot 0-4, index of panelNames}
     public void reloadHotbarSlots() {
         stationaryItems.clear();
-        for (Panel panel : plugin.panelList) {
-            if(panel.getConfig().contains("open-with-item.stationary")){
-                stationaryItems.put(panel.getConfig().getInt("open-with-item.stationary"), panel.copy());
-            }
-        }
         //update hotbar items for all players when reloaded
         for(Player p : Bukkit.getServer().getOnlinePlayers()){
             plugin.hotbar.updateHotbarItems(p);
         }
     }
 
-    public Set<Integer> getStationaryItemSlots(){
-        return stationaryItems.keySet();
-    }
-
     //return true if found
     public boolean stationaryExecute(int slot, Player p, boolean openPanel){
-        for(int temp : stationaryItems.keySet()){
-            if(slot == temp){
-                if(openPanel) {
-                    Panel panel = stationaryItems.get(temp);
-                    //only open panel automatically if there are no commands and player world is not disabled
-                    if(!p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))){
+        if(stationaryItems.get(p.getUniqueId()).list.containsKey(slot)){
+            if(openPanel) {
+                try {
+                    if (!plugin.nbt.getNBT(p.getInventory().getItem(slot), "CommandPanelsHotbar").split(":")[1].equals(String.valueOf(slot))) {
                         return false;
                     }
-                    if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
-                        return false;
-                    }
-                    if(!itemCheckExecute(p.getInventory().getItem(slot),p,false,false)){
-                        return false;
-                    }
-                    if(panel.getConfig().contains("open-with-item.commands")){
-                        for(String command : panel.getConfig().getStringList("open-with-item.commands")){
-                            plugin.commandTags.runCommand(panel,p, command);
-                        }
-                        return true;
-                    }
-                    panel.open(p);
+                }catch(Exception ex){
+                    return false;
                 }
-                return true;
+                Panel panel = stationaryItems.get(p.getUniqueId()).getPanel(slot);
+                //only open panel automatically if there are no commands and player world is not disabled
+                if(!p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))){
+                    return false;
+                }
+                if(!itemCheckExecute(p.getInventory().getItem(slot),p,false,false)){
+                    return false;
+                }
+                if(panel.getConfig().contains("open-with-item.commands")){
+                    for(String command : panel.getConfig().getStringList("open-with-item.commands")){
+                        plugin.commandTags.runCommand(panel,p, command);
+                    }
+                    return true;
+                }
+                panel.open(p);
             }
+            return true;
         }
         return false;
     }
@@ -78,12 +71,14 @@ public class HotbarItemLoader {
         }
         for(Panel panel : plugin.panelList) {
             if(stationaryOnly){
-                if(!panel.getConfig().contains("open-with-item.stationary")){
-                    continue;
-                }
+                try {
+                    if (plugin.nbt.getNBT(invItem, "CommandPanelsHotbar").split(":")[1].equals("-1")) {
+                        continue;
+                    }
+                }catch(NullPointerException | IllegalArgumentException ignore){}
             }
             if(panel.hasHotbarItem()){
-                if(plugin.nbt.getNBT(invItem,"CommandPanelsHotbar").equals(panel.getName())){
+                if(plugin.nbt.getNBT(invItem,"CommandPanelsHotbar").split(":")[0].equals(panel.getName())){
                     if(openPanel) {
                         //only open panel automatically if there are no commands and if world is not disabled
                         if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
@@ -121,6 +116,7 @@ public class HotbarItemLoader {
         }
 
         //remove any old hotbar items
+        stationaryItems.put(p.getUniqueId(),new HotbarPlayerManager());
         for(int i = 0; i <= 35; i++){
             try {
                 if (plugin.nbt.getNBT(p.getInventory().getItem(i), "CommandPanelsHotbar") != null) {
@@ -136,8 +132,9 @@ public class HotbarItemLoader {
             }
             if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm")) && panel.hasHotbarItem()) {
                 ItemStack s = panel.getHotbarItem(p);
-                if(panel.getConfig().contains("open-with-item.stationary")) {
-                    p.getInventory().setItem(panel.getConfig().getInt("open-with-item.stationary"),s);
+                if(panel.getHotbarSection(p).contains("stationary")) {
+                    p.getInventory().setItem(panel.getHotbarSection(p).getInt("stationary"),s);
+                    stationaryItems.get(p.getUniqueId()).addSlot(panel.getHotbarSection(p).getInt("stationary"),panel);
                 }
             }
         }

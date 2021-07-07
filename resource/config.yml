@@ -7,13 +7,13 @@
 # |------------------------------------------------------------------------
 config:
   refresh-panels: true
+  refresh-delay: 20
   panel-blocks: true
   ingame-editor: true
   hotbar-items: true
   custom-commands: true
   auto-register-commands: false
   auto-update-panels: false
-  refresh-delay: 20
   server-ping-timeout: 10
   stop-sound: true
   disabled-world-message: true
@@ -37,6 +37,13 @@ config:
 hexcodes:
   start_tag: '#'
   end_tag: ''
+placeholders:
+  primary:
+    start: '%'
+    end: '%'
+  secondary:
+    start: '{'
+    end: '}'
 updater:
   auto-update: true
   minor-updates-only: true

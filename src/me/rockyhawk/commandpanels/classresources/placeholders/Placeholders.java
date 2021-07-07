@@ -23,17 +23,60 @@ public class Placeholders {
         this.plugin = pl;
     }
 
+    public String setPlaceholders(Panel panel, Player p, String str, boolean primary){
+        String[] HOLDERS = getPlaceholderEnds(panel,primary);
+        while (str.contains(HOLDERS[0] + "cp-")) {
+            try {
+                int start = str.indexOf(HOLDERS[0] + "cp-");
+                int end = str.indexOf(HOLDERS[1], str.indexOf(HOLDERS[0] + "cp-") + 1);
+                String identifier = str.substring(start, end).replace(HOLDERS[0] + "cp-", "").replace(HOLDERS[1], "");
+                String value;
+                try {
+                    value = doCpPlaceholders(panel,p,identifier, str);
+                } catch (NullPointerException er) {
+                    value = "";
+                }
+                str = str.replace(str.substring(start, end) + HOLDERS[1], value);
+            }catch(Exception ex){
+                plugin.debug(ex,p);
+                break;
+            }
+        }
+        return str;
+    }
+
+    //returns primary then secondary {[start,end],[start,end]}
+    public String[] getPlaceholderEnds(Panel panel, boolean primary){
+        List<String[]> values = new ArrayList<>();
+        values.add(new String[]{plugin.config.getString("placeholders.primary.start"),plugin.config.getString("placeholders.primary.end")});
+        values.add(new String[]{plugin.config.getString("placeholders.secondary.start"),plugin.config.getString("placeholders.secondary.end")});
+        if(panel.getConfig().isSet("placeholders")){
+            if(panel.getConfig().isSet("placeholders.primary")){
+                values.set(0,new String[]{panel.getConfig().getString("placeholders.primary.start"),panel.getConfig().getString("placeholders.primary.end")});
+            }
+            if(panel.getConfig().isSet("placeholders.secondary")){
+                values.set(1,new String[]{panel.getConfig().getString("placeholders.secondary.start"),panel.getConfig().getString("placeholders.secondary.end")});
+            }
+        }
+        if(primary){
+            return values.get(0);
+        }else{
+            return values.get(1);
+        }
+    }
+
     @SuppressWarnings("deprecation")
-    public String setCpPlaceholders(Panel panel, Player p, String str){
+    private String doCpPlaceholders(Panel panel, Player p, String identifier, String string){
+
         //do player input placeholder first
-        if (str.contains("%cp-player-input%")) {
+        if (identifier.equals("player-input")) {
             for (String[] key : plugin.userInputStrings) {
                 if (key[0].equals(p.getName())) {
-                    plugin.userInputStrings.add(new String[]{p.getName(), str});
+                    plugin.userInputStrings.add(new String[]{p.getName(), string});
                     return "cpc";
                 }
             }
-            plugin.userInputStrings.add(new String[]{p.getName(), str});
+            plugin.userInputStrings.add(new String[]{p.getName(), string});
             List<String> inputMessages = new ArrayList<String>(plugin.config.getStringList("config.input-message"));
             for (String temp : inputMessages) {
                 temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(plugin.config.getString("config.input-cancel")));
@@ -43,23 +86,39 @@ public class Placeholders {
         }
 
         //replace nodes with PlaceHolders
-        str = str.replaceAll("%cp-player-displayname%", p.getDisplayName());
-        str = str.replaceAll("%cp-player-name%", p.getName());
-        str = str.replaceAll("%cp-player-world%", p.getWorld().getName());
-        str = str.replaceAll("%cp-player-x%", String.valueOf(Math.round(p.getLocation().getX())));
-        str = str.replaceAll("%cp-player-y%", String.valueOf(Math.round(p.getLocation().getY())));
-        str = str.replaceAll("%cp-player-z%", String.valueOf(Math.round(p.getLocation().getZ())));
-        str = str.replaceAll("%cp-online-players%", Integer.toString(Bukkit.getServer().getOnlinePlayers().size()));
-        str = str.replaceAll("%cp-tag%", plugin.tex.colour(plugin.tag));
+        switch(identifier){
+            case("player-displayname"): {
+                return p.getDisplayName();
+            }
+            case("player-name"): {
+                return p.getName();
+            }
+            case("player-world"): {
+                return p.getWorld().getName();
+            }
+            case("player-x"): {
+                return String.valueOf(Math.round(p.getLocation().getX()));
+            }
+            case("player-y"): {
+                return String.valueOf(Math.round(p.getLocation().getY()));
+            }
+            case("player-z"): {
+                return String.valueOf(Math.round(p.getLocation().getZ()));
+            }
+            case("online-players"): {
+                return Integer.toString(Bukkit.getServer().getOnlinePlayers().size());
+            }
+            case("tag"): {
+                return plugin.tex.colour(plugin.tag);
+            }
+        }
 
         //set custom placeholders to their values
         if(panel != null) {
             for (String placeholder : panel.placeholders.keys.keySet()) {
-                while (str.contains(placeholder)) {
+                if(identifier.equals(placeholder)) {
                     try {
-                        int start = str.indexOf(placeholder);
-                        int end = start + placeholder.length() - 1;
-                        str = str.replace(str.substring(start, end) + "%", panel.placeholders.keys.get(placeholder));
+                        return panel.placeholders.keys.get(placeholder);
                     } catch (Exception ex) {
                         plugin.debug(ex, p);
                         break;
@@ -69,103 +128,91 @@ public class Placeholders {
         }
 
         //placeholder to check for server availability %cp-server-IP:PORT%
-        while (str.contains("%cp-server-")) {
-            int start = str.indexOf("%cp-server-");
-            int end = str.indexOf("%", str.indexOf("%cp-server-")+1);
-            String ip_port = str.substring(start, end).replace("%cp-server-", "").replace("%","");
+        if(identifier.startsWith("server-")) {
+            String ip_port = identifier.replace("server-", "");
             Socket s = new Socket();
             try {
                 s.connect(new InetSocketAddress(ip_port.split(":")[0], Integer.parseInt(ip_port.split(":")[1])), plugin.config.getInt("config.server-ping-timeout"));
-                str = str.replace(str.substring(start, end) + "%", "true");
                 s.close();
+                return "true";
             }catch (IOException ex){
-                str = str.replace(str.substring(start, end) + "%", "false");
+                return "false";
             }
         }
 
         //placeholder to check if an item has NBT %cp-nbt-slot:key%
-        while (str.contains("%cp-nbt-")) {
+        if(identifier.startsWith("nbt-")) {
             try {
-                int start = str.indexOf("%cp-nbt-");
-                int end = str.indexOf("%", str.indexOf("%cp-nbt-")+1);
-                String slot_key = str.substring(start, end).replace("%cp-nbt-", "").replace("%","");
+                String slot_key = identifier.replace("nbt-", "");
                 String value;
                 value = plugin.nbt.getNBT(p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(slot_key.split(":")[0])),slot_key.split(":")[1]);
                 if(value == null){
                     value = "empty";
                 }
-                str = str.replace(str.substring(start, end) + "%", value);
+                return value;
             }catch (Exception ex){
                 plugin.debug(ex,p);
-                break;
+                return "";
             }
         }
 
         //DO placeholders for detection of other items in a panel
         //get material value from slot in current open inventory (panel)
-        while (str.contains("%cp-material-")) {
+        if(identifier.startsWith("material-")) {
             try {
-                int start = str.indexOf("%cp-material-");
-                int end = str.indexOf("%", str.indexOf("%cp-material-") + 1);
-                String matNumber = str.substring(start, end).replace("%cp-material-", "").replace("%", "");
+                String matNumber = identifier.replace("material-", "");
                 String material;
                 try {
                     material = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().toString();
-                    if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
+                    if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                         //add the ID to the end if it is legacy (eg, material:id)
                         material = material + ":" + p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().getId();
                     }
                 } catch (NullPointerException er) {
                     material = "AIR";
                 }
-                str = str.replace(str.substring(start, end) + "%", material);
+                return material;
             } catch (Exception ex) {
                 plugin.debug(ex,p);
-                break;
+                return "";
             }
         }
         //get stack amount from slot in current open inventory (panel)
-        while (str.contains("%cp-stack-")) {
+        if(identifier.startsWith("stack-")) {
             try {
-                int start = str.indexOf("%cp-stack-");
-                int end = str.indexOf("%", str.indexOf("%cp-stack-") + 1);
-                String matNumber = str.substring(start, end).replace("%cp-stack-", "").replace("%", "");
+                String matNumber = identifier.replace("stack-", "");
                 int amount;
                 try {
                     amount = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getAmount();
                 } catch (NullPointerException er) {
                     amount = 0;
                 }
-                str = str.replace(str.substring(start, end) + "%", String.valueOf(amount));
+                return String.valueOf(amount);
             }catch(Exception ex){
                 plugin.debug(ex,p);
-                break;
+                return "";
             }
         }
         //get stack amount from slot in current open inventory (panel)
-        while (str.contains("%cp-modeldata-")) {
+        if(identifier.startsWith("modeldata-")) {
             try {
-                int start = str.indexOf("%cp-modeldata-");
-                int end = str.indexOf("%", str.indexOf("%cp-modeldata-") + 1);
-                String matNumber = str.substring(start, end).replace("%cp-modeldata-", "").replace("%", "");
+                String matNumber = identifier.replace("modeldata-", "");
                 int modelData;
                 try {
                     modelData = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getItemMeta().getCustomModelData();
                 } catch (NullPointerException er) {
                     modelData = 0;
                 }
-                str = str.replace(str.substring(start, end) + "%", String.valueOf(modelData));
+                return String.valueOf(modelData);
             }catch(Exception ex){
                 plugin.debug(ex,p);
-                break;
+                return "";
             }
         }
         //is an item damaged
-        while (str.contains("%cp-damaged-")) {
+        if(identifier.startsWith("damaged-")) {
             try {
-                int start = str.indexOf("%cp-damaged-");
-                int end = str.indexOf("%", str.indexOf("%cp-damaged-") + 1);
-                String matNumber = str.substring(start, end).replace("%cp-damaged-", "").replace("%", "");
+                String matNumber = identifier.replace("damaged-", "");
                 boolean damaged = false;
                 ItemStack itm = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber));
                 try {
@@ -180,18 +227,16 @@ public class Placeholders {
                 } catch (NullPointerException er) {
                     damaged = false;
                 }
-                str = str.replace(str.substring(start, end) + "%", String.valueOf(damaged));
+                return String.valueOf(damaged);
             }catch(Exception ex){
                 plugin.debug(ex,p);
-                break;
+                return "";
             }
         }
         //is an item identical, uses custom-items (custom item, slot)
-        while (str.contains("%cp-identical-")) {
+        if(identifier.startsWith("identical-")) {
             try {
-                int start = str.indexOf("%cp-identical-");
-                int end = str.indexOf("%", str.indexOf("%cp-identical-") + 1);
-                String matLocSlot = str.substring(start, end).replace("%cp-identical-", "").replace("%", "");
+                String matLocSlot = identifier.replace("identical-", "");
                 String matLoc = matLocSlot.split(",")[0];
                 int matSlot = Integer.parseInt(matLocSlot.split(",")[1]);
                 boolean isIdentical = false;
@@ -199,8 +244,7 @@ public class Placeholders {
 
                 if(itm == null){
                     //continue if material is null
-                    str = str.replace(str.substring(start, end) + "%", String.valueOf(false));
-                    continue;
+                    return "false";
                 }
 
                 try {
@@ -224,96 +268,88 @@ public class Placeholders {
                     isIdentical = false;
                 }
 
-                str = str.replace(str.substring(start, end) + "%", String.valueOf(isIdentical));
+                return String.valueOf(isIdentical);
             }catch(Exception ex){
                 plugin.debug(ex,p);
-                break;
+                return "";
             }
         }
 
         //does %cp-random-MIN,MAX%
-        while (str.contains("%cp-random-")) {
+        if(identifier.startsWith("random-")) {
             try {
-                int start = str.indexOf("%cp-random-");
-                int end = str.indexOf("%", str.indexOf("%cp-random-") + 1);
-                String min_max = str.substring(start, end).replace("%cp-random-", "").replace("%", "");
+                String min_max = identifier.replace("random-", "");
                 int min = Integer.parseInt(min_max.split(",")[0]);
                 int max = Integer.parseInt(min_max.split(",")[1]);
-                str = str.replace(str.substring(start, end) + "%", String.valueOf(plugin.getRandomNumberInRange(min, max)));
+                return String.valueOf(plugin.getRandomNumberInRange(min, max));
             }catch (Exception ex){
                 plugin.debug(ex,p);
-                break;
+                return "";
             }
         }
         //returns value of stored data
-        while (str.contains("%cp-data-")) {
+        if(identifier.startsWith("data-")) {
             try {
-                int start = str.indexOf("%cp-data-");
-                int end = str.indexOf("%", str.indexOf("%cp-data-") + 1);
-                String dataPoint = str.substring(start, end).replace("%cp-data-", "").replace("%", "");
+                String dataPoint = identifier.replace("data-", "");
                 //get data from other user
                 if(dataPoint.contains(",")){
                     String dataName = dataPoint.split(",")[0];
                     String playerName = dataPoint.split(",")[1];
-                    str = str.replace(str.substring(start, end) + "%", plugin.panelData.getUserData(Bukkit.getOfflinePlayer(playerName).getUniqueId(),dataName));
+                    return plugin.panelData.getUserData(Bukkit.getOfflinePlayer(playerName).getUniqueId(),dataName);
                 }else{
-                    str = str.replace(str.substring(start, end) + "%", plugin.panelData.getUserData(p.getUniqueId(),dataPoint));
+                    return plugin.panelData.getUserData(p.getUniqueId(),dataPoint);
                 }
             }catch (Exception ex){
                 plugin.debug(ex,p);
-                break;
+                return "";
             }
         }
         //edits data via placeholder execution (will return empty output)
-        while (str.contains("%cp-setdata-")) {
+        if(identifier.startsWith("setdata-")) {
             try {
-                int start = str.indexOf("%cp-setdata-");
-                int end = str.indexOf("%", str.indexOf("%cp-setdata-") + 1);
-                String point_value = str.substring(start, end).replace("%cp-setdata-", "").replace("%", "");
+                String point_value = identifier.replace("cp-setdata-", "");
                 String command = "set-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
                 plugin.commandTags.runCommand(panel,p, command);
-                str = str.replace(str.substring(start, end) + "%", "");
+                return "";
             }catch (Exception ex){
                 plugin.debug(ex,p);
-                break;
+                return "";
             }
         }
         //math data via placeholder execution (will return empty output)
-        while (str.contains("%cp-mathdata-")) {
+        if(identifier.startsWith("mathdata-")) {
             try {
-                int start = str.indexOf("%cp-mathdata-");
-                int end = str.indexOf("%", str.indexOf("%cp-mathdata-") + 1);
-                String point_value = str.substring(start, end).replace("%cp-mathdata-", "").replace("%", "");
+                String point_value = identifier.replace("mathdata-", "");
                 String command = "math-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
                 plugin.commandTags.runCommand(panel,p,command);
-                str = str.replace(str.substring(start, end) + "%", "");
+                return "";
             }catch (Exception ex){
                 plugin.debug(ex,p);
-                break;
+                return "";
             }
         }
 
         //checks for players online
-        while (str.contains("%cp-player-online-")) {
+        if(identifier.startsWith("player-online-")) {
             try {
-                int start = str.indexOf("%cp-player-online-");
-                int end = str.indexOf("-find%", str.indexOf("%cp-player-online-") + 1);
-                String playerLocation = str.substring(start, end).replace("%cp-player-online-", "");
+                String playerLocation = identifier.replace("player-online-", "");
                 Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
                 if (Integer.parseInt(playerLocation) > playerFind.length) {
-                    str = str.replace(str.substring(start, end) + "-find%", plugin.tex.colour(Objects.requireNonNull(plugin.config.getString("config.format.offline"))));
+                    return plugin.tex.colour(Objects.requireNonNull(plugin.config.getString("config.format.offline")));
                 } else {
-                    str = str.replace(str.substring(start, end) + "-find%", playerFind[Integer.parseInt(playerLocation) - 1].getName());
+                    return playerFind[Integer.parseInt(playerLocation) - 1].getName();
                 }
             }catch (Exception ex){
                 plugin.debug(ex,p);
-                break;
+                return "";
             }
         }
 
         try {
             if (plugin.econ != null) {
-                str = str.replaceAll("%cp-player-balance%", String.valueOf(Math.round(plugin.econ.getBalance(p))));
+                if(identifier.equals("player-balance")) {
+                    return String.valueOf(Math.round(plugin.econ.getBalance(p)));
+                }
             }
         } catch (Exception place) {
             //skip
@@ -321,12 +357,16 @@ public class Placeholders {
         if (plugin.getServer().getPluginManager().isPluginEnabled("TokenManager")) {
             TokenManager api = (TokenManager) Bukkit.getServer().getPluginManager().getPlugin("TokenManager");
             assert api != null;
-            str = str.replaceAll("%cp-tokenmanager-balance%", Long.toString(api.getTokens(p).orElse(0)));
+            if(identifier.equals("tokenmanager-balance")) {
+                return Long.toString(api.getTokens(p).orElse(0));
+            }
         }
         if (plugin.getServer().getPluginManager().isPluginEnabled("VotingPlugin")) {
-            str = str.replaceAll("%cp-votingplugin-points%", String.valueOf(UserManager.getInstance().getVotingPluginUser(p).getPoints()));
+            if(identifier.equals("votingplugin-points")) {
+                return String.valueOf(UserManager.getInstance().getVotingPluginUser(p).getPoints());
+            }
         }
         //end nodes with PlaceHolders
-        return str;
+        return "";
     }
 }

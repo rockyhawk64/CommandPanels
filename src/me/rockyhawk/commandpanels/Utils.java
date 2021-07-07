@@ -42,6 +42,11 @@ public class Utils implements Listener {
             e.setCancelled(true);
         }
         if(e.getClickedInventory().getType() == InventoryType.PLAYER){
+            if(panel.getConfig().isSet("panelType")){
+                if(panel.getConfig().getStringList("panelType").contains("unmovable")){
+                    e.setCancelled(true);
+                }
+            }
             return;
         }
 

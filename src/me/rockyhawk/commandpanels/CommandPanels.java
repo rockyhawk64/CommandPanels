@@ -287,7 +287,7 @@ public class CommandPanels extends JavaPlugin{
                 }else{
                     clore = lore;
                 }
-                renamedMeta.setLore(clore);
+                renamedMeta.setLore(splitListWithEscape(clore));
             }
             renamed.setItemMeta(renamedMeta);
         } catch (Exception ignored) {
@@ -454,6 +454,15 @@ public class CommandPanels extends JavaPlugin{
         }else{
             return new Sequence_1_14(this).getReaderFromStream(initialStream);
         }
+    }
+
+    //split lists using \n escape character
+    public List<String> splitListWithEscape(List<String> list){
+        List<String> output = new ArrayList<>();
+        for(String str : list){
+            output.addAll(Arrays.asList(str.split("\\\\n")));
+        }
+        return output;
     }
 
     public int getRandomNumberInRange(int min, int max) {

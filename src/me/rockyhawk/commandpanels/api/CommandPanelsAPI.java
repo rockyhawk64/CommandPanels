@@ -65,9 +65,4 @@ public class CommandPanelsAPI {
     public ItemStack makeItem(Player p, ConfigurationSection itemSection){
         return plugin.itemCreate.makeCustomItemFromConfig(null,itemSection, p, true, true, false);
     }
-
-    //will return item slots of hotbar stationary items
-    public Set<Integer> getHotbarItems(){
-        return plugin.hotbar.getStationaryItemSlots();
-    }
 }

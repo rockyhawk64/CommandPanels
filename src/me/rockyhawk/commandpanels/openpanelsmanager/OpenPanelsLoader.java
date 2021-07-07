@@ -114,9 +114,7 @@ public class OpenPanelsLoader {
 
     public boolean isNBTInjected(ItemStack itm){
         if(itm != null){
-            if (plugin.nbt.hasNBT(itm)) {
-                return true;
-            }
+            return plugin.nbt.hasNBT(itm);
         }
         return false;
     }

@@ -96,8 +96,7 @@ public final class NBT_1_13 {
             classCache.put( "GameProfile", Class.forName( "com.mojang.authlib.GameProfile" ) );
             classCache.put( "Property", Class.forName( "com.mojang.authlib.properties.Property" ) );
             classCache.put( "PropertyMap", Class.forName( "com.mojang.authlib.properties.PropertyMap" ) );
-        } catch ( ClassNotFoundException e ) {
-            e.printStackTrace();
+        } catch ( ClassNotFoundException ignore ) {
         }
 
         NBTClasses = new HashMap< Class< ? >, Class< ? > >();
@@ -126,7 +125,6 @@ public final class NBT_1_13 {
                 NBTClasses.put( Class.forName( "[I" ), Class.forName( "net.minecraft.nbt.NBTTagIntArray" ) );
             }
         } catch ( ClassNotFoundException e ) {
-            e.printStackTrace();
         }
 
         methodCache = new HashMap< String, Method >();
@@ -210,7 +208,6 @@ public final class NBT_1_13 {
 
             methodCache.put( "loadNBTTagCompound", getNMSClass( "MojangsonParser" ).getMethod( "parse", String.class ) );
         } catch( Exception e ) {
-            e.printStackTrace();
         }
 
         try {
@@ -246,8 +243,7 @@ public final class NBT_1_13 {
             if ( LOCAL_VERSION == MinecraftVersion.v1_11 || LOCAL_VERSION == MinecraftVersion.v1_12 ) {
                 constructorCache.put( getNMSClass( "ItemStack" ), getNMSClass( "ItemStack" ).getConstructor( getNMSClass( "NBTTagCompound" ) ) );
             }
-        } catch( Exception e ) {
-            e.printStackTrace();
+        } catch( Exception ignore ) {
         }
 
         NBTTagFieldCache = new HashMap< Class< ? >, Field >();
@@ -274,8 +270,7 @@ public final class NBT_1_13 {
                     field.setAccessible( true );
                 }
             }
-        } catch( Exception e ) {
-            e.printStackTrace();
+        } catch( Exception ignore ) {
         }
 
         try {
@@ -288,8 +283,7 @@ public final class NBT_1_13 {
             }
             NBTListData.setAccessible( true );
             NBTCompoundMap.setAccessible( true );
-        } catch( Exception e ) {
-            e.printStackTrace();
+        } catch( Exception ignore ) {
         }
     }
 
@@ -309,7 +303,6 @@ public final class NBT_1_13 {
                 return NBTTagFieldCache.get( clazz ).get( object );
             }
         } catch ( Exception exception ) {
-            exception.printStackTrace();
         }
         return null;
     }
@@ -330,7 +323,6 @@ public final class NBT_1_13 {
         try {
             return Class.forName("net.minecraft.server." + VERSION + "." + name);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -392,27 +384,23 @@ public final class NBT_1_13 {
             Object textureProperty = getConstructor( getNMSClass( "Property" ) ).newInstance( "textures", new String( Base64.getEncoder().encode( String.format( "{textures:{SKIN:{\"url\":\"%s\"}}}", skinURL ).getBytes() ) ) );
             getMethod( "put" ).invoke( propertyMap, "textures", textureProperty );
         } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e1 ) {
-            e1.printStackTrace();
         }
 
         if ( methodCache.containsKey( "setProfile" ) ) {
             try {
                 getMethod( "setProfile" ).invoke( headMeta, profile );
             } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-                e.printStackTrace();
             }
         } else {
             Field profileField = null;
             try {
                 profileField = headMeta.getClass().getDeclaredField("profile");
             } catch ( NoSuchFieldException | SecurityException e ) {
-                e.printStackTrace();
             }
             profileField.setAccessible(true);
             try {
                 profileField.set(headMeta, profile);
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
             }
         }
         head.setItemMeta(headMeta);
@@ -433,7 +421,6 @@ public final class NBT_1_13 {
         try {
             profileField = meta.getClass().getDeclaredField("profile");
         } catch ( NoSuchFieldException | SecurityException e ) {
-            e.printStackTrace();
             throw new IllegalArgumentException( "Item is not a player skull!" );
         }
         profileField.setAccessible(true);
@@ -452,7 +439,6 @@ public final class NBT_1_13 {
             }
             return null;
         } catch ( IllegalArgumentException | IllegalAccessException | SecurityException | InvocationTargetException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -472,7 +458,6 @@ public final class NBT_1_13 {
         try {
             return getTag( getCompound( item ), keys );
         } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -496,7 +481,6 @@ public final class NBT_1_13 {
 
             return tag;
         } catch ( Exception exception ) {
-            exception.printStackTrace();
             return null;
         }
     }
@@ -525,7 +509,6 @@ public final class NBT_1_13 {
 
             return getNBTTag( tag, keys );
         } catch ( Exception exception ) {
-            exception.printStackTrace();
             return null;
         }
     }
@@ -567,7 +550,6 @@ public final class NBT_1_13 {
             getMethod( "setTag" ).invoke( stack, tag );
             return ( ItemStack ) getMethod( "asBukkitCopy" ).invoke( null, stack );
         } catch ( Exception exception ) {
-            exception.printStackTrace();
             return null;
         }
     }
@@ -596,7 +578,6 @@ public final class NBT_1_13 {
             }
             return null;
         } catch ( Exception exception ) {
-            exception.printStackTrace();
             return null;
         }
     }
@@ -616,7 +597,6 @@ public final class NBT_1_13 {
         try {
             return getTag( getCompound( entity ), keys );
         } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -635,7 +615,6 @@ public final class NBT_1_13 {
 
             return tag;
         } catch ( Exception exception ) {
-            exception.printStackTrace();
             return null;
         }
     }
@@ -663,7 +642,6 @@ public final class NBT_1_13 {
 
             return getNBTTag( tag, keys );
         } catch ( Exception exception ) {
-            exception.printStackTrace();
             return null;
         }
     }
@@ -698,7 +676,6 @@ public final class NBT_1_13 {
 
             getMethod( "setEntityTag" ).invoke( NMSEntity, tag );
         } catch ( Exception exception ) {
-            exception.printStackTrace();
             return;
         }
     }
@@ -718,7 +695,6 @@ public final class NBT_1_13 {
         try {
             return getTag( getCompound( block ), keys );
         } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -743,7 +719,6 @@ public final class NBT_1_13 {
 
             return tag;
         } catch( Exception exception ) {
-            exception.printStackTrace();
             return null;
         }
     }
@@ -777,7 +752,6 @@ public final class NBT_1_13 {
 
             return getNBTTag( tag, keys );
         } catch( Exception exception ) {
-            exception.printStackTrace();
             return null;
         }
     }
@@ -822,7 +796,6 @@ public final class NBT_1_13 {
                 getMethod( "setTileTag" ).invoke( tileEntity, tag );
             }
         } catch( Exception exception ) {
-            exception.printStackTrace();
             return;
         }
     }
@@ -852,7 +825,6 @@ public final class NBT_1_13 {
 
             getMethod( "setGameProfile" ).invoke( tileEntity, profile );
         } catch( Exception exception ) {
-            exception.printStackTrace();
         }
     }
 
@@ -867,7 +839,6 @@ public final class NBT_1_13 {
             try {
                 return getTag( ( ( NBTCompound ) object ).tag, keys );
             } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-                e.printStackTrace();
                 return null;
             }
         } else {
@@ -896,14 +867,12 @@ public final class NBT_1_13 {
             try {
                 return getNBTTag( ( ( NBTCompound ) object ).tag, keys );
             } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-                e.printStackTrace();
                 return null;
             }
         } else if ( getNMSClass( "NBTTagCompound" ).isInstance( object ) ) {
             try {
                 return getNBTTag( object, keys );
             } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-                e.printStackTrace();
                 return null;
             }
         } else {
@@ -1109,8 +1078,7 @@ public final class NBT_1_13 {
                 return null;
             }
 
-        } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-            e.printStackTrace();
+        } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException ignore ) {
         }
 
         return null;
@@ -1148,7 +1116,6 @@ public final class NBT_1_13 {
                 return ( int ) getMethod( "size" ).invoke( nbtCompound.tag );
             }
         } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-            e.printStackTrace();
             return 0;
         }
 
@@ -1179,8 +1146,7 @@ public final class NBT_1_13 {
         } else if ( object instanceof NBTCompound ) {
             try {
                 setTag( ( ( NBTCompound ) object ).tag, value, keys );
-            } catch ( InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-                e.printStackTrace();
+            } catch ( InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ignore ) {
             }
         } else {
             throw new IllegalArgumentException( "Object provided must be of type ItemStack, Entity, Block, or NBTCompound!" );
@@ -1210,7 +1176,6 @@ public final class NBT_1_13 {
         try {
             return new NBTCompound( getNMSClass( "NBTTagCompound" ).newInstance() );
         } catch ( InstantiationException | IllegalAccessException e ) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -1368,7 +1333,6 @@ public final class NBT_1_13 {
             }
             return tags;
         } catch ( Exception e ) {
-            e.printStackTrace();
             return tags;
         }
     }
@@ -1386,8 +1350,7 @@ public final class NBT_1_13 {
         public void set( Object value, Object... keys ) {
             try {
                 new NBT_1_13().setTag( tag, value, keys );
-            } catch ( Exception e ) {
-                e.printStackTrace();
+            } catch ( Exception ignore ) {
             }
         }
 
@@ -1405,7 +1368,6 @@ public final class NBT_1_13 {
             try {
                 return new NBTCompound( new NBT_1_13().getMethod( "loadNBTTagCompound" ).invoke( null, json ) );
             } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-                e.printStackTrace();
                 return null;
             }
         }

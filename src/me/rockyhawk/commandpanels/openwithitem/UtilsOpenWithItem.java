@@ -95,6 +95,10 @@ public class UtilsOpenWithItem implements Listener {
         plugin.hotbar.updateHotbarItems(e.getPlayer());
     }
     @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent e){
+        plugin.hotbar.stationaryItems.remove(e.getPlayer().getUniqueId());
+    }
+    @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent e){
         if(!plugin.openWithItem){
             //if none of the panels have open-with-item

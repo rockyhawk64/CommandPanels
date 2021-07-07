@@ -29,16 +29,18 @@ public class Commandpanelcustom implements Listener {
 
                         boolean correctCommand = true;
                         ArrayList<String[]> placeholders = new ArrayList<>(); //should read placeholder,argument
-                        String[] args = cmd.split("\\s");
-                        String[] executedCommand = e.getMessage().replace("/", "").split("\\s"); //command split into args
-                        if(args.length != executedCommand.length){
+                        String[] phEnds = plugin.placeholders.getPlaceholderEnds(panel,true); //start and end of placeholder
+                        String[] command = cmd.split("\\s");
+                        String[] message = e.getMessage().replace("/", "").split("\\s"); //command split into args
+
+                        if(command.length != message.length){
                             continue;
                         }
 
                         for(int i = 0; i < cmd.split("\\s").length; i++){
-                            if(args[i].startsWith("%cp-")){
-                                placeholders.add(new String[]{args[i], executedCommand[i]});
-                            }else if(!args[i].equals(executedCommand[i])){
+                            if(command[i].startsWith(phEnds[0])){
+                                placeholders.add(new String[]{command[i].replace(phEnds[0],"").replace(phEnds[1],""), message[i]});
+                            }else if(!command[i].equals(message[i])){
                                 correctCommand = false;
                             }
                         }
