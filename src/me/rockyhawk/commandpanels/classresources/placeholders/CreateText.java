@@ -61,17 +61,13 @@ public class CreateText {
                     tempInt += 1;
                 }
             }
-        }catch(Exception ignore){
-            //this will be ignored as it is probably a null
-            return null;
-        }
+        }catch(Exception ignore){}
         int tempInt = 0;
         //change colour
         for(String temp : setpapi){
             try {
                 setpapi.set(tempInt, plugin.hex.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', temp)));
-            }catch(NullPointerException ignore){
-            }
+            }catch(NullPointerException ignore){}
             tempInt += 1;
         }
         return setpapi;

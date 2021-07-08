@@ -50,12 +50,14 @@ public class Placeholders {
         List<String[]> values = new ArrayList<>();
         values.add(new String[]{plugin.config.getString("placeholders.primary.start"),plugin.config.getString("placeholders.primary.end")});
         values.add(new String[]{plugin.config.getString("placeholders.secondary.start"),plugin.config.getString("placeholders.secondary.end")});
-        if(panel.getConfig().isSet("placeholders")){
-            if(panel.getConfig().isSet("placeholders.primary")){
-                values.set(0,new String[]{panel.getConfig().getString("placeholders.primary.start"),panel.getConfig().getString("placeholders.primary.end")});
-            }
-            if(panel.getConfig().isSet("placeholders.secondary")){
-                values.set(1,new String[]{panel.getConfig().getString("placeholders.secondary.start"),panel.getConfig().getString("placeholders.secondary.end")});
+        if(panel != null) {
+            if (panel.getConfig().isSet("placeholders")) {
+                if (panel.getConfig().isSet("placeholders.primary")) {
+                    values.set(0, new String[]{panel.getConfig().getString("placeholders.primary.start"), panel.getConfig().getString("placeholders.primary.end")});
+                }
+                if (panel.getConfig().isSet("placeholders.secondary")) {
+                    values.set(1, new String[]{panel.getConfig().getString("placeholders.secondary.start"), panel.getConfig().getString("placeholders.secondary.end")});
+                }
             }
         }
         if(primary){

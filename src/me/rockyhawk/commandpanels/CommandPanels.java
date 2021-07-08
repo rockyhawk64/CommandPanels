@@ -256,7 +256,7 @@ public class CommandPanels extends JavaPlugin{
         return new CommandPanelsAPI(JavaPlugin.getPlugin(CommandPanels.class));
     }
 
-    public void setName(Panel panel, ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours, Boolean hideAttributes) {
+    public ItemStack setName(Panel panel, ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours, Boolean hideAttributes) {
         try {
             ItemMeta renamedMeta = renamed.getItemMeta();
             //set cp placeholders
@@ -276,23 +276,22 @@ public class CommandPanels extends JavaPlugin{
                 renamedMeta.setDisplayName(customName);
             }
 
-            List<String> clore;
+            List<String> re_lore;
             if (lore != null) {
                 if(usePlaceholders && useColours){
-                    clore = tex.placeholdersList(panel, p, lore, true);
+                    re_lore = tex.placeholdersList(panel, p, lore, true);
                 }else if(usePlaceholders){
-                    clore = tex.placeholdersNoColour(panel,p, lore);
+                    re_lore = tex.placeholdersNoColour(panel,p, lore);
                 }else if(useColours){
-                    clore = tex.placeholdersList(panel, p, lore, false);
+                    re_lore = tex.placeholdersList(panel, p, lore, false);
                 }else{
-                    clore = lore;
+                    re_lore = lore;
                 }
-                renamedMeta.setLore(splitListWithEscape(clore));
+                renamedMeta.setLore(splitListWithEscape(re_lore));
             }
             renamed.setItemMeta(renamedMeta);
-        } catch (Exception ignored) {
-        }
-
+        } catch (Exception ignored) {}
+        return renamed;
     }
 
     private void setupEconomy() {

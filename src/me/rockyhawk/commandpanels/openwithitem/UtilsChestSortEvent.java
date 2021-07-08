@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.openwithitem;
 
-import de.jeff_media.chestsort.ChestSortEvent;
+import de.jeff_media.chestsort.api.ChestSortEvent;
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
