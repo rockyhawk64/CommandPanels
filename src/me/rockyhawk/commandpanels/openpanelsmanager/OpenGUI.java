@@ -94,11 +94,11 @@ public class OpenGUI {
                                     try{
                                         if(!pconfig.contains("item." + n)){
                                             setItem(s,n,i,p,position);
-                                            takenSlots.add(Integer.parseInt(item));
+                                            takenSlots.add(n);
                                         }
                                     }catch(NullPointerException ignore){
                                         setItem(s,n,i,p,position);
-                                        takenSlots.add(Integer.parseInt(item));
+                                        takenSlots.add(n);
                                     }
                                 }
                             } else {
@@ -106,11 +106,11 @@ public class OpenGUI {
                                 try{
                                     if(!pconfig.contains("item." + Integer.parseInt(tempDupe))){
                                         setItem(s,Integer.parseInt(tempDupe),i,p,position);
-                                        takenSlots.add(Integer.parseInt(item));
+                                        takenSlots.add(Integer.parseInt(tempDupe));
                                     }
                                 }catch(NullPointerException ignore){
                                     setItem(s,Integer.parseInt(tempDupe),i,p,position);
-                                    takenSlots.add(Integer.parseInt(item));
+                                    takenSlots.add(Integer.parseInt(tempDupe));
                                 }
                             }
                         }
