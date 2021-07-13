@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.ingameeditor;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -260,7 +261,7 @@ public class OpenEditorGuis {
 
         if(cf.contains("open-with-item.material")){
             hotbarItems = true;
-            temp = plugin.itemCreate.makeItemFromConfig(null,cf.getConfigurationSection("open-with-item"), p, false, true, false);
+            temp = plugin.itemCreate.makeItemFromConfig(null, PanelPosition.Top,cf.getConfigurationSection("open-with-item"), p, false, true, false);
         }else{
             temp = new ItemStack(Material.REDSTONE_BLOCK, 1);
         }
@@ -497,7 +498,7 @@ public class OpenEditorGuis {
         plugin.setName(null,temp, ChatColor.RED + "Back", null, p, true, true, true);
         i.setItem(27, temp);
 
-        temp = plugin.itemCreate.makeItemFromConfig(null,cf,p,false,false, false);
+        temp = plugin.itemCreate.makeItemFromConfig(null,PanelPosition.Top,cf,p,false,false, false);
         lore.clear();
         lore.add(ChatColor.GRAY + "Click to set custom material");
         lore.add(ChatColor.GRAY + "typically for custom heads");
@@ -536,7 +537,7 @@ public class OpenEditorGuis {
                     lore.add(ChatColor.WHITE + "Compare: " + ChatColor.GRAY + cf.getString(section + ".compare"));
                 }
 
-                temp = plugin.itemCreate.makeItemFromConfig(null,cf.getConfigurationSection(section),p,false,false, false);
+                temp = plugin.itemCreate.makeItemFromConfig(null,PanelPosition.Top,cf.getConfigurationSection(section),p,false,false, false);
                 plugin.setName(null,temp, ChatColor.AQUA + section, lore, p,false, true, true);
                 i.setItem(slot, temp);
                 slot++;

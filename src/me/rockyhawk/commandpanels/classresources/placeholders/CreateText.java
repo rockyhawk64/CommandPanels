@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.classresources.placeholders;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -16,9 +17,9 @@ public class CreateText {
     }
 
     //CommandPanels send message function with all placeholders
-    public void sendMessage(Panel panel, Player p, String message){
+    public void sendMessage(Panel panel,PanelPosition position, Player p, String message){
         if(!message.equals("")) {
-            p.sendMessage(placeholders(panel, p,plugin.tag + message));
+            p.sendMessage(placeholders(panel,position, p,plugin.tag + message));
         }
     }
 
@@ -37,11 +38,11 @@ public class CreateText {
     }
 
     //papi except if it is a String List
-    public List<String> placeholdersNoColour(Panel panel, Player p, List<String> setpapi) {
+    public List<String> placeholdersNoColour(Panel panel,PanelPosition position, Player p, List<String> setpapi) {
         try {
             int tempInt = 0;
             for (String temp : setpapi) {
-                setpapi.set(tempInt, attachPlaceholders(panel, p, temp));
+                setpapi.set(tempInt, attachPlaceholders(panel,position, p, temp));
                 tempInt += 1;
             }
         }catch(Exception ignore){
@@ -52,12 +53,12 @@ public class CreateText {
     }
 
     //papi except if it is a String List
-    public List<String> placeholdersList(Panel panel, Player p, List<String> setpapi, boolean placeholder) {
+    public List<String> placeholdersList(Panel panel,PanelPosition position, Player p, List<String> setpapi, boolean placeholder) {
         try {
             if(placeholder) {
                 int tempInt = 0;
                 for (String temp : setpapi) {
-                    setpapi.set(tempInt, attachPlaceholders(panel, p, temp));
+                    setpapi.set(tempInt, attachPlaceholders(panel,position, p, temp));
                     tempInt += 1;
                 }
             }
@@ -84,9 +85,9 @@ public class CreateText {
     }
 
     //string papi with no colours
-    public String placeholdersNoColour(Panel panel, Player p, String setpapi) {
+    public String placeholdersNoColour(Panel panel, PanelPosition position, Player p, String setpapi) {
         try {
-            setpapi = attachPlaceholders(panel, p,setpapi);
+            setpapi = attachPlaceholders(panel,position, p,setpapi);
             return setpapi;
         }catch(NullPointerException e){
             return setpapi;
@@ -94,9 +95,9 @@ public class CreateText {
     }
 
     //regular string papi
-    public String placeholders(Panel panel, Player p, String setpapi) {
+    public String placeholders(Panel panel, PanelPosition position, Player p, String setpapi) {
         try {
-            setpapi = attachPlaceholders(panel, p,setpapi);
+            setpapi = attachPlaceholders(panel,position, p,setpapi);
             setpapi = plugin.hex.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
             return setpapi;
         }catch(NullPointerException e){
@@ -104,14 +105,14 @@ public class CreateText {
         }
     }
 
-    public String attachPlaceholders(Panel panel, Player p, String input){
+    public String attachPlaceholders(Panel panel, PanelPosition position, Player p, String input){
         //do all the placeholders in order to fill into text
-        input = plugin.placeholders.setPlaceholders(panel, p, input, false);
+        input = plugin.placeholders.setPlaceholders(panel,position, p, input, false);
         if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             OfflinePlayer offp = plugin.getServer().getOfflinePlayer(p.getUniqueId());
             input = PlaceholderAPI.setPlaceholders(offp, input);
         }
-        input = plugin.placeholders.setPlaceholders(panel, p, input, true);
+        input = plugin.placeholders.setPlaceholders(panel,position, p, input, true);
         return input;
     }
 }

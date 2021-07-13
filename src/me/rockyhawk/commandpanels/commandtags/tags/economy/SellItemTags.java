@@ -13,6 +13,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class SellItemTags implements Listener {
@@ -28,7 +31,7 @@ public class SellItemTags implements Listener {
             //if player uses sell= it will be eg. sell= <cashback> <item> <amount of item> [enchanted:KNOCKBACK:1] [potion:JUMP]
             try {
                 if (plugin.econ != null) {
-                    boolean sold = checkItem(e.p, e.args);
+                    boolean sold = removeItem(e.p, e.args);
                     if (!sold) {
                         plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.item.failure"));
                     } else {
@@ -50,7 +53,7 @@ public class SellItemTags implements Listener {
             try {
                 if (plugin.getServer().getPluginManager().isPluginEnabled("TokenManager")) {
                     TokenManager api = (TokenManager) Bukkit.getServer().getPluginManager().getPlugin("TokenManager");
-                    boolean sold = checkItem(e.p, e.args);
+                    boolean sold = removeItem(e.p, e.args);
                     if (!sold) {
                         plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.item.failure"));
                     } else {
@@ -68,10 +71,12 @@ public class SellItemTags implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
-    private boolean checkItem(Player p, String[] args){
-        for (int f = 0; f < p.getInventory().getSize(); f++) {
-            ItemStack itm = p.getInventory().getItem(f);
+    //returns false if player does not have item
+    private boolean removeItem(Player p, String[] args){
+        List<ItemStack> cont = new ArrayList<>(Arrays.asList(plugin.inventorySaver.getNormalInventory(p)));
+
+        for (int f = 0; f < 36; f++) {
+            ItemStack itm = cont.get(f);
             if (itm != null && itm.getType().equals(Material.matchMaterial(args[1]))) {
                 //determine if the command contains parameters for extensions
                 String potion = "false";
@@ -112,8 +117,13 @@ public class SellItemTags implements Listener {
                 if (itm.getAmount() >= new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2])).getAmount()) {
                     int amt = itm.getAmount() - new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2])).getAmount();
                     itm.setAmount(amt);
-                    p.getInventory().setItem(f, amt > 0 ? itm : null);
-                    p.updateInventory();
+                    if(plugin.inventorySaver.hasNormalInventory(p)){
+                        p.getInventory().setItem(f, amt > 0 ? itm : null);
+                        p.updateInventory();
+                    }else{
+                        cont.set(f,amt > 0 ? itm : null);
+                        plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
+                    }
                     return true;
                 }
             }

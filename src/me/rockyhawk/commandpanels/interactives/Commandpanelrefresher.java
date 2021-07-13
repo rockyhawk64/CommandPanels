@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.interactives;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -27,7 +28,6 @@ public class Commandpanelrefresher implements Listener {
             }
         }
 
-        //I have to convert HumanEntity to a player
         Player p = e.getPlayer();
         Panel pn = e.getPanel();
 
@@ -68,7 +68,7 @@ public class Commandpanelrefresher implements Listener {
                     c=0;
                 }
                 //refresh here
-                if(plugin.openPanels.hasPanelOpen(p.getName(),pn.getName())){
+                if(e.getPanel().isOpen){
                     if(p.getOpenInventory().getTopInventory().getHolder() != p){
                         //if open inventory is not a panel (owned by the player holder), cancel
                         this.cancel();
@@ -89,11 +89,11 @@ public class Commandpanelrefresher implements Listener {
                                 //reload the panel is debug is enabled (only personal debug)
                                 pn.setConfig(YamlConfiguration.loadConfiguration(pn.getFile()));
                             }
-                            plugin.createGUI.openGui(pn, p, 0,animatecount);
-                        } catch (Exception e) {
+                            plugin.createGUI.openGui(pn, p,e.getPosition(), PanelOpenType.Refresh,animatecount);
+                        } catch (Exception ex) {
                             //error opening gui
                             p.closeInventory();
-                            plugin.openPanels.closePanelForLoader(p.getName());
+                            plugin.openPanels.closePanelForLoader(p.getName(),e.getPosition());
                             this.cancel();
                         }
                     }
@@ -109,10 +109,12 @@ public class Commandpanelrefresher implements Listener {
                     this.cancel();
                     //remove duplicate items here
                     p.updateInventory();
-                    for(ItemStack itm : p.getInventory().getContents()){
-                        if(itm != null){
-                            if (plugin.nbt.hasNBT(itm)) {
-                                p.getInventory().remove(itm);
+                    if(plugin.inventorySaver.hasNormalInventory(p)) {
+                        for (ItemStack itm : p.getInventory().getContents()) {
+                            if (itm != null) {
+                                if (plugin.nbt.hasNBT(itm)) {
+                                    p.getInventory().remove(itm);
+                                }
                             }
                         }
                     }

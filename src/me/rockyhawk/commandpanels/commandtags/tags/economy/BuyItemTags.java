@@ -80,10 +80,6 @@ public class BuyItemTags implements Listener {
                 }
             }
         }
-        if (p.getInventory().firstEmpty() >= 0) {
-            p.getInventory().addItem(new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2]),id));
-        } else {
-            Objects.requireNonNull(p.getLocation().getWorld()).dropItemNaturally(p.getLocation(), new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2]),id));
-        }
+        plugin.inventorySaver.addItem(p,new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2]),id));
     }
 }

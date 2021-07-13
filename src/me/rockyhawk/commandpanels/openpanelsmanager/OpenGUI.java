@@ -11,6 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -21,31 +22,36 @@ public class OpenGUI {
     }
 
     @SuppressWarnings("deprecation")
-    public Inventory openGui(Panel panel, Player p, int onOpen, int animateValue) {
+    public Inventory openGui(Panel panel, Player p, PanelPosition position, PanelOpenType openType, int animateValue) {
         ConfigurationSection pconfig = panel.getConfig();
 
-        String title;
-        if (onOpen != 3) {
-            //regular inventory
-            title = plugin.tex.placeholders(panel,p,pconfig.getString("title"));
-        } else {
-            //editor inventory
-            title = "Editing Panel: " + panel.getName();
-        }
-
         Inventory i;
-        if(isNumeric(pconfig.getString("rows"))){
-            i = Bukkit.createInventory(p, pconfig.getInt("rows") * 9, title);
+        if(position == PanelPosition.Top) {
+            String title;
+            if (openType != PanelOpenType.Editor) {
+                //regular inventory
+                title = plugin.tex.placeholders(panel, position, p, pconfig.getString("title"));
+            } else {
+                //editor inventory
+                title = "Editing Panel: " + panel.getName();
+            }
+
+            if (isNumeric(pconfig.getString("rows"))) {
+                i = Bukkit.createInventory(p, pconfig.getInt("rows") * 9, title);
+            } else {
+                i = Bukkit.createInventory(p, InventoryType.valueOf(pconfig.getString("rows")), title);
+            }
         }else{
-            i = Bukkit.createInventory(p, InventoryType.valueOf(pconfig.getString("rows")), title);
+            i = p.getInventory();
         }
             
         Set<String> itemList = pconfig.getConfigurationSection("item").getKeys(false);
+        HashSet<Integer> takenSlots = new HashSet<>();
         for (String item : itemList) {
             String section = "";
-            //onOpen needs to not be 3 so the editor won't include hasperm and hasvalue, etc items
-            if (onOpen != 3) {
-                section = plugin.itemCreate.hasSection(panel,pconfig.getConfigurationSection("item." + Integer.parseInt(item)), p);
+            //openType needs to not be 3 so the editor won't include hasperm and hasvalue, etc items
+            if (openType != PanelOpenType.Editor) {
+                section = plugin.itemCreate.hasSection(panel,position,pconfig.getConfigurationSection("item." + Integer.parseInt(item)), p);
                 //This section is for animations below here: VISUAL ONLY
 
                 //check for if there is animations inside the items section
@@ -58,23 +64,26 @@ public class OpenGUI {
             }
 
             //will only add NBT if not an editor GUI
-            ItemStack s = plugin.itemCreate.makeItemFromConfig(panel,Objects.requireNonNull(pconfig.getConfigurationSection("item." + item + section)), p, onOpen != 3, onOpen != 3, onOpen != 3);
+            ItemStack s = plugin.itemCreate.makeItemFromConfig(panel,position,Objects.requireNonNull(pconfig.getConfigurationSection("item." + item + section)), p, openType != PanelOpenType.Editor, openType != PanelOpenType.Editor, openType != PanelOpenType.Editor);
 
             //This is for CUSTOM ITEMS
             if(pconfig.contains("item." + item + section + ".itemType")) {
                 //this is for contents in the itemType section
-                if (pconfig.getStringList("item." + item + section + ".itemType").contains("placeable") && onOpen == 0) {
-                    //keep item the same, onOpen == 0 meaning panel is refreshing
-                    i.setItem(Integer.parseInt(item), p.getOpenInventory().getItem(Integer.parseInt(item)));
+                if (pconfig.getStringList("item." + item + section + ".itemType").contains("placeable") && openType == PanelOpenType.Refresh) {
+                    //keep item the same, openType == 0 meaning panel is refreshing
+                    setItem(p.getOpenInventory().getItem(Integer.parseInt(item)),Integer.parseInt(item),i,p,position);
+                    takenSlots.add(Integer.parseInt(item));
                     continue;
                 }
             }
 
             try {
                 //place item into the GUI
-                i.setItem(Integer.parseInt(item), s);
+                setItem(s,Integer.parseInt(item),i,p,position);
+                takenSlots.add(Integer.parseInt(item));
+                //i.setItem(Integer.parseInt(item), s);
                 //only place duplicate items in without the editor mode. These are merely visual and will not carry over commands
-                if(pconfig.contains("item." + item + section + ".duplicate") && onOpen != 3) {
+                if(pconfig.contains("item." + item + section + ".duplicate") && openType != PanelOpenType.Editor) {
                     try {
                         String[] duplicateItems = pconfig.getString("item." + item + section + ".duplicate").split(",");
                         for (String tempDupe : duplicateItems) {
@@ -84,101 +93,117 @@ public class OpenGUI {
                                 for(int n = bothNumbers[0]; n <= bothNumbers[1]; n++){
                                     try{
                                         if(!pconfig.contains("item." + n)){
-                                            i.setItem(n, s);
+                                            setItem(s,n,i,p,position);
+                                            takenSlots.add(Integer.parseInt(item));
                                         }
                                     }catch(NullPointerException ignore){
-                                        i.setItem(n, s);
+                                        setItem(s,n,i,p,position);
+                                        takenSlots.add(Integer.parseInt(item));
                                     }
                                 }
                             } else {
                                 //if there is only one dupe item
                                 try{
                                     if(!pconfig.contains("item." + Integer.parseInt(tempDupe))){
-                                        i.setItem(Integer.parseInt(tempDupe), s);
+                                        setItem(s,Integer.parseInt(tempDupe),i,p,position);
+                                        takenSlots.add(Integer.parseInt(item));
                                     }
                                 }catch(NullPointerException ignore){
-                                    i.setItem(Integer.parseInt(tempDupe), s);
+                                    setItem(s,Integer.parseInt(tempDupe),i,p,position);
+                                    takenSlots.add(Integer.parseInt(item));
                                 }
                             }
                         }
                     }catch(NullPointerException nullp){
                         plugin.debug(nullp,p);
                         p.closeInventory();
-                        plugin.openPanels.closePanelForLoader(p.getName());
+                        plugin.openPanels.closePanelForLoader(p.getName(),position);
                     }
                 }
-            } catch (ArrayIndexOutOfBoundsException var24) {
-                plugin.debug(var24,p);
-                if (plugin.debug.isEnabled(p)) {
-                    p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " item: One of the items does not fit in the Panel!"));
-                    p.closeInventory();
-                    plugin.openPanels.closePanelForLoader(p.getName());
-                }
-            }
+            } catch (ArrayIndexOutOfBoundsException ignore) {}
         }
         if (pconfig.contains("empty") && !Objects.equals(pconfig.getString("empty"), "AIR")) {
-            for (int c = 0; i.getSize() > c; ++c) {
-                boolean found = false;
-                if(itemList.contains(String.valueOf(c))){
-                    if(i.getItem(c) == null){
-                        found = true;
-                    }
+            ItemStack empty;
+            try {
+                //emptyID for older versions of minecraft (might be deprecated later on)
+                short id = 0;
+                if(pconfig.contains("emptyID")){
+                    id = Short.parseShort(pconfig.getString("emptyID"));
                 }
-                if (!found) {
-                    ItemStack empty;
-                    try {
-                        //emptyID for older versions of minecraft (might be deprecated later on)
-                        short id = 0;
-                        if(pconfig.contains("emptyID")){
-                            id = Short.parseShort(pconfig.getString("emptyID"));
-                        }
-                        //either use custom item or just material type
-                        if(pconfig.contains("custom-item." + pconfig.getString("empty"))){
-                            empty = plugin.itemCreate.makeItemFromConfig(panel,pconfig.getConfigurationSection("custom-item." + pconfig.getString("empty")),p,true,true,true);
-                        }else{
-                            empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(pconfig.getString("empty").toUpperCase())), 1,id);
-                            empty = plugin.nbt.setNBT(empty);
-                            ItemMeta renamedMeta = empty.getItemMeta();
-                            assert renamedMeta != null;
-                            renamedMeta.setDisplayName(" ");
-                            empty.setItemMeta(renamedMeta);
-                        }
-                        if (empty.getType() == Material.AIR) {
-                            continue;
-                        }
-                    } catch (IllegalArgumentException | NullPointerException var26) {
-                        plugin.debug(var26,p);
-                        p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " empty: " + pconfig.getString("empty")));
-                        p.closeInventory();
-                        plugin.openPanels.closePanelForLoader(p.getName());
-                        return null;
-                    }
-                    if (onOpen != 3) {
-                        //only place empty items if not editing
-                        if(i.getItem(c) == null && !pconfig.contains("item." + c)) {
-                            i.setItem(c, empty);
+                //either use custom item or just material type
+                if(pconfig.contains("custom-item." + pconfig.getString("empty"))){
+                    empty = plugin.itemCreate.makeItemFromConfig(panel,position,pconfig.getConfigurationSection("custom-item." + pconfig.getString("empty")),p,true,true,true);
+                }else{
+                    empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(pconfig.getString("empty").toUpperCase())), 1,id);
+                    empty = plugin.nbt.setNBT(empty);
+                    ItemMeta renamedMeta = empty.getItemMeta();
+                    assert renamedMeta != null;
+                    renamedMeta.setDisplayName(" ");
+                    empty.setItemMeta(renamedMeta);
+                }
+                if (empty.getType() != Material.AIR) {
+                    for (int c = 0; getInvSize(i,position) > c; ++c) {
+                        if (!takenSlots.contains(c)) {
+                            //only place empty items if not editing
+                            if(openType != PanelOpenType.Editor) {
+                                setItem(empty,c,i,p,position);
+                            }
                         }
                     }
                 }
+            } catch (IllegalArgumentException | NullPointerException var26) {
+                plugin.debug(var26,p);
             }
         }
-        if (onOpen == 1) {
-            //onOpen 1 is default
+        if (openType == PanelOpenType.Normal) {
+            //declare old panel closed
+            if(plugin.openPanels.hasPanelOpen(p.getName(),position)){
+                plugin.openPanels.getOpenPanel(p.getName(),position).isOpen = false;
+            }
+            //open new panel
             plugin.openPanels.skipPanelClose.add(p.getName());
-            plugin.openPanels.openPanelForLoader(p.getName(),panel);
-            p.openInventory(i);
+            plugin.openPanels.openPanelForLoader(p.getName(),panel,position);
+            //only if it needs to open the top inventory
+            if(position == PanelPosition.Top) {
+                p.openInventory(i);
+            }
             plugin.openPanels.skipPanelClose.remove(p.getName());
-        } else if (onOpen == 3) {
-            //onOpen 3 will open the editor panel
+        } else if (openType == PanelOpenType.Editor) {
+            //The editor will always be at panel position top
             p.openInventory(i);
-        } else if (onOpen == 0) {
-            //onOpen 0 will just refresh the panel
-            plugin.legacy.setStorageContents(p,plugin.legacy.getStorageContents(i));
-        } else if (onOpen == 2) {
+        } else if (openType == PanelOpenType.Refresh) {
+            //openType 0 will just refresh the panel
+            if(position == PanelPosition.Top) {
+                plugin.legacy.setStorageContents(p, plugin.legacy.getStorageContents(i));
+            }
+        } else if (openType == PanelOpenType.Return) {
             //will return the inventory, not opening it at all
             return i;
         }
         return i;
+    }
+
+    private int getInvSize(Inventory inv, PanelPosition position){
+        if(position == PanelPosition.Top){
+            return inv.getSize();
+        }else if(position == PanelPosition.Middle){
+            return 27;
+        }else{
+            return 9;
+        }
+    }
+    private void setItem(ItemStack item, int slot, Inventory inv, Player p, PanelPosition position) throws ArrayIndexOutOfBoundsException{
+        if(position == PanelPosition.Top){
+            inv.setItem(slot, item);
+        }else if(position == PanelPosition.Middle){
+            if(slot+9 < 36) {
+                p.getInventory().setItem(slot + 9, item);
+            }
+        }else{
+            if(slot < 9) {
+                p.getInventory().setItem(slot, item);
+            }
+        }
     }
 
     private boolean isNumeric(String strNum) {

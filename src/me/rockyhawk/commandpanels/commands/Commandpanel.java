@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.commands;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -49,7 +50,7 @@ public class Commandpanel implements CommandExecutor {
                 if(args.length == 2){
                     if(!args[1].equals("item")){
                         if(!disableCommand) {
-                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.copy(), true);
+                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.copy(), PanelPosition.Top, true);
                         }
                     }else{
                         sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cp <panel> [item] [player]"));
@@ -72,7 +73,7 @@ public class Commandpanel implements CommandExecutor {
                 //do player command
                 if (args.length == 1) {
                     if(!disableCommand) {
-                        plugin.openVoids.openCommandPanel(sender, p, panel.copy(), false);
+                        plugin.openVoids.openCommandPanel(sender, p, panel.copy(),PanelPosition.Top, false);
                     }
                     return true;
                 }else if(args.length == 2){
@@ -80,7 +81,7 @@ public class Commandpanel implements CommandExecutor {
                         plugin.openVoids.giveHotbarItem(sender, p, panel, false);
                     }else{
                         if(!disableCommand) {
-                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.copy(), true);
+                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.copy(),PanelPosition.Top, true);
                         }
                     }
                     return true;

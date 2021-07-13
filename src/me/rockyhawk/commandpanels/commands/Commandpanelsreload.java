@@ -2,12 +2,12 @@ package me.rockyhawk.commandpanels.commands;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 
@@ -24,6 +24,14 @@ public class Commandpanelsreload implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (label.equalsIgnoreCase("cpr") || label.equalsIgnoreCase("commandpanelreload") || label.equalsIgnoreCase("cpanelr")) {
             if (sender.hasPermission("commandpanel.reload")) {
+                //close all the panels
+                for(String name : plugin.openPanels.openPanels.keySet()){
+                    plugin.openPanels.closePanelForLoader(name, PanelPosition.Top);
+                    try {
+                        Bukkit.getPlayer(name).closeInventory();
+                    }catch (Exception ignore){}
+                }
+
                 plugin.reloadPanelFiles();
                 if(new File(plugin.getDataFolder() + File.separator + "temp.yml").delete()){
                     //empty
@@ -55,7 +63,6 @@ public class Commandpanelsreload implements CommandExecutor {
 
     //this will require a server restart for new commands
     public void registerCommands(){
-        ConfigurationSection tempFile;
         File commandsLoc = new File("commands.yml");
         YamlConfiguration cmdCF;
         try {

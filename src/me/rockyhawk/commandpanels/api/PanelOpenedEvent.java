@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.api;
 
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -11,6 +12,7 @@ public class PanelOpenedEvent extends Event implements Cancellable {
     private boolean isCancelled;
     private final Player p;
     private final Panel panel;
+    private final PanelPosition pos;
 
     public boolean isCancelled() {
         return this.isCancelled;
@@ -20,9 +22,14 @@ public class PanelOpenedEvent extends Event implements Cancellable {
         this.isCancelled = isCancelled;
     }
 
-    public PanelOpenedEvent(Player player, Panel panel) {
+    public PanelOpenedEvent(Player player, Panel panel, PanelPosition position) {
         this.p = player;
         this.panel = panel;
+        this.pos = position;
+    }
+
+    public PanelPosition getPosition(){
+        return this.pos;
     }
 
     public Player getPlayer(){

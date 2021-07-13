@@ -37,7 +37,6 @@ public class NBT_1_14 {
             ItemMeta itemMeta = item.getItemMeta();
             return itemMeta.getPersistentDataContainer().get(ns_key, PersistentDataType.STRING);
         }catch (Exception e){
-            plugin.debug(e,null);
             return "";
         }
     }

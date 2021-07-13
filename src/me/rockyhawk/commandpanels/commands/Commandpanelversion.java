@@ -18,7 +18,7 @@ public class Commandpanelversion implements CommandExecutor {
             if(args.length == 0) {
                 if (sender.hasPermission("commandpanel.version")) {
                     //version command
-                    String latestVersion = plugin.updater.githubNewUpdate(false);
+                    String latestVersion = plugin.updater.getLatestVersion(false);
                     sender.sendMessage(plugin.tex.colour(plugin.tag));
                     sender.sendMessage(ChatColor.GREEN + "This Version " + ChatColor.GRAY + plugin.getDescription().getVersion());
                     sender.sendMessage(ChatColor.GREEN + "Latest Version " + ChatColor.GRAY + latestVersion);

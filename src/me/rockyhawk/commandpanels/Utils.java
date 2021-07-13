@@ -1,6 +1,8 @@
 package me.rockyhawk.commandpanels;
 
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.commandtags.PaywallOutput;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,7 +21,7 @@ public class Utils implements Listener {
     @EventHandler
     public void onItemDrag(InventoryDragEvent e) {
         Player p = (Player)e.getWhoClicked();
-        if(!plugin.openPanels.hasPanelOpen(p.getName())){
+        if(!plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             return;
         }
         if(e.getInventory().getType() != InventoryType.PLAYER){
@@ -31,32 +33,64 @@ public class Utils implements Listener {
     public void onPanelClick(InventoryClickEvent e) {
         //when clicked on a panel
         Player p = (Player)e.getWhoClicked();
+        int clickedSlot = e.getSlot();
         ItemStack clicked = e.getCurrentItem();
-        if(!plugin.openPanels.hasPanelOpen(p.getName()) || e.getSlotType() == InventoryType.SlotType.OUTSIDE || e.getClick() == ClickType.DOUBLE_CLICK){
+
+        if(!plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top) || e.getClick() == ClickType.DOUBLE_CLICK){
             return;
         }
-        Panel panel = plugin.openPanels.getOpenPanel(p.getName()); //this is the panel cf section
 
-        if(e.getSlot() == -999){return;}
+        //set the panel to the top panel
+        Panel panel = plugin.openPanels.getOpenPanel(p.getName(),PanelPosition.Top);
+
         if(e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY){
             e.setCancelled(true);
         }
-        if(e.getClickedInventory().getType() == InventoryType.PLAYER){
-            if(panel.getConfig().isSet("panelType")){
-                if(panel.getConfig().getStringList("panelType").contains("unmovable")){
-                    e.setCancelled(true);
+
+        if(e.getSlotType() == InventoryType.SlotType.OUTSIDE){
+            //if the panel is clicked on the outside area of the GUI
+            if (panel.getConfig().contains("outside-commands")) {
+                try {
+                    plugin.commandTags.runCommands(panel,PanelPosition.Top,p, panel.getConfig().getStringList("outside-commands"));
+                }catch(Exception s){
+                    plugin.debug(s,p);
                 }
             }
             return;
         }
 
-        //loop through possible hasvalue/hasperm 1,2,3,etc
+        PanelPosition position = PanelPosition.Top;
+        if(e.getClickedInventory().getType() == InventoryType.PLAYER) {
+            if (e.getSlotType() == InventoryType.SlotType.CONTAINER) {
+                if(plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Middle)) {
+                    position = PanelPosition.Middle;
+                    clickedSlot -= 9;
+                }else{
+                    e.setCancelled(itemsUnmovable(panel));
+                    return;
+                }
+            } else{
+                if(plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Bottom)) {
+                    position = PanelPosition.Bottom;
+                    //this is set to cancelled as if the command is to close the panel and there is a hotbar item in the same slot
+                    //it will also trigger the hotbar item after the panel is closed
+                    e.setCancelled(true);
+                }else{
+                    e.setCancelled(itemsUnmovable(panel));
+                    return;
+                }
+            }
+        }
+
+        //the panels proper position
+        panel = plugin.openPanels.getOpenPanel(p.getName(),position);
 
         //this loops through all the items in the panel
         boolean foundSlot = false;
         for(String slot : Objects.requireNonNull(panel.getConfig().getConfigurationSection("item")).getKeys(false)){
-            if(slot.equals(Integer.toString(e.getSlot()))){
+            if (slot.equals(Integer.toString(clickedSlot))) {
                 foundSlot = true;
+                break;
             }
         }
         if(!foundSlot){
@@ -64,10 +98,11 @@ public class Utils implements Listener {
             return;
         }
 
-        String section = plugin.itemCreate.hasSection(panel,panel.getConfig().getConfigurationSection("item." + e.getSlot()), p);
+        //get the section of the slot that was clicked
+        String section = plugin.itemCreate.hasSection(panel,position,panel.getConfig().getConfigurationSection("item." + clickedSlot), p);
 
-        if(panel.getConfig().contains("item." + e.getSlot() + section + ".itemType")){
-            if(panel.getConfig().getStringList("item." + e.getSlot() + section + ".itemType").contains("placeable")){
+        if(panel.getConfig().contains("item." + clickedSlot + section + ".itemType")){
+            if(panel.getConfig().getStringList("item." + clickedSlot + section + ".itemType").contains("placeable")){
                 //skip if the item is a placeable
                 e.setCancelled(false);
                 return;
@@ -85,8 +120,8 @@ public class Utils implements Listener {
             }
         }
 
-        if(panel.getConfig().contains("item." + e.getSlot() + section + ".commands")) {
-            List<String> commands = panel.getConfig().getStringList("item." + e.getSlot() + section + ".commands");
+        if(panel.getConfig().contains("item." + clickedSlot + section + ".commands")) {
+            List<String> commands = panel.getConfig().getStringList("item." + clickedSlot + section + ".commands");
             if (commands.size() != 0) {
                 //this will replace a sequence tag command with the commands from the sequence
                 List<String> commandsAfterSequence = commands;
@@ -155,17 +190,25 @@ public class Utils implements Listener {
                     //end custom command PlaceHolders
 
                     //make the command
-                    String command = plugin.tex.placeholders(panel,p,commands.get(i));
+                    String command = plugin.tex.placeholders(panel,position,p,commands.get(i));
 
-                    int val = plugin.commandTags.commandPayWall(p,command);
-                    if(val == 0){
+                    PaywallOutput val = plugin.commandTags.commandPayWall(panel,p,command);
+                    if(val == PaywallOutput.Blocked){
                         return;
                     }
-                    if(val == 2){
-                        plugin.commandTags.runCommand(panel, p, commands.get(i));
+                    if(val == PaywallOutput.NotApplicable){
+                        plugin.commandTags.runCommand(panel,position, p, commands.get(i));
                     }
                 }
             }
         }
+    }
+
+    private boolean itemsUnmovable(Panel panel){
+        if(panel.getConfig().isSet("panelType")){
+            //cancel event and return to signal no commands and no movement will occur
+            return panel.getConfig().getStringList("panelType").contains("unmovable");
+        }
+        return false;
     }
 }

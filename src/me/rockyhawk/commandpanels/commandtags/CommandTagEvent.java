@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.commandtags;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -14,11 +15,13 @@ public class CommandTagEvent extends Event {
     public String[] raw;
     public String[] args;
     public String name;
+    public PanelPosition pos;
     public boolean commandTagUsed = false;
 
-    public CommandTagEvent(CommandPanels plugin,  Panel panel1, Player player, String rawCommand1) {
+    public CommandTagEvent(CommandPanels plugin, Panel panel1, PanelPosition position, Player player, String rawCommand1) {
         this.p = player;
         this.panel = panel1;
+        this.pos = position;
 
         //do nopapi= tag (donation feature) which will stop PlaceholderAPI placeholders from executing
         boolean doApiPlaceholders = true;
@@ -40,10 +43,10 @@ public class CommandTagEvent extends Event {
         this.name = split[0].trim();
         this.raw = split[1].trim().split("\\s");
         if(doApiPlaceholders) {
-            this.args = plugin.tex.attachPlaceholders(panel1, player, split[1].trim()).split("\\s");
+            this.args = plugin.tex.attachPlaceholders(panel1,pos, player, split[1].trim()).split("\\s");
         }else{
-            this.args = ChatColor.translateAlternateColorCodes('&',plugin.placeholders.setPlaceholders(panel, p,split[1].trim(),false)).split("\\s");
-            this.args = ChatColor.translateAlternateColorCodes('&',plugin.placeholders.setPlaceholders(panel, p,split[1].trim(),true)).split("\\s");
+            this.args = ChatColor.translateAlternateColorCodes('&',plugin.placeholders.setPlaceholders(panel, pos, p,split[1].trim(),false)).split("\\s");
+            this.args = ChatColor.translateAlternateColorCodes('&',plugin.placeholders.setPlaceholders(panel, pos, p,split[1].trim(),true)).split("\\s");
         }
     }
 

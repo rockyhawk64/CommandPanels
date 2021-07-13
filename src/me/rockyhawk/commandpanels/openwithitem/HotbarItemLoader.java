@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.openwithitem;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -49,11 +50,11 @@ public class HotbarItemLoader {
                 }
                 if(panel.getConfig().contains("open-with-item.commands")){
                     for(String command : panel.getConfig().getStringList("open-with-item.commands")){
-                        plugin.commandTags.runCommand(panel,p, command);
+                        plugin.commandTags.runCommand(panel,PanelPosition.Top,p, command);
                     }
                     return true;
                 }
-                panel.open(p);
+                panel.open(p, PanelPosition.Top);
             }
             return true;
         }
@@ -86,11 +87,11 @@ public class HotbarItemLoader {
                         }
                         if(panel.getConfig().contains("open-with-item.commands")){
                             for(String command : panel.getConfig().getStringList("open-with-item.commands")){
-                                plugin.commandTags.runCommand(panel,p, command);
+                                plugin.commandTags.runCommand(panel,PanelPosition.Top,p, command);
                             }
                             return true;
                         }
-                        panel.open(p);
+                        panel.open(p,PanelPosition.Top);
                     }
                     return true;
                 }

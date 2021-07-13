@@ -2,6 +2,8 @@ package me.rockyhawk.commandpanels.ingameeditor;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -78,7 +80,7 @@ public class EditorUserInput implements Listener {
                 final ConfigurationSection finalCF = cf;
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-                        plugin.createGUI.openGui(new Panel(finalCF, panelName), p, 3,0); //I have to do this to run regular Bukkit voids in an ASYNC Event
+                        plugin.createGUI.openGui(new Panel(finalCF, panelName), p, PanelPosition.Top, PanelOpenType.Editor,0); //I have to do this to run regular Bukkit voids in an ASYNC Event
                     }
                 });
             }else if(section.startsWith("section.")){

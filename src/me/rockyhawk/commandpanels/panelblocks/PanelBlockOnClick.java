@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.panelblocks;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -31,7 +32,7 @@ public class PanelBlockOnClick implements Listener {
         if(!plugin.blockConfig.contains("blocks")){
             return;
         }
-        if(plugin.openPanels.hasPanelOpen(p.getName())) {
+        if(plugin.openPanels.hasPanelOpen(p.getName(), PanelPosition.Top)) {
             //some blocks run this event twice, skip if panel already open
             //as blocks cannot be clicked obviously if a panel is open
             return;
@@ -43,13 +44,13 @@ public class PanelBlockOnClick implements Listener {
                 e.setCancelled(true);
                 if(plugin.blockConfig.contains("blocks." + configLocation + ".commands")){
                     for(String command : plugin.blockConfig.getStringList("blocks." + configLocation + ".commands")){
-                        plugin.commandTags.runCommand(null,p, command);
+                        plugin.commandTags.runCommand(null,PanelPosition.Top,p, command);
                     }
                     return;
                 }
                 //uses the open= tag because it will open a panel with panel names, but also works with open= features like placeholders
                 String command = "open= " + plugin.blockConfig.getString("blocks." + configLocation + ".panel");
-                plugin.commandTags.runCommand(null,p, command);
+                plugin.commandTags.runCommand(null,PanelPosition.Top,p, command);
             }
         }
     }

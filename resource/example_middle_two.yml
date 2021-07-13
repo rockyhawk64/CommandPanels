@@ -1,0 +1,180 @@
+# |------------------------------------------------------------------------
+# |                       CommandPanels Example File
+# |                            By RockyHawk v3.0
+# | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
+# |------------------------------------------------------------------------
+panels:
+  example_middle_two:
+    perm: default
+    rows: 4
+    title: '&e&lOnline Browser - Page $cp-data-nextpage$'
+    empty: LIGHT_BLUE_STAINED_GLASS_PANE
+    panelType:
+      - nocommand
+    placeholders:
+      primary:
+        start: '$'
+        end: '$'
+      secondary:
+        start: '{'
+        end: '}'
+    pre-load-commands:
+      - add-data= onlinepage 0
+      - add-data= nextpage 1
+    item:
+      '10':
+        material: 'cps= $cp-player-online-%math_1+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_1+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '$cp-player-online-%math_1+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '11':
+        material: 'cps= $cp-player-online-%math_2+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_2+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_2+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '12':
+        material: 'cps= $cp-player-online-%math_3+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_3+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_3+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '13':
+        material: 'cps= $cp-player-online-%math_4+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_4+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_4+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '14':
+        material: 'cps= $cp-player-online-%math_5+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_5+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_5+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '15':
+        material: 'cps= $cp-player-online-%math_6+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_6+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_6+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '16':
+        material: 'cps= $cp-player-online-%math_7+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_7+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_7+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '19':
+        material: 'cps= $cp-player-online-%math_8+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_8+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_8+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '20':
+        material: 'cps= $cp-player-online-%math_9+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_9+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_9+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '21':
+        material: 'cps= $cp-player-online-%math_10+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_10+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_10+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '22':
+        material: 'cps= $cp-player-online-%math_11+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_11+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_11+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '23':
+        material: 'cps= $cp-player-online-%math_12+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_12+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_12+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '24':
+        material: 'cps= $cp-player-online-%math_13+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_13+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_13+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '25':
+        material: 'cps= $cp-player-online-%math_14+14*{cp-data-onlinepage}%$'
+        name: '&e$cp-player-online-%math_14+14*{cp-data-onlinepage}%$'
+        hasvalue:
+          compare: '&e$cp-player-online-%math_14+14*{cp-data-onlinepage}%$'
+          value: 'Offline'
+          material: cps= eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyNzEwNTI3MTllZjY0MDc5ZWU4YzE0OTg5NTEyMzhhNzRkYWM0YzI3Yjk1NjQwZGI2ZmJkZGMyZDZiNWI2ZSJ9fX0=
+          stack: 1
+          name: '&7&l????'
+      '2':
+        material: LIGHT_BLUE_STAINED_GLASS_PANE
+        name: "&f"
+        hasgreater:
+          compare: '$cp-data-onlinepage$'
+          value: 1
+          material: STICK
+          stack: 1
+          name: "&c&lLast Page"
+          commands:
+            - math-data= onlinepage -1
+            - math-data= nextpage -1
+            - refresh
+      '6':
+        material: ARROW
+        stack: 1
+        name: "&e&lNext Page"
+        commands:
+          - 'math-data= onlinepage +1'
+          - 'math-data= nextpage +1'
+          - 'refresh'
+      '4':
+        material: OAK_SIGN
+        name: '&e&lOnline Players'
+        lore:
+          - '&b$cp-online-players$'
+          - ''
+          - '&8Player Browser made by:'
+          - '&8TinyTank800'
+

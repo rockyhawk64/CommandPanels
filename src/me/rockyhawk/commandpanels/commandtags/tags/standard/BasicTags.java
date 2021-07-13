@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.commandtags.tags.standard;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.PanelCommandEvent;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
@@ -24,7 +25,7 @@ public class BasicTags implements Listener {
         }
         if(e.name.equalsIgnoreCase("refresh")) {
             e.commandTagUsed();
-            plugin.createGUI.openGui(plugin.openPanels.getOpenPanel(e.p.getName()), e.p, 0, 0);
+            plugin.createGUI.openGui(e.panel, e.p, e.pos, PanelOpenType.Refresh, 0);
             return;
         }
         if(e.name.equalsIgnoreCase("console=")) {

@@ -2,6 +2,8 @@ package me.rockyhawk.commandpanels.ingameeditor;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -39,7 +41,7 @@ public class CpIngameEditCommand implements CommandExecutor {
             for(Panel panel  : plugin.panelList){
                 if(panel.getName().equals(args[0])) {
                     //below will start the command, once it got the right file and panel
-                    plugin.createGUI.openGui(panel.copy(), p,3,0);
+                    plugin.createGUI.openGui(panel.copy(), p, PanelPosition.Top, PanelOpenType.Editor,0);
                     return true;
                 }
             }

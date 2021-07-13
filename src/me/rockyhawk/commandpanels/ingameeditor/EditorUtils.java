@@ -2,6 +2,8 @@ package me.rockyhawk.commandpanels.ingameeditor;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -35,7 +37,7 @@ public class EditorUtils implements Listener {
                 return;
             }
         }catch(NullPointerException nu){return;}
-        if(!p.getOpenInventory().getTitle().equals(ChatColor.stripColor(plugin.tex.colour("Command Panels Editor"))) || plugin.openPanels.hasPanelOpen(p.getName())){
+        if(!p.getOpenInventory().getTitle().equals(ChatColor.stripColor(plugin.tex.colour("Command Panels Editor"))) || plugin.openPanels.hasPanelOpen(p.getName(), PanelPosition.Top)){
             return;
         }
         if(e.getClickedInventory() != e.getView().getTopInventory()){
@@ -98,7 +100,7 @@ public class EditorUtils implements Listener {
                         int count = 0;
                         for(String panelName : panelNames){
                             if(panelName.equals(ChatColor.stripColor(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getDisplayName()))){
-                                plugin.createGUI.openGui(new Panel(panelYaml.get(count), panelName), p,3,0);
+                                plugin.createGUI.openGui(new Panel(panelYaml.get(count), panelName), p,PanelPosition.Top,PanelOpenType.Editor,0);
                                 return;
                             }
                             count +=1;
@@ -123,7 +125,7 @@ public class EditorUtils implements Listener {
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent e) {
         Player p = (Player)e.getWhoClicked();
-        if(!p.getOpenInventory().getTitle().contains("Editing Panel:") || plugin.openPanels.hasPanelOpen(p.getName())){
+        if(!p.getOpenInventory().getTitle().contains("Editing Panel:") || plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             return;
         }
         String panelName = ""; //all panels from ALL files (panel names)
@@ -180,7 +182,7 @@ public class EditorUtils implements Listener {
     @EventHandler
     public void onInventoryEdit(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
-        if(!p.getOpenInventory().getTitle().contains("Editing Panel:") || plugin.openPanels.hasPanelOpen(p.getName())){
+        if(!p.getOpenInventory().getTitle().contains("Editing Panel:") || plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             return;
         }
         String panelName = "";
@@ -293,8 +295,8 @@ public class EditorUtils implements Listener {
     @EventHandler
     public void onPlayerClosePanel(InventoryCloseEvent e){
         //this is put here to avoid conflicts, close panel if it is open
-        if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName())){
-            plugin.openPanels.closePanelForLoader(e.getPlayer().getName());
+        if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName(),PanelPosition.Top)){
+            plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
             return;
         }
         //do editor settings if it is not a regular panel
@@ -308,7 +310,7 @@ public class EditorUtils implements Listener {
     @EventHandler
     public void onPanelSettings(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
-        if(!p.getOpenInventory().getTitle().contains("Panel Settings:") || plugin.openPanels.hasPanelOpen(p.getName())){
+        if(!p.getOpenInventory().getTitle().contains("Panel Settings:") || plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             return;
         }
         e.setCancelled(true);
@@ -459,7 +461,7 @@ public class EditorUtils implements Listener {
     @EventHandler
     public void onItemSettings(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
-        if(!p.getOpenInventory().getTitle().contains("Item Settings:") || plugin.openPanels.hasPanelOpen(p.getName())){
+        if(!p.getOpenInventory().getTitle().contains("Item Settings:") || plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             return;
         }
         e.setCancelled(true);
@@ -570,7 +572,7 @@ public class EditorUtils implements Listener {
                 String newSection = itemSlot.substring(0, itemSlot.lastIndexOf("."));
                 plugin.editorGuis.openItemSections(p,panelName,panelYaml.getConfigurationSection("item." + newSection), newSection);
             }else {
-                plugin.createGUI.openGui(new Panel(panelYaml, panelName), p, 3, 0);
+                plugin.createGUI.openGui(new Panel(panelYaml, panelName), p,PanelPosition.Top, PanelOpenType.Editor, 0);
             }
             p.updateInventory();
         }
@@ -580,7 +582,7 @@ public class EditorUtils implements Listener {
     @EventHandler
     public void onItemSection(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
-        if(!p.getOpenInventory().getTitle().contains("Item Sections:") || plugin.openPanels.hasPanelOpen(p.getName())){
+        if(!p.getOpenInventory().getTitle().contains("Item Sections:") || plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             return;
         }
         e.setCancelled(true);

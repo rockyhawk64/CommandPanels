@@ -5,6 +5,7 @@ import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +24,7 @@ public class Placeholders {
         this.plugin = pl;
     }
 
-    public String setPlaceholders(Panel panel, Player p, String str, boolean primary){
+    public String setPlaceholders(Panel panel,PanelPosition position, Player p, String str, boolean primary){
         String[] HOLDERS = getPlaceholderEnds(panel,primary);
         while (str.contains(HOLDERS[0] + "cp-")) {
             try {
@@ -32,7 +33,7 @@ public class Placeholders {
                 String identifier = str.substring(start, end).replace(HOLDERS[0] + "cp-", "").replace(HOLDERS[1], "");
                 String value;
                 try {
-                    value = doCpPlaceholders(panel,p,identifier, str);
+                    value = cpPlaceholders(panel,position,p,identifier, str);
                 } catch (NullPointerException er) {
                     value = "";
                 }
@@ -68,7 +69,7 @@ public class Placeholders {
     }
 
     @SuppressWarnings("deprecation")
-    private String doCpPlaceholders(Panel panel, Player p, String identifier, String string){
+    private String cpPlaceholders(Panel panel, PanelPosition position, Player p, String identifier, String string){
 
         //do player input placeholder first
         if (identifier.equals("player-input")) {
@@ -82,7 +83,7 @@ public class Placeholders {
             List<String> inputMessages = new ArrayList<String>(plugin.config.getStringList("config.input-message"));
             for (String temp : inputMessages) {
                 temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(plugin.config.getString("config.input-cancel")));
-                p.sendMessage(plugin.tex.placeholders(panel,p, temp));
+                p.sendMessage(plugin.tex.placeholders(panel,position,p, temp));
             }
             return "cpc";
         }
@@ -251,13 +252,13 @@ public class Placeholders {
 
                 try {
                     //if it is a regular custom item
-                    ItemStack confItm = plugin.itemCreate.makeItemFromConfig(panel,plugin.openPanels.getOpenPanel(p.getName()).getConfig().getConfigurationSection("custom-item." + matLoc),p,true,true, false);
+                    ItemStack confItm = plugin.itemCreate.makeItemFromConfig(panel,position,panel.getConfig().getConfigurationSection("custom-item." + matLoc),p,true,true, false);
                     if(plugin.itemCreate.isIdentical(confItm,itm)){
                         isIdentical = true;
                     }
 
                     //if custom item is an mmo item (1.14+ for the API)
-                    String customItemMaterial = plugin.openPanels.getOpenPanel(p.getName()).getConfig().getString("custom-item." + matLoc + ".material");
+                    String customItemMaterial = panel.getConfig().getString("custom-item." + matLoc + ".material");
                     if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems") && customItemMaterial.startsWith("mmo=")) {
                         String mmoType = customItemMaterial.split("\\s")[1];
                         String mmoID = customItemMaterial.split("\\s")[2];
@@ -311,7 +312,7 @@ public class Placeholders {
             try {
                 String point_value = identifier.replace("cp-setdata-", "");
                 String command = "set-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
-                plugin.commandTags.runCommand(panel,p, command);
+                plugin.commandTags.runCommand(panel,position,p, command);
                 return "";
             }catch (Exception ex){
                 plugin.debug(ex,p);
@@ -323,7 +324,7 @@ public class Placeholders {
             try {
                 String point_value = identifier.replace("mathdata-", "");
                 String command = "math-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
-                plugin.commandTags.runCommand(panel,p,command);
+                plugin.commandTags.runCommand(panel,position,p,command);
                 return "";
             }catch (Exception ex){
                 plugin.debug(ex,p);

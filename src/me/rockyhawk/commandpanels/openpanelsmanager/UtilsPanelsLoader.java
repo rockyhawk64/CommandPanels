@@ -26,7 +26,7 @@ public class UtilsPanelsLoader implements Listener {
     //tell panel loader that player has opened panel
     @EventHandler
     public void onPlayerClosePanel(PlayerQuitEvent e){
-        plugin.openPanels.closePanelForLoader(e.getPlayer().getName());
+        plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
         Player p = e.getPlayer();
         p.updateInventory();
         for(ItemStack itm : p.getInventory().getContents()){
@@ -44,7 +44,7 @@ public class UtilsPanelsLoader implements Listener {
         //only do this if editor is disabled as it will disabled this code
         if(!Objects.requireNonNull(plugin.config.getString("config.ingame-editor")).equalsIgnoreCase("true")) {
             //this is put here to avoid conflicts, close panel if it is closed
-            plugin.openPanels.closePanelForLoader(e.getPlayer().getName());
+            plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
         }
     }
 
@@ -52,7 +52,7 @@ public class UtilsPanelsLoader implements Listener {
     public void onInventoryItemClick(InventoryClickEvent e){
         //this will check to ensure an item is not from CommandPanels on inventory open
         Player p = (Player)e.getWhoClicked();
-        if(!plugin.openPanels.hasPanelOpen(p.getName())){
+        if(!plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             for(ItemStack itm : p.getInventory().getContents()){
                 if(plugin.openPanels.isNBTInjected(itm)){
                     p.getInventory().remove(itm);
@@ -65,14 +65,14 @@ public class UtilsPanelsLoader implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void vanillaOpenedEvent(InventoryOpenEvent e){
         if(e.isCancelled()) {
-            if (plugin.openPanels.hasPanelOpen(e.getPlayer().getName())) {
-                Panel closedPanel = plugin.openPanels.getOpenPanel(e.getPlayer().getName());
+            if (plugin.openPanels.hasPanelOpen(e.getPlayer().getName(),PanelPosition.Top)) {
+                Panel closedPanel = plugin.openPanels.getOpenPanel(e.getPlayer().getName(),PanelPosition.Top);
 
                 //manually remove player with no skip checks
-                plugin.openPanels.openPanels.remove(e.getPlayer().getName());
+                plugin.openPanels.removePlayer(e.getPlayer().getName());
 
                 //fire PanelClosedEvent
-                PanelClosedEvent closedEvent = new PanelClosedEvent(Bukkit.getPlayer(e.getPlayer().getName()),closedPanel);
+                PanelClosedEvent closedEvent = new PanelClosedEvent(Bukkit.getPlayer(e.getPlayer().getName()),closedPanel, PanelPosition.Top);
                 Bukkit.getPluginManager().callEvent(closedEvent);
 
                 //do message

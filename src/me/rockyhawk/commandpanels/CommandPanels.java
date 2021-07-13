@@ -33,10 +33,7 @@ import me.rockyhawk.commandpanels.ioclasses.nbt.NBTManager;
 import me.rockyhawk.commandpanels.ioclasses.legacy.LegacyVersion;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.ioclasses.legacy.PlayerHeads;
-import me.rockyhawk.commandpanels.openpanelsmanager.OpenGUI;
-import me.rockyhawk.commandpanels.openpanelsmanager.OpenPanelsLoader;
-import me.rockyhawk.commandpanels.openpanelsmanager.PanelPermissions;
-import me.rockyhawk.commandpanels.openpanelsmanager.UtilsPanelsLoader;
+import me.rockyhawk.commandpanels.openpanelsmanager.*;
 import me.rockyhawk.commandpanels.openwithitem.HotbarItemLoader;
 import me.rockyhawk.commandpanels.openwithitem.SwapItemEvent;
 import me.rockyhawk.commandpanels.openwithitem.UtilsChestSortEvent;
@@ -44,6 +41,8 @@ import me.rockyhawk.commandpanels.openwithitem.UtilsOpenWithItem;
 import me.rockyhawk.commandpanels.panelblocks.BlocksTabComplete;
 import me.rockyhawk.commandpanels.panelblocks.Commandpanelblocks;
 import me.rockyhawk.commandpanels.panelblocks.PanelBlockOnClick;
+import me.rockyhawk.commandpanels.playerinventoryhandler.InventorySaver;
+import me.rockyhawk.commandpanels.playerinventoryhandler.ItemStackSerializer;
 import me.rockyhawk.commandpanels.updater.Updater;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -101,7 +100,10 @@ public class CommandPanels extends JavaPlugin{
     public HotbarItemLoader hotbar = new HotbarItemLoader(this);
     public NBTManager nbt = new NBTManager(this);
 
-    public File panelsf;
+    public InventorySaver inventorySaver = new InventorySaver(this);
+    public ItemStackSerializer itemSerializer = new ItemStackSerializer(this);
+
+    public File panelsf = new File(this.getDataFolder() + File.separator + "panels");
     public YamlConfiguration blockConfig; //where panel block locations are stored
 
     public void onEnable() {
@@ -111,9 +113,9 @@ public class CommandPanels extends JavaPlugin{
         updater.githubNewUpdate(false);
 
         //register config files
-        this.panelsf = new File(this.getDataFolder() + File.separator + "panels");
         this.blockConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "blocks.yml"));
         panelData.dataConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "data.yml"));
+        inventorySaver.inventoryConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "inventories.yml"));
         this.config = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + File.separator + "config.yml"));
 
         //save the config.yml file
@@ -152,6 +154,8 @@ public class CommandPanels extends JavaPlugin{
         Objects.requireNonNull(this.getCommand("commandpanelversion")).setExecutor(new Commandpanelversion(this));
         Objects.requireNonNull(this.getCommand("commandpanellist")).setExecutor(new Commandpanelslist(this));
         this.getServer().getPluginManager().registerEvents(new Utils(this), this);
+        this.getServer().getPluginManager().registerEvents(updater, this);
+        this.getServer().getPluginManager().registerEvents(inventorySaver, this);
         this.getServer().getPluginManager().registerEvents(new UtilsPanelsLoader(this), this);
         this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
         this.getServer().getPluginManager().registerEvents(new CommandpanelUserInput(this), this);
@@ -201,17 +205,27 @@ public class CommandPanels extends JavaPlugin{
             this.getServer().getPluginManager().registerEvents(new UtilsChestSortEvent(this), this);
         }
 
-        //save the example.yml file and the template.yml file
+        //save the example_top.yml file and the template.yml file
         if (!this.panelsf.exists()) {
             try {
-                FileConfiguration exampleFileConfiguration;
-                FileConfiguration templateFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("template.yml")));
                 if(legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
-                    exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("exampleLegacy.yml")));
+                    FileConfiguration exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("exampleLegacy.yml")));
+                    exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example.yml"));
                 }else {
-                    exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example.yml")));
+                    //top
+                    FileConfiguration exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example_top.yml")));
+                    exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example_top.yml"));
+                    //middle one
+                    exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example_middle_one.yml")));
+                    exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example_middle_one.yml"));
+                    //middle two
+                    exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example_middle_two.yml")));
+                    exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example_middle_two.yml"));
+                    //bottom
+                    exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example_bottom.yml")));
+                    exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example_bottom.yml"));
                 }
-                exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example.yml"));
+                FileConfiguration templateFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("template.yml")));
                 templateFileConfiguration.save(new File(this.panelsf + File.separator + "template.yml"));
             } catch (IOException var11) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not save the example file!");
@@ -245,7 +259,17 @@ public class CommandPanels extends JavaPlugin{
     }
 
     public void onDisable() {
+        //close all the panels
+        for(String name : openPanels.openPanels.keySet()){
+            openPanels.closePanelForLoader(name, PanelPosition.Top);
+            try {
+                Bukkit.getPlayer(name).closeInventory();
+            }catch (Exception ignore){}
+        }
+
+        //save files
         panelData.saveDataFile();
+        inventorySaver.saveInventoryFile();
         if (Objects.requireNonNull(this.config.getString("updater.auto-update")).equalsIgnoreCase("true")) {
             updater.autoUpdatePlugin(this.getFile().getName());
         }
@@ -261,7 +285,7 @@ public class CommandPanels extends JavaPlugin{
             ItemMeta renamedMeta = renamed.getItemMeta();
             //set cp placeholders
             if(usePlaceholders){
-                customName = tex.placeholdersNoColour(panel,p,customName);
+                customName = tex.placeholdersNoColour(panel,PanelPosition.Top,p,customName);
             }
             if(useColours){
                 customName = tex.colour(customName);
@@ -279,11 +303,11 @@ public class CommandPanels extends JavaPlugin{
             List<String> re_lore;
             if (lore != null) {
                 if(usePlaceholders && useColours){
-                    re_lore = tex.placeholdersList(panel, p, lore, true);
+                    re_lore = tex.placeholdersList(panel,PanelPosition.Top, p, lore, true);
                 }else if(usePlaceholders){
-                    re_lore = tex.placeholdersNoColour(panel,p, lore);
+                    re_lore = tex.placeholdersNoColour(panel,PanelPosition.Top,p, lore);
                 }else if(useColours){
-                    re_lore = tex.placeholdersList(panel, p, lore, false);
+                    re_lore = tex.placeholdersList(panel,PanelPosition.Top, p, lore, false);
                 }else{
                     re_lore = lore;
                 }

@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.api;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -9,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 public class CommandPanelsAPI {
     CommandPanels plugin;
@@ -19,12 +19,12 @@ public class CommandPanelsAPI {
 
     //returns true if the player has a panel open
     public boolean isPanelOpen(Player p){
-        return plugin.openPanels.hasPanelOpen(p.getName());
+        return plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top);
     }
 
     //get the name of a panel currently open, will return null if panel is not open
-    public Panel getOpenPanel(Player p){
-        return plugin.openPanels.getOpenPanel(p.getName());
+    public Panel getOpenPanel(Player p, PanelPosition position){
+        return plugin.openPanels.getOpenPanel(p.getName(), position);
     }
 
     //loaded panels in folder
@@ -34,9 +34,14 @@ public class CommandPanelsAPI {
 
     //import panel into folder
     public void addPanel(Panel panel) throws IOException{
-        File addedFile = new File(plugin.panelsf + File.separator + panel.getFile().getName());
-        YamlConfiguration addedYaml = YamlConfiguration.loadConfiguration(panel.getFile());
-        addedYaml.save(addedFile);
+        File addedFile = new File(plugin.panelsf + File.separator + panel.getName() + ".yml");
+        YamlConfiguration newYaml = new YamlConfiguration();
+        if(panel.getConfig().contains("panels")){
+            newYaml.set("",panel.getConfig());
+        }else{
+            newYaml.set("panels." + panel.getName(),panel.getConfig());
+        }
+        newYaml.save(addedFile);
         plugin.reloadPanelFiles();
     }
 
@@ -61,8 +66,13 @@ public class CommandPanelsAPI {
         return null;
     }
 
+    //if the players inventory has no panels in it
+    public boolean hasNormalInventory(Player p){
+        return plugin.inventorySaver.hasNormalInventory(p);
+    }
+
     //make custom item using items section
     public ItemStack makeItem(Player p, ConfigurationSection itemSection){
-        return plugin.itemCreate.makeCustomItemFromConfig(null,itemSection, p, true, true, false);
+        return plugin.itemCreate.makeCustomItemFromConfig(null,PanelPosition.Top,itemSection, p, true, true, false);
     }
 }

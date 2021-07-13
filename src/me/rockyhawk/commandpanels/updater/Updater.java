@@ -3,6 +3,9 @@ package me.rockyhawk.commandpanels.updater;
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
@@ -11,7 +14,7 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.logging.Level;
 
-public class Updater {
+public class Updater implements Listener {
     CommandPanels plugin;
     public Updater(CommandPanels pl) {
         this.plugin = pl;
@@ -22,7 +25,27 @@ public class Updater {
     public String downloadVersionManually = null;
     public String catchedLatestVersion = "null";
 
-    public String githubNewUpdate(boolean sendMessages){
+    //send update message when the player joins the game with the permission
+    @EventHandler
+    public void joinGame(PlayerJoinEvent e){
+        if(e.getPlayer().hasPermission("commandpanel.update")){
+            if(githubNewUpdate(false)){
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        plugin.tex.sendMessage(e.getPlayer(),ChatColor.YELLOW + "A new update is available for download!");
+                        plugin.tex.sendString(e.getPlayer(),ChatColor.YELLOW
+                                + "Current version "
+                                + ChatColor.RED + plugin.getDescription().getVersion() + ChatColor.YELLOW
+                                + " Latest version " + ChatColor.GREEN + catchedLatestVersion);
+                        this.cancel();
+                    }
+                }.runTaskTimer(plugin, 30, 1); //20 ticks == 1 second
+            }
+        }
+    }
+
+    public boolean githubNewUpdate(boolean sendMessages){
         //refresh latest version
         getLatestVersion(sendMessages);
 
@@ -30,14 +53,11 @@ public class Updater {
             if(sendMessages) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Running a custom version.");
             }
-            return null;
+            return false;
         }
 
         //if update is true there is a new update
-        boolean update = false;
-        if(!catchedLatestVersion.equals(plugin.getDescription().getVersion())){
-            update = true;
-        }
+        boolean update = !catchedLatestVersion.equals(plugin.getDescription().getVersion());
 
         if(update){
             if(sendMessages) {
@@ -47,11 +67,12 @@ public class Updater {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.WHITE + " following command:" + ChatColor.AQUA + " /cpv latest" + ChatColor.WHITE + " and restart the server");
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GOLD + " ================================================");
             }
+            return true;
         }
-        return catchedLatestVersion;
+        return false;
     }
 
-    public void getLatestVersion(boolean sendMessages){
+    public String getLatestVersion(boolean sendMessages){
         //check for null
         if(catchedLatestVersion.equals("null")){
             catchedLatestVersion = plugin.getDescription().getVersion();
@@ -77,6 +98,7 @@ public class Updater {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Cannot check for update.");
             }
         }
+        return catchedLatestVersion;
     }
 
     //the pluginFileName can only be obtained from the main class

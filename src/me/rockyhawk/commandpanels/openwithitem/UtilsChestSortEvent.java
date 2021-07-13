@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.openwithitem;
 
 import de.jeff_media.chestsort.api.ChestSortEvent;
 import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
@@ -13,6 +14,12 @@ public class UtilsChestSortEvent implements Listener {
     }
     @EventHandler
     public void onChestSortEvent(ChestSortEvent e){
+        //cancel if a panel is opened at all
+        if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName(), PanelPosition.Top)){
+            e.setCancelled(true);
+            return;
+        }
+        //hotbar item code below
         if(!plugin.openWithItem){
             //if none of the panels have open-with-item
             return;

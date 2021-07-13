@@ -3,6 +3,9 @@ package me.rockyhawk.commandpanels.classresources;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
+import me.rockyhawk.commandpanels.commandtags.PaywallOutput;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -21,7 +24,7 @@ public class ExecuteOpenVoids {
     }
 
     //this is the main method to open a panel
-    public void openCommandPanel(CommandSender sender, Player p, Panel panel, boolean openForOtherUser){
+    public void openCommandPanel(CommandSender sender, Player p, Panel panel, PanelPosition position, boolean openForOtherUser){
         if(p.isSleeping()){
             //avoid plugin glitches when sleeping
             return;
@@ -42,38 +45,34 @@ public class ExecuteOpenVoids {
                 return;
             }
 
+            if(position != PanelPosition.Top && !plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
+                sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Cannot open a panel without a panel at the top already."));
+                return;
+            }
+
             //close any foreign GUIs for CommandPanels
-            if(!plugin.openPanels.hasPanelOpen(p.getName()) && p.getOpenInventory().getType() != InventoryType.CRAFTING){
+            if(!plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top) && p.getOpenInventory().getType() != InventoryType.CRAFTING){
                 p.closeInventory();
             }
 
             //fire PanelOpenedEvent
-            PanelOpenedEvent openedEvent = new PanelOpenedEvent(p,panel);
+            PanelOpenedEvent openedEvent = new PanelOpenedEvent(p,panel,position);
             Bukkit.getPluginManager().callEvent(openedEvent);
             if(openedEvent.isCancelled()){
                 return;
             }
 
             //do these commands before the panel loads
-            beforeLoadCommands(panel,p);
+            beforeLoadCommands(panel,position,p);
 
             try {
                 //create and open the GUI
-                plugin.createGUI.openGui(panel, p,1,0);
+                plugin.createGUI.openGui(panel, p, position,PanelOpenType.Normal,0);
 
                 //execute commands once the panel opens
                 if (panel.getConfig().contains("commands-on-open")) {
                     try {
-                        List<String> commands = panel.getConfig().getStringList("commands-on-open");
-                        for (String command : commands) {
-                            int val = plugin.commandTags.commandPayWall(p, command);
-                            if (val == 0) {
-                                break;
-                            }
-                            if (val == 2) {
-                                plugin.commandTags.runCommand(panel,p, command);
-                            }
-                        }
+                        plugin.commandTags.runCommands(panel,position,p, panel.getConfig().getStringList("commands-on-open"));
                     }catch(Exception s){
                         p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands-on-open: " + panel.getConfig().getString("commands-on-open")));
                     }
@@ -96,7 +95,7 @@ public class ExecuteOpenVoids {
             } catch (Exception r) {
                 plugin.debug(r,null);
                 sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error")));
-                plugin.openPanels.closePanelForLoader(p.getName());
+                plugin.openPanels.closePanelForLoader(p.getName(),position);
                 p.closeInventory();
             }
         }else{
@@ -139,21 +138,11 @@ public class ExecuteOpenVoids {
         sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
     }
 
-    public void beforeLoadCommands(Panel panel, Player p){
+    public void beforeLoadCommands(Panel panel,PanelPosition pos, Player p){
         if (panel.getConfig().contains("pre-load-commands")) {
             try {
-                List<String> commands = panel.getConfig().getStringList("pre-load-commands");
-                for (String command : commands) {
-                    int val = plugin.commandTags.commandPayWall(p, command);
-                    if (val == 0) {
-                        break;
-                    }
-                    if (val == 2) {
-                        plugin.commandTags.runCommand(panel,p, command);
-                    }
-                }
+                plugin.commandTags.runCommands(panel,pos,p, panel.getConfig().getStringList("pre-load-commands"));
             }catch(Exception s){
-                p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " " + "pre-load-commands: " + panel.getConfig().getString("pre-load-commands")));
                 plugin.debug(s,p);
             }
         }

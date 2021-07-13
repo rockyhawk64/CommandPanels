@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.customcommands;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -23,7 +24,7 @@ public class Commandpanelcustom implements Listener {
                     for(String cmd : panelCommands){
                         if(cmd.equalsIgnoreCase(e.getMessage().replace("/", ""))){
                             e.setCancelled(true);
-                            panel.open(e.getPlayer());
+                            panel.open(e.getPlayer(), PanelPosition.Top);
                             return;
                         }
 
@@ -51,7 +52,7 @@ public class Commandpanelcustom implements Listener {
                             for(String[] placeholder : placeholders){
                                 openPanel.placeholders.addPlaceholder(placeholder[0],placeholder[1]);
                             }
-                            openPanel.open(e.getPlayer());
+                            openPanel.open(e.getPlayer(),PanelPosition.Top);
                             return;
                         }
                     }

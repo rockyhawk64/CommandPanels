@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.commandtags.tags.other;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -26,6 +27,7 @@ public class SpecialTags implements Listener {
             String cmd = String.join(" ",e.args).replace(e.args[0],"").trim();
 
             Panel openPanel = null;
+            PanelPosition openPosition = e.pos;
             for(Panel pane : plugin.panelList){
                 if(pane.getName().equals(panelName)){
                     openPanel = pane.copy();
@@ -42,12 +44,30 @@ public class SpecialTags implements Listener {
                     //do not change the placeholder
                     String placeholder = contents.substring(0,contents.indexOf(':'));
                     //only convert placeholders for the value
-                    String value = plugin.tex.placeholders(e.panel,e.p,contents.substring(contents.indexOf(':')+1));
+                    String value = plugin.tex.placeholders(e.panel,e.pos,e.p,contents.substring(contents.indexOf(':')+1));
                     openPanel.placeholders.addPlaceholder(placeholder,value);
+                    i = i+contents.length()-1;
+                }else if(cm[i].equals('{')){
+                    String contents = cmd.substring(i+1, i+cmd.substring(i).indexOf('}'));
+                    openPosition = PanelPosition.valueOf(contents);
                     i = i+contents.length()-1;
                 }
             }
-            openPanel.open(e.p);
+            openPanel.open(e.p,openPosition);
+            return;
+        }
+        if(e.name.equalsIgnoreCase("close=")) {
+            e.commandTagUsed();
+            //closes specific panel positions
+            PanelPosition position = PanelPosition.valueOf(e.args[0]);
+            if(position == PanelPosition.Middle && plugin.openPanels.hasPanelOpen(e.p.getName(),position)){
+                plugin.openPanels.closePanelForLoader(e.p.getName(),PanelPosition.Middle);
+            }else if(position == PanelPosition.Bottom && plugin.openPanels.hasPanelOpen(e.p.getName(),position)){
+                plugin.openPanels.closePanelForLoader(e.p.getName(),PanelPosition.Bottom);
+            }else if(position == PanelPosition.Top && plugin.openPanels.hasPanelOpen(e.p.getName(),position)){
+                //closing top closes all
+                e.p.closeInventory();
+            }
             return;
         }
         if(e.name.equalsIgnoreCase("teleport=")) {
@@ -79,17 +99,18 @@ public class SpecialTags implements Listener {
                     plugin.tex.sendMessage(e.p,plugin.config.getString("config.format.notitem"));
                 }
             }
+            return;
         }
         if(e.name.equalsIgnoreCase("delay=")) {
             e.commandTagUsed();
             //if player uses op= it will perform command as op
-            final int delaySeconds = Integer.parseInt(e.args[0]);
+            final int delayTicks = Integer.parseInt(e.args[0]);
             String finalCommand = String.join(" ",e.args).replace(e.args[0],"").trim();
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     try {
-                        plugin.commandTags.runCommand(e.panel, e.p, finalCommand);
+                        plugin.commandTags.runCommand(e.panel,e.pos, e.p, finalCommand);
                     } catch (Exception ex) {
                         //if there are any errors, cancel so that it doesn't loop errors
                         plugin.debug(ex, e.p);
@@ -97,7 +118,7 @@ public class SpecialTags implements Listener {
                     }
                     this.cancel();
                 }
-            }.runTaskTimer(plugin, 20L * delaySeconds, 20); //20 ticks == 1 second
+            }.runTaskTimer(plugin, delayTicks, 1); //20 ticks == 1 second
         }
     }
 }

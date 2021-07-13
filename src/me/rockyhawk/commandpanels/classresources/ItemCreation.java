@@ -5,6 +5,7 @@ import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
 import net.Indyuce.mmoitems.manager.ItemManager;
@@ -40,8 +41,8 @@ public class ItemCreation {
     }
 
     @SuppressWarnings("deprecation")
-    public ItemStack makeItemFromConfig(Panel panel, ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours, boolean addNBT){
-        String material = plugin.tex.placeholdersNoColour(panel,p,itemSection.getString("material"));
+    public ItemStack makeItemFromConfig(Panel panel, PanelPosition position, ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours, boolean addNBT){
+        String material = plugin.tex.placeholdersNoColour(panel,position,p,itemSection.getString("material"));
         try {
             if (Objects.requireNonNull(material).equalsIgnoreCase("AIR")) {
                 return null;
@@ -120,7 +121,7 @@ public class ItemCreation {
                 BookMeta bookMeta = (BookMeta) s.getItemMeta();
                 bookMeta.setTitle(matraw.split("\\s")[1]);
                 bookMeta.setAuthor(matraw.split("\\s")[1]);
-                List<String> bookLines = plugin.tex.placeholdersList(panel,p,itemSection.getStringList("write"),true);
+                List<String> bookLines = plugin.tex.placeholdersList(panel,position,p,itemSection.getStringList("write"),true);
                 String result = bookLines.stream().map(String::valueOf).collect(Collectors.joining("\n" + ChatColor.RESET, "", ""));
                 bookMeta.setPages(result);
                 s.setItemMeta(bookMeta);
@@ -129,7 +130,7 @@ public class ItemCreation {
 
             //creates item from custom-items section of panel
             if(matraw.split("\\s")[0].equalsIgnoreCase("cpi=")){
-                s = makeCustomItemFromConfig(panel,plugin.openPanels.getOpenPanel(p.getName()).getConfig().getConfigurationSection("custom-item." + matraw.split("\\s")[1]), p, true, true, true);
+                s = makeCustomItemFromConfig(panel,position,panel.getConfig().getConfigurationSection("custom-item." + matraw.split("\\s")[1]), p, true, true, true);
                 normalCreation = false;
             }
 
@@ -155,12 +156,12 @@ public class ItemCreation {
                             meta.setOwner(p.getName());
                         }
                         s.setItemMeta(meta);
-                    }else if (plugin.tex.placeholdersNoColour(panel,p,matraw.split("\\s")[1]).length() <= 16) {
+                    }else if (plugin.tex.placeholdersNoColour(panel,position,p,matraw.split("\\s")[1]).length() <= 16) {
                         //if cps= username
-                        s = plugin.customHeads.getPlayerHead(plugin.tex.placeholdersNoColour(panel,p,matraw.split("\\s")[1]));
+                        s = plugin.customHeads.getPlayerHead(plugin.tex.placeholdersNoColour(panel,position,p,matraw.split("\\s")[1]));
                     } else {
                         //custom data cps= base64
-                        s = plugin.customHeads.getCustomHead(plugin.tex.placeholdersNoColour(panel,p,matraw.split("\\s")[1]));
+                        s = plugin.customHeads.getCustomHead(plugin.tex.placeholdersNoColour(panel,position,p,matraw.split("\\s")[1]));
                     }
                 } catch (Exception var32) {
                     p.sendMessage(plugin.tex.colour( plugin.tag + plugin.config.getString("config.format.error") + " head material: Could not load skull"));
@@ -212,7 +213,7 @@ public class ItemCreation {
                 This will do maps from custom images
                 the maps will be in the 'maps' folder, so
                 CommandPanels/maps/image.png <-- here
-                CommandPanels/panels/example.yml
+                CommandPanels/panels/example_top.yml
                 The images should be 128x128
                  */
                 try{
@@ -265,7 +266,7 @@ public class ItemCreation {
             if (itemSection.contains("customdata")) {
                 ItemMeta customMeta = s.getItemMeta();
                 assert customMeta != null;
-                customMeta.setCustomModelData(Integer.parseInt(Objects.requireNonNull(itemSection.getString("customdata"))));
+                customMeta.setCustomModelData(Integer.parseInt(plugin.tex.placeholders(panel,position,p,itemSection.getString("customdata"))));
                 s.setItemMeta(customMeta);
             }
             try {
@@ -335,7 +336,7 @@ public class ItemCreation {
                 //if the damage is not unbreakable and should be a value
                 if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                     try {
-                        s.setDurability(Short.parseShort(Objects.requireNonNull(plugin.tex.placeholders(panel,p, itemSection.getString("damage")))));
+                        s.setDurability(Short.parseShort(Objects.requireNonNull(plugin.tex.placeholders(panel,position,p, itemSection.getString("damage")))));
                     } catch (Exception e) {
                         plugin.debug(e, p);
                         p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
@@ -350,7 +351,7 @@ public class ItemCreation {
 
                     try {
                         Damageable itemDamage = (Damageable) s.getItemMeta();
-                        itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(plugin.tex.placeholders(panel,p, itemSection.getString("damage")))));
+                        itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(plugin.tex.placeholders(panel,position,p, itemSection.getString("damage")))));
                         s.setItemMeta((ItemMeta) itemDamage);
                     } catch (Exception e) {
                         plugin.debug(e, p);
@@ -365,7 +366,7 @@ public class ItemCreation {
             }
             if (itemSection.contains("stack")) {
                 //change the stack amount (placeholders accepted)
-                s.setAmount((int)Double.parseDouble(Objects.requireNonNull(plugin.tex.placeholders(panel,p,itemSection.getString("stack")))));
+                s.setAmount((int)Double.parseDouble(Objects.requireNonNull(plugin.tex.placeholders(panel,position,p,itemSection.getString("stack")))));
             }
         } catch (IllegalArgumentException | NullPointerException var33) {
             plugin.debug(var33,p);
@@ -377,16 +378,16 @@ public class ItemCreation {
     }
 
     //do custom-item items, they have an additional hasSection requirement
-    public ItemStack makeCustomItemFromConfig(Panel panel, ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours, boolean addNBT){
-        String section = plugin.itemCreate.hasSection(panel,itemSection,p);
+    public ItemStack makeCustomItemFromConfig(Panel panel,PanelPosition position, ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours, boolean addNBT){
+        String section = plugin.itemCreate.hasSection(panel,position,itemSection,p);
         if(!section.equals("")){
             itemSection = itemSection.getConfigurationSection(section.substring(1));
         }
-        return plugin.itemCreate.makeItemFromConfig(panel,itemSection, p, placeholders, colours, addNBT);
+        return plugin.itemCreate.makeItemFromConfig(panel,position,itemSection, p, placeholders, colours, addNBT);
     }
 
     //hasperm hasvalue, etc sections will be done here
-    public String hasSection(Panel panel, ConfigurationSection cf, Player p){
+    public String hasSection(Panel panel,PanelPosition position, ConfigurationSection cf, Player p){
         if (cf.isSet("hasvalue")) {
             //this will do the hasvalue without any numbers
             boolean outputValue = true;
@@ -395,11 +396,11 @@ public class ItemCreation {
                 //if output is true, and values match it will be this item, vice versa
                 outputValue = cf.getBoolean("hasvalue.output");
             }
-            String value = ChatColor.stripColor(plugin.tex.placeholders(panel,p,cf.getString("hasvalue.value")));
-            String compare = ChatColor.stripColor(plugin.tex.placeholders(panel,p,cf.getString("hasvalue.compare")));
+            String value = ChatColor.stripColor(plugin.tex.placeholders(panel,position,p,cf.getString("hasvalue.value")));
+            String compare = ChatColor.stripColor(plugin.tex.placeholders(panel,position,p,cf.getString("hasvalue.compare")));
             if (compare.equals(value) == outputValue) {
                 //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
-                String section = hasSection(panel,Objects.requireNonNull(cf.getConfigurationSection("hasvalue")), p);
+                String section = hasSection(panel,position,Objects.requireNonNull(cf.getConfigurationSection("hasvalue")), p);
                 //string section, it executes itself to check for subsections
                 return ".hasvalue" + section;
             }
@@ -412,11 +413,11 @@ public class ItemCreation {
                         //if output is true, and values match it will be this item, vice versa
                         outputValue = cf.getBoolean("hasvalue" + count + ".output");
                     }
-                    value = ChatColor.stripColor(plugin.tex.placeholders(panel,p,cf.getString("hasvalue" + count + ".value")));
-                    compare = ChatColor.stripColor(plugin.tex.placeholders(panel,p,cf.getString("hasvalue" + count + ".compare")));
+                    value = ChatColor.stripColor(plugin.tex.placeholders(panel,position,p,cf.getString("hasvalue" + count + ".value")));
+                    compare = ChatColor.stripColor(plugin.tex.placeholders(panel,position,p,cf.getString("hasvalue" + count + ".compare")));
                     if (compare.equals(value) == outputValue) {
                         //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
-                        String section = hasSection(panel,Objects.requireNonNull(cf.getConfigurationSection("hasvalue" + count)), p);
+                        String section = hasSection(panel,position,Objects.requireNonNull(cf.getConfigurationSection("hasvalue" + count)), p);
                         //string section, it executes itself to check for subsections
                         return ".hasvalue" + count + section;
                     }
@@ -431,11 +432,11 @@ public class ItemCreation {
                 //if output is true, and values match it will be this item, vice versa
                 outputValue = cf.getBoolean("hasgreater.output");
             }
-            double value = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,p,cf.getString("hasgreater.value"))));
-            double compare = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,p,cf.getString("hasgreater.compare"))));
+            double value = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,position,p,cf.getString("hasgreater.value"))));
+            double compare = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,position,p,cf.getString("hasgreater.compare"))));
             if ((compare >= value) == outputValue) {
                 //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
-                String section = hasSection(panel,Objects.requireNonNull(cf.getConfigurationSection("hasgreater")), p);
+                String section = hasSection(panel,position,Objects.requireNonNull(cf.getConfigurationSection("hasgreater")), p);
                 return ".hasgreater" + section;
             }
             //loop through possible hasgreater 1,2,3,etc
@@ -447,11 +448,11 @@ public class ItemCreation {
                         //if output is true, and values match it will be this item, vice versa
                         outputValue = cf.getBoolean("hasgreater" + count + ".output");
                     }
-                    value = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,p,cf.getString("hasgreater" + count + ".value"))));
-                    compare = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,p,cf.getString("hasgreater" + count + ".compare"))));
+                    value = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,position,p,cf.getString("hasgreater" + count + ".value"))));
+                    compare = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,position,p,cf.getString("hasgreater" + count + ".compare"))));
                     if ((compare >= value) == outputValue) {
                         //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
-                        String section = hasSection(panel,Objects.requireNonNull(cf.getConfigurationSection("hasgreater" + count)), p);
+                        String section = hasSection(panel,position,Objects.requireNonNull(cf.getConfigurationSection("hasgreater" + count)), p);
                         return ".hasgreater" + count + section;
                     }
                 }
@@ -466,7 +467,7 @@ public class ItemCreation {
                 outputValue = cf.getBoolean("hasperm.output");
             }
             if (p.hasPermission(Objects.requireNonNull(cf.getString("hasperm.perm"))) == outputValue) {
-                String section = hasSection(panel,Objects.requireNonNull(cf.getConfigurationSection("hasperm")), p);
+                String section = hasSection(panel,position,Objects.requireNonNull(cf.getConfigurationSection("hasperm")), p);
                 return ".hasperm" + section;
             }
             for(int count = 0; cf.getKeys(false).size() > count; count++){
@@ -478,7 +479,7 @@ public class ItemCreation {
                         outputValue = cf.getBoolean("hasperm" + count + ".output");
                     }
                     if (p.hasPermission(Objects.requireNonNull(cf.getString("hasperm" + count + ".perm"))) == outputValue) {
-                        String section = hasSection(panel,Objects.requireNonNull(cf.getConfigurationSection("hasperm" + count)), p);
+                        String section = hasSection(panel,position,Objects.requireNonNull(cf.getConfigurationSection("hasperm" + count)), p);
                         return ".hasperm" + count + section;
                     }
                 }
