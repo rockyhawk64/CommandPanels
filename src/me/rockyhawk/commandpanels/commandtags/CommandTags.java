@@ -1,6 +1,5 @@
 package me.rockyhawk.commandpanels.commandtags;
 
-import jdk.nashorn.internal.ir.Block;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;

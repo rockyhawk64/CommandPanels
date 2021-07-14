@@ -44,12 +44,6 @@ public class GenUtils implements Listener {
         Player p = e.getPlayer();
         //if the player is in generate mode, remove generate mode
         this.plugin.generateMode.remove(p);
-        for(int o = 0; this.plugin.userInputStrings.size() > o; ++o) {
-            if (this.plugin.userInputStrings.get(o)[0].equals(e.getPlayer().getName())) {
-                this.plugin.userInputStrings.remove(o);
-                break;
-            }
-        }
     }
 
     @EventHandler

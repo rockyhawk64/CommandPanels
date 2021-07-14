@@ -1,4 +1,4 @@
-version: 3.16.1.1
+version: 3.16.2.0
 main: me.rockyhawk.commandpanels.CommandPanels
 name: CommandPanels
 author: RockyHawk
@@ -38,6 +38,10 @@ commands:
       description: Lists the currently loaded panels.
       usage: /commandpanellist
       aliases: [cpl, cpanell]
+   commandpanelimport:
+      description: Import raw text panels from online.
+      usage: /commandpanelimport
+      aliases: [cpi, cpaneli]
 permissions:
    commandpanel.panel.default:
       default: true
@@ -68,4 +72,6 @@ permissions:
    commandpanel.edit:
       default: op
    commandpanel.list:
+      default: op
+   commandpanel.import:
       default: op

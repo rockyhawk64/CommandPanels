@@ -33,7 +33,7 @@ public class Placeholders {
                 String identifier = str.substring(start, end).replace(HOLDERS[0] + "cp-", "").replace(HOLDERS[1], "");
                 String value;
                 try {
-                    value = cpPlaceholders(panel,position,p,identifier, str);
+                    value = cpPlaceholders(panel,position,p,identifier);
                 } catch (NullPointerException er) {
                     value = "";
                 }
@@ -69,24 +69,7 @@ public class Placeholders {
     }
 
     @SuppressWarnings("deprecation")
-    private String cpPlaceholders(Panel panel, PanelPosition position, Player p, String identifier, String string){
-
-        //do player input placeholder first
-        if (identifier.equals("player-input")) {
-            for (String[] key : plugin.userInputStrings) {
-                if (key[0].equals(p.getName())) {
-                    plugin.userInputStrings.add(new String[]{p.getName(), string});
-                    return "cpc";
-                }
-            }
-            plugin.userInputStrings.add(new String[]{p.getName(), string});
-            List<String> inputMessages = new ArrayList<String>(plugin.config.getStringList("config.input-message"));
-            for (String temp : inputMessages) {
-                temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(plugin.config.getString("config.input-cancel")));
-                p.sendMessage(plugin.tex.placeholders(panel,position,p, temp));
-            }
-            return "cpc";
-        }
+    private String cpPlaceholders(Panel panel, PanelPosition position, Player p, String identifier){
 
         //replace nodes with PlaceHolders
         switch(identifier){
@@ -110,6 +93,9 @@ public class Placeholders {
             }
             case("online-players"): {
                 return Integer.toString(Bukkit.getServer().getOnlinePlayers().size());
+            }
+            case("panel-position"): {
+                return position.toString();
             }
             case("tag"): {
                 return plugin.tex.colour(plugin.tag);

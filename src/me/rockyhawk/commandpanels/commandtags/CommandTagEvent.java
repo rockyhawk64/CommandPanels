@@ -34,11 +34,6 @@ public class CommandTagEvent extends Event {
         if(split.length == 1){
             split = new String[]{split[0],""};
         }
-        if(split[1].contains("%cp-player-input%")){
-            //set command to cpc and then use full command for input
-            this.name = "cpc";
-            return;
-        }
 
         this.name = split[0].trim();
         this.raw = split[1].trim().split("\\s");

@@ -25,7 +25,12 @@ public class BasicTags implements Listener {
         }
         if(e.name.equalsIgnoreCase("refresh")) {
             e.commandTagUsed();
-            plugin.createGUI.openGui(e.panel, e.p, e.pos, PanelOpenType.Refresh, 0);
+            if(plugin.openPanels.hasPanelOpen(e.p.getName(),e.pos)) {
+                plugin.createGUI.openGui(e.panel, e.p, e.pos, PanelOpenType.Refresh, 0);
+            }
+            if(plugin.inventorySaver.hasNormalInventory(e.p)){
+                plugin.hotbar.updateHotbarItems(e.p);
+            }
             return;
         }
         if(e.name.equalsIgnoreCase("console=")) {

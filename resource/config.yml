@@ -1,6 +1,6 @@
 # |------------------------------------------------------------------------
 # |                       CommandPanels Config File
-# |                           By RockyHawk v5.0
+# |                           By RockyHawk v5.1
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
 # |
 # |        auto-update and minor-updates-only is HEAVILY RECOMMENDED
@@ -19,11 +19,6 @@ config:
   disabled-world-message: true
   update-notifications: true
   panel-snooper: false
-  input-cancel: cancel
-  input-cancelled: '&cCancelled!'
-  input-message:
-  - '%cp-tag%&aEnter Input for Command'
-  - '&cType &4%cp-args% &cto Cancel the command'
   format:
     tag: '&6[&bCommandPanels&6]'
     perms: '&cNo permission.'
@@ -34,6 +29,12 @@ config:
     error: '&cError found in config.'
     offline: 'Offline'
     offlineHeadValue: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU1Mjg2YzQ3MGY2NmZmYTFhMTgzMzFjYmZmYjlhM2MyYTQ0MjRhOGM3MjU5YzQ0MzZmZDJlMzU1ODJhNTIyIn19fQ=='
+input:
+  input-cancel: cancel
+  input-cancelled: '&cCancelled!'
+  input-message:
+    - '%cp-tag%&aEnter Input for Command'
+    - '&cType &4%cp-args% &cto Cancel the command'
 hexcodes:
   start_tag: '#'
   end_tag: ''

@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels;
 
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.commandtags.PaywallOutput;
+import me.rockyhawk.commandpanels.interactives.input.PlayerInput;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -112,12 +113,10 @@ public class Utils implements Listener {
         e.setCancelled(true);
         p.updateInventory();
 
-        //this will remove any pending user inputs, if there is already something there from a previous item
-        for(int o = 0; plugin.userInputStrings.size() > o; o++){
-            if(plugin.userInputStrings.get(o)[0].equals(p.getName())){
-                plugin.userInputStrings.remove(o);
-                o=o-1;
-            }
+        //if an item has an area for input instead of commands
+        if(panel.getConfig().contains("item." + clickedSlot + section + ".player-input")) {
+            plugin.inputUtils.playerInput.put(p,new PlayerInput(panel,panel.getConfig().getStringList("item." + clickedSlot + section + ".player-input")));
+            plugin.inputUtils.sendMessage(panel,position,p);
         }
 
         if(panel.getConfig().contains("item." + clickedSlot + section + ".commands")) {

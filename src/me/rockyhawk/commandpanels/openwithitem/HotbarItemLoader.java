@@ -48,8 +48,8 @@ public class HotbarItemLoader {
                 if(!itemCheckExecute(p.getInventory().getItem(slot),p,false,false)){
                     return false;
                 }
-                if(panel.getConfig().contains("open-with-item.commands")){
-                    for(String command : panel.getConfig().getStringList("open-with-item.commands")){
+                if(panel.getHotbarSection(p).contains("commands")){
+                    for(String command : panel.getHotbarSection(p).getStringList("commands")){
                         plugin.commandTags.runCommand(panel,PanelPosition.Top,p, command);
                     }
                     return true;
@@ -85,8 +85,8 @@ public class HotbarItemLoader {
                         if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
                             return false;
                         }
-                        if(panel.getConfig().contains("open-with-item.commands")){
-                            for(String command : panel.getConfig().getStringList("open-with-item.commands")){
+                        if(panel.getHotbarSection(p).contains("commands")){
+                            for(String command : panel.getHotbarSection(p).getStringList("commands")){
                                 plugin.commandTags.runCommand(panel,PanelPosition.Top,p, command);
                             }
                             return true;
@@ -139,5 +139,6 @@ public class HotbarItemLoader {
                 }
             }
         }
+        p.updateInventory();
     }
 }

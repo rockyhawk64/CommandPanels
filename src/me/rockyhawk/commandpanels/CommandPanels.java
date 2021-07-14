@@ -24,7 +24,7 @@ import me.rockyhawk.commandpanels.ingameeditor.CpIngameEditCommand;
 import me.rockyhawk.commandpanels.ingameeditor.CpTabCompleteIngame;
 import me.rockyhawk.commandpanels.ingameeditor.EditorUserInput;
 import me.rockyhawk.commandpanels.ingameeditor.EditorUtils;
-import me.rockyhawk.commandpanels.interactives.CommandpanelUserInput;
+import me.rockyhawk.commandpanels.interactives.input.UserInputUtils;
 import me.rockyhawk.commandpanels.interactives.Commandpanelrefresher;
 import me.rockyhawk.commandpanels.interactives.OpenOnJoin;
 import me.rockyhawk.commandpanels.ioclasses.Sequence_1_13;
@@ -74,7 +74,6 @@ public class CommandPanels extends JavaPlugin{
     public String tag = "[CommandPanels]";
 
     public List<Player> generateMode = new ArrayList<>(); //players that are currently in generate mode
-    public List<String[]> userInputStrings = new ArrayList<>();
     public List<String[]> editorInputStrings = new ArrayList<>();
     public List<Panel> panelList = new ArrayList<>(); //contains all the panels that are included in the panels folder
 
@@ -102,6 +101,7 @@ public class CommandPanels extends JavaPlugin{
 
     public InventorySaver inventorySaver = new InventorySaver(this);
     public ItemStackSerializer itemSerializer = new ItemStackSerializer(this);
+    public UserInputUtils inputUtils = new UserInputUtils(this);
 
     public File panelsf = new File(this.getDataFolder() + File.separator + "panels");
     public YamlConfiguration blockConfig; //where panel block locations are stored
@@ -153,12 +153,13 @@ public class CommandPanels extends JavaPlugin{
         Objects.requireNonNull(this.getCommand("commandpaneldebug")).setExecutor(new Commandpanelsdebug(this));
         Objects.requireNonNull(this.getCommand("commandpanelversion")).setExecutor(new Commandpanelversion(this));
         Objects.requireNonNull(this.getCommand("commandpanellist")).setExecutor(new Commandpanelslist(this));
+        Objects.requireNonNull(this.getCommand("commandpanelimport")).setExecutor(new CommandPanelImport(this));
         this.getServer().getPluginManager().registerEvents(new Utils(this), this);
         this.getServer().getPluginManager().registerEvents(updater, this);
         this.getServer().getPluginManager().registerEvents(inventorySaver, this);
+        this.getServer().getPluginManager().registerEvents(inputUtils, this);
         this.getServer().getPluginManager().registerEvents(new UtilsPanelsLoader(this), this);
         this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
-        this.getServer().getPluginManager().registerEvents(new CommandpanelUserInput(this), this);
         this.getServer().getPluginManager().registerEvents(new ItemFallManager(this), this);
         this.getServer().getPluginManager().registerEvents(new OpenOnJoin(this), this);
 
@@ -429,6 +430,9 @@ public class CommandPanels extends JavaPlugin{
         if (p.hasPermission("commandpanel.update")) {
             p.sendMessage(ChatColor.GOLD + "/cpv latest " + ChatColor.WHITE + "Download the latest update upon server reload/restart.");
             p.sendMessage(ChatColor.GOLD + "/cpv [version:cancel] " + ChatColor.WHITE + "Download an update upon server reload/restart.");
+        }
+        if (p.hasPermission("commandpanel.import")) {
+            p.sendMessage(ChatColor.GOLD + "/cpi [file name] [URL] " + ChatColor.WHITE + "Downloads a panel from a raw link online.");
         }
         if (p.hasPermission("commandpanel.edit")) {
             p.sendMessage(ChatColor.GOLD + "/cpe [panel] " + ChatColor.WHITE + "Edit a panel with the Panel Editor.");
