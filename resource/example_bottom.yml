@@ -27,8 +27,16 @@ panels:
       '8':
         material: ENDER_PEARL
         name: '&bOpen Player Browser'
-        commands:
-          - open= example_middle_two {Middle}
+        lore:
+          - '&7The Player Browser requires'
+          - '&7PlaceholderAPI with the Math extension'
+        hasvalue0:
+          compare: '%math_0:_1+1%'
+          value: '2'
+          material: ENDER_PEARL
+          name: '&bOpen Player Browser'
+          commands:
+            - open= example_middle_two {Middle}
         hasvalue:
           compare: '%cp-data-example_item%'
           value: true

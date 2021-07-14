@@ -121,7 +121,7 @@ public class Placeholders {
             String ip_port = identifier.replace("server-", "");
             Socket s = new Socket();
             try {
-                s.connect(new InetSocketAddress(ip_port.split(":")[0], Integer.parseInt(ip_port.split(":")[1])), plugin.config.getInt("config.server-ping-timeout"));
+                s.connect(new InetSocketAddress(ip_port.split(":")[0], (int)Double.parseDouble(ip_port.split(":")[1])), plugin.config.getInt("config.server-ping-timeout"));
                 s.close();
                 return "true";
             }catch (IOException ex){
@@ -134,7 +134,7 @@ public class Placeholders {
             try {
                 String slot_key = identifier.replace("nbt-", "");
                 String value;
-                value = plugin.nbt.getNBT(p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(slot_key.split(":")[0])),slot_key.split(":")[1]);
+                value = plugin.nbt.getNBT(p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(slot_key.split(":")[0])),slot_key.split(":")[1]);
                 if(value == null){
                     value = "empty";
                 }
@@ -152,10 +152,10 @@ public class Placeholders {
                 String matNumber = identifier.replace("material-", "");
                 String material;
                 try {
-                    material = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().toString();
+                    material = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getType().toString();
                     if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                         //add the ID to the end if it is legacy (eg, material:id)
-                        material = material + ":" + p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getType().getId();
+                        material = material + ":" + p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getType().getId();
                     }
                 } catch (NullPointerException er) {
                     material = "AIR";
@@ -172,7 +172,7 @@ public class Placeholders {
                 String matNumber = identifier.replace("stack-", "");
                 int amount;
                 try {
-                    amount = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getAmount();
+                    amount = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getAmount();
                 } catch (NullPointerException er) {
                     amount = 0;
                 }
@@ -188,7 +188,7 @@ public class Placeholders {
                 String matNumber = identifier.replace("modeldata-", "");
                 int modelData;
                 try {
-                    modelData = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber)).getItemMeta().getCustomModelData();
+                    modelData = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getItemMeta().getCustomModelData();
                 } catch (NullPointerException er) {
                     modelData = 0;
                 }
@@ -203,7 +203,7 @@ public class Placeholders {
             try {
                 String matNumber = identifier.replace("damaged-", "");
                 boolean damaged = false;
-                ItemStack itm = p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(matNumber));
+                ItemStack itm = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber));
                 try {
                     if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
                         if(itm.getType().getMaxDurability() != 0) {
@@ -227,7 +227,7 @@ public class Placeholders {
             try {
                 String matLocSlot = identifier.replace("identical-", "");
                 String matLoc = matLocSlot.split(",")[0];
-                int matSlot = Integer.parseInt(matLocSlot.split(",")[1]);
+                int matSlot = (int)Double.parseDouble(matLocSlot.split(",")[1]);
                 boolean isIdentical = false;
                 ItemStack itm = p.getOpenInventory().getTopInventory().getItem(matSlot);
 
@@ -268,8 +268,8 @@ public class Placeholders {
         if(identifier.startsWith("random-")) {
             try {
                 String min_max = identifier.replace("random-", "");
-                int min = Integer.parseInt(min_max.split(",")[0]);
-                int max = Integer.parseInt(min_max.split(",")[1]);
+                int min = (int)Double.parseDouble(min_max.split(",")[0]);
+                int max = (int)Double.parseDouble(min_max.split(",")[1]);
                 return String.valueOf(plugin.getRandomNumberInRange(min, max));
             }catch (Exception ex){
                 plugin.debug(ex,p);
@@ -323,10 +323,10 @@ public class Placeholders {
             try {
                 String playerLocation = identifier.replace("player-online-", "");
                 Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
-                if (Integer.parseInt(playerLocation) > playerFind.length) {
+                if (Double.parseDouble(playerLocation) > playerFind.length) {
                     return plugin.tex.colour(Objects.requireNonNull(plugin.config.getString("config.format.offline")));
                 } else {
-                    return playerFind[Integer.parseInt(playerLocation) - 1].getName();
+                    return playerFind[(int)(Double.parseDouble(playerLocation) - 1)].getName();
                 }
             }catch (Exception ex){
                 plugin.debug(ex,p);

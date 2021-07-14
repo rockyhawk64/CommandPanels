@@ -56,7 +56,7 @@ public class CommandPanelImport implements CommandExecutor {
             }
             sender.sendMessage(plugin.tag + ChatColor.GREEN + "Finished downloading.");
         } catch (Exception var22) {
-            sender.sendMessage(ChatColor.RED + "Could not download panel.");
+            sender.sendMessage(plugin.tag + ChatColor.RED + "Could not download panel.");
         } finally {
             try {
                 if (in != null) {
