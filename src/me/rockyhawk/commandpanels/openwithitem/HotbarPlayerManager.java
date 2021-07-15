@@ -15,6 +15,6 @@ public class HotbarPlayerManager {
     }
 
     public Panel getPanel(int slot){
-        return list.get(slot);
+        return list.get(slot).copy();
     }
 }

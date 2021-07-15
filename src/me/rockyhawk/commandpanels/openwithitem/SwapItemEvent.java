@@ -12,7 +12,7 @@ public class SwapItemEvent implements Listener {
         this.plugin = pl;
     }
     @EventHandler
-    public void onPlayerSwapHandItemsEvent​(PlayerSwapHandItemsEvent e){
+    public void onPlayerSwapHandItemsEvent(PlayerSwapHandItemsEvent e){
         if(!plugin.openWithItem){
             //if none of the panels have open-with-item
             return;

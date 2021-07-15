@@ -119,6 +119,10 @@ public class Updater implements Listener {
             //no need to update or running custom version
             return;
         }
+        if (Objects.requireNonNull(plugin.config.getString("updater.auto-update")).equalsIgnoreCase("true")) {
+            //don't update the plugin automatically if it is disabled
+            return;
+        }
         if(Objects.equals(plugin.config.getString("updater.minor-updates-only"), "true")){
             //only update versions that will not break
             if(thisVersion.split("\\.")[1].equals(latestVersion.split("\\.")[1]) && thisVersion.split("\\.")[0].equals(latestVersion.split("\\.")[0])){

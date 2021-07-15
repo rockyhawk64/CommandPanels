@@ -58,7 +58,7 @@ public class Commandpanel implements CommandExecutor {
                     return true;
                 }else if(args.length == 3){
                     if (args[1].equals("item")) {
-                        plugin.openVoids.giveHotbarItem(sender,plugin.getServer().getPlayer(args[2]),panel,true);
+                        plugin.openVoids.giveHotbarItem(sender,plugin.getServer().getPlayer(args[2]),panel.copy(),true);
                     }else{
                         sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cp <panel> item [player]"));
                     }
@@ -78,7 +78,7 @@ public class Commandpanel implements CommandExecutor {
                     return true;
                 }else if(args.length == 2){
                     if (args[1].equals("item")) {
-                        plugin.openVoids.giveHotbarItem(sender, p, panel, false);
+                        plugin.openVoids.giveHotbarItem(sender, p, panel.copy(), false);
                     }else{
                         if(!disableCommand) {
                             plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.copy(),PanelPosition.Top, true);
@@ -86,7 +86,7 @@ public class Commandpanel implements CommandExecutor {
                     }
                     return true;
                 }else if(args.length == 3){
-                    plugin.openVoids.giveHotbarItem(sender, plugin.getServer().getPlayer(args[2]), panel,true);
+                    plugin.openVoids.giveHotbarItem(sender, plugin.getServer().getPlayer(args[2]), panel.copy(),true);
                     return true;
                 }
             }

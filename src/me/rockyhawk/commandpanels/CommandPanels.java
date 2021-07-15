@@ -271,9 +271,7 @@ public class CommandPanels extends JavaPlugin{
         //save files
         panelData.saveDataFile();
         inventorySaver.saveInventoryFile();
-        if (Objects.requireNonNull(this.config.getString("updater.auto-update")).equalsIgnoreCase("true")) {
-            updater.autoUpdatePlugin(this.getFile().getName());
-        }
+        updater.autoUpdatePlugin(this.getFile().getName());
         Bukkit.getLogger().info("RockyHawk's CommandPanels Plugin Disabled, aww man.");
     }
 

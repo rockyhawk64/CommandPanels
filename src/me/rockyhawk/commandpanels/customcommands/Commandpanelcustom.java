@@ -24,7 +24,7 @@ public class Commandpanelcustom implements Listener {
                     for(String cmd : panelCommands){
                         if(cmd.equalsIgnoreCase(e.getMessage().replace("/", ""))){
                             e.setCancelled(true);
-                            panel.open(e.getPlayer(), PanelPosition.Top);
+                            panel.copy().open(e.getPlayer(), PanelPosition.Top);
                             return;
                         }
 
