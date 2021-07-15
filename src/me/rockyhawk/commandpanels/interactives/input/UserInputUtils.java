@@ -32,6 +32,14 @@ public class UserInputUtils implements Listener {
                 return;
             }
             playerInput.get(e.getPlayer()).panel.placeholders.addPlaceholder("player-input",e.getMessage());
+
+            //get certain words from the input
+            int c = 0;
+            for(String message : e.getMessage().split("\\s")){
+                playerInput.get(e.getPlayer()).panel.placeholders.addPlaceholder("player-input-" + (c+1),message);
+                c++;
+            }
+
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 public void run() {
                     plugin.commandTags.runCommands(playerInput.get(e.getPlayer()).panel, PanelPosition.Top,e.getPlayer(), playerInput.get(e.getPlayer()).commands); //I have to do this to run regular Bukkit voids in an ASYNC Event

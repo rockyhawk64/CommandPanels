@@ -43,6 +43,13 @@ public class OpenGUI {
             }
         }else{
             i = p.getInventory();
+            //if middle or bottom position, old items need to be cleared
+            for (int c = 0; getInvSize(i,position) > c; ++c) {
+                if(pconfig.getConfigurationSection("item").getKeys(false).contains(String.valueOf(c))){
+                    continue;
+                }
+                setItem(null, c, i, p, position);
+            }
         }
             
         Set<String> itemList = pconfig.getConfigurationSection("item").getKeys(false);
