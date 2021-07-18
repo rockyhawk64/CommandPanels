@@ -24,7 +24,7 @@ public class SpecialTags implements Listener {
             e.commandTagUsed();
             //if player uses open= it will open the panel, with the option to add custom placeholders
             String panelName = e.args[0];
-            String cmd = String.join(" ",e.args).replace(e.args[0],"").trim();
+            String cmd = String.join(" ",e.args).replace(e.args[0] + " ","").trim();
 
             Panel openPanel = null;
             PanelPosition openPosition = e.pos;

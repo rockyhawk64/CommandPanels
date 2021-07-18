@@ -28,7 +28,7 @@ public class Updater implements Listener {
     //send update message when the player joins the game with the permission
     @EventHandler
     public void joinGame(PlayerJoinEvent e){
-        if(e.getPlayer().hasPermission("commandpanel.update")){
+        if(e.getPlayer().hasPermission("commandpanel.update") && plugin.config.getBoolean("updater.update-checks")){
             if(githubNewUpdate(false)){
                 new BukkitRunnable() {
                     @Override

@@ -17,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -28,6 +29,25 @@ public class CommandTags {
     CommandPanels plugin;
     public CommandTags(CommandPanels pl) {
         this.plugin = pl;
+    }
+
+    //with the click type included
+    public void runCommands(Panel panel, PanelPosition position,Player p, List<String> commands, ClickType click){
+        for (String command : commands) {
+            command = plugin.commandTags.hasCorrectClick(command,click);
+            if(command.equals("")){
+                //click type is wrong
+                continue;
+            }
+
+            PaywallOutput val = plugin.commandTags.commandPayWall(panel,p,command);
+            if(val == PaywallOutput.Blocked){
+                break;
+            }
+            if(val == PaywallOutput.NotApplicable){
+                plugin.commandTags.runCommand(panel,position,p, command);
+            }
+        }
     }
 
     public void runCommands(Panel panel, PanelPosition position,Player p, List<String> commands){
@@ -63,6 +83,56 @@ public class CommandTags {
         plugin.getServer().getPluginManager().registerEvents(new BasicTags(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new BungeeTags(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new ItemTags(plugin), plugin);
+    }
+
+    public String hasCorrectClick(String command, ClickType click){
+        try {
+            switch(command.split("\\s")[0]){
+                case "right=":{
+                    //if commands is for right clicking, remove the 'right=' and continue
+                    command = command.replace("right= ", "");
+                    if (click != ClickType.RIGHT) {
+                        return "";
+                    }
+                    break;
+                }
+                case "rightshift=":{
+                    //if commands is for right clicking, remove the 'right=' and continue
+                    command = command.replace("rightshift= ", "");
+                    if (click != ClickType.SHIFT_RIGHT) {
+                        return "";
+                    }
+                    break;
+                }
+                case "left=":{
+                    //if commands is for right clicking, remove the 'right=' and continue
+                    command = command.replace("left= ", "");
+                    if (click != ClickType.LEFT) {
+                        return "";
+                    }
+                    break;
+                }
+                case "leftshift=":{
+                    //if commands is for right clicking, remove the 'right=' and continue
+                    command = command.replace("leftshift= ", "");
+                    if (click != ClickType.SHIFT_LEFT) {
+                        return "";
+                    }
+                    break;
+                }
+                case "middle=":{
+                    command = command.replace("middle= ", "");
+                    if (click != ClickType.MIDDLE) {
+                        return "";
+                    }
+                    break;
+                }
+            }
+            return command;
+        } catch (Exception ex) {
+            return "";
+            //skip if you can't do this
+        }
     }
 
     @SuppressWarnings("deprecation")

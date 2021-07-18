@@ -35,7 +35,6 @@ public class Utils implements Listener {
         //when clicked on a panel
         Player p = (Player)e.getWhoClicked();
         int clickedSlot = e.getSlot();
-        ItemStack clicked = e.getCurrentItem();
 
         if(!plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top) || e.getClick() == ClickType.DOUBLE_CLICK){
             return;
@@ -52,7 +51,7 @@ public class Utils implements Listener {
             //if the panel is clicked on the outside area of the GUI
             if (panel.getConfig().contains("outside-commands")) {
                 try {
-                    plugin.commandTags.runCommands(panel,PanelPosition.Top,p, panel.getConfig().getStringList("outside-commands"));
+                    plugin.commandTags.runCommands(panel,PanelPosition.Top,p, panel.getConfig().getStringList("outside-commands"),e.getClick());
                 }catch(Exception s){
                     plugin.debug(s,p);
                 }
@@ -133,51 +132,12 @@ public class Utils implements Listener {
                     }
                 }
                 commands = commandsAfterSequence;
-                for (int i = 0; commands.size() - 1 >= i; i++) {
-                    try {
-                        switch(commands.get(i).split("\\s")[0]){
-                            case "right=":{
-                                //if commands is for right clicking, remove the 'right=' and continue
-                                commands.set(i, commands.get(i).replace("right=", "").trim());
-                                if (e.getClick() != ClickType.RIGHT) {
-                                    continue;
-                                }
-                                break;
-                            }
-                            case "rightshift=":{
-                                //if commands is for right clicking, remove the 'right=' and continue
-                                commands.set(i, commands.get(i).replace("rightshift=", "").trim());
-                                if (e.getClick() != ClickType.SHIFT_RIGHT) {
-                                    continue;
-                                }
-                                break;
-                            }
-                            case "left=":{
-                                //if commands is for right clicking, remove the 'right=' and continue
-                                commands.set(i, commands.get(i).replace("left=", "").trim());
-                                if (e.getClick() != ClickType.LEFT) {
-                                    continue;
-                                }
-                                break;
-                            }
-                            case "leftshift=":{
-                                //if commands is for right clicking, remove the 'right=' and continue
-                                commands.set(i, commands.get(i).replace("leftshift=", "").trim());
-                                if (e.getClick() != ClickType.SHIFT_LEFT) {
-                                    continue;
-                                }
-                                break;
-                            }
-                            case "middle=":{
-                                commands.set(i, commands.get(i).replace("middle=", "").trim());
-                                if (e.getClick() != ClickType.MIDDLE) {
-                                    continue;
-                                }
-                                break;
-                            }
-                        }
-                    } catch (Exception click) {
-                        //skip if you can't do this
+                plugin.commandTags.runCommands(panel,position,p,commands,e.getClick());
+                /*for (int i = 0; commands.size() - 1 >= i; i++) {
+                    commands.set(i,plugin.commandTags.hasCorrectClick(commands.get(i),e.getClick()));
+                    if(commands.get(i).equals("")){
+                        //click type is wrong
+                        continue;
                     }
                     //start custom command placeholders
                     try {
@@ -198,7 +158,7 @@ public class Utils implements Listener {
                     if(val == PaywallOutput.NotApplicable){
                         plugin.commandTags.runCommand(panel,position, p, commands.get(i));
                     }
-                }
+                }*/
             }
         }
     }

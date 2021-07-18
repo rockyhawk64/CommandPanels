@@ -6,6 +6,7 @@ import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class HotbarItemLoader {
     }
 
     //return true if found
-    public boolean stationaryExecute(int slot, Player p, boolean openPanel){
+    public boolean stationaryExecute(int slot, Player p, ClickType click, boolean openPanel){
         if(stationaryItems.get(p.getUniqueId()).list.containsKey(slot)){
             if(openPanel) {
                 try {
@@ -49,9 +50,7 @@ public class HotbarItemLoader {
                     return false;
                 }
                 if(panel.getHotbarSection(p).contains("commands")){
-                    for(String command : panel.getHotbarSection(p).getStringList("commands")){
-                        plugin.commandTags.runCommand(panel,PanelPosition.Top,p, command);
-                    }
+                    plugin.commandTags.runCommands(panel,PanelPosition.Top,p,panel.getHotbarSection(p).getStringList("commands"),click);
                     return true;
                 }
                 panel.open(p, PanelPosition.Top);

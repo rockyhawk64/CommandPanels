@@ -14,6 +14,10 @@ public class UtilsChestSortEvent implements Listener {
     }
     @EventHandler
     public void onChestSortEvent(ChestSortEvent e){
+        //if player is null it is not necessary
+        if(e.getPlayer() == null){
+            return;
+        }
         //cancel if a panel is opened at all
         if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName(), PanelPosition.Top)){
             e.setCancelled(true);

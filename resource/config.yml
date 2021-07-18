@@ -48,6 +48,7 @@ placeholders:
 updater:
   auto-update: true
   minor-updates-only: true
+  update-checks: true
 purchase:
   currency:
     success: '&aSuccessfully Bought For $%cp-args%'

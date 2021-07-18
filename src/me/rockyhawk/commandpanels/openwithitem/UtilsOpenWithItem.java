@@ -40,7 +40,7 @@ public class UtilsOpenWithItem implements Listener {
             return;
         }
         if(e.getClickedInventory().getType() == InventoryType.PLAYER && !e.isCancelled()) {
-            if (plugin.hotbar.stationaryExecute(e.getSlot(), p, true)) {
+            if (plugin.hotbar.stationaryExecute(e.getSlot(), p,e.getClick(), true)) {
                 e.setCancelled(true);
                 p.updateInventory();
             }
