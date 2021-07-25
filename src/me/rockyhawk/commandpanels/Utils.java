@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
-import org.bukkit.inventory.ItemStack;
+//import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Objects;
@@ -133,7 +133,7 @@ public class Utils implements Listener {
                 }
                 commands = commandsAfterSequence;
                 plugin.commandTags.runCommands(panel,position,p,commands,e.getClick());
-                /*for (int i = 0; commands.size() - 1 >= i; i++) {
+                for (int i = 0; commands.size() - 1 >= i; i++) {
                     commands.set(i,plugin.commandTags.hasCorrectClick(commands.get(i),e.getClick()));
                     if(commands.get(i).equals("")){
                         //click type is wrong
@@ -141,7 +141,13 @@ public class Utils implements Listener {
                     }
                     //start custom command placeholders
                     try {
-                        commands.set(i, commands.get(i).replaceAll("%cp-clicked%", clicked.getType().toString()));
+                    	//
+                    	//	Patch author: TheLonelyWolf1@https://github.com/TheLonelyWolf1
+                    	//
+                    	// With this Patch, the Placeholder should work as intended and give the Material.
+                        commands.set(i, commands.get(i).replaceAll("%cp-clicked%", e.getCurrentItem().getType().toString()));
+                        // 3.16.2.4's code:
+                        // commands.set(i, commands.get(i).replaceAll("%cp-clicked%", clicked.getType().toString()));
                     } catch (Exception mate) {
                         commands.set(i, commands.get(i).replaceAll("%cp-clicked%", "Air"));
                     }
@@ -158,7 +164,7 @@ public class Utils implements Listener {
                     if(val == PaywallOutput.NotApplicable){
                         plugin.commandTags.runCommand(panel,position, p, commands.get(i));
                     }
-                }*/
+                }
             }
         }
     }
