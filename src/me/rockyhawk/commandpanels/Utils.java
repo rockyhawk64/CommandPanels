@@ -133,10 +133,10 @@ public class Utils implements Listener {
                 }
                 commands = commandsAfterSequence;
                 //
-            	// Patch author: TheLonelyWolf1@https://github.com/TheLonelyWolf1
+                // Patch author: TheLonelyWolf1@https://github.com/TheLonelyWolf1
                 // Patch Date: 26-July-2021
-            	//
-            	// With this Patch, the Placeholder should work as intended and give the Material.
+                //
+                // With this Patch, the Placeholder should work as intended and give the Material.
                 // And the commands shouldn't run twice
                 for (int i = 0; commands.size() - 1 >= i; i++) {
                     commands.set(i,plugin.commandTags.hasCorrectClick(commands.get(i),e.getClick()));
