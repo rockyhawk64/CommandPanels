@@ -31,6 +31,13 @@ public class CreateText {
     }
 
     //CommandPanels send message function without the tag
+    public void sendString(Panel panel,PanelPosition position, Player p, String message){
+        if(!message.equals("")) {
+            p.sendMessage(placeholders(panel,position, p,message));
+        }
+    }
+
+    //CommandPanels send message function without the tag
     public void sendString(Player p, String message){
         if(!message.equals("")) {
             p.sendMessage(colour(message));

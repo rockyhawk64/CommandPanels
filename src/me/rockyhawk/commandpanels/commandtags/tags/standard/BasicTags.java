@@ -50,7 +50,7 @@ public class BasicTags implements Listener {
         }
         if(e.name.equalsIgnoreCase("msg=")) {
             e.commandTagUsed();
-            e.p.sendMessage(String.join(" ",e.args));
+            plugin.tex.sendString(e.panel,e.pos,e.p,String.join(" ",e.args));
             return;
         }
         if(e.name.equalsIgnoreCase("op=")) {

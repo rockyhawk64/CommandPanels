@@ -1,14 +1,12 @@
 package me.rockyhawk.commandpanels;
 
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.commandtags.PaywallOutput;
 import me.rockyhawk.commandpanels.interactives.input.PlayerInput;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Objects;
@@ -132,33 +130,16 @@ public class Utils implements Listener {
                     }
                 }
                 commands = commandsAfterSequence;
-                plugin.commandTags.runCommands(panel,position,p,commands,e.getClick());
-                /*for (int i = 0; commands.size() - 1 >= i; i++) {
-                    commands.set(i,plugin.commandTags.hasCorrectClick(commands.get(i),e.getClick()));
-                    if(commands.get(i).equals("")){
-                        //click type is wrong
-                        continue;
-                    }
-                    //start custom command placeholders
+
+                for (int i = 0; commands.size() > i; i++) {
                     try {
-                        commands.set(i, commands.get(i).replaceAll("%cp-clicked%", clicked.getType().toString()));
+                        commands.set(i, commands.get(i).replaceAll("%cp-clicked%", e.getCurrentItem().getType().toString()));
                     } catch (Exception mate) {
-                        commands.set(i, commands.get(i).replaceAll("%cp-clicked%", "Air"));
+                        commands.set(i, commands.get(i).replaceAll("%cp-clicked%", "AIR"));
                     }
+                }
 
-                    //end custom command PlaceHolders
-
-                    //make the command
-                    String command = plugin.tex.placeholders(panel,position,p,commands.get(i));
-
-                    PaywallOutput val = plugin.commandTags.commandPayWall(panel,p,command);
-                    if(val == PaywallOutput.Blocked){
-                        return;
-                    }
-                    if(val == PaywallOutput.NotApplicable){
-                        plugin.commandTags.runCommand(panel,position, p, commands.get(i));
-                    }
-                }*/
+                plugin.commandTags.runCommands(panel,position,p,commands,e.getClick());
             }
         }
     }
