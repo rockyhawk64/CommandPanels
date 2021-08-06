@@ -62,3 +62,6 @@ purchase:
   xp:
     success: '&aSuccessfully Bought For %cp-args% xp level.'
     failure: '&cInsufficient xp levels!'
+  xppoints:
+    success: '&aSuccessfully Bought For %cp-args% xp points.'
+    failure: '&cInsufficient xp points!'
