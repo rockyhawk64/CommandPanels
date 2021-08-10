@@ -4,7 +4,6 @@ import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.classresources.placeholders.PanelPlaceholders;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

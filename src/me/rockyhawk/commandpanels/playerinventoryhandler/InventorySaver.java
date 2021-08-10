@@ -1,38 +1,28 @@
 package me.rockyhawk.commandpanels.playerinventoryhandler;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.api.PanelClosedEvent;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
-import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.PotionMeta;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class InventorySaver implements Listener {
+    public YamlConfiguration inventoryConfig;
+
     CommandPanels plugin;
     public InventorySaver(CommandPanels pl) {
         this.plugin = pl;
     }
-
-    public YamlConfiguration inventoryConfig;
 
     public void saveInventoryFile(){
         try {

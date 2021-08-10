@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.classresources;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
-import me.rockyhawk.commandpanels.commandtags.PaywallOutput;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
@@ -14,7 +13,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 
-import java.util.List;
 import java.util.Objects;
 
 public class ExecuteOpenVoids {
@@ -25,6 +23,10 @@ public class ExecuteOpenVoids {
 
     //this is the main method to open a panel
     public void openCommandPanel(CommandSender sender, Player p, Panel panel, PanelPosition position, boolean openForOtherUser){
+        if(p == null){
+            sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Player not found."));
+            return;
+        }
         if(p.isSleeping()){
             //avoid plugin glitches when sleeping
             return;

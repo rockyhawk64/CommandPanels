@@ -29,11 +29,10 @@ public class CpTabComplete implements TabCompleter {
                         if (sender.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))) {
                             if(panel.getConfig().contains("panelType")) {
                                 if (panel.getConfig().getStringList("panelType").contains("nocommand")) {
-                                    //do not allow command with noCommand
+                                    //do not allow command with nocommand
                                     continue;
                                 }
                             }
-
                             if(plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
                                 apanels.add(panel.getName());
                             }

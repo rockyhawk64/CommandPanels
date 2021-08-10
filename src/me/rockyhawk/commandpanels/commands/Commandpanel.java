@@ -39,7 +39,7 @@ public class Commandpanel implements CommandExecutor {
         boolean disableCommand = false;
         if(panel.getConfig().contains("panelType")) {
             if (panel.getConfig().getStringList("panelType").contains("nocommand")) {
-                //do not allow command with noCommand
+                //do not allow command with noCommand, console is an exception
                 disableCommand =  true;
             }
         }
@@ -49,9 +49,7 @@ public class Commandpanel implements CommandExecutor {
                 //do console command command
                 if(args.length == 2){
                     if(!args[1].equals("item")){
-                        if(!disableCommand) {
-                            plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.copy(), PanelPosition.Top, true);
-                        }
+                        plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.copy(), PanelPosition.Top, true);
                     }else{
                         sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cp <panel> [item] [player]"));
                     }
