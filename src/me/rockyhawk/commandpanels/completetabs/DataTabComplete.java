@@ -1,7 +1,6 @@
 package me.rockyhawk.commandpanels.completetabs;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -10,7 +9,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class DataTabComplete implements TabCompleter {
@@ -34,12 +32,11 @@ public class DataTabComplete implements TabCompleter {
                     output.add(p.getName());
                 }
             }else if(args.length == 3){
-                if(!args[0].equals("clear")) {
-                    try {
-                        return new ArrayList<>(plugin.panelData.dataConfig.getConfigurationSection("playerData." + plugin.panelData.getOffline(args[1])).getKeys(false));
-                    } catch (Exception ex) {
-                        return null;
-                    }
+                //the clear function is here as it is the only subcommand with 3 args
+                try {
+                    return new ArrayList<>(plugin.panelData.dataConfig.getConfigurationSection("playerData." + plugin.panelData.getOffline(args[1])).getKeys(false));
+                } catch (Exception ex) {
+                    return null;
                 }
             }
             return output;

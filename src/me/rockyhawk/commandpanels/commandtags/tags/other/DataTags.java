@@ -2,11 +2,8 @@ package me.rockyhawk.commandpanels.commandtags.tags.other;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-
-import java.util.UUID;
 
 public class DataTags implements Listener {
     CommandPanels plugin;

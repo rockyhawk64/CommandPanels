@@ -1,18 +1,11 @@
 package me.rockyhawk.commandpanels.commands;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
-import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-
-import java.util.UUID;
 
 public class Commandpanelsdata implements CommandExecutor {
     CommandPanels plugin;
