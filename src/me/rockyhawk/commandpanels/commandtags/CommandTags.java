@@ -313,33 +313,15 @@ public class CommandTags {
                     return PaywallOutput.Blocked;
                 }
             }
-            case "xp-points-paywall=": {
-            	//if player uses xp-points-paywall= [price]
-            	try {
-            		int balance = Utils.getPlayerExp(p);
-                    if (balance >= Integer.parseInt(command.split("\\s")[1])) {
-                    	Utils.changePlayerExp(p, Integer.parseInt(command.split("\\s")[1]));
-                        //if the message is empty don't send
-                        plugin.tex.sendString(p,Objects.requireNonNull(plugin.config.getString("purchase.xppoints.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
-                        return PaywallOutput.Passed;
-                    } else {
-                        plugin.tex.sendString(p, plugin.config.getString("purchase.xppoints.failure"));
-                        return PaywallOutput.Blocked;
-                    }
-            		
-            	} catch (Exception buyc) {
-            		plugin.debug(buyc,p);
-                    plugin.tex.sendString(p, tag + plugin.config.getString("config.format.error") + " " + "commands: " + command);
-                    return PaywallOutput.Blocked;
-            	}
-            	
-            }
         }
         return PaywallOutput.NotApplicable;
     }
 
     //Experience math is a bit doggy doo doo so these will help to calculate values
     // Calculate total experience up to a level
+
+    // @author thelonelywolf@https://github.com/TheLonelyWolf1
+    // @date 06 August 2021
     private int getExpAtLevel(int level){
         if(level <= 16){
             return (int) (Math.pow(level,2) + 6*level);
