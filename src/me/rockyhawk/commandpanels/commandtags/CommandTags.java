@@ -319,6 +319,9 @@ public class CommandTags {
 
     //Experience math is a bit doggy doo doo so these will help to calculate values
     // Calculate total experience up to a level
+
+    // @author thelonelywolf@https://github.com/TheLonelyWolf1
+    // @date 06 August 2021
     private int getExpAtLevel(int level){
         if(level <= 16){
             return (int) (Math.pow(level,2) + 6*level);
