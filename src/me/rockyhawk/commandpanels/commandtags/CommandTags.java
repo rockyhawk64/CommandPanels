@@ -286,11 +286,20 @@ public class CommandTags {
                 }
             }
             case "xp-paywall=": {
-                //if player uses xp-paywall= [price]
+                //if player uses xp-paywall= <price> <levels:points>
                 try {
-                    int balance = p.getLevel();
+                    int balance;
+                    if(command.split("\\s")[2].startsWith("level")){
+                        balance = p.getLevel();
+                    }else{
+                        balance = getPlayerExp(p);
+                    }
                     if (balance >= Integer.parseInt(command.split("\\s")[1])) {
-                        p.setLevel(p.getLevel() - Integer.parseInt(command.split("\\s")[1]));
+                        if(command.split("\\s")[2].startsWith("level")){
+                            p.setLevel(p.getLevel() - Integer.parseInt(command.split("\\s")[1]));
+                        }else{
+                            removePlayerExp(p,Integer.parseInt(command.split("\\s")[1]));
+                        }
                         //if the message is empty don't send
                         plugin.tex.sendString(p,Objects.requireNonNull(plugin.config.getString("purchase.xp.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                         return PaywallOutput.Passed;
@@ -327,5 +336,59 @@ public class CommandTags {
             }
         }
         return PaywallOutput.NotApplicable;
+    }
+
+    //Experience math is a bit doggy doo doo so these will help to calculate values
+    // Calculate total experience up to a level
+    private int getExpAtLevel(int level){
+        if(level <= 16){
+            return (int) (Math.pow(level,2) + 6*level);
+        } else if(level <= 31){
+            return (int) (2.5*Math.pow(level,2) - 40.5*level + 360.0);
+        } else {
+            return (int) (4.5*Math.pow(level,2) - 162.5*level + 2220.0);
+        }
+    }
+
+    // Calculate amount of EXP needed to level up
+    private int getExpToLevelUp(int level){
+        if(level <= 15){
+            return 2*level+7;
+        } else if(level <= 30){
+            return 5*level-38;
+        } else {
+            return 9*level-158;
+        }
+    }
+
+    // Calculate player's current EXP amount
+    private int getPlayerExp(Player player){
+        int exp = 0;
+        int level = player.getLevel();
+
+        // Get the amount of XP in past levels
+        exp += getExpAtLevel(level);
+
+        // Get amount of XP towards next level
+        exp += Math.round(getExpToLevelUp(level) * player.getExp());
+
+        return exp;
+    }
+
+    // Take EXP
+    private int removePlayerExp(Player player, int exp){
+        // Get player's current exp
+        int currentExp = getPlayerExp(player);
+
+        // Reset player's current exp to 0
+        player.setExp(0);
+        player.setLevel(0);
+
+        // Give the player their exp back, with the difference
+        int newExp = currentExp - exp;
+        player.giveExp(newExp);
+
+        // Return the player's new exp amount
+        return newExp;
     }
 }

@@ -1,6 +1,6 @@
 # |------------------------------------------------------------------------
 # |                       CommandPanels Config File
-# |                           By RockyHawk v5.1
+# |                           By RockyHawk v5.2
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
 # |
 # |        auto-update and minor-updates-only is HEAVILY RECOMMENDED
@@ -60,8 +60,5 @@ purchase:
     success: '&aSuccessfully Sold %cp-args%.'
     failure: '&cInsufficient Items!'
   xp:
-    success: '&aSuccessfully Bought For %cp-args% xp level.'
-    failure: '&cInsufficient xp levels!'
-  xppoints:
-    success: '&aSuccessfully Bought For %cp-args% xp points.'
-    failure: '&cInsufficient xp points!'
+    success: '&aSuccessfully Bought For %cp-args% Experience.'
+    failure: '&cInsufficient Experience!'

@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.datamanager;
 
 import me.rockyhawk.commandpanels.CommandPanels;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -103,5 +104,11 @@ public class PanelDataLoader {
         }
 
         dataConfig.set("playerData." + playerUUID + "." + dataPoint, output.toPlainString());
+    }
+
+    @SuppressWarnings("deprecation")
+    public UUID getOffline(String playerName){
+        //making this a separate function as it is long and deprecated
+        return Bukkit.getOfflinePlayer(playerName).getUniqueId();
     }
 }

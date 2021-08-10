@@ -6,6 +6,9 @@ import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.classresources.ExecuteOpenVoids;
 import me.rockyhawk.commandpanels.classresources.GetCustomHeads;
 import me.rockyhawk.commandpanels.classresources.ItemCreation;
+import me.rockyhawk.commandpanels.classresources.placeholders.expansion.CpPlaceholderExpansion;
+import me.rockyhawk.commandpanels.completetabs.DataTabComplete;
+import me.rockyhawk.commandpanels.completetabs.ImportTabComplete;
 import me.rockyhawk.commandpanels.ingameeditor.OpenEditorGuis;
 import me.rockyhawk.commandpanels.classresources.item_fall.ItemFallManager;
 import me.rockyhawk.commandpanels.classresources.placeholders.CreateText;
@@ -147,13 +150,20 @@ public class CommandPanels extends JavaPlugin{
         new Metrics(this);
         Objects.requireNonNull(this.getCommand("commandpanel")).setExecutor(new Commandpanel(this));
         Objects.requireNonNull(this.getCommand("commandpanel")).setTabCompleter(new CpTabComplete(this));
+
         Objects.requireNonNull(this.getCommand("commandpanelgenerate")).setTabCompleter(new TabCompleteGenerate(this));
         Objects.requireNonNull(this.getCommand("commandpanelgenerate")).setExecutor(new Commandpanelsgenerate(this));
+
+        Objects.requireNonNull(this.getCommand("commandpaneldata")).setTabCompleter(new DataTabComplete(this));
+        Objects.requireNonNull(this.getCommand("commandpaneldata")).setExecutor(new Commandpanelsdata(this));
+
+        Objects.requireNonNull(this.getCommand("commandpanelimport")).setExecutor(new CommandPanelImport(this));
+        Objects.requireNonNull(this.getCommand("commandpanelimport")).setTabCompleter(new ImportTabComplete(this));
+
         Objects.requireNonNull(this.getCommand("commandpanelreload")).setExecutor(new Commandpanelsreload(this));
         Objects.requireNonNull(this.getCommand("commandpaneldebug")).setExecutor(new Commandpanelsdebug(this));
         Objects.requireNonNull(this.getCommand("commandpanelversion")).setExecutor(new Commandpanelversion(this));
         Objects.requireNonNull(this.getCommand("commandpanellist")).setExecutor(new Commandpanelslist(this));
-        Objects.requireNonNull(this.getCommand("commandpanelimport")).setExecutor(new CommandPanelImport(this));
         this.getServer().getPluginManager().registerEvents(new Utils(this), this);
         this.getServer().getPluginManager().registerEvents(updater, this);
         this.getServer().getPluginManager().registerEvents(inventorySaver, this);
@@ -162,6 +172,11 @@ public class CommandPanels extends JavaPlugin{
         this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
         this.getServer().getPluginManager().registerEvents(new ItemFallManager(this), this);
         this.getServer().getPluginManager().registerEvents(new OpenOnJoin(this), this);
+
+        //load in PlaceholderAPI Expansion
+        if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new CpPlaceholderExpansion(this).register();
+        }
 
         //load in all built in command tags
         commandTags.registerBuiltInTags();
@@ -432,11 +447,11 @@ public class CommandPanels extends JavaPlugin{
         if (p.hasPermission("commandpanel.import")) {
             p.sendMessage(ChatColor.GOLD + "/cpi [file name] [URL] " + ChatColor.WHITE + "Downloads a panel from a raw link online.");
         }
-        if (p.hasPermission("commandpanel.edit")) {
-            p.sendMessage(ChatColor.GOLD + "/cpe [panel] " + ChatColor.WHITE + "Edit a panel with the Panel Editor.");
-        }
         if (p.hasPermission("commandpanel.list")) {
             p.sendMessage(ChatColor.GOLD + "/cpl " + ChatColor.WHITE + "Lists the currently loaded panels.");
+        }
+        if (p.hasPermission("commandpanel.data")) {
+            p.sendMessage(ChatColor.GOLD + "/cpdata " + ChatColor.WHITE + "Change panel data for a user.");
         }
         if (p.hasPermission("commandpanel.debug")) {
             p.sendMessage(ChatColor.GOLD + "/cpd " + ChatColor.WHITE + "Enable and Disable debug mode globally.");
@@ -449,6 +464,9 @@ public class CommandPanels extends JavaPlugin{
         }
         if (p.hasPermission("commandpanel.block.list")) {
             p.sendMessage(ChatColor.GOLD + "/cpb list " + ChatColor.WHITE + "List blocks that will open panels.");
+        }
+        if (p.hasPermission("commandpanel.edit")) {
+            p.sendMessage(ChatColor.GOLD + "/cpe [panel] " + ChatColor.WHITE + "Edit a panel with the Panel Editor.");
         }
     }
 

@@ -68,8 +68,9 @@ public class Placeholders {
         }
     }
 
+    //this requires the placeholder to already be identified
     @SuppressWarnings("deprecation")
-    private String cpPlaceholders(Panel panel, PanelPosition position, Player p, String identifier){
+    public String cpPlaceholders(Panel panel, PanelPosition position, Player p, String identifier){
 
         //replace nodes with PlaceHolders
         switch(identifier){

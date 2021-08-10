@@ -14,33 +14,29 @@ public class Commandpanelsdebug implements CommandExecutor {
 
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (label.equalsIgnoreCase("cpd") || label.equalsIgnoreCase("commandpaneldebug") || label.equalsIgnoreCase("cpaneld")) {
-            if (sender.hasPermission("commandpanel.debug")) {
-                if (args.length == 0) {
-                    //command /cpd
-                    if(!(sender instanceof Player)) {
-                        plugin.debug.consoleDebug = !plugin.debug.consoleDebug;
-                        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.GREEN + "Global Debug Mode: " + plugin.debug.consoleDebug));
-                        return true;
-                    }
+        if (sender.hasPermission("commandpanel.debug")) {
+            if (args.length == 0) {
+                //command /cpd
+                if(!(sender instanceof Player)) {
+                    plugin.debug.consoleDebug = !plugin.debug.consoleDebug;
+                    sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.GREEN + "Global Debug Mode: " + plugin.debug.consoleDebug));
+                    return true;
+                }
 
-                    Player p = (Player)sender;
-                    if(plugin.debug.isEnabled(p)){
-                        plugin.debug.debugSet.remove(p);
-                        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.GREEN + "Personal Debug Mode Disabled!"));
-                    }else{
-                        plugin.debug.debugSet.add(p);
-                        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.GREEN + "Personal Debug Mode Enabled!"));
-                    }
+                Player p = (Player)sender;
+                if(plugin.debug.isEnabled(p)){
+                    plugin.debug.debugSet.remove(p);
+                    sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.GREEN + "Personal Debug Mode Disabled!"));
                 }else{
-                    sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cpd"));
+                    plugin.debug.debugSet.add(p);
+                    sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.GREEN + "Personal Debug Mode Enabled!"));
                 }
             }else{
-                sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
+                sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cpd"));
             }
-            return true;
+        }else{
+            sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
         }
-        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cpd"));
         return true;
     }
 }

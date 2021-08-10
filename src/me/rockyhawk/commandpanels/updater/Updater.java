@@ -15,15 +15,15 @@ import java.util.Objects;
 import java.util.logging.Level;
 
 public class Updater implements Listener {
-    CommandPanels plugin;
-    public Updater(CommandPanels pl) {
-        this.plugin = pl;
-    }
-
     //if this is set to something, it will download that version on restart
     //can be a version number, 'latest' or 'cancel'
     public String downloadVersionManually = null;
     public String catchedLatestVersion = "null";
+
+    CommandPanels plugin;
+    public Updater(CommandPanels pl) {
+        this.plugin = pl;
+    }
 
     //send update message when the player joins the game with the permission
     @EventHandler

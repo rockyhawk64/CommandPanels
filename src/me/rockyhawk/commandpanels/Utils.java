@@ -43,6 +43,7 @@ public class Utils implements Listener {
 
         if(e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY){
             e.setCancelled(true);
+            return;
         }
 
         if(e.getSlotType() == InventoryType.SlotType.OUTSIDE){

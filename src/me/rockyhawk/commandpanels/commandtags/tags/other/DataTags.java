@@ -2,11 +2,8 @@ package me.rockyhawk.commandpanels.commandtags.tags.other;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-
-import java.util.UUID;
 
 public class DataTags implements Listener {
     CommandPanels plugin;
@@ -19,7 +16,7 @@ public class DataTags implements Listener {
         if(e.name.equalsIgnoreCase("set-data=")){
             e.commandTagUsed();
             if(e.args.length == 3){
-                plugin.panelData.setUserData(getOffline(e.args[2]),e.args[0],plugin.tex.placeholdersNoColour(e.panel,e.pos,e.p,e.args[1]),true);
+                plugin.panelData.setUserData(plugin.panelData.getOffline(e.args[2]),e.args[0],plugin.tex.placeholdersNoColour(e.panel,e.pos,e.p,e.args[1]),true);
                 return;
             }
             //this will overwrite data. set-data= [data point] [data value] [optional player]
@@ -29,7 +26,7 @@ public class DataTags implements Listener {
         if(e.name.equalsIgnoreCase("add-data=")){
             e.commandTagUsed();
             if(e.args.length == 3){
-                plugin.panelData.setUserData(getOffline(e.args[2]),e.args[0],plugin.tex.placeholdersNoColour(e.panel,e.pos,e.p,e.args[1]),false);
+                plugin.panelData.setUserData(plugin.panelData.getOffline(e.args[2]),e.args[0],plugin.tex.placeholdersNoColour(e.panel,e.pos,e.p,e.args[1]),false);
                 return;
             }
             //this will not overwrite existing data. add-data= [data point] [data value] [optional player]
@@ -39,7 +36,7 @@ public class DataTags implements Listener {
         if(e.name.equalsIgnoreCase("math-data=")){
             e.commandTagUsed();
             if(e.args.length == 3){
-                plugin.panelData.doDataMath(getOffline(e.args[2]),e.args[0],plugin.tex.placeholdersNoColour(e.panel,e.pos,e.p,e.args[1]));
+                plugin.panelData.doDataMath(plugin.panelData.getOffline(e.args[2]),e.args[0],plugin.tex.placeholdersNoColour(e.panel,e.pos,e.p,e.args[1]));
                 return;
             }
             //only works if data is number, goes math-data= [data point] [operator:number] [optional player] eg, math-data= -1 OR /3
@@ -55,17 +52,11 @@ public class DataTags implements Listener {
         if(e.name.equalsIgnoreCase("del-data=")){
             e.commandTagUsed();
             if(e.args.length == 3){
-                plugin.panelData.delUserData(getOffline(e.args[1]),e.args[0]);
+                plugin.panelData.delUserData(plugin.panelData.getOffline(e.args[1]),e.args[0]);
                 return;
             }
             //this will remove data. del-data= [data point] [optional player]
             plugin.panelData.delUserData(e.p.getUniqueId(),e.args[0]);
         }
-    }
-
-    @SuppressWarnings("deprecation")
-    private UUID getOffline(String playerName){
-        //making this a separate function as it is long and deprecated
-        return Bukkit.getOfflinePlayer(playerName).getUniqueId();
     }
 }
