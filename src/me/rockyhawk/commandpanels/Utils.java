@@ -41,11 +41,6 @@ public class Utils implements Listener {
         //set the panel to the top panel
         Panel panel = plugin.openPanels.getOpenPanel(p.getName(),PanelPosition.Top);
 
-        if(e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY){
-            e.setCancelled(true);
-            return;
-        }
-
         if(e.getSlotType() == InventoryType.SlotType.OUTSIDE){
             //if the panel is clicked on the outside area of the GUI
             if (panel.getConfig().contains("outside-commands")) {
@@ -60,6 +55,13 @@ public class Utils implements Listener {
 
         PanelPosition position = PanelPosition.Top;
         if(e.getClickedInventory().getType() == InventoryType.PLAYER) {
+            //cancel the event and return, stops items going from players inventory to the panels
+            if(e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY){
+                e.setCancelled(true);
+                return;
+            }
+
+            //do player or panel inventory checks
             if (e.getSlotType() == InventoryType.SlotType.CONTAINER) {
                 if(plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Middle)) {
                     position = PanelPosition.Middle;
@@ -108,6 +110,7 @@ public class Utils implements Listener {
             }
         }
 
+        //updates the inventory to stop item glitches
         e.setCancelled(true);
         p.updateInventory();
 

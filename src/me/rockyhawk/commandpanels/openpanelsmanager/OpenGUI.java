@@ -218,7 +218,7 @@ public class OpenGUI {
             return false;
         }
         try {
-            int d = Integer.parseInt(strNum);
+            int unused = Integer.parseInt(strNum);
         } catch (NumberFormatException nfe) {
             return false;
         }
