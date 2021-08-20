@@ -27,7 +27,7 @@ public class UserInputUtils implements Listener {
         if(playerInput.containsKey(e.getPlayer())){
             e.setCancelled(true);
             if(e.getMessage().equalsIgnoreCase(plugin.config.getString("input.input-cancel"))){
-                e.getPlayer().sendMessage(plugin.tex.colour( Objects.requireNonNull(plugin.config.getString("config.input-cancelled"))));
+                e.getPlayer().sendMessage(plugin.tex.colour( Objects.requireNonNull(plugin.config.getString("input.input-cancelled"))));
                 playerInput.remove(e.getPlayer());
                 return;
             }
