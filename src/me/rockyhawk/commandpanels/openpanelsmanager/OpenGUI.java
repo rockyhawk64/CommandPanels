@@ -58,7 +58,7 @@ public class OpenGUI {
             String section = "";
             //openType needs to not be 3 so the editor won't include hasperm and hasvalue, etc items
             if (openType != PanelOpenType.Editor) {
-                section = plugin.itemCreate.hasSection(panel,position,pconfig.getConfigurationSection("item." + Integer.parseInt(item)), p);
+                section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("item." + Integer.parseInt(item)), p);
                 //This section is for animations below here: VISUAL ONLY
 
                 //check for if there is animations inside the items section

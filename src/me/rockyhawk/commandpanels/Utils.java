@@ -100,7 +100,7 @@ public class Utils implements Listener {
         }
 
         //get the section of the slot that was clicked
-        String section = plugin.itemCreate.hasSection(panel,position,panel.getConfig().getConfigurationSection("item." + clickedSlot), p);
+        String section = plugin.has.hasSection(panel,position,panel.getConfig().getConfigurationSection("item." + clickedSlot), p);
 
         if(panel.getConfig().contains("item." + clickedSlot + section + ".itemType")){
             if(panel.getConfig().getStringList("item." + clickedSlot + section + ".itemType").contains("placeable")){
@@ -116,7 +116,7 @@ public class Utils implements Listener {
 
         //if an item has an area for input instead of commands
         if(panel.getConfig().contains("item." + clickedSlot + section + ".player-input")) {
-            plugin.inputUtils.playerInput.put(p,new PlayerInput(panel,panel.getConfig().getStringList("item." + clickedSlot + section + ".player-input")));
+            plugin.inputUtils.playerInput.put(p,new PlayerInput(panel,panel.getConfig().getStringList("item." + clickedSlot + section + ".player-input"),e.getClick()));
             plugin.inputUtils.sendMessage(panel,position,p);
         }
 

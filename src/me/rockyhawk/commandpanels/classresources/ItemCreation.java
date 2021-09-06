@@ -379,113 +379,11 @@ public class ItemCreation {
 
     //do custom-item items, they have an additional hasSection requirement
     public ItemStack makeCustomItemFromConfig(Panel panel,PanelPosition position, ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours, boolean addNBT){
-        String section = plugin.itemCreate.hasSection(panel,position,itemSection,p);
+        String section = plugin.has.hasSection(panel,position,itemSection,p);
         if(!section.equals("")){
             itemSection = itemSection.getConfigurationSection(section.substring(1));
         }
         return plugin.itemCreate.makeItemFromConfig(panel,position,itemSection, p, placeholders, colours, addNBT);
-    }
-
-    //hasperm hasvalue, etc sections will be done here
-    public String hasSection(Panel panel,PanelPosition position, ConfigurationSection cf, Player p){
-        if (cf.isSet("hasvalue")) {
-            //this will do the hasvalue without any numbers
-            boolean outputValue = true;
-            //outputValue will default to true
-            if (cf.contains("hasvalue.output")) {
-                //if output is true, and values match it will be this item, vice versa
-                outputValue = cf.getBoolean("hasvalue.output");
-            }
-            String value = ChatColor.stripColor(plugin.tex.placeholders(panel,position,p,cf.getString("hasvalue.value")));
-            String compare = ChatColor.stripColor(plugin.tex.placeholders(panel,position,p,cf.getString("hasvalue.compare")));
-            if (compare.equals(value) == outputValue) {
-                //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
-                String section = hasSection(panel,position,Objects.requireNonNull(cf.getConfigurationSection("hasvalue")), p);
-                //string section, it executes itself to check for subsections
-                return ".hasvalue" + section;
-            }
-            //loop through possible hasvalue 1,2,3,etc
-            for (int count = 0; cf.getKeys(false).size() > count; count++) {
-                if (cf.contains("hasvalue" + count)) {
-                    outputValue = true;
-                    //outputValue will default to true
-                    if (cf.contains("hasvalue" + count + ".output")) {
-                        //if output is true, and values match it will be this item, vice versa
-                        outputValue = cf.getBoolean("hasvalue" + count + ".output");
-                    }
-                    value = ChatColor.stripColor(plugin.tex.placeholders(panel,position,p,cf.getString("hasvalue" + count + ".value")));
-                    compare = ChatColor.stripColor(plugin.tex.placeholders(panel,position,p,cf.getString("hasvalue" + count + ".compare")));
-                    if (compare.equals(value) == outputValue) {
-                        //onOpen being 3 means it is the editor panel.. hasvalue items cannot be included to avoid item breaking
-                        String section = hasSection(panel,position,Objects.requireNonNull(cf.getConfigurationSection("hasvalue" + count)), p);
-                        //string section, it executes itself to check for subsections
-                        return ".hasvalue" + count + section;
-                    }
-                }
-            }
-        }
-        if (cf.isSet("hasgreater")) {
-            //this will do the hasgreater without any numbers
-            boolean outputValue = true;
-            //outputValue will default to true
-            if (cf.contains("hasgreater.output")) {
-                //if output is true, and values match it will be this item, vice versa
-                outputValue = cf.getBoolean("hasgreater.output");
-            }
-            double value = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,position,p,cf.getString("hasgreater.value"))));
-            double compare = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,position,p,cf.getString("hasgreater.compare"))));
-            if ((compare >= value) == outputValue) {
-                //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
-                String section = hasSection(panel,position,Objects.requireNonNull(cf.getConfigurationSection("hasgreater")), p);
-                return ".hasgreater" + section;
-            }
-            //loop through possible hasgreater 1,2,3,etc
-            for (int count = 0; cf.getKeys(false).size() > count; count++) {
-                if (cf.contains("hasgreater" + count)) {
-                    outputValue = true;
-                    //outputValue will default to true
-                    if (cf.contains("hasgreater" + count + ".output")) {
-                        //if output is true, and values match it will be this item, vice versa
-                        outputValue = cf.getBoolean("hasgreater" + count + ".output");
-                    }
-                    value = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,position,p,cf.getString("hasgreater" + count + ".value"))));
-                    compare = Double.parseDouble(ChatColor.stripColor(plugin.tex.placeholdersNoColour(panel,position,p,cf.getString("hasgreater" + count + ".compare"))));
-                    if ((compare >= value) == outputValue) {
-                        //onOpen being 3 means it is the editor panel.. hasgreater items cannot be included to avoid item breaking
-                        String section = hasSection(panel,position,Objects.requireNonNull(cf.getConfigurationSection("hasgreater" + count)), p);
-                        return ".hasgreater" + count + section;
-                    }
-                }
-            }
-        }
-        if (cf.isSet("hasperm")) {
-            //this will do hasperm with no numbers
-            boolean outputValue = true;
-            //outputValue will default to true
-            if (cf.contains("hasperm.output")) {
-                //if output is true, and values match it will be this item, vice versa
-                outputValue = cf.getBoolean("hasperm.output");
-            }
-            if (p.hasPermission(Objects.requireNonNull(cf.getString("hasperm.perm"))) == outputValue) {
-                String section = hasSection(panel,position,Objects.requireNonNull(cf.getConfigurationSection("hasperm")), p);
-                return ".hasperm" + section;
-            }
-            for(int count = 0; cf.getKeys(false).size() > count; count++){
-                if (cf.contains("hasperm" + count) && cf.contains("hasperm"  + count + ".perm")) {
-                    outputValue = true;
-                    //outputValue will default to true
-                    if (cf.contains("hasperm" + count + ".output")) {
-                        //if output is true, and values match it will be this item, vice versa
-                        outputValue = cf.getBoolean("hasperm" + count + ".output");
-                    }
-                    if (p.hasPermission(Objects.requireNonNull(cf.getString("hasperm" + count + ".perm"))) == outputValue) {
-                        String section = hasSection(panel,position,Objects.requireNonNull(cf.getConfigurationSection("hasperm" + count)), p);
-                        return ".hasperm" + count + section;
-                    }
-                }
-            }
-        }
-        return "";
     }
 
     @SuppressWarnings("deprecation")
@@ -538,7 +436,7 @@ public class ItemCreation {
                     BannerMeta bannerMeta = (BannerMeta) cont.getItemMeta();
                     List<String> dyePattern = new ArrayList<>();
                     for(Pattern pattern : bannerMeta.getPatterns()) { //sublist to skip first value
-                        dyePattern.add(pattern.getColor().toString() + "," + pattern.getPattern().toString());
+                        dyePattern.add(pattern.getColor() + "," + pattern.getPattern());
                     }
                     file.set("panels." + panelName + ".item." + i + ".banner", dyePattern);
                 }catch(Exception ignore){

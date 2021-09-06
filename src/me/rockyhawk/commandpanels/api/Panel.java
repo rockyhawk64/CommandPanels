@@ -71,13 +71,13 @@ public class Panel{
     }
 
     public ItemStack getItem(Player p, int slot){
-        String section = plugin.itemCreate.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("item." + slot), p);
+        String section = plugin.has.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("item." + slot), p);
         ConfigurationSection itemSection = panelConfig.getConfigurationSection("item." + slot + section);
         return plugin.itemCreate.makeItemFromConfig(this,PanelPosition.Top,itemSection, p, true, true, false);
     }
 
     public ItemStack getCustomItem(Player p, String itemName){
-        String section = plugin.itemCreate.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("custom-item." + itemName), p);
+        String section = plugin.has.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("custom-item." + itemName), p);
         ConfigurationSection itemSection = panelConfig.getConfigurationSection("custom-item." + itemName + section);
         return plugin.itemCreate.makeCustomItemFromConfig(this,PanelPosition.Top,itemSection, p, true, true, false);
     }
@@ -91,7 +91,7 @@ public class Panel{
         return plugin.nbt.setNBT(s,"CommandPanelsHotbar",panelName + ":" + slot);
     }
     public ConfigurationSection getHotbarSection(Player p){
-        String section = plugin.itemCreate.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("open-with-item"), p);
+        String section = plugin.has.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("open-with-item"), p);
         return panelConfig.getConfigurationSection("open-with-item" + section);
     }
 

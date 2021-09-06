@@ -5,6 +5,7 @@ import me.rockyhawk.commandpanels.api.CommandPanelsAPI;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.classresources.ExecuteOpenVoids;
 import me.rockyhawk.commandpanels.classresources.GetCustomHeads;
+import me.rockyhawk.commandpanels.classresources.HasSections;
 import me.rockyhawk.commandpanels.classresources.ItemCreation;
 import me.rockyhawk.commandpanels.classresources.placeholders.expansion.CpPlaceholderExpansion;
 import me.rockyhawk.commandpanels.completetabs.DataTabComplete;
@@ -91,6 +92,7 @@ public class CommandPanels extends JavaPlugin{
     public OpenEditorGuis editorGuis = new OpenEditorGuis(this);
     public ExecuteOpenVoids openVoids = new ExecuteOpenVoids(this);
     public ItemCreation itemCreate = new ItemCreation(this);
+    public HasSections has = new HasSections(this);
     public GetCustomHeads customHeads = new GetCustomHeads(this);
     public Updater updater = new Updater(this);
     public PlayerHeads getHeads = new PlayerHeads(this);
