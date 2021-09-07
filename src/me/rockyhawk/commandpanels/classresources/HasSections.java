@@ -33,9 +33,12 @@ public class HasSections {
                 continue;
             }
 
+            boolean endProcess = true;
             //loop through possible values and compares for hypothetical and operators
             for (int a = 0; cf.getConfigurationSection(setName).getKeys(false).size() > a; a++) {
                 if(cf.isSet(setName + ".value" + a) && cf.isSet(setName + ".compare" + a)){
+                    //ensure the endProcess variable has been reset for another operation
+                    endProcess = true;
                     //get the values of this statement
                     String value = ChatColor.stripColor(plugin.tex.placeholders(panel, position, p, cf.getString(setName + ".value" + a)));
                     String compare = ChatColor.stripColor(plugin.tex.placeholders(panel, position, p, cf.getString(setName + ".compare" + a)));
@@ -51,7 +54,6 @@ public class HasSections {
                     //list of values with the or operator
                     HashSet<String> values = doOperators(new HashSet<>(Collections.singletonList(value)));
                     //go through all values with the or operator
-                    boolean endProcess = true;
                     for(String val : values){
                         if (hasProcess(setName, val, compare, p)) {
                             endProcess = false;
@@ -65,11 +67,16 @@ public class HasSections {
                         //check if the operator link between the next value/compare is OR
                         if(operator.equals("OR")){
                             //I can just continue because the algorithm already assumes the last sequence was true
+                            endProcess = false;
                             continue;
                         }
-                        return "";
+                        break;
                     }
                 }
+            }
+            //if the has section is false move to the next has section
+            if(endProcess){
+                continue;
             }
             //proceed if none of the values were false
             return "." + setName + hasSection(panel, position, cf.getConfigurationSection(setName), p);
