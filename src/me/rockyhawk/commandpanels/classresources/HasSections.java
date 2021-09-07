@@ -20,7 +20,6 @@ public class HasSections {
 
     public String hasSection(Panel panel, PanelPosition position, ConfigurationSection cf, Player p){
         for (int count = 0; cf.getKeys(false).size() > count; count++) {
-            boolean outputValue = true;
             String setName;
             if(cf.isSet("has" + count)) {
                 setName = "has" + count;
@@ -32,10 +31,6 @@ public class HasSections {
                 setName = "hasgreater" + count;
             }else{
                 continue;
-            }
-            if(cf.contains(setName + ".output")) {
-                //if output is true, and values match it will be this item, vice versa
-                outputValue = cf.getBoolean(setName + ".output");
             }
 
             //loop through possible values and compares for hypothetical and operators
@@ -58,7 +53,7 @@ public class HasSections {
                     //go through all values with the or operator
                     boolean endProcess = true;
                     for(String val : values){
-                        if (hasProcess(setName, val, compare, p, outputValue)) {
+                        if (hasProcess(setName, val, compare, p)) {
                             endProcess = false;
                             //if it is true and it is OR, there is no need to check the next value in the line
                             if(operator.equals("OR")){
@@ -93,7 +88,14 @@ public class HasSections {
         return value;
     }
 
-    private boolean hasProcess(String setName, String value, String compare,Player p, boolean outputValue){
+    private boolean hasProcess(String setName, String value, String compare,Player p){
+        //check to see if the value should be reversed
+        boolean outputValue = true;
+        if(value.startsWith("NOT ")){
+            value = value.substring(4);
+            outputValue = false;
+        }
+
         //the original has sections as TinyTank800 wanted to keep them
         if(setName.startsWith("hasvalue")) {
             return compare.equals(value) == outputValue;
