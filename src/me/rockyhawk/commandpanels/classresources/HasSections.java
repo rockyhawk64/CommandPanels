@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -118,7 +119,7 @@ public class HasSections {
             if(value.endsWith(" HASPERM")) {
                 return Bukkit.getPlayer(value.substring(0, value.length()-8)).hasPermission(compare) == outputValue;
             }else if(value.endsWith(" ISGREATER")) {
-                return (Long.parseLong(compare) <= Long.parseLong(value.substring(0, value.length()-10))) == outputValue;
+                return (new BigDecimal(compare).compareTo(new BigDecimal(value.substring(0, value.length()-10))) <= 0 == outputValue);
             }else{
                 return compare.equals(value) == outputValue;
             }
