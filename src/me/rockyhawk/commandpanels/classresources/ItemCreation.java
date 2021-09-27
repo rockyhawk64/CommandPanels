@@ -319,10 +319,24 @@ public class ItemCreation {
                 //if the item is a potion, give it an effect
                 try {
                     PotionMeta potionMeta = (PotionMeta)s.getItemMeta();
-                    String effectType = itemSection.getString("potion");
+                    String[] effectType = itemSection.getString("potion").split("\\s");
                     assert potionMeta != null;
-                    assert effectType != null;
-                    potionMeta.setBasePotionData(new PotionData(PotionType.valueOf(effectType.toUpperCase())));
+                    boolean extended = false;
+                    boolean upgraded = false;
+                    //create data
+                    if(effectType.length >= 2){
+                        if(effectType[1].equalsIgnoreCase("true")){
+                            extended = true;
+                        }
+                        if(effectType.length == 3){
+                            if(effectType[2].equalsIgnoreCase("true")){
+                                upgraded = true;
+                            }
+                        }
+                    }
+                    PotionData newData = new PotionData(PotionType.valueOf(effectType[0].toUpperCase()),extended,upgraded);
+                    //set meta
+                    potionMeta.setBasePotionData(newData);
                     potionMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
                     s.setItemMeta(potionMeta);
                 } catch (Exception er) {
@@ -459,7 +473,7 @@ public class ItemCreation {
     /*
     The ItemStack 'one' will be used, if it doesn't have a lore for example, it won't check to see if the other does have one
     The isIdentical() function will check for the following
-    Material, Name, Lore, Enchanted
+    Material, Name, Lore, Enchanted, Potion
      */
     @SuppressWarnings("deprecation")
     public boolean isIdentical(ItemStack one, ItemStack two){
@@ -497,6 +511,23 @@ public class ItemCreation {
                 }
             }
         } catch (Exception ignore) {}
+        //check for potions
+        try {
+            PotionMeta meta1 = (PotionMeta) one.getItemMeta();
+            PotionMeta meta2 = (PotionMeta) two.getItemMeta();
+            //different duration
+            if(meta1.getBasePotionData().isExtended() != meta2.getBasePotionData().isExtended()){
+                return false;
+            }
+            //different upgrade
+            if(meta1.getBasePotionData().isUpgraded() != meta2.getBasePotionData().isUpgraded()){
+                return false;
+            }
+            //different potion type
+            if (meta1.getBasePotionData().getType().compareTo(meta2.getBasePotionData().getType()) != 0){
+                return false;
+            }
+        }catch(Exception ignore){}
         //check for enchantments
         if(one.getEnchantments() == two.getEnchantments()){
             if(!one.getEnchantments().isEmpty()) {
