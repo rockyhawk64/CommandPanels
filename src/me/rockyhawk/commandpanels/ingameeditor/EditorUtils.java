@@ -43,6 +43,9 @@ public class EditorUtils implements Listener {
         if(e.getClickedInventory() != e.getView().getTopInventory()){
             return;
         }
+        if(!p.hasPermission("commandpanel.edit")){
+            return;
+        }
         e.setCancelled(true);
         ArrayList<String> panelNames = new ArrayList<String>(); //all panels from ALL files (panel names)
         ArrayList<String> panelTitles = new ArrayList<String>(); //all panels from ALL files (panel titles)
@@ -128,6 +131,9 @@ public class EditorUtils implements Listener {
         if(!p.getOpenInventory().getTitle().contains("Editing Panel:") || plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             return;
         }
+        if(!p.hasPermission("commandpanel.edit")){
+            return;
+        }
         String panelName = ""; //all panels from ALL files (panel names)
         File file = null; //all panels from ALL files (panel names)
         YamlConfiguration config = new YamlConfiguration(); //all panels from ALL files (panel yaml files)
@@ -183,6 +189,9 @@ public class EditorUtils implements Listener {
     public void onInventoryEdit(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
         if(!p.getOpenInventory().getTitle().contains("Editing Panel:") || plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
+            return;
+        }
+        if(!p.hasPermission("commandpanel.edit")){
             return;
         }
         String panelName = "";
@@ -311,6 +320,9 @@ public class EditorUtils implements Listener {
     public void onPanelSettings(InventoryClickEvent e) {
         Player p = (Player)e.getWhoClicked();
         if(!p.getOpenInventory().getTitle().contains("Panel Settings:") || plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
+            return;
+        }
+        if(!p.hasPermission("commandpanel.edit")){
             return;
         }
         e.setCancelled(true);
@@ -464,6 +476,9 @@ public class EditorUtils implements Listener {
         if(!p.getOpenInventory().getTitle().contains("Item Settings:") || plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             return;
         }
+        if(!p.hasPermission("commandpanel.edit")){
+            return;
+        }
         e.setCancelled(true);
         String panelName = ""; //all panels from ALL files (panel names)
         ConfigurationSection panelYaml = null; //all panels from ALL files (panel names)
@@ -585,6 +600,9 @@ public class EditorUtils implements Listener {
         if(!p.getOpenInventory().getTitle().contains("Item Sections:") || plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             return;
         }
+        if(!p.hasPermission("commandpanel.edit")){
+            return;
+        }
         e.setCancelled(true);
         String panelName = ""; //all panels from ALL files (panel names)
         ConfigurationSection panelYaml = null;
@@ -693,6 +711,9 @@ public class EditorUtils implements Listener {
     @SuppressWarnings("deprecation")
     public void onEditPanelClose(Player p, Inventory inv, InventoryView invView) {
         if(!p.getOpenInventory().getTitle().contains("Editing Panel:")){
+            return;
+        }
+        if(!p.hasPermission("commandpanel.edit")){
             return;
         }
         String panelName = ""; //all panels from ALL files (panel names)
