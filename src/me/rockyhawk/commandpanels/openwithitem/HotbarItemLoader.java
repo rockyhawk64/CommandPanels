@@ -120,7 +120,10 @@ public class HotbarItemLoader {
         for(int i = 0; i <= 35; i++){
             try {
                 if (plugin.nbt.getNBT(p.getInventory().getItem(i), "CommandPanelsHotbar") != null) {
-                    p.getInventory().setItem(i,new ItemStack(Material.AIR));
+                    //do not remove items that are not stationary
+                    if(!plugin.nbt.getNBT(p.getInventory().getItem(i), "CommandPanelsHotbar").endsWith("-1")) {
+                        p.getInventory().setItem(i, new ItemStack(Material.AIR));
+                    }
                 }
             }catch(NullPointerException | IllegalArgumentException ignore){}
         }

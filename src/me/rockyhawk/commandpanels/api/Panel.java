@@ -82,6 +82,7 @@ public class Panel{
         return plugin.itemCreate.makeCustomItemFromConfig(this,PanelPosition.Top,itemSection, p, true, true, false);
     }
 
+    //NBT will equal to panelName:slot and the slot will be -1 if item is not stationery
     public ItemStack getHotbarItem(Player p){
         ItemStack s = plugin.itemCreate.makeItemFromConfig(this,PanelPosition.Top,getHotbarSection(p), p, true, true, false);
         int slot = -1;

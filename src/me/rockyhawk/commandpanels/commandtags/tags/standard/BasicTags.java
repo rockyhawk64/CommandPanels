@@ -71,7 +71,12 @@ public class BasicTags implements Listener {
         if(e.name.equalsIgnoreCase("sound=")) {
             e.commandTagUsed();
             try {
-                e.p.playSound(e.p.getLocation(), Sound.valueOf(e.args[0]), 1F, 1F);
+                if(e.args.length == 3){
+                    //volume (0.0 to 1.0), pitch (0.5 to 2.0)
+                    e.p.playSound(e.p.getLocation(), Sound.valueOf(e.args[0]), Float.parseFloat(e.args[1]), Float.parseFloat(e.args[2]));
+                }else{
+                    e.p.playSound(e.p.getLocation(), Sound.valueOf(e.args[0]), 1F, 1F);
+                }
             } catch (Exception s) {
                 plugin.debug(s, e.p);
                 plugin.tex.sendMessage(e.p, plugin.config.getString("config.format.error") + " " + "commands: " + e.args[0]);
