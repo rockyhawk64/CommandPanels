@@ -105,7 +105,7 @@ public class SpecialTags implements Listener {
             e.commandTagUsed();
             //if player uses op= it will perform command as op
             final int delayTicks = Integer.parseInt(e.args[0]);
-            String finalCommand = String.join(" ",e.args).replace(e.args[0],"").trim();
+            String finalCommand = String.join(" ",e.args).replaceFirst(e.args[0],"").trim();
             new BukkitRunnable() {
                 @Override
                 public void run() {
