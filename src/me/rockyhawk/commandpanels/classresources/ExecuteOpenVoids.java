@@ -36,7 +36,7 @@ public class ExecuteOpenVoids {
             panel.setConfig(YamlConfiguration.loadConfiguration(panel.getFile()));
         }
         if (!sender.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))) {
-            if(!(panel.getConfig().getString("custom-messages.perms") == null)) {
+            if(panel.getConfig().getString("custom-messages.perms") != null) {
         		sender.sendMessage(plugin.tex.colour(plugin.tag + panel.getConfig().getString("custom-messages.perms")));
                 return;
         	}else {
@@ -48,7 +48,7 @@ public class ExecuteOpenVoids {
         if(sender.hasPermission("commandpanel.other") || !openForOtherUser) {
             //check for disabled worlds
             if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
-                if(!(panel.getConfig().getString("custom-messages.perms") == null)) {
+                if(panel.getConfig().getString("custom-messages.perms") != null) {
         		    sender.sendMessage(plugin.tex.colour(plugin.tag + panel.getConfig().getString("custom-messages.perms")));
                     return;
         	    }else {
@@ -111,7 +111,7 @@ public class ExecuteOpenVoids {
                 p.closeInventory();
             }
         }else{
-            if(!(panel.getConfig().getString("custom-messages.perms") == null)) {
+            if(panel.getConfig().getString("custom-messages.perms") != null) {
         		sender.sendMessage(plugin.tex.colour(plugin.tag + panel.getConfig().getString("custom-messages.perms")));
                 return;
         	}else {
