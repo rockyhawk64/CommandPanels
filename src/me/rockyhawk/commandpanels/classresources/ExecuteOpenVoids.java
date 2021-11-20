@@ -36,15 +36,25 @@ public class ExecuteOpenVoids {
             panel.setConfig(YamlConfiguration.loadConfiguration(panel.getFile()));
         }
         if (!sender.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))) {
-            sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
-            return;
+            if(!(panel.getConfig().getString("custom-messages.perms") == null)) {
+        		sender.sendMessage(plugin.tex.colour(plugin.tag + panel.getConfig().getString("custom-messages.perms")));
+                return;
+        	}else {
+        		sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
+                return;
+        	}
         }
         //if the sender has OTHER perms, or if sendOpenedMessage is false, implying it is not for another person
         if(sender.hasPermission("commandpanel.other") || !openForOtherUser) {
             //check for disabled worlds
             if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
-                sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
-                return;
+                if(!(panel.getConfig().getString("custom-messages.perms") == null)) {
+        		    sender.sendMessage(plugin.tex.colour(plugin.tag + panel.getConfig().getString("custom-messages.perms")));
+                    return;
+        	    }else {
+        		    sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
+                    return;
+        	    }
             }
 
             if(position != PanelPosition.Top && !plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
@@ -101,7 +111,13 @@ public class ExecuteOpenVoids {
                 p.closeInventory();
             }
         }else{
-            sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
+            if(!(panel.getConfig().getString("custom-messages.perms") == null)) {
+        		sender.sendMessage(plugin.tex.colour(plugin.tag + panel.getConfig().getString("custom-messages.perms")));
+                return;
+        	}else {
+        		sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
+                return;
+        	}
         }
     }
 
