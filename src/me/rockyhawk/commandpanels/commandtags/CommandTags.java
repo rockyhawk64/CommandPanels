@@ -136,8 +136,10 @@ public class CommandTags {
     }
 
     @SuppressWarnings("deprecation")
-    public PaywallOutput commandPayWall(Panel panel, Player p, String command) { //return 0 means no funds, 1 is they passed and 2 means paywall is not this command
+    public PaywallOutput commandPayWall(Panel panel, Player p, String rawCommand) { //return 0 means no funds, 1 is they passed and 2 means paywall is not this command
         String tag = plugin.config.getString("config.format.tag") + " ";
+        //create new instance of command but with placeholders parsed
+        String command = plugin.tex.placeholders(panel,PanelPosition.Top,p,rawCommand);
         switch(command.split("\\s")[0]){
             case "paywall=": {
                 //if player uses paywall= [price]

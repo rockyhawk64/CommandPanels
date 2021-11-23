@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class CommandPanelsAPI {
-    CommandPanels plugin;
+    public CommandPanels plugin;
     public CommandPanelsAPI(CommandPanels pl) {
         this.plugin = pl;
     }

@@ -68,6 +68,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 public class CommandPanels extends JavaPlugin{
     public YamlConfiguration config;
@@ -361,7 +362,7 @@ public class CommandPanels extends JavaPlugin{
 
     //check for duplicate panel names
     public boolean checkDuplicatePanel(CommandSender sender){
-        ArrayList<String> apanels = new ArrayList<>();
+        List<String> apanels = new ArrayList<>();
         for(Panel panel : panelList){
             apanels.add(panel.getName());
         }
