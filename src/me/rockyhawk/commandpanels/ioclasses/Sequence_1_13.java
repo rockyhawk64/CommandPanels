@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.ioclasses;
 
-//1.13- Imports
+//1.13 and below, 1.18+ Imports
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CharSequenceReader;

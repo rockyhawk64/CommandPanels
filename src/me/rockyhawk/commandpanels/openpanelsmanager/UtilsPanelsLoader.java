@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.openpanelsmanager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelClosedEvent;
-import me.rockyhawk.commandpanels.ioclasses.nbt.NBT_1_13;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

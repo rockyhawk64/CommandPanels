@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class CommandPanelsAPI {
+    //set to public to adjust any public settings within the plugin through the API
     public CommandPanels plugin;
+
     public CommandPanelsAPI(CommandPanels pl) {
         this.plugin = pl;
     }

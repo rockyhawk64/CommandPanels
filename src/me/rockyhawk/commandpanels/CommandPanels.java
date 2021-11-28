@@ -68,7 +68,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 public class CommandPanels extends JavaPlugin{
     public YamlConfiguration config;
@@ -501,7 +500,7 @@ public class CommandPanels extends JavaPlugin{
 
     public Reader getReaderFromStream(InputStream initialStream) throws IOException {
         //this reads the encrypted resource files in the jar file
-        if(legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_13)){
+        if(legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_13) || legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_18)){
             return new Sequence_1_13(this).getReaderFromStream(initialStream);
         }else{
             return new Sequence_1_14(this).getReaderFromStream(initialStream);
