@@ -140,7 +140,7 @@ public class Updater implements Listener {
 
         try {
             this.plugin.getLogger().info("Downloading new update: " + "v" + latestVersion);
-            URL fileUrl = new URL("https://github.com/rockyhawk64/CommandPanels/releases/download/" + latestVersion + "/Command.Panels.jar");
+            URL fileUrl = new URL("https://github.com/rockyhawk64/CommandPanels/releases/download/" + latestVersion + "/CommandPanels.jar");
             int fileLength = fileUrl.openConnection().getContentLength();
             in = new BufferedInputStream(fileUrl.openStream());
             fout = new FileOutputStream(new File(new File(".").getAbsolutePath() + "/plugins/", pluginFileName));
