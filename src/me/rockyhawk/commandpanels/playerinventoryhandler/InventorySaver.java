@@ -70,7 +70,10 @@ public class InventorySaver implements Listener {
     public void addInventory(Player p){
         if(!inventoryConfig.contains(p.getUniqueId().toString())){
             inventoryConfig.set(p.getUniqueId().toString(),plugin.itemSerializer.itemStackArrayToBase64(p.getInventory().getContents()));
-            p.getInventory().clear();
+            //will clear items except leave armour on the player while panels are open
+            ItemStack[] armorContents = p.getInventory().getArmorContents().clone(); //Clone armour slots
+            p.getInventory().clear(); //Clear inventory
+            p.getInventory().setArmorContents(armorContents); //Place armour back in slots
         }
     }
 
