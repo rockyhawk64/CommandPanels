@@ -373,6 +373,16 @@ public class ItemCreation {
                     }
                 }
             }
+
+            if (itemSection.contains("unbreakable")) {
+                // Applies the unbreakable flag to the item. Only works in non legacy versions
+                if (itemSection.getBoolean("unbreakable") == true && plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+                    ItemMeta unbreak = s.getItemMeta();
+                    unbreak.setUnbreakable(true);
+                    s.setItemMeta(unbreak);
+                }
+            }
+
             if (itemSection.contains("nbt")) {
                 for(String key : itemSection.getConfigurationSection("nbt").getKeys(false)){
                     s = plugin.nbt.setNBT(s,key,itemSection.getString("nbt." + key));
