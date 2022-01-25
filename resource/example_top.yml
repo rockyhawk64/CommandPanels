@@ -64,10 +64,10 @@ panels:
         commands:
           - placeholder= [item:GOLDEN_APPLE]
           - refresh
-        hasvalue:
+        has0:
           material: GOLDEN_APPLE
-          compare: '%cp-item%'
-          value: GOLDEN_APPLE
+          compare0: '%cp-item%'
+          value0: GOLDEN_APPLE
           name: '&fClick me to change item'
           commands:
             - placeholder= [item:APPLE]
@@ -105,9 +105,9 @@ panels:
           - set-data= example_item true
           - msg= &fThis message can only be sent one time
           - refresh
-        hasvalue:
-          compare: '%cp-data-example_item%'
-          value: true
+        has0:
+          compare0: '%cp-data-example_item%'
+          value0: true
           material: BARRIER
           name: '&cItem has been used!'
       '30':
@@ -116,9 +116,7 @@ panels:
         commands:
           - home
           - cpc
-          - console= title %cp-player-name% times 20 60 20
-          - console= title %cp-player-name% subtitle {"text":"%cp-player-displayname%","color":"green"}
-          - console= title %cp-player-name% title {"text":"Welcome Home"}
+          - title= %cp-player-name% 20 60 20 &eWelcome Home/n/&2%cp-player-displayname%
       '33':
         material: ARROW
         name: '&fItems can be stacked'

@@ -70,6 +70,33 @@ public class SpecialTags implements Listener {
             }
             return;
         }
+        if(e.name.equalsIgnoreCase("title=")) {
+            e.commandTagUsed();
+            //added into the 1.11 API
+            //will send a title to the player title= <player> <fadeIn> <stay> <fadeOut>
+            if(e.args.length >= 5){
+                Player p = Bukkit.getPlayer(e.args[0]);
+                StringBuilder message = new StringBuilder();
+                for(int i = 4; i < e.args.length; i++){
+                    message.append(e.args[i]).append(" ");
+                }
+                message.deleteCharAt(message.length()-1);
+                String title;
+                String subtitle = "";
+                if(message.toString().contains("/n/")) {
+                    title = plugin.tex.placeholders(e.panel, e.pos, e.p, message.toString().split("/n/")[0]);
+                    subtitle = plugin.tex.placeholders(e.panel, e.pos, e.p, message.toString().split("/n/")[1]);
+                }else{
+                    title = plugin.tex.placeholders(e.panel, e.pos, e.p, message.toString().trim());
+                }
+                try{
+                    p.sendTitle(title, subtitle, Integer.parseInt(e.args[1]), Integer.parseInt(e.args[2]), Integer.parseInt(e.args[3]));
+                }catch(Exception ex) {
+                    plugin.debug(ex, e.p);
+                }
+            }
+            return;
+        }
         if(e.name.equalsIgnoreCase("teleport=")) {
             e.commandTagUsed();
             if (e.args.length == 5) {
