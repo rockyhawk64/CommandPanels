@@ -1,6 +1,6 @@
 # |------------------------------------------------------------------------
 # |                    CommandPanels Legacy Example File
-# |                            By RockyHawk v2.2
+# |                            By RockyHawk v2.3
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
 # |------------------------------------------------------------------------
 panels:
@@ -34,10 +34,9 @@ panels:
         '10':
           material: REDSTONE_BLOCK
           name: '&fTake the diamond'
-          hasvalue:
-            value: DIAMOND
-            output: false
-            compare: '%cp-material-1%'
+          has0:
+            value0: NOT DIAMOND
+            compare0: '%cp-material-1%'
             name: '&fNice One!'
             material: EMERALD_BLOCK
       '9':
@@ -92,10 +91,9 @@ panels:
         name: '&cYour nickname is not ''RockyHawk'''
         commands:
           - 'msg= &cNot RockyHawk'
-        hasvalue:
-          output: true
-          value: RockyHawk
-          compare: '%cp-player-name%'
+        has0:
+          value0: RockyHawk
+          compare0: '%cp-player-name%'
           material: WOOL
           ID: 5
           name: '&aYour username is ''RockyHawk'''
@@ -132,9 +130,9 @@ panels:
         lore:
           - '&4You cannot change to'
           - '&4creative looking like that!'
-        hasperm:
-          perm: essentials.gamemode
-          output: true
+        has0:
+          value0: '%cp-player-name% HASPERM'
+          compare0: essentials.gamemode
           material: EMERALD_BLOCK
           name: '&aClick Me'
           lore:

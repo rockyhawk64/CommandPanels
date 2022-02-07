@@ -17,6 +17,8 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class UtilsOpenWithItem implements Listener {
@@ -80,14 +82,16 @@ public class UtilsOpenWithItem implements Listener {
             //if none of the panels have open-with-item
             return;
         }
-        Player p = e.getEntity();
-        for(Panel panel : plugin.panelList) { //will loop through all the files in folder
-            if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm")) && panel.hasHotbarItem()) {
-                if(panel.getConfig().contains("open-with-item.stationary")){
-                    ItemStack s = panel.getHotbarItem(p);
-                    e.getDrops().remove(s);
+        //a new list instance has to be created with the dropped items to avoid ConcurrentModificationException
+        for(ItemStack s : new ArrayList<>(e.getDrops())){
+            try {
+                if (plugin.nbt.getNBT(s, "CommandPanelsHotbar") != null) {
+                    //do not remove items that are not stationary
+                    if(!plugin.nbt.getNBT(s, "CommandPanelsHotbar").endsWith("-1")) {
+                        e.getDrops().remove(s);
+                    }
                 }
-            }
+            }catch(NullPointerException | IllegalArgumentException ignore){}
         }
     }
     @EventHandler

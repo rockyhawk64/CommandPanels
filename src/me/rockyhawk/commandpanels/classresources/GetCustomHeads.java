@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -70,34 +71,33 @@ public class GetCustomHeads {
             ItemStack head = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1,id);
             ItemMeta headMeta = head.getItemMeta();
             assert headMeta != null;
-            Class headMetaClass = headMeta.getClass();
 
+            Field profileField;
+            Method setProfileMethod = null;
             try {
-                getField(headMetaClass, "profile", GameProfile.class, 0).set(headMeta, profile);
-            } catch (IllegalArgumentException | IllegalAccessException var10) {
-                plugin.debug(var10,null);
+                profileField = headMeta.getClass().getDeclaredField("profile");
+                profileField.setAccessible(true);
+                profileField.set(headMeta, profile);
+            } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
+                try {
+                    setProfileMethod = headMeta.getClass().getDeclaredMethod("setProfile", GameProfile.class);
+                } catch (NoSuchMethodException ignore) {}
+            } catch (SecurityException ignored) {}
+            try {
+                if (setProfileMethod == null) {
+                    profileField = headMeta.getClass().getDeclaredField("profile");
+                    profileField.setAccessible(true);
+                    profileField.set(headMeta, profile);
+                } else {
+                    setProfileMethod.setAccessible(true);
+                    setProfileMethod.invoke(headMeta, profile);
+                }
+            } catch (Exception e1) {
+                plugin.debug(e1,null);
             }
 
             head.setItemMeta(headMeta);
             return head;
-        }
-    }
-
-    //used with getItem for heads
-    private <T> Field getField(Class<?> target, String name, Class<T> fieldType, int index) {
-        Field[] var4 = target.getDeclaredFields();
-
-        for (Field field : var4) {
-            if ((name == null || field.getName().equals(name)) && fieldType.isAssignableFrom(field.getType()) && index-- <= 0) {
-                field.setAccessible(true);
-                return field;
-            }
-        }
-
-        if (target.getSuperclass() != null) {
-            return getField(target.getSuperclass(), name, fieldType, index);
-        } else {
-            throw new IllegalArgumentException("Cannot find field with type " + fieldType);
         }
     }
 }
