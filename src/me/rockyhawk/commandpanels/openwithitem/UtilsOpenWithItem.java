@@ -1,7 +1,6 @@
 package me.rockyhawk.commandpanels.openwithitem;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.GetItemInHand;
 import me.rockyhawk.commandpanels.ioclasses.GetItemInHand_Legacy;
 import org.bukkit.Bukkit;
@@ -18,7 +17,6 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class UtilsOpenWithItem implements Listener {

@@ -315,6 +315,24 @@ public class CommandTags {
                     return PaywallOutput.Blocked;
                 }
             }
+            case "data-paywall=": {
+                //if player uses data-paywall= <data> <amount>
+                try {
+                    if (Double.parseDouble(plugin.panelData.getUserData(p.getUniqueId(),command.split("\\s")[1])) >= Double.parseDouble(command.split("\\s")[2])) {
+                        plugin.panelData.doDataMath(p.getUniqueId(),command.split("\\s")[1],"-" + plugin.tex.placeholdersNoColour(panel,PanelPosition.Top,p,command.split("\\s")[2]));
+                        //if the message is empty don't send
+                        plugin.tex.sendString(p,Objects.requireNonNull(plugin.config.getString("purchase.data.success")).replaceAll("%cp-args%", command.split("\\s")[2]));
+                        return PaywallOutput.Passed;
+                    } else {
+                        plugin.tex.sendString(p, plugin.config.getString("purchase.data.failure"));
+                        return PaywallOutput.Blocked;
+                    }
+                } catch (Exception buyc) {
+                    plugin.debug(buyc,p);
+                    plugin.tex.sendString(p, tag + plugin.config.getString("config.format.error") + " " + "commands: " + command);
+                    return PaywallOutput.Blocked;
+                }
+            }
         }
         return PaywallOutput.NotApplicable;
     }

@@ -55,6 +55,9 @@ purchase:
   currency:
     success: '&aSuccessfully Bought For $%cp-args%'
     failure: '&cInsufficient Funds!'
+  data:
+    success: '&aSuccessfully Bought For $%cp-args%'
+    failure: '&cInsufficient Funds!'
   tokens:
     success: '&aSuccessfully Bought For %cp-args% Tokens.'
     failure: '&cInsufficient Tokens!'

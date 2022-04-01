@@ -7,6 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 
+import java.util.Arrays;
+
 public class Commandpanelsdata implements CommandExecutor {
     CommandPanels plugin;
     public Commandpanelsdata(CommandPanels pl) { this.plugin = pl; }
@@ -14,24 +16,34 @@ public class Commandpanelsdata implements CommandExecutor {
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender.hasPermission("commandpanel.data")) {
+            boolean sendPlayerMessage = true;
+            //if the first argument is -s it will not send a message to the sender
+            if(args[0].equalsIgnoreCase("-s")){
+                args = Arrays.copyOfRange(args, 1, args.length);
+                sendPlayerMessage = false;
+            }
             if(args.length == 2){
                 //for the clear command
                 if(args[0].equals("clear")){
                     plugin.panelData.clearData(plugin.panelData.getOffline(args[1]));
-                    sender.sendMessage(plugin.tex.colour(plugin.tag
-                            + ChatColor.GREEN + "Cleared all data for "
-                            + ChatColor.WHITE + args[1]));
+                    if(sendPlayerMessage) {
+                        sender.sendMessage(plugin.tex.colour(plugin.tag
+                                + ChatColor.GREEN + "Cleared all data for "
+                                + ChatColor.WHITE + args[1]));
+                    }
                     return  true;
                 }
             }else if (args.length == 3){
                 //for the remove command
                 if(args[0].equals("remove")) {
                     plugin.panelData.delUserData(plugin.panelData.getOffline(args[1]), args[2]);
-                    sender.sendMessage(plugin.tex.colour(plugin.tag
-                            + ChatColor.GREEN + "Removed "
-                            + ChatColor.WHITE + args[2]
-                            + ChatColor.GREEN + " from "
-                            + ChatColor.WHITE + args[1]));
+                    if(sendPlayerMessage) {
+                        sender.sendMessage(plugin.tex.colour(plugin.tag
+                                + ChatColor.GREEN + "Removed "
+                                + ChatColor.WHITE + args[2]
+                                + ChatColor.GREEN + " from "
+                                + ChatColor.WHITE + args[1]));
+                    }
                     return  true;
                 }else if(args[0].equals("get")){
                     //for the get command
@@ -44,23 +56,26 @@ public class Commandpanelsdata implements CommandExecutor {
                 if(args[0].equals("set")){
                     //for set command
                     plugin.panelData.setUserData(plugin.panelData.getOffline(args[1]), args[2],args[3],true);
-                    sender.sendMessage(plugin.tex.colour(plugin.tag
-                            + ChatColor.GREEN + "Set "
-                            + ChatColor.WHITE + args[2]
-                            + ChatColor.GREEN + " to "
-                            + ChatColor.WHITE + args[3]));
-                    return  true;
+                    if(sendPlayerMessage) {
+                        sender.sendMessage(plugin.tex.colour(plugin.tag
+                                + ChatColor.GREEN + "Set "
+                                + ChatColor.WHITE + args[2]
+                                + ChatColor.GREEN + " to "
+                                + ChatColor.WHITE + args[3]));
+                    }
                 }else{
                     //for add command
                     plugin.panelData.setUserData(plugin.panelData.getOffline(args[1]), args[2],args[3],false);
-                    sender.sendMessage(plugin.tex.colour(plugin.tag
-                            + ChatColor.GREEN + "Set "
-                            + ChatColor.WHITE + args[2]
-                            + ChatColor.GREEN + " to "
-                            + ChatColor.WHITE + args[3])
-                            + ChatColor.GREEN + " if it did not exist already");
-                    return  true;
+                    if(sendPlayerMessage) {
+                        sender.sendMessage(plugin.tex.colour(plugin.tag
+                                + ChatColor.GREEN + "Set "
+                                + ChatColor.WHITE + args[2]
+                                + ChatColor.GREEN + " to "
+                                + ChatColor.WHITE + args[3])
+                                + ChatColor.GREEN + " if it did not exist already");
+                    }
                 }
+                return  true;
             }
             sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cpdata <set:add:get:remove:clear> <player> <data> [value]"));
         }else{
