@@ -114,14 +114,16 @@ public class CommandPanels extends JavaPlugin{
     public void onEnable() {
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loading...");
 
-        //set version to latest version
-        updater.githubNewUpdate(false);
-
         //register config files
         this.blockConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "blocks.yml"));
         panelData.dataConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "data.yml"));
         inventorySaver.inventoryConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "inventories.yml"));
         this.config = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + File.separator + "config.yml"));
+
+        //set version to latest version
+        if (Objects.requireNonNull(this.config.getString("updater.update-checks")).equalsIgnoreCase("true")) {
+            updater.githubNewUpdate(false);
+        }
 
         //save the config.yml file
         File configFile = new File(this.getDataFolder() + File.separator + "config.yml");
@@ -167,13 +169,17 @@ public class CommandPanels extends JavaPlugin{
         Objects.requireNonNull(this.getCommand("commandpanelversion")).setExecutor(new Commandpanelversion(this));
         Objects.requireNonNull(this.getCommand("commandpanellist")).setExecutor(new Commandpanelslist(this));
         this.getServer().getPluginManager().registerEvents(new Utils(this), this);
-        this.getServer().getPluginManager().registerEvents(updater, this);
         this.getServer().getPluginManager().registerEvents(inventorySaver, this);
         this.getServer().getPluginManager().registerEvents(inputUtils, this);
         this.getServer().getPluginManager().registerEvents(new UtilsPanelsLoader(this), this);
         this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
         this.getServer().getPluginManager().registerEvents(new ItemFallManager(this), this);
         this.getServer().getPluginManager().registerEvents(new OpenOnJoin(this), this);
+
+        //load in the updater if requested
+        if (Objects.requireNonNull(config.getString("updater.update-checks")).equalsIgnoreCase("true")) {
+            this.getServer().getPluginManager().registerEvents(updater, this);
+        }
 
         //load in PlaceholderAPI Expansion
         if (this.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {

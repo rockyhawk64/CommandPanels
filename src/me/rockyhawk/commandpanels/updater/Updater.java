@@ -103,6 +103,10 @@ public class Updater implements Listener {
 
     //the pluginFileName can only be obtained from the main class
     public void autoUpdatePlugin(String pluginFileName){
+        if (Objects.requireNonNull(plugin.config.getString("updater.update-checks")).equalsIgnoreCase("true")) {
+            return;
+        }
+
         String latestVersion = catchedLatestVersion;
         String thisVersion = plugin.getDescription().getVersion();
 
