@@ -120,11 +120,6 @@ public class CommandPanels extends JavaPlugin{
         inventorySaver.inventoryConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "inventories.yml"));
         this.config = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + File.separator + "config.yml"));
 
-        //set version to latest version
-        if (Objects.requireNonNull(this.config.getString("updater.update-checks")).equalsIgnoreCase("true")) {
-            updater.githubNewUpdate(false);
-        }
-
         //save the config.yml file
         File configFile = new File(this.getDataFolder() + File.separator + "config.yml");
         if (!configFile.exists()) {
@@ -146,6 +141,11 @@ public class CommandPanels extends JavaPlugin{
             } catch (IOException var10) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not save the config file!");
             }
+        }
+
+        //set version to latest version
+        if (Objects.requireNonNull(this.config.getString("updater.update-checks")).equalsIgnoreCase("true")) {
+            updater.githubNewUpdate(false);
         }
 
         //setup class files
