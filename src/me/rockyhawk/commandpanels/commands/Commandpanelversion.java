@@ -20,11 +20,11 @@ public class Commandpanelversion implements CommandExecutor {
                     //version command
                     String latestVersion = plugin.updater.getLatestVersion(false);
                     sender.sendMessage(plugin.tex.colour(plugin.tag));
-                    sender.sendMessage(ChatColor.GREEN + "This Version " + ChatColor.GRAY + plugin.getDescription().getVersion());
+                    sender.sendMessage(ChatColor.GREEN + "This Version   " + ChatColor.GRAY + plugin.getDescription().getVersion());
                     sender.sendMessage(ChatColor.GREEN + "Latest Version " + ChatColor.GRAY + latestVersion);
                     sender.sendMessage(ChatColor.GRAY + "-------------------");
                     sender.sendMessage(ChatColor.GREEN + "Developer " + ChatColor.GRAY + "RockyHawk");
-                    sender.sendMessage(ChatColor.GREEN + "Command " + ChatColor.GRAY + "/cp");
+                    sender.sendMessage(ChatColor.GREEN + "Command   " + ChatColor.GRAY + "/cp");
                 } else {
                     sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
                 }
