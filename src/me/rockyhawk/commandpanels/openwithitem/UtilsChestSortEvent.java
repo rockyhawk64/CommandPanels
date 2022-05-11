@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.openwithitem;
 import de.jeff_media.chestsort.api.ChestSortEvent;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
@@ -29,12 +30,14 @@ public class UtilsChestSortEvent implements Listener {
             return;
         }
         //If the ChestSort plugin triggers an event
-        if(e.getInventory().getType() == InventoryType.PLAYER){
-            for(int slot : plugin.hotbar.stationaryItems.get(e.getPlayer().getUniqueId()).list.keySet()){
-                if(e.getInventory().getItem(slot) != null) {
+        try {
+            if (e.getInventory().getType() == InventoryType.PLAYER) {
+                for (int slot : plugin.hotbar.stationaryItems.get(e.getPlayer().getUniqueId()).list.keySet()) {
                     e.setUnmovable(slot);
                 }
             }
+        }catch(NullPointerException ex){
+            plugin.debug(ex, (Player) e.getPlayer());
         }
     }
 }
