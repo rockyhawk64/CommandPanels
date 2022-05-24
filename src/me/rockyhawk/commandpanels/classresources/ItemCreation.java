@@ -246,13 +246,23 @@ public class ItemCreation {
             if (itemSection.contains("enchanted")) {
                 try {
                     ItemMeta EnchantMeta;
-                    if (Objects.requireNonNull(itemSection.getString("enchanted")).trim().equalsIgnoreCase("true")) {
+                    if(itemSection.isList("enchanted")){
+                        //if there is a list of enchantments to add
+                        EnchantMeta = s.getItemMeta();
+                        assert EnchantMeta != null;
+                        for(String enchantment : itemSection.getStringList("enchanted")){
+                            EnchantMeta.addEnchant(Objects.requireNonNull(Enchantment.getByKey(NamespacedKey.minecraft(enchantment.split("\\s")[0].toLowerCase()))), Integer.parseInt(enchantment.split("\\s")[1]), true);
+                        }
+                        s.setItemMeta(EnchantMeta);
+                    }else if (Objects.requireNonNull(itemSection.getString("enchanted")).trim().equalsIgnoreCase("true")) {
+                        //if used if enchanted is set to true
                         EnchantMeta = s.getItemMeta();
                         assert EnchantMeta != null;
                         EnchantMeta.addEnchant(Enchantment.KNOCKBACK, 1, false);
                         EnchantMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                         s.setItemMeta(EnchantMeta);
                     } else if (!Objects.requireNonNull(itemSection.getString("enchanted")).trim().equalsIgnoreCase("false")) {
+                        //if used to ensure enchanted does not equal false but equals something else
                         EnchantMeta = s.getItemMeta();
                         assert EnchantMeta != null;
                         EnchantMeta.addEnchant(Objects.requireNonNull(Enchantment.getByKey(NamespacedKey.minecraft(Objects.requireNonNull(itemSection.getString("enchanted")).split("\\s")[0].toLowerCase()))), Integer.parseInt(Objects.requireNonNull(itemSection.getString("enchanted")).split("\\s")[1]), true);

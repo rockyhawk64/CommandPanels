@@ -84,6 +84,13 @@ public class Panel{
 
     //NBT will equal to panelName:slot and the slot will be -1 if item is not stationery
     public ItemStack getHotbarItem(Player p){
+        if (this.getConfig().contains("open-with-item.pre-load-commands")) {
+            try {
+                plugin.commandTags.runCommands(this,PanelPosition.Top,p, this.getConfig().getStringList("open-with-item.pre-load-commands"));
+            }catch(Exception s){
+                plugin.debug(s,p);
+            }
+        }
         ItemStack s = plugin.itemCreate.makeItemFromConfig(this,PanelPosition.Top,getHotbarSection(p), p, true, true, false);
         int slot = -1;
         if(getHotbarSection(p).isSet("stationary")){
