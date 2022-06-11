@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.commandtags.tags.economy;
 
+import de.NeonnBukkit.CoinsAPI.API.CoinsAPI;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
@@ -60,6 +61,30 @@ public class BuyCommandTags implements Listener {
                         plugin.tex.sendMessage(e.p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", price));
                     } else {
                         plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.tokens.failure"));
+                    }
+                } else {
+                    plugin.tex.sendMessage(e.p, ChatColor.RED + "Buying Requires Vault and an Economy to work!");
+                }
+            } catch (Exception buyc) {
+                plugin.debug(buyc,e.p);
+                plugin.tex.sendMessage(e.p, plugin.config.getString("config.format.error") + " " + "commands: " + e.name);
+            }
+        }
+        if(e.name.equalsIgnoreCase("coinbuycommand=")){
+            e.commandTagUsed();
+            //if player uses coinbuycommand [price] [command]
+            try {
+                if (plugin.getServer().getPluginManager().isPluginEnabled("CoinsAPINB")) {
+                    int balance = CoinsAPI.getCoins(e.p.getUniqueId().toString());
+                    if (balance >= Double.parseDouble(e.args[0])) {
+                        CoinsAPI.removeCoins(e.p.getUniqueId().toString(), (int) Long.parseLong(e.args[0]));
+                        //execute command under here
+                        String price = e.args[0];
+                        String command = String.join(" ",Arrays.copyOfRange(e.raw, 1, e.raw.length));
+                        plugin.commandTags.runCommand(e.panel,e.pos,e.p,command);
+                        plugin.tex.sendMessage(e.p, Objects.requireNonNull(plugin.config.getString("purchase.coins.success")).replaceAll("%cp-args%", price));
+                    } else {
+                        plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.coins.failure"));
                     }
                 } else {
                     plugin.tex.sendMessage(e.p, ChatColor.RED + "Buying Requires Vault and an Economy to work!");

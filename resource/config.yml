@@ -61,6 +61,9 @@ purchase:
   tokens:
     success: '&aSuccessfully Bought For %cp-args% Tokens.'
     failure: '&cInsufficient Tokens!'
+  coins:
+    success: '&aSuccessfully Bought For %cp-args% Coins.'
+    failure: '&cInsufficient Coins!'
   item:
     success: '&aSuccessfully Sold %cp-args%.'
     failure: '&cInsufficient Items!'
