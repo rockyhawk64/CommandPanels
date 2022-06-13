@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.classresources.placeholders;
 
 import com.bencodez.votingplugin.user.UserManager;
+import de.NeonnBukkit.CoinsAPI.API.CoinsAPI;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
@@ -349,6 +350,11 @@ public class Placeholders {
             assert api != null;
             if(identifier.equals("tokenmanager-balance")) {
                 return Long.toString(api.getTokens(p).orElse(0));
+            }
+        }
+        if (plugin.getServer().getPluginManager().isPluginEnabled("CoinsAPINB")) {
+            if(identifier.equals("coins-balance")) {
+                return String.valueOf(CoinsAPI.getCoins(p.getUniqueId().toString()));
             }
         }
         if (plugin.getServer().getPluginManager().isPluginEnabled("VotingPlugin")) {
