@@ -22,7 +22,7 @@ public class Commandpanel implements CommandExecutor {
         //below is going to go through the files and find the right one
         Panel panel = null;
         if (args.length != 0) { //check to make sure the person hasn't just left it empty
-            for(Panel tempPanel  : plugin.panelList){
+            for(Panel tempPanel : plugin.panelList){
                 if(tempPanel.getName().equals(args[0])) {
                     panel = tempPanel;
                     break;
