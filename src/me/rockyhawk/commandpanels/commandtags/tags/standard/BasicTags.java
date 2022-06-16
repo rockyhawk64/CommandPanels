@@ -2,7 +2,7 @@ package me.rockyhawk.commandpanels.commandtags.tags.standard;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.PanelCommandEvent;
-import me.rockyhawk.commandpanels.classresources.Serializer;
+import me.rockyhawk.commandpanels.classresources.SerializerUtils;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
 import me.rockyhawk.commandpanels.ioclasses.legacy.LegacyVersion;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
@@ -14,8 +14,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-
-import java.util.Arrays;
 
 public class BasicTags implements Listener {
     CommandPanels plugin;
@@ -113,7 +111,7 @@ public class BasicTags implements Listener {
                 LegacyVersion legacy = new LegacyVersion(plugin);
                 if(legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_18)){
                     Audience player = (Audience) e.p; // Needed because the basic Player from the Event can't send Paper's Components
-                    Component parsedText = Serializer.serializeText(String.join(" ",e.args));
+                    Component parsedText = SerializerUtils.serializeText(String.join(" ",e.args));
                     player.sendMessage(parsedText);
                 }else{
                     plugin.tex.sendString(e.p, tag + ChatColor.RED + "MiniMessage-Feature needs Paper 1.18 or newer to work!");
