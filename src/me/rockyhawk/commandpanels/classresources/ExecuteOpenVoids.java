@@ -31,18 +31,17 @@ public class ExecuteOpenVoids {
             //avoid plugin glitches when sleeping
             return;
         }
-        if(plugin.debug.isEnabled(sender) || plugin.config.getBoolean("config.auto-update-panels")){
-            //reload the panel is debug is enabled
+        if((plugin.debug.isEnabled(sender) || plugin.config.getBoolean("config.auto-update-panels")) && panel.getFile() != null){
+            //reload the panel if debug is enabled
             panel.setConfig(YamlConfiguration.loadConfiguration(panel.getFile()));
         }
         if (!sender.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))) {
             if(panel.getConfig().getString("custom-messages.perms") != null) {
         		sender.sendMessage(plugin.tex.colour(plugin.tag + panel.getConfig().getString("custom-messages.perms")));
-                return;
-        	}else {
+            }else {
         		sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
-                return;
-        	}
+            }
+            return;
         }
         //if the sender has OTHER perms, or if sendOpenedMessage is false, implying it is not for another person
         if(sender.hasPermission("commandpanel.other") || !openForOtherUser) {
@@ -50,11 +49,10 @@ public class ExecuteOpenVoids {
             if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
                 if(panel.getConfig().getString("custom-messages.perms") != null) {
         		    sender.sendMessage(plugin.tex.colour(plugin.tag + panel.getConfig().getString("custom-messages.perms")));
-                    return;
-        	    }else {
+                }else {
         		    sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
-                    return;
-        	    }
+                }
+                return;
             }
 
             if(position != PanelPosition.Top && !plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
@@ -113,11 +111,9 @@ public class ExecuteOpenVoids {
         }else{
             if(panel.getConfig().getString("custom-messages.perms") != null) {
         		sender.sendMessage(plugin.tex.colour(plugin.tag + panel.getConfig().getString("custom-messages.perms")));
-                return;
-        	}else {
+            }else {
         		sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
-                return;
-        	}
+            }
         }
     }
 

@@ -4,7 +4,6 @@ import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.PanelCommandEvent;
 import me.rockyhawk.commandpanels.classresources.SerializerUtils;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
-import me.rockyhawk.commandpanels.ioclasses.legacy.LegacyVersion;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
 import net.kyori.adventure.audience.Audience;
@@ -101,23 +100,18 @@ public class BasicTags implements Listener {
         }
         if(e.name.equalsIgnoreCase("event=")) {
             e.commandTagUsed();
-            PanelCommandEvent commandEvent = new PanelCommandEvent(e.p, e.args[0], e.panel);
+            PanelCommandEvent commandEvent = new PanelCommandEvent(e.p, String.join(" ",e.args), e.panel);
             Bukkit.getPluginManager().callEvent(commandEvent);
+            return;
         }
         if(e.name.equalsIgnoreCase("minimessage=")){
             e.commandTagUsed();
-            String tag = plugin.config.getString("config.format.tag") + " ";
-            if(Bukkit.getServer().getVersion().contains("Paper")){
-                LegacyVersion legacy = new LegacyVersion(plugin);
-                if(legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_18)){
-                    Audience player = (Audience) e.p; // Needed because the basic Player from the Event can't send Paper's Components
-                    Component parsedText = SerializerUtils.serializeText(String.join(" ",e.args));
-                    player.sendMessage(parsedText);
-                }else{
-                    plugin.tex.sendString(e.p, tag + ChatColor.RED + "MiniMessage-Feature needs Paper 1.18 or newer to work!");
-                }
+            if(plugin.legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_18) && Bukkit.getServer().getVersion().contains("Paper")){
+                Audience player = (Audience) e.p; // Needed because the basic Player from the Event can't send Paper's Components
+                Component parsedText = SerializerUtils.serializeText(String.join(" ",e.args));
+                player.sendMessage(parsedText);
             }else{
-                plugin.tex.sendString(e.p, tag + ChatColor.RED + "MiniMessage-Feature needs Paper 1.18 or newer to work!");
+                plugin.tex.sendString(e.p, plugin.tag + ChatColor.RED + "MiniMessage-Feature needs Paper 1.18 or newer to work!");
             }
         }
     }

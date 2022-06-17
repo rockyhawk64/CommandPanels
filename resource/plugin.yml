@@ -1,4 +1,4 @@
-version: 3.17.5.0
+version: 3.18.0.0
 main: me.rockyhawk.commandpanels.CommandPanels
 name: CommandPanels
 author: RockyHawk
@@ -36,7 +36,7 @@ commands:
       aliases: [cpv, cpanelv]
    commandpaneledit:
       description: Edit panels ingame.
-      usage: /commandpaneledit [panel]
+      usage: /commandpaneledit <panel>
       aliases: [cpe, cpanele]
    commandpanellist:
       description: Lists the currently loaded panels.

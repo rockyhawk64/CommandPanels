@@ -19,7 +19,7 @@ public class Panel{
 
     private ConfigurationSection panelConfig;
     private String panelName;
-    private File panelFile;
+    private File panelFile = null;
     public PanelPlaceholders placeholders = new PanelPlaceholders();
     public boolean isOpen = false;
 

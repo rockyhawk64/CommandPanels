@@ -41,10 +41,7 @@ public class UtilsPanelsLoader implements Listener {
     @EventHandler
     public void onPlayerClosePanel(InventoryCloseEvent e){
         //only do this if editor is disabled as it will disabled this code
-        if(!Objects.requireNonNull(plugin.config.getString("config.ingame-editor")).equalsIgnoreCase("true")) {
-            //this is put here to avoid conflicts, close panel if it is closed
-            plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
-        }
+        plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
     }
 
     @EventHandler

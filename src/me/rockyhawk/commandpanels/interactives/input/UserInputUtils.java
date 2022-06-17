@@ -64,7 +64,12 @@ public class UserInputUtils implements Listener {
     }
 
     public void sendMessage(Panel panel, PanelPosition pos, Player p){
-        List<String> inputMessages = new ArrayList<>(plugin.config.getStringList("input.input-message"));
+        List<String> inputMessages;
+        if(panel.getConfig().contains("custom-messages.input-message")){
+            inputMessages = new ArrayList<>(panel.getConfig().getStringList("custom-messages.input-message"));
+        }else{
+            inputMessages = new ArrayList<>(plugin.config.getStringList("input.input-message"));
+        }
         for (String temp : inputMessages) {
             temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(plugin.config.getString("input.input-cancel")));
             p.sendMessage(plugin.tex.placeholders(panel,pos,p, temp));

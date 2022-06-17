@@ -1,0 +1,271 @@
+panels:
+  PanelEditMenu:
+    perm: default
+    rows: 3
+    title: '&8Panel Settings'
+    panelType:
+      - static
+    custom-messages:
+      input-message:
+        - "&e[&bCommand Panels Editor&e]"
+        - "&fEnter your value in the chat bar below."
+    item:
+      '3':
+        material: PUMPKIN_SEEDS
+        name: '&fEmpty Slot Item ID'
+        lore:
+          - "&7Material ID for Minecraft 1.12 and below."
+        commands:
+          - event= CPEditorPanel_emptyID
+          - cpc
+        player-input:
+          - "event= CPEditor_panelemptyid %cp-player-input%"
+      '4':
+        material: MELON_SEEDS
+        name: '&fEmpty Slot Item'
+        lore:
+          - "&7This item will replace all"
+          - "&7of the empty slots."
+        commands:
+          - event= CPEditorPanel_empty
+          - cpc
+        player-input:
+          - "event= CPEditor_panelempty %cp-player-input%"
+      '5':
+        material: COBBLESTONE
+        name: '&fEnabled Worlds'
+        lore:
+          - "&7Add Enabled Worlds."
+          - "&7The panel will only open in them."
+          - ""
+          - "&7Options"
+          - "&7- add [world]"
+          - "&7- edit [line number] [world]"
+          - "&7- insert [line number] [world]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorPanel_enabled-worlds
+          - cpc
+        player-input:
+          - "event= CPEditor_panelenabledworlds %cp-player-input%"
+      '6':
+        material: REDSTONE_BLOCK
+        name: '&fDisabled Worlds'
+        lore:
+          - "&7Add Disabled Worlds."
+          - "&7The panel will not open in them."
+          - ""
+          - "&7Options"
+          - "&7- add [world]"
+          - "&7- edit [line number] [world]"
+          - "&7- insert [line number] [world]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorPanel_disabled-worlds
+          - cpc
+        player-input:
+          - "event= CPEditor_paneldisabledworlds %cp-player-input%"
+      '7':
+        material: BEACON
+        name: '&fPanel Permission'
+        lore:
+          - "&7Change the permission for your Panel."
+          - "&7Use 'default' to disable this feature."
+          - "&7The permission will be commandpanel.panel.[text]"
+        commands:
+          - event= CPEditorPanel_perm
+          - cpc
+        player-input:
+          - "event= CPEditor_panelpermission %cp-player-input%"
+      '8':
+        material: NOTE_BLOCK
+        name: '&fPanel Open Sound'
+        lore:
+          - "&7Choose a sound when your panel opens."
+          - "&7Make sure this is all uppercase."
+        commands:
+          - event= CPEditorPanel_sound-on-open
+          - cpc
+        player-input:
+          - "event= CPEditor_panelopensound %cp-player-input%"
+      '0':
+        material: LAVA_BUCKET
+        name: '&cDelete Panel'
+        lore:
+          - "&7Enter 'confirm' to delete the panel."
+        commands:
+          - cpc
+        player-input:
+          - "event= CPEditor_paneldelete %cp-player-input%"
+      '9':
+        material: NAME_TAG
+        name: '&fPanel Name: %cp-panel-name%'
+        lore:
+          - "&7Choose the name for your panel."
+        commands:
+          - cpc
+        player-input:
+          - "event= CPEditor_panelname %cp-player-input%"
+      '21':
+        material: FEATHER
+        name: '&fNo Permission Custom Message'
+        lore:
+          - "&7Add a No Permission custom message."
+        commands:
+          - event= CPEditorPanel_custom-messages.perm
+          - cpc
+        player-input:
+          - "event= CPEditor_panelpermissionmessage %cp-player-input%"
+      '12':
+        material: FEATHER
+        name: '&fMaximum Input Custom Message'
+        lore:
+          - "&7Add a Player Input Maximum custom message."
+        commands:
+          - event= CPEditorPanel_custom-messages.input
+          - cpc
+        player-input:
+          - "event= CPEditor_panelmaxinputmessage %cp-player-input%"
+      '13':
+        material: FEATHER
+        name: '&fPlayer Input Custom Message'
+        lore:
+          - "&7Add a Player Input custom message."
+          - ""
+          - "&7Options"
+          - "&7- add [text]"
+          - "&7- edit [line number] [text]"
+          - "&7- insert [line number] [text]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorPanel_custom-messages.player-input
+          - cpc
+        player-input:
+          - "event= CPEditor_panelplayerinputmessage %cp-player-input%"
+      '14':
+        material: BOOK
+        name: '&fPanel Title'
+        lore:
+          - "&7Change your panel title."
+        commands:
+          - event= CPEditorPanel_title
+          - cpc
+        player-input:
+          - "event= CPEditor_paneletitle %cp-player-input%"
+      '15':
+        material: LADDER
+        name: '&fPanel Rows'
+        lore:
+          - "&7How many rows the panel should be 1-6."
+        commands:
+          - event= CPEditorPanel_rows
+          - cpc
+        player-input:
+          - "event= CPEditor_panelrows %cp-player-input%"
+      '16':
+        material: LEVER
+        name: '&fPanel Refresh Delay'
+        lore:
+          - "&7Refresh delay measured in ticks."
+        commands:
+          - event= CPEditorPanel_refresh-delay
+          - cpc
+        player-input:
+          - "event= CPEditor_panelrefreshdelay %cp-player-input%"
+      '17':
+        material: SLIME_BALL
+        name: '&fPanel Types'
+        lore:
+          - "&7Add Panel Types."
+          - ""
+          - "&7Options"
+          - "&7- add [text]"
+          - "&7- edit [line number] [text]"
+          - "&7- insert [line number] [text]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorPanel_panelType
+          - cpc
+        player-input:
+          - "event= CPEditor_paneltype %cp-player-input%"
+      '22':
+        material: MAGMA_CREAM
+        name: '&fPanel Commands to Open Panel'
+        lore:
+          - "&7Commands that can be used to"
+          - "&7open this panel."
+          - ""
+          - "&7Options"
+          - "&7- add [command]"
+          - "&7- edit [line number] [command]"
+          - "&7- insert [line number] [command]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorPanel_commands
+          - cpc
+        player-input:
+          - "event= CPEditor_panelcommands %cp-player-input%"
+      '23':
+        material: MAGMA_CREAM
+        name: '&fCommands Before Panel Open'
+        lore:
+          - "&7Commands before the panel has opened."
+          - ""
+          - "&7Options"
+          - "&7- add [command]"
+          - "&7- edit [line number] [command]"
+          - "&7- insert [line number] [command]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorPanel_pre-load-commands
+          - cpc
+        player-input:
+          - "event= CPEditor_panelprecommands %cp-player-input%"
+      '24':
+        material: MAGMA_CREAM
+        name: '&fCommands On Panel Open'
+        lore:
+          - "&7Commands when the panel has opened."
+          - ""
+          - "&7Options"
+          - "&7- add [command]"
+          - "&7- edit [line number] [command]"
+          - "&7- insert [line number] [command]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorPanel_commands-on-open
+          - cpc
+        player-input:
+          - "event= CPEditor_panelopencommands %cp-player-input%"
+      '25':
+        material: MAGMA_CREAM
+        name: '&fCommands On Panel Close'
+        lore:
+          - "&7Commands when the panel is closing."
+          - ""
+          - "&7Options"
+          - "&7- add [command]"
+          - "&7- edit [line number] [command]"
+          - "&7- insert [line number] [command]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorPanel_commands-on-close
+          - cpc
+        player-input:
+          - "event= CPEditor_panelclosecommands %cp-player-input%"
+      '26':
+        material: MAGMA_CREAM
+        name: '&fOutside Panel Commands'
+        lore:
+          - "&7Add commands when clicking outside the panel."
+          - ""
+          - "&7Options"
+          - "&7- add [command]"
+          - "&7- edit [line number] [command]"
+          - "&7- insert [line number] [command]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorPanel_outside-commands
+          - cpc
+        player-input:
+          - "event= CPEditor_paneloutsidecommands %cp-player-input%"
