@@ -6,6 +6,7 @@ import me.rockyhawk.commandpanels.classresources.SerializerUtils;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -24,8 +25,18 @@ public class BasicTags implements Listener {
     public void commandTag(CommandTagEvent e){
         if(e.name.equalsIgnoreCase("cpc")){
             e.commandTagUsed();
+
+            //unclosable panels are at the Top only
+            if(plugin.openPanels.getOpenPanel(e.p.getName(),PanelPosition.Top).getConfig().contains("panelType")){
+                if(plugin.openPanels.getOpenPanel(e.p.getName(),PanelPosition.Top).getConfig().getStringList("panelType").contains("unclosable")){
+                    plugin.openPanels.closePanelForLoader(e.p.getName(),PanelPosition.Top);
+                    plugin.openPanels.skipPanelClose.add(e.p.getName());
+                }
+            }
+
             //this will close the current inventory
             e.p.closeInventory();
+            plugin.openPanels.skipPanelClose.remove(e.p.getName());
             return;
         }
         if(e.name.equalsIgnoreCase("refresh")) {

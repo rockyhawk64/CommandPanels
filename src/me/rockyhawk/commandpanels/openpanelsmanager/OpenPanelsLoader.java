@@ -77,18 +77,26 @@ public class OpenPanelsLoader {
 
     //close all of the panels for a player currently open
     public void closePanelForLoader(String playerName, PanelPosition position){
-        if(!openPanels.containsKey(playerName) || skipPanelClose.contains(playerName)){
+        //close if not panel
+        if(!plugin.openPanels.openPanels.containsKey(playerName) || plugin.openPanels.skipPanelClose.contains(playerName)){
             return;
         }
-        panelCloseCommands(playerName,position,openPanels.get(playerName).getPanel(position));
+
+        //snooper
         if (plugin.config.contains("config.panel-snooper")) {
             if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).equalsIgnoreCase("true")) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + playerName + " Closed " + openPanels.get(playerName).getPanel(position).getName() + " at " + position);
             }
         }
 
+        //panel instance
+        Panel panel = openPanels.get(playerName).getPanel(position);
+
+        //run close commands once panel is closed
+        panelCloseCommands(playerName,position,panel);
+
         //fire PanelClosedEvent
-        PanelClosedEvent closedEvent = new PanelClosedEvent(Bukkit.getPlayer(playerName),openPanels.get(playerName).getPanel(position),position);
+        PanelClosedEvent closedEvent = new PanelClosedEvent(Bukkit.getPlayer(playerName),panel,position);
         Bukkit.getPluginManager().callEvent(closedEvent);
 
         openPanels.get(playerName).setPanel(null,position);

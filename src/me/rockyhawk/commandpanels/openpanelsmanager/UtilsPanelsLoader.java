@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.openpanelsmanager;
 
+import me.realized.tokenmanager.command.commands.subcommands.TopCommand;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelClosedEvent;
@@ -40,7 +41,34 @@ public class UtilsPanelsLoader implements Listener {
     //tell panel loader that player has closed the panel (there is also one of these in EditorUtils)
     @EventHandler
     public void onPlayerClosePanel(InventoryCloseEvent e){
-        //only do this if editor is disabled as it will disabled this code
+        String playerName = e.getPlayer().getName();
+
+        //close if not panel
+        if(!plugin.openPanels.openPanels.containsKey(playerName) || plugin.openPanels.skipPanelClose.contains(playerName)){
+            return;
+        }
+
+        //check for panelType unclosable (unclosable is Top only)
+        if(plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).getConfig().contains("panelType")){
+            if(plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).getConfig().getStringList("panelType").contains("unclosable")){
+                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    public void run() {
+                        plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).open(Bukkit.getPlayer(playerName), PanelPosition.Top);
+                    }
+                });
+                return;
+            }
+        }
+
+        //run commands-on-close for panels
+        if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName(),PanelPosition.Bottom)){
+            plugin.openPanels.panelCloseCommands(playerName,PanelPosition.Bottom,plugin.openPanels.getOpenPanel(playerName,PanelPosition.Bottom));
+        }
+        if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName(),PanelPosition.Middle)){
+            plugin.openPanels.panelCloseCommands(playerName,PanelPosition.Middle,plugin.openPanels.getOpenPanel(playerName,PanelPosition.Middle));
+        }
+
+        //close panels and run commands for Top panel
         plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
     }
 

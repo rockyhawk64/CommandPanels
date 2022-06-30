@@ -66,7 +66,7 @@ public class SpecialTags implements Listener {
                 plugin.openPanels.closePanelForLoader(e.p.getName(),PanelPosition.Bottom);
             }else if(position == PanelPosition.Top && plugin.openPanels.hasPanelOpen(e.p.getName(),position)){
                 //closing top closes all
-                e.p.closeInventory();
+                plugin.commandTags.runCommand(e.panel,e.pos,e.p,"cpc");
             }
             return;
         }

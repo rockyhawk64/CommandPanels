@@ -56,7 +56,6 @@ public class GenUtils implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     void generatePanel(Player p, Inventory inv){
         ArrayList<String> apanels = new ArrayList();
         for(Panel panel : plugin.panelList){

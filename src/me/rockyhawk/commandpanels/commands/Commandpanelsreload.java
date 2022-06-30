@@ -45,6 +45,9 @@ public class Commandpanelsreload implements CommandExecutor {
                 //reloadHotbarSlots
                 plugin.hotbar.reloadHotbarSlots();
 
+                //reload tag
+                plugin.tag = plugin.tex.colour(plugin.config.getString("config.format.tag"));
+
                 //add custom commands to commands.yml
                 if(plugin.config.getString("config.auto-register-commands").equalsIgnoreCase("true")) {
                     registerCommands();

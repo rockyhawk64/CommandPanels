@@ -20,7 +20,7 @@ config:
   update-notifications: true
   panel-snooper: false
   format:
-    tag: '&6[&bCommandPanels&6]'
+    tag: '&6[&bCommandPanels&6] '
     perms: '&cNo permission.'
     reload: '&aReloaded.'
     nopanel: '&cPanel not found.'
@@ -48,7 +48,7 @@ placeholders:
     start: '{'
     end: '}'
 updater:
-  auto-update: true
+  auto-update: false
   minor-updates-only: true
   update-checks: true
 purchase:

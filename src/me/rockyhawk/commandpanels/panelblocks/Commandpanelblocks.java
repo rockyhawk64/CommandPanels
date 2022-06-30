@@ -64,9 +64,8 @@ public class Commandpanelblocks implements CommandExecutor {
                             return true;
                         }
                         //make the material name look okay
-                        String materialNameFormatted = blockType.getType().toString().substring(0, 1).toUpperCase() + blockType.getType().toString().substring(1).toLowerCase();
-                        materialNameFormatted = materialNameFormatted.replaceAll("_"," ");
-                        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.WHITE + args[1] + ChatColor.GREEN + " will now open when right clicking " + ChatColor.WHITE + materialNameFormatted));
+                        String coordinates = blockLocation.getBlockX() + ", " + blockLocation.getBlockY() + ", " + blockLocation.getBlockZ();
+                        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.WHITE + args[1] + ChatColor.GREEN + "will now open when right clicking a block in the coordinates " + ChatColor.WHITE + coordinates));
                     }else{
                         sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
                     }

@@ -15,6 +15,7 @@ panels:
         stack: 1
         name: '&cExit'
         commands:
+          - event= CommandPanels_EditorClosed
           - cpc
       '4':
         material: CHEST
@@ -28,11 +29,11 @@ panels:
         name: '&fItem Settings'
         commands:
           - "event= CommandPanels_OpenItemSettings"
-      '8':
-        material: COMPASS
-        stack: 1
-        name: '&fItem Sections'
-        lore:
-          - "&cIN PROGRESS"
-        commands:
-          - "event= CommandPanels_OpenItemSections"
+      #'8':
+      #  material: COMPASS
+      #  stack: 1
+      #  name: '&fItem Sections'
+      #  lore:
+      #    - "&cIN PROGRESS"
+      #  commands:
+      #    - "event= CommandPanels_OpenItemSections"
