@@ -276,7 +276,7 @@ public class CommandPanels extends JavaPlugin{
         }));
 
         //get tag
-        tag = tex.colour(config.getString("config.format.tag") + " ");
+        tag = tex.colour(config.getString("config.format.tag"));
 
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loaded!");
     }

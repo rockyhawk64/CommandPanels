@@ -50,7 +50,6 @@ public class Commandpanelsreload implements CommandExecutor {
                     registerCommands();
                 }
 
-                plugin.tag = plugin.tex.colour(plugin.config.getString("config.format.tag") + " ");
                 sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.reload")));
             }else{
                 sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
