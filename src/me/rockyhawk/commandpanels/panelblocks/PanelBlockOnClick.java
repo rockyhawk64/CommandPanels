@@ -20,19 +20,28 @@ public class PanelBlockOnClick implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e){
-        if(e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null) {
-            e.setCancelled(blockClickEventTrigger(e.getClickedBlock().getLocation(), e.getPlayer()));
+        boolean isPanelBlock = blockClickEventTrigger(e.getClickedBlock().getLocation(), e.getPlayer(),true);
+        if(isPanelBlock) {
+            if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null) {
+                blockClickEventTrigger(e.getClickedBlock().getLocation(), e.getPlayer(),false);
+                e.setCancelled(true);
+            }
         }
     }
 
     @EventHandler
     public void onInteractEntity(PlayerInteractEntityEvent e){
-        if(!e.getPlayer().isSneaking()) {
-            e.setCancelled(blockClickEventTrigger(e.getRightClicked().getLocation().getBlock().getLocation(), e.getPlayer()));
+        boolean isPanelBlock = blockClickEventTrigger(e.getRightClicked().getLocation().getBlock().getLocation(), e.getPlayer(),true);
+        if(isPanelBlock) {
+            if (!e.getPlayer().isSneaking()) {
+                blockClickEventTrigger(e.getRightClicked().getLocation().getBlock().getLocation(), e.getPlayer(), false);
+                e.setCancelled(true);
+            }
         }
     }
 
-    public boolean blockClickEventTrigger(Location location, Player p){
+    //if isVoid is used, it will not trigger anything to happen
+    public boolean blockClickEventTrigger(Location location, Player p, boolean isVoid){
         //if panel blocks are disabled return
         if(Objects.requireNonNull(plugin.config.getString("config.panel-blocks")).equalsIgnoreCase("false")){
             return false;
@@ -50,14 +59,18 @@ public class PanelBlockOnClick implements Listener {
             Location tempLocation = new Location(plugin.getServer().getWorld(loc[0].replaceAll("%dash%","_")),Double.parseDouble(loc[1]),Double.parseDouble(loc[2]),Double.parseDouble(loc[3]));
             if(tempLocation.equals(location)){
                 if(plugin.blockConfig.contains("blocks." + configLocation + ".commands")){
-                    for(String command : plugin.blockConfig.getStringList("blocks." + configLocation + ".commands")){
-                        plugin.commandTags.runCommand(null,PanelPosition.Top,p, command);
+                    if(!isVoid) {
+                        for (String command : plugin.blockConfig.getStringList("blocks." + configLocation + ".commands")) {
+                            plugin.commandTags.runCommand(null, PanelPosition.Top, p, command);
+                        }
                     }
                     return true;
                 }
                 //uses the open= tag because it will open a panel with panel names, but also works with open= features like placeholders
-                String command = "open= " + plugin.blockConfig.getString("blocks." + configLocation + ".panel");
-                plugin.commandTags.runCommand(null,PanelPosition.Top,p, command);
+                if(!isVoid) {
+                    String command = "open= " + plugin.blockConfig.getString("blocks." + configLocation + ".panel");
+                    plugin.commandTags.runCommand(null, PanelPosition.Top, p, command);
+                }
                 return true;
             }
         }

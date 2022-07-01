@@ -1,6 +1,5 @@
 package me.rockyhawk.commandpanels.openpanelsmanager;
 
-import me.realized.tokenmanager.command.commands.subcommands.TopCommand;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelClosedEvent;
