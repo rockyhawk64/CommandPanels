@@ -20,10 +20,10 @@ public class PanelBlockOnClick implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e){
-        boolean isPanelBlock = blockClickEventTrigger(e.getClickedBlock().getLocation(), e.getPlayer(),true);
-        if(isPanelBlock) {
-            if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null) {
-                blockClickEventTrigger(e.getClickedBlock().getLocation(), e.getPlayer(),false);
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null) {
+            boolean isPanelBlock = blockClickEventTrigger(e.getClickedBlock().getLocation(), e.getPlayer(), true);
+            if (isPanelBlock) {
+                blockClickEventTrigger(e.getClickedBlock().getLocation(), e.getPlayer(), false);
                 e.setCancelled(true);
             }
         }
