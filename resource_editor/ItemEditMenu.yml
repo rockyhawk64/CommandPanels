@@ -79,7 +79,7 @@ panels:
           - cpc
         player-input:
           - "event= CPEditor_itemnbt %cp-player-input%"
-      '0':
+      '18':
         material: LAVA_BUCKET
         name: '&cDelete Item'
         lore:
@@ -98,7 +98,7 @@ panels:
           - cpc
         player-input:
           - "event= CPEditor_itemslot %cp-player-input%"
-      '18':
+      '0':
         material: ENDER_CHEST
         name: '&fMove Item'
         lore:

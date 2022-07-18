@@ -86,6 +86,16 @@ public class Utils implements Listener {
         //the panels proper position
         panel = plugin.openPanels.getOpenPanel(p.getName(),position);
 
+        //this will cancel click on editor open and then change the slot clicked
+        if(plugin.editorMain.settings.containsKey(p.getUniqueId())) {
+            if (plugin.editorMain.settings.get(p.getUniqueId()).hasEditorOpen && position == PanelPosition.Top) {
+                plugin.editorMain.settings.get(p.getUniqueId()).slotSelected = String.valueOf(e.getSlot());
+                plugin.editorMain.openGuiPage(plugin.editorMain.settings.get(p.getUniqueId()).menuOpen, p, PanelPosition.Middle);
+                e.setCancelled(true);
+                return;
+            }
+        }
+
         //this loops through all the items in the panel
         boolean foundSlot = false;
         for(String slot : Objects.requireNonNull(panel.getConfig().getConfigurationSection("item")).getKeys(false)){

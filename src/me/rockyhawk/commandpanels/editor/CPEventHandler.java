@@ -195,7 +195,11 @@ public class CPEventHandler implements Listener {
                     panel.getConfig().set("title", playerInput);
                     break;
                 case "panelrows":
-                    panel.getConfig().set("rows", playerInput);
+                    if(isNumeric(playerInput)){
+                        panel.getConfig().set("rows", Integer.parseInt(playerInput));
+                    }else {
+                        panel.getConfig().set("rows", playerInput);
+                    }
                     break;
                 case "panelrefreshdelay":
                     panel.getConfig().set("refresh-delay", playerInput);

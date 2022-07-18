@@ -6,7 +6,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 public class SerializerUtils {
 
     public static Component serializeText(String msg){
-        Component parsedText = MiniMessage.miniMessage().deserialize(msg);
-        return parsedText;
+        return MiniMessage.miniMessage().deserialize(msg);
     }
 }
