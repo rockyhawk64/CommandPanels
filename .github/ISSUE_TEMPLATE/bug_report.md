@@ -38,5 +38,9 @@ If applicable, add screenshots or videos to help explain your problem.
  - Minecraft: [e.g. 1.16]
  - CommandPanels: [e.g. 3.2.0]
 
+### Serversoftware:
+ - Spigot
+ - Paperspigot
+
 ### Additional context/Panel files
 Add any other context or about the problem here. Please also send you're panel in question. We only accept [pastebin](https://pastebin.com/) links.
