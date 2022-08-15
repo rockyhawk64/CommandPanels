@@ -23,7 +23,7 @@ public class BasicTags implements Listener {
 
     @EventHandler
     public void commandTag(CommandTagEvent e){
-        if(e.name.equalsIgnoreCase("cpc")){
+        if(e.name.equalsIgnoreCase("cpc") || e.name.equalsIgnoreCase("commandpanelclose")){
             e.commandTagUsed();
 
             //unclosable panels are at the Top only

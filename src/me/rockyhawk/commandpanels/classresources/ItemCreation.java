@@ -15,6 +15,7 @@ import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -251,11 +252,11 @@ public class ItemCreation {
                         EnchantMeta = s.getItemMeta();
                         assert EnchantMeta != null;
                         for(String enchantment : itemSection.getStringList("enchanted")){
-                            EnchantMeta.addEnchant(Objects.requireNonNull(Enchantment.getByKey(NamespacedKey.minecraft(enchantment.split("\\s")[0].toLowerCase()))), Integer.parseInt(enchantment.split("\\s")[1]), true);
+                            EnchantMeta.addEnchant(Objects.requireNonNull(EnchantmentWrapper.getByKey(NamespacedKey.minecraft(enchantment.split("\\s")[0].toLowerCase()))), Integer.parseInt(enchantment.split("\\s")[1]), true);
                         }
                         s.setItemMeta(EnchantMeta);
                     }else if (Objects.requireNonNull(itemSection.getString("enchanted")).trim().equalsIgnoreCase("true")) {
-                        //if used if enchanted is set to true
+                        //is used if enchanted is set to true
                         EnchantMeta = s.getItemMeta();
                         assert EnchantMeta != null;
                         EnchantMeta.addEnchant(Enchantment.KNOCKBACK, 1, false);
@@ -265,7 +266,7 @@ public class ItemCreation {
                         //if used to ensure enchanted does not equal false but equals something else
                         EnchantMeta = s.getItemMeta();
                         assert EnchantMeta != null;
-                        EnchantMeta.addEnchant(Objects.requireNonNull(Enchantment.getByKey(NamespacedKey.minecraft(Objects.requireNonNull(itemSection.getString("enchanted")).split("\\s")[0].toLowerCase()))), Integer.parseInt(Objects.requireNonNull(itemSection.getString("enchanted")).split("\\s")[1]), true);
+                        EnchantMeta.addEnchant(Objects.requireNonNull(EnchantmentWrapper.getByKey(NamespacedKey.minecraft(Objects.requireNonNull(itemSection.getString("enchanted")).split("\\s")[0].toLowerCase()))), Integer.parseInt(Objects.requireNonNull(itemSection.getString("enchanted")).split("\\s")[1]), true);
                         s.setItemMeta(EnchantMeta);
                     }
                 } catch (Exception ench) {
@@ -284,6 +285,7 @@ public class ItemCreation {
                     BannerMeta bannerMeta = (BannerMeta) s.getItemMeta();
                     List<Pattern> patterns = new ArrayList<>(); //Load patterns in order top to bottom
                     for (String temp : itemSection.getStringList("banner")) {
+                        temp = plugin.tex.placeholders(panel,position,p,temp);
                         String[] dyePattern = temp.split(",");
                         patterns.add(new Pattern(DyeColor.valueOf(dyePattern[0]), PatternType.valueOf(dyePattern[1]))); //load patterns in config: RED:STRIPE_TOP
                     }
@@ -299,7 +301,7 @@ public class ItemCreation {
                 try {
                     if (s.getType() == Material.LEATHER_BOOTS || s.getType() == Material.LEATHER_LEGGINGS || s.getType() == Material.LEATHER_CHESTPLATE || s.getType() == Material.LEATHER_HELMET) {
                         LeatherArmorMeta leatherMeta = (LeatherArmorMeta) s.getItemMeta();
-                        String colourCode = itemSection.getString("leatherarmor");
+                        String colourCode = plugin.tex.placeholdersNoColour(panel,position,p,itemSection.getString("leatherarmor"));
                         assert colourCode != null;
                         if (!colourCode.contains(",")) {
                             //use a color name
@@ -329,7 +331,7 @@ public class ItemCreation {
                 //if the item is a potion, give it an effect
                 try {
                     PotionMeta potionMeta = (PotionMeta)s.getItemMeta();
-                    String[] effectType = itemSection.getString("potion").split("\\s");
+                    String[] effectType = plugin.tex.placeholdersNoColour(panel,position,p,itemSection.getString("potion")).split("\\s");
                     assert potionMeta != null;
                     boolean extended = false;
                     boolean upgraded = false;
