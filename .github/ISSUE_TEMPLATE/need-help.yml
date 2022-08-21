@@ -13,6 +13,72 @@ body:
           required: true
         - label: "Have you asked for help in the [Discord Server](https://discord.com/invite/eUWBWh7)? (Or got redirected to a Github issue here)"
           required: true
+  - type: dropdown
+    id: server_version
+    attributes:
+      label: What server version are you running?
+      options:
+        - 1.7
+        - 1.8
+        - 1.9
+        - 1.10
+        - 1.11
+        - 1.12
+        - 1.13
+        - 1.14
+        - 1.15
+        - 1.16
+        - 1.17
+        - 1.18
+        - 1.19
+    validations:
+     required: true
+  - type: dropdown
+    id: commandpanels_version
+    attributes:
+      label: What CommandPanels version are you using?
+      options:
+        - 3.18.1.2
+        - 3.18.1.1
+        - 3.18.1.0
+        - 3.18.0.0
+        - 3.17.5.0
+        - 3.17.4.3
+        - 3.17.4.2
+        - 3.17.4.1
+        - 3.17.4.0
+        - 3.17.3.1
+        - 3.17.3.0
+        - 3.17.2.2
+        - 3.17.2.1
+        - 3.17.2.0
+        - 3.17.1.5
+        - 3.17.1.4
+        - 3.17.1.3
+        - 3.17.1.2
+        - 3.17.1.1
+        - 3.17.1.0
+        - Any other version
+    validations:
+     required: true
+  - type: dropdown
+    id: server_software
+    attributes:
+      label: What server software are you running?
+      options:
+        - PaperMC
+        - Purpur
+        - Spigot
+        - CraftBukkit
+        - Glowstone
+        - Magma
+        - Mohist
+        - WaterFall
+        - BungeeCord
+        - Velocity
+        - Travertine
+    validations:
+     required: true
   - type: textarea
     id: what-happened
     attributes:
