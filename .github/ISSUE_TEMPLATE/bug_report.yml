@@ -1,0 +1,166 @@
+name: Bug Report
+description: File a bug report
+labels: ["bug"]
+body:
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Terms
+      options:
+        - label: "Have you checked the [wiki](https://rockyhawk99.gitbook.io/rockyhawk-wiki/commandpanels/wiki) page to see if there is a solution for your bug?"
+          required: true
+        - label: "Have you looked at the [Current bugs project](https://github.com/rockyhawk64/CommandPanels/projects/6) to see if your bug is listed there?"
+          required: true
+        - label: Have you asked for help in the [Discord Server](https://discord.com/invite/eUWBWh7)? (Or got redirected to a Github issue here)
+          required: true
+        - label: Did you search the [issue tracker](https://github.com/rockyhawk64/CommandPanels/issues?q=is%3Aissue) for a similar problem?
+          required: true
+  - type: dropdown
+    id: server_version
+    attributes:
+      label: What server version are you running?
+      options:
+        - 1.7
+        - 1.8
+        - 1.9
+        - 1.10
+        - 1.11
+        - 1.12
+        - 1.13
+        - 1.14
+        - 1.15
+        - 1.16
+        - 1.17
+        - 1.18
+        - 1.19
+    validations:
+     required: true
+  - type: dropdown
+    id: commandpanels_version
+    attributes:
+      label: What CommandPanels version are you using?
+      options:
+        - 3.18.1.2
+        - 3.18.1.1
+        - 3.18.1.0
+        - 3.18.0.0
+        - 3.17.5.0
+        - 3.17.4.3
+        - 3.17.4.2
+        - 3.17.4.1
+        - 3.17.4.0
+        - 3.17.3.1
+        - 3.17.3.0
+        - 3.17.2.2
+        - 3.17.2.1
+        - 3.17.2.0
+        - 3.17.1.5
+        - 3.17.1.4
+        - 3.17.1.3
+        - 3.17.1.2
+        - 3.17.1.1
+        - 3.17.1.0
+        - Any other version
+    validations:
+     required: true
+  - type: dropdown
+    id: server_software
+    attributes:
+      label: What server software are you running?
+      options:
+        - PaperMC
+        - Purpur
+        - Spigot
+        - CraftBukkit
+        - Glowstone
+        - Magma
+        - Mohist
+        - WaterFall
+        - BungeeCord
+        - Velocity
+        - Travertine
+    validations:
+     required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear and concise description of what the bug is.
+      placeholder: Tell us what you see!
+      placeholder: "Example: I can't interact with custom furniture if I'm in my own claim"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce the issue
+      description: Describe how to reproduce the issue step by step
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error (optional)
+      description: Please copy and paste any error you got (this will be automatically formatted into code).
+      render: shell
+      placeholder: "|
+        [17:10:16 ERROR]: Could not pass event PlayerInteractEvent to CommandPanels v3.18.1.1
+        org.bukkit.event.EventException: null 
+        at org.bukkit.plugin.java.JavaPluginLoader$1.execute(JavaPluginLoader.java:302) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at co.aikar.timings.TimedEventExecutor.execute(TimedEventExecutor.java:78) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at org.bukkit.plugin.RegisteredListener.callEvent(RegisteredListener.java:62) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at org.bukkit.plugin.SimplePluginManager.fireEvent(SimplePluginManager.java:517) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at org.bukkit.plugin.SimplePluginManager.callEvent(SimplePluginManager.java:502) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at org.bukkit.craftbukkit.v1_8_R3.event.CraftEventFactory.callPlayerInteractEvent(CraftEventFactory.java:228) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at org.bukkit.craftbukkit.v1_8_R3.event.CraftEventFactory.callPlayerInteractEvent(CraftEventFactory.java:195) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at org.bukkit.craftbukkit.v1_8_R3.event.CraftEventFactory.callPlayerInteractEvent(CraftEventFactory.java:191) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at net.minecraft.server.v1_8_R3.PlayerConnection.a(PlayerConnection.java:721) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at net.minecraft.server.v1_8_R3.PacketPlayInBlockPlace.a(PacketPlayInBlockPlace.java:52) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at net.minecraft.server.v1_8_R3.PacketPlayInBlockPlace.a(PacketPlayInBlockPlace.java:1) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at net.minecraft.server.v1_8_R3.PlayerConnectionUtils$1.run(SourceFile:13) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) ~[?:1.8.0_292]
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266) ~[?:1.8.0_292]
+        at net.minecraft.server.v1_8_R3.SystemUtils.a(SourceFile:44) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at net.minecraft.server.v1_8_R3.MinecraftServer.B(MinecraftServer.java:741) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at net.minecraft.server.v1_8_R3.DedicatedServer.B(DedicatedServer.java:366) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at net.minecraft.server.v1_8_R3.MinecraftServer.A(MinecraftServer.java:680) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at net.minecraft.server.v1_8_R3.MinecraftServer.run(MinecraftServer.java:583) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        at java.lang.Thread.run(Thread.java:748) ~[?:1.8.0_292] Caused by: java.lang.NullPointerException
+        at me.rockyhawk.commandpanels.panelblocks.PanelBlockOnClick.onInteract(PanelBlockOnClick.java:23) ~[?:?]
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_292]
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_292]
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_292]
+        at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_292]
+        at org.bukkit.plugin.java.JavaPluginLoader$1.execute(JavaPluginLoader.java:300) ~[server1.jar:git-PaperSpigot-f6b10d47]
+        ... 19 more"
+  - type: textarea
+    id: configuration_files
+    attributes:
+      label: Other files, you can drag and drop them here to upload. (optional)
+      description: Drag and drop your files here.
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots/Videos (you can drag and drop files or paste links)
+      description: If applicable, add screenshots to help explain your problem (you can drag and drop files or paste links).
+  - type: markdown
+    attributes:
+      value: |
+        ## Thanks for taking the time to fill out this bug report!
