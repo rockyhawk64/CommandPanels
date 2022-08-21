@@ -1,0 +1,46 @@
+name: Need help
+description: Create an issue for a problem you are having.
+labels: ["help wanted"]
+body:
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Terms
+      options:
+        - label: "Have you checked the [wiki](https://rockyhawk99.gitbook.io/rockyhawk-wiki/commandpanels/wiki) page to see if the solution for your problem is there?
+          required: true
+        - label: "Have you checked the [Current bugs project](https://github.com/rockyhawk64/CommandPanels/projects/6) to see if your issue is a duplicate and your problem already has been solved?
+          required: true
+        - label: "Have you asked for help in the [Discord Server](https://discord.com/invite/eUWBWh7)? (Or got redirected to a Github issue here)"
+          required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Describe the Issue
+      description: A clear and concise description of what the problem is.
+      placeholder: "Example: How can I add commands to a item"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Additional context/Panel files
+      description: Add any other context about the problem here. Please also send you're panel in question. We only accept [pastebin](https://pastebin.com/) links.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots/Videos (you can drag and drop files or paste links)
+      description: Add any other context or screenshots about the feature request here.
+  - type: markdown
+    attributes:
+      value: |
+        ## Thanks for taking the time to fill out this help request!
