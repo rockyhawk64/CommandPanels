@@ -4,9 +4,11 @@ import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -37,6 +39,19 @@ public class InventorySaver implements Listener {
     public void onOpen(PanelOpenedEvent e){
         if(e.getPosition() != PanelPosition.Top) {
             addInventory(e.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void onPickup(EntityPickupItemEvent e){
+        if(e.getEntity() instanceof HumanEntity) {
+            Player p = (Player)e.getEntity();
+            //move the item into the players inventory instead of the panel
+            if (plugin.openPanels.hasPanelOpen(p.getName(), PanelPosition.Middle) || plugin.openPanels.hasPanelOpen(p.getName(), PanelPosition.Bottom)) {
+                plugin.inventorySaver.addItem(p,e.getItem().getItemStack());
+                e.getItem().remove();
+                e.setCancelled(true);
+            }
         }
     }
 
@@ -105,7 +120,7 @@ public class InventorySaver implements Listener {
                     break;
                 }
                 if(cont.get(i).isSimilar(item)){
-                    cont.get(i).setAmount(cont.get(i).getAmount()+1);
+                    cont.get(i).setAmount(cont.get(i).getAmount() + item.getAmount());
                     found = true;
                     break;
                 }

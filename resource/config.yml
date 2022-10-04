@@ -35,7 +35,7 @@ input:
   input-cancelled: '&cCancelled!'
   max-input-length: -1
   input-message:
-    - '%cp-tag%&aEnter Input for Command'
+    - '&aEnter Input for Command'
     - '&cType &4%cp-args% &cto Cancel the command'
 hexcodes:
   start_tag: '#'
