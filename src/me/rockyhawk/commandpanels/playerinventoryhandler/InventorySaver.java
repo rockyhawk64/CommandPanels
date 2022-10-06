@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -39,6 +40,15 @@ public class InventorySaver implements Listener {
     public void onOpen(PanelOpenedEvent e){
         if(e.getPosition() != PanelPosition.Top) {
             addInventory(e.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent e){
+        //drop the players inventory if a panel is open in the inventory
+        if (plugin.openPanels.hasPanelOpen(e.getEntity().getName(), PanelPosition.Middle) || plugin.openPanels.hasPanelOpen(e.getEntity().getName(), PanelPosition.Bottom)) {
+            e.getDrops().clear();
+            e.getDrops().addAll(Arrays.asList(plugin.inventorySaver.getNormalInventory(e.getEntity())));
         }
     }
 
