@@ -239,7 +239,7 @@ public class CommandTags {
 
                     //create the item to be removed
                     ItemStack sellItem;
-                    if(command.split("\\s").length == 2) {
+                    if(Material.matchMaterial(command.split("\\s")[1]) == null) {
                         sellItem = plugin.itemCreate.makeCustomItemFromConfig(panel,PanelPosition.Top,panel.getConfig().getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, false);
                     }else{
                         sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[1])), Integer.parseInt(command.split("\\s")[2]), id);
@@ -255,15 +255,19 @@ public class CommandTags {
                             continue;
                         }
 
-                        if(command.split("\\s").length == 2){
-                            //if item paywall is custom item
+                        if(Material.matchMaterial(command.split("\\s")[1]) == null){
+                            //item-paywall is a custom item as it is not a material
                             if(plugin.itemCreate.isIdentical(sellItem,cont.get(f))){
-                                if (sellItem.getAmount() <= cont.get(f).getAmount()) {
+                                int sellItemAmount = sellItem.getAmount();
+                                if(command.split("\\s").length == 3){
+                                    sellItemAmount = Integer.parseInt(command.split("\\s")[2]);
+                                }
+                                if (sellItemAmount <= cont.get(f).getAmount()) {
                                     if (plugin.inventorySaver.hasNormalInventory(p)) {
-                                        p.getInventory().getItem(f).setAmount(cont.get(f).getAmount() - sellItem.getAmount());
+                                        p.getInventory().getItem(f).setAmount(cont.get(f).getAmount() - sellItemAmount);
                                         p.updateInventory();
                                     } else {
-                                        cont.get(f).setAmount(cont.get(f).getAmount() - sellItem.getAmount());
+                                        cont.get(f).setAmount(cont.get(f).getAmount() - sellItemAmount);
                                         plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
                                     }
                                     removedItem = PaywallOutput.Passed;

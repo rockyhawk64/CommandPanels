@@ -19,7 +19,7 @@ public class BungeeTags implements Listener {
     public void commandTag(CommandTagEvent e){
         if(e.name.equalsIgnoreCase("force-server=")){
             e.commandTagUsed();
-            //this contacts bungee and tells it to send the server change command
+            //this contacts bungee and tells it to send the server change command without checking permissions
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("Connect");
             out.writeUTF(e.args[0]);
@@ -31,7 +31,7 @@ public class BungeeTags implements Listener {
             Player player = Bukkit.getPlayerExact(e.p.getName());
             assert player != null;
             if (player.hasPermission("bungeecord.command.server." + e.args[0].toLowerCase())) {
-                //this contacts bungee and tells it to send the server change command
+                //this contacts bungee and tells it to send the server change command whilst checking for permissions
                 ByteArrayDataOutput out = ByteStreams.newDataOutput();
                 out.writeUTF("Connect");
                 out.writeUTF(e.args[0]);

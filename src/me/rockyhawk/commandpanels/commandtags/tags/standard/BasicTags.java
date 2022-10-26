@@ -26,6 +26,11 @@ public class BasicTags implements Listener {
         if(e.name.equalsIgnoreCase("cpc") || e.name.equalsIgnoreCase("commandpanelclose")){
             e.commandTagUsed();
 
+            //return if no panel open
+            if(!plugin.openPanels.hasPanelOpen(e.p.getName(),PanelPosition.Top)){
+                return;
+            }
+
             //unclosable panels are at the Top only
             if(plugin.openPanels.getOpenPanel(e.p.getName(),PanelPosition.Top).getConfig().contains("panelType")){
                 if(plugin.openPanels.getOpenPanel(e.p.getName(),PanelPosition.Top).getConfig().getStringList("panelType").contains("unclosable")){
