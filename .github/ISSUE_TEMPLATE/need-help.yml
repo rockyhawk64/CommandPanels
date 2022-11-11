@@ -38,6 +38,9 @@ body:
     attributes:
       label: What CommandPanels version are you using?
       options:
+        - 3.18.2.0
+        - 3.18.1.4
+        - 3.18.1.3
         - 3.18.1.2
         - 3.18.1.1
         - 3.18.1.0
