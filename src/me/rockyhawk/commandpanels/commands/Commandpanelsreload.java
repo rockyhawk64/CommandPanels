@@ -33,9 +33,7 @@ public class Commandpanelsreload implements CommandExecutor {
                 }
 
                 plugin.reloadPanelFiles();
-                if(new File(plugin.getDataFolder() + File.separator + "temp.yml").delete()){
-                    //empty
-                }
+
                 plugin.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "config.yml"));
                 plugin.blockConfig = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "blocks.yml"));
 

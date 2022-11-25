@@ -52,7 +52,9 @@ public class UtilsPanelsLoader implements Listener {
             if(plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).getConfig().getStringList("panelType").contains("unclosable")){
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-                        plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).open(Bukkit.getPlayer(playerName), PanelPosition.Top);
+                        //end the old panel session and copy a new one
+                        plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).isOpen = false;
+                        plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).copy().open(Bukkit.getPlayer(playerName), PanelPosition.Top);
                     }
                 });
                 return;

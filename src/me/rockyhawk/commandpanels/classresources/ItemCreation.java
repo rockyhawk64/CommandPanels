@@ -299,7 +299,11 @@ public class ItemCreation {
             if (itemSection.contains("leatherarmor")) {
                 //if the item is leather armor, change the colour to this
                 try {
-                    if (s.getType() == Material.LEATHER_BOOTS || s.getType() == Material.LEATHER_LEGGINGS || s.getType() == Material.LEATHER_CHESTPLATE || s.getType() == Material.LEATHER_HELMET) {
+                    if (s.getType() == Material.LEATHER_BOOTS ||
+                            s.getType() == Material.LEATHER_LEGGINGS ||
+                            s.getType() == Material.LEATHER_CHESTPLATE ||
+                            s.getType() == Material.LEATHER_HELMET ||
+                            s.getType() == Material.matchMaterial("LEATHER_HORSE_ARMOR")) { //avoid exceptions on older versions which don't have leather armour
                         LeatherArmorMeta leatherMeta = (LeatherArmorMeta) s.getItemMeta();
                         String colourCode = plugin.tex.placeholdersNoColour(panel,position,p,itemSection.getString("leatherarmor"));
                         assert colourCode != null;
@@ -393,6 +397,15 @@ public class ItemCreation {
             if (itemSection.contains("stack")) {
                 //change the stack amount (placeholders accepted)
                 s.setAmount((int)Double.parseDouble(Objects.requireNonNull(plugin.tex.placeholders(panel,position,p,itemSection.getString("stack")))));
+            }
+            //do the items commands throughout the refresh
+            //check that the panel is already open and not running commands when opening
+            if (itemSection.contains("refresh-commands") && plugin.openPanels.hasPanelOpen(p.getName(), panel.getName(), position)) {
+                try {
+                    plugin.commandTags.runCommands(panel,position,p,itemSection.getStringList("refresh-commands"));
+                }catch(Exception ex){
+                    plugin.debug(ex,p);
+                }
             }
         } catch (IllegalArgumentException | NullPointerException var33) {
             plugin.debug(var33,p);
