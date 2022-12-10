@@ -149,12 +149,12 @@ public class CommandTags {
                         if (plugin.econ.getBalance(p) >= Double.parseDouble(command.split("\\s")[1])) {
                             plugin.econ.withdrawPlayer(p, Double.parseDouble(command.split("\\s")[1]));
                             if(plugin.config.getBoolean("purchase.currency.enable")){
-                                plugin.tex.sendString(p,Objects.requireNonNull(plugin.config.getString("purchase.currency.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
+                                plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.currency.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                             }
                             return PaywallOutput.Passed;
                         } else {
                             if(plugin.config.getBoolean("purchase.currency.enable")){
-                                plugin.tex.sendString(p,plugin.config.getString("purchase.currency.failure"));
+                                plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.currency.failure")).replaceAll("%cp-args%", command.split("\\s")[1]));
                             }
                             return PaywallOutput.Blocked;
                         }
@@ -179,13 +179,13 @@ public class CommandTags {
                             api.removeTokens(p, Long.parseLong(command.split("\\s")[1]));
                             //if the message is empty don't send
                             if(plugin.config.getBoolean("purchase.tokens.enable")){
-                                plugin.tex.sendString(p,plugin.config.getString("purchase.tokens.failure"));
+                                plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                             }
-                            plugin.tex.sendString(p,Objects.requireNonNull(plugin.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
+                            plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                             return PaywallOutput.Passed;
                         } else {
                             if(plugin.config.getBoolean("purchase.tokens.enable")){
-                                plugin.tex.sendString(p,plugin.config.getString("purchase.tokens.failure"));
+                                plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.failure")).replaceAll("%cp-args%", command.split("\\s")[1]));
                             }
                             return PaywallOutput.Blocked;
                         }
@@ -208,12 +208,12 @@ public class CommandTags {
                             CoinsAPI.removeCoins(p.getUniqueId().toString(), (int) Long.parseLong(command.split("\\s")[1]));
                             //if the message is empty don't send
                             if(plugin.config.getBoolean("purchase.coins.enable")){
-                                plugin.tex.sendString(p,Objects.requireNonNull(plugin.config.getString("purchase.coins.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
+                                plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.coins.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                             }
                             return PaywallOutput.Passed;
                         } else {
                             if(plugin.config.getBoolean("purchase.coins.enable")){
-                                plugin.tex.sendString(p,plugin.config.getString("purchase.coins.failure"));
+                                plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.coins.failure")).replaceAll("%cp-args%", command.split("\\s")[1]));
                             }
                             return PaywallOutput.Blocked;
                         }
@@ -319,11 +319,11 @@ public class CommandTags {
                     //send message and return
                     if(removedItem == PaywallOutput.Blocked){
                         if(plugin.config.getBoolean("purchase.item.enable")){
-                            plugin.tex.sendString(p, plugin.tag + plugin.config.getString("purchase.item.failure"));
+                            plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.item.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                         }
                     }else{
                         if(plugin.config.getBoolean("purchase.item.enable")){
-                            plugin.tex.sendString(p,Objects.requireNonNull(plugin.config.getString("purchase.item.success")).replaceAll("%cp-args%",sellItem.getType().toString()));
+                            plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.item.failure")).replaceAll("%cp-args%", command.split("\\s")[1]));
                         }
                     }
                     return removedItem;
@@ -350,12 +350,12 @@ public class CommandTags {
                         }
                         //if the message is empty don't send
                         if(plugin.config.getBoolean("purchase.xp.enable")){
-                            plugin.tex.sendString(p,Objects.requireNonNull(plugin.config.getString("purchase.xp.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
+                            plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.xp.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                         }
                         return PaywallOutput.Passed;
                     } else {
                         if(plugin.config.getBoolean("purchase.xp.enable")){
-                            plugin.tex.sendString(p, plugin.config.getString("purchase.xp.failure"));
+                            plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.xp.failure")).replaceAll("%cp-args%", command.split("\\s")[1]));
                         }
                         return PaywallOutput.Blocked;
                     }
@@ -372,12 +372,12 @@ public class CommandTags {
                         plugin.panelData.doDataMath(p.getUniqueId(),command.split("\\s")[1],"-" + plugin.tex.placeholdersNoColour(panel,PanelPosition.Top,p,command.split("\\s")[2]));
                         //if the message is empty don't send
                         if(plugin.config.getBoolean("purchase.data.enable")){
-                            plugin.tex.sendString(p,Objects.requireNonNull(plugin.config.getString("purchase.data.success")).replaceAll("%cp-args%", command.split("\\s")[2]));
+                            plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.data.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                         }
                         return PaywallOutput.Passed;
                     } else {
                         if(plugin.config.getBoolean("purchase.data.enable")){
-                            plugin.tex.sendString(p, plugin.config.getString("purchase.data.failure"));
+                            plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.data.failure")).replaceAll("%cp-args%", command.split("\\s")[1]));
                         }
                         return PaywallOutput.Blocked;
                     }
