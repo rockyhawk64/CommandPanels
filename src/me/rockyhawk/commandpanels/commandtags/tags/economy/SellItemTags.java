@@ -5,6 +5,7 @@ import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -34,10 +35,10 @@ public class SellItemTags implements Listener {
                 if (plugin.econ != null) {
                     boolean sold = removeItem(e.p, e.args);
                     if (!sold) {
-                        plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.item.failure"));
+                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.item.failure")).replaceAll("%cp-args%", e.args[1]));
                     } else {
                         plugin.econ.depositPlayer(e.p, Double.parseDouble(e.args[0]));
-                        plugin.tex.sendMessage(e.p, Objects.requireNonNull(plugin.config.getString("purchase.item.success")).replaceAll("%cp-args%", e.args[1]));
+                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.item.success")).replaceAll("%cp-args%", e.args[1]));
                     }
                 } else {
                     plugin.tex.sendMessage(e.p, ChatColor.RED + "Selling Requires Vault and an Economy to work!");
@@ -56,11 +57,11 @@ public class SellItemTags implements Listener {
                     TokenManager api = (TokenManager) Bukkit.getServer().getPluginManager().getPlugin("TokenManager");
                     boolean sold = removeItem(e.p, e.args);
                     if (!sold) {
-                        plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.item.failure"));
+                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.item.failure")).replaceAll("%cp-args%", e.args[1]));
                     } else {
                         assert api != null;
                         api.addTokens(e.p, Long.parseLong(e.args[0]));
-                        plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.item.success").replaceAll("%cp-args%", e.args[1]));
+                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.item.success")).replaceAll("%cp-args%", e.args[1]));
                     }
                 } else {
                     plugin.tex.sendMessage(e.p, ChatColor.RED + "Selling Requires TokenManager to work!");
@@ -77,10 +78,10 @@ public class SellItemTags implements Listener {
                 if (plugin.getServer().getPluginManager().isPluginEnabled("CoinsAPINB")) {
                     boolean sold = removeItem(e.p, e.args);
                     if (!sold) {
-                        plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.item.failure"));
+                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.item.failure")).replaceAll("%cp-args%", e.args[1]));
                     } else {
                         CoinsAPI.addCoins(e.p.getUniqueId().toString(), (int) Long.parseLong(e.args[0]));
-                        plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.item.success").replaceAll("%cp-args%", e.args[1]));
+                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.item.success")).replaceAll("%cp-args%", e.args[1]));
                     }
                 } else {
                     plugin.tex.sendMessage(e.p, ChatColor.RED + "Selling Requires CoinsAPINB to work!");

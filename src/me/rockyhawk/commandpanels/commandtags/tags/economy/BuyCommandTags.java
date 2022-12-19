@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.commandtags.tags.economy;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
+import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -30,9 +31,10 @@ public class BuyCommandTags implements Listener {
                         String price = e.args[0];
                         String command = String.join(" ",Arrays.copyOfRange(e.raw, 1, e.raw.length));
                         plugin.commandTags.runCommand(e.panel,e.pos,e.p,command);
-                        plugin.tex.sendMessage(e.p,plugin.config.getString("purchase.currency.success").replaceAll("%cp-args%", price));
+                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.currency.success")).replaceAll("%cp-args%", price));
                     } else {
-                        plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.currency.failure"));
+                        String price = e.args[0];
+                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.currency.failure")).replaceAll("%cp-args%", price));
                     }
                 } else {
                     plugin.tex.sendMessage(e.p, ChatColor.RED + "Buying Requires Vault and an Economy to work!");
@@ -57,9 +59,10 @@ public class BuyCommandTags implements Listener {
                         String price = e.args[0];
                         String command = String.join(" ",Arrays.copyOfRange(e.raw, 1, e.raw.length));
                         plugin.commandTags.runCommand(e.panel,e.pos,e.p,command);
-                        plugin.tex.sendMessage(e.p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", price));
+                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", price));
                     } else {
-                        plugin.tex.sendMessage(e.p, plugin.config.getString("purchase.tokens.failure"));
+                        String price = e.args[0];
+                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.failure")).replaceAll("%cp-args%", price));
                     }
                 } else {
                     plugin.tex.sendMessage(e.p, ChatColor.RED + "Buying Requires Vault and an Economy to work!");
