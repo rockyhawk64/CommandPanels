@@ -181,7 +181,7 @@ public class CommandTags {
                             if(plugin.config.getBoolean("purchase.tokens.enable")){
                                 plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                             }
-                            plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
+                            
                             return PaywallOutput.Passed;
                         } else {
                             if(plugin.config.getBoolean("purchase.tokens.enable")){
