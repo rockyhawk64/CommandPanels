@@ -285,9 +285,9 @@ public class ItemCreation {
                     BannerMeta bannerMeta = (BannerMeta) s.getItemMeta();
                     List<Pattern> patterns = new ArrayList<>(); //Load patterns in order top to bottom
                     for (String temp : itemSection.getStringList("banner")) {
-                        temp = plugin.tex.placeholders(panel,position,p,temp);
+                        temp = plugin.tex.placeholdersNoColour(panel,position,p,temp);
                         String[] dyePattern = temp.split(",");
-                        patterns.add(new Pattern(DyeColor.valueOf(dyePattern[0]), PatternType.valueOf(dyePattern[1]))); //load patterns in config: RED:STRIPE_TOP
+                        patterns.add(new Pattern(DyeColor.valueOf(dyePattern[0]), PatternType.valueOf(dyePattern[1]))); //load patterns in config: RED,STRIPE_TOP
                     }
                     bannerMeta.setPatterns(patterns);
                     bannerMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);

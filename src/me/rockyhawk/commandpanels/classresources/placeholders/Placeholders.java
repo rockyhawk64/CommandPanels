@@ -18,6 +18,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Placeholders {
     CommandPanels plugin;
@@ -96,7 +97,8 @@ public class Placeholders {
             case("online-players"): {
                 return Integer.toString(Bukkit.getServer().getOnlinePlayers().size());
             }
-            case("online-players-true"): {
+            case("online-players-visible"): {
+                //will filter out players with metadata 'vanished'
                 return Integer.toString(Bukkit.getOnlinePlayers().stream().filter(player -> !player.getMetadata("vanished").get(0).asBoolean()).collect(Collectors.toList()).size());
             }
             case("panel-position"): {
@@ -326,22 +328,17 @@ public class Placeholders {
         //checks for players online
         if(identifier.startsWith("player-online-")) {
             try {
-                if (identifier.endsWith("-true")){
-                    String playerLocation = identifier.replace("player-online-", "");
-                    Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().stream().filter(player -> !player.getMetadata("vanished").get(0).asBoolean()).collect(Collectors.toList()).size()]);
-                    if (Double.parseDouble(playerLocation) > playerFind.length) {
-                        return plugin.tex.colour(Objects.requireNonNull(plugin.config.getString("config.format.offline")));
-                    } else {
-                        return playerFind[(int)(Double.parseDouble(playerLocation) - 1)].getName();
-                    }
+                String playerLocation = identifier.replace("player-online-", "");
+                Player[] playerFind;
+                if (identifier.endsWith("-visible")){
+                    playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().stream().filter(player -> !player.getMetadata("vanished").get(0).asBoolean()).collect(Collectors.toList()).size()]);
                 } else {
-                    String playerLocation = identifier.replace("player-online-", "");
-                    Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
-                    if (Double.parseDouble(playerLocation) > playerFind.length) {
-                        return plugin.tex.colour(Objects.requireNonNull(plugin.config.getString("config.format.offline")));
-                    } else {
-                        return playerFind[(int)(Double.parseDouble(playerLocation) - 1)].getName();
-                    }
+                    playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
+                }
+                if (Double.parseDouble(playerLocation) > playerFind.length) {
+                    return plugin.tex.colour(Objects.requireNonNull(plugin.config.getString("config.format.offline")));
+                } else {
+                    return playerFind[(int)(Double.parseDouble(playerLocation) - 1)].getName();
                 }
             }catch (Exception ex){
                 plugin.debug(ex,p);

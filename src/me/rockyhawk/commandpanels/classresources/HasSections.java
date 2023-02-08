@@ -24,12 +24,6 @@ public class HasSections {
             String setName;
             if(cf.isSet("has" + count)) {
                 setName = "has" + count;
-            }else if(cf.isSet("hasperm" + count)) {
-                setName = "hasperm" + count;
-            }else if(cf.isSet("hasvalue" + count)) {
-                setName = "hasvalue" + count;
-            }else if(cf.isSet("hasgreater" + count)) {
-                setName = "hasgreater" + count;
             }else{
                 continue;
             }
@@ -114,7 +108,7 @@ public class HasSections {
         if(setName.startsWith("hasgreater")) {
             return (Long.parseLong(compare) >= Long.parseLong(value)) == outputValue;
         }
-        //the current has section with all of the functions implemented inside it
+        //the current has section with all the functions implemented inside it
         if(setName.startsWith("has")) {
             if(value.endsWith(" HASPERM")) {
                 return Bukkit.getPlayer(value.substring(0, value.length()-8)).hasPermission(compare) == outputValue;

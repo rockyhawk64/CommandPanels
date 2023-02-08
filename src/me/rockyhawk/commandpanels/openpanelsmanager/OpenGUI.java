@@ -29,8 +29,14 @@ public class OpenGUI {
         if(position == PanelPosition.Top) {
             String title;
             if (openType != PanelOpenType.Editor) {
-                //regular inventory
-                title = plugin.tex.placeholders(panel, position, p, pconfig.getString("title"));
+                if(pconfig.contains("custom-title")) {
+                    //used for titles in the custom-title section, for has sections
+                    String section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("custom-title"), p);
+                    title = plugin.tex.placeholders(panel, position, p, pconfig.getString("custom-title" + section + ".title"));
+                }else {
+                    //regular inventory title
+                    title = plugin.tex.placeholders(panel, position, p, pconfig.getString("title"));
+                }
             } else {
                 //editor inventory
                 title = "Editing Panel: " + panel.getName();
