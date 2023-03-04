@@ -275,7 +275,7 @@ public class CommandTags {
                                 }
                             }
 
-                            //if custom item is an mmo item (1.14+ for the API)
+                            //if custom item is a mmo item (1.14+ for the API)
                             try {
                                 if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems") && panel.getConfig().getString("custom-item." + command.split("\\s")[1] + ".material").startsWith("mmo=")) {
                                     String customItemMaterial = panel.getConfig().getString("custom-item." + command.split("\\s")[1] + ".material");
@@ -319,11 +319,13 @@ public class CommandTags {
                     //send message and return
                     if(removedItem == PaywallOutput.Blocked){
                         if(plugin.config.getBoolean("purchase.item.enable")){
-                            plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.item.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
+                            //no item was found
+                            plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.item.failure")).replaceAll("%cp-args%", command.split("\\s")[1]));
                         }
                     }else{
                         if(plugin.config.getBoolean("purchase.item.enable")){
-                            plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.item.failure")).replaceAll("%cp-args%", command.split("\\s")[1]));
+                            //item was removed
+                            plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.item.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                         }
                     }
                     return removedItem;

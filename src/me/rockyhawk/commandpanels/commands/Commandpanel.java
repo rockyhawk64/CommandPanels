@@ -46,7 +46,7 @@ public class Commandpanel implements CommandExecutor {
         //below will start the command, once it got the right file and panel
         if (cmd.getName().equalsIgnoreCase("cp") || cmd.getName().equalsIgnoreCase("commandpanel") || cmd.getName().equalsIgnoreCase("cpanel")) {
             if(!(sender instanceof Player)) {
-                //do console command command
+                //do console command
                 if(args.length == 2){
                     if(!args[1].equals("item")){
                         plugin.openVoids.openCommandPanel(sender, plugin.getServer().getPlayer(args[1]), panel.copy(), PanelPosition.Top, true);

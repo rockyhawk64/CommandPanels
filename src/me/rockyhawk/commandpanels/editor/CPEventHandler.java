@@ -254,6 +254,10 @@ public class CPEventHandler implements Listener {
                     plugin.reloadPanelFiles();
                     return;
                 case "panelname":
+                    if(panel.getName().equals(playerInput.split("\\s")[0])) {
+                        e.getPlayer().sendMessage(ChatColor.RED + "Changed name is not different!");
+                        return;
+                    }
                     YamlConfiguration newConfig = YamlConfiguration.loadConfiguration(panel.getFile());
                     newConfig.set("panels." + playerInput.split("\\s")[0], panel.getConfig());
                     newConfig.set("panels." + panel.getName(), null);
