@@ -76,7 +76,7 @@ public class BasicTags implements Listener {
         }
         if(e.name.equalsIgnoreCase("broadcast=")) {
             e.commandTagUsed();
-            Bukkit.broadcastMessage(plugin.tex.placeholders(e.panel, e.pos, e.p,String.join(" ",message).trim());
+            Bukkit.broadcastMessage(plugin.tex.placeholders(e.panel, e.pos, e.p,String.join(" ",e.args).trim()));
             return;
         }
         if(e.name.equalsIgnoreCase("broadcast-perm=")) {
@@ -85,7 +85,8 @@ public class BasicTags implements Listener {
             for(int i = 1; i < e.args.length; i++){
                 message.append(e.args[i]).append(" ");
             }
-            Bukkit.broadcast(plugin.tex.placeholders(e.panel, e.pos, e.p,String.join(" ",message).trim(),String.valueOf(e.args[0]));
+            // <perm> <message>
+            Bukkit.broadcast(plugin.tex.placeholders(e.panel, e.pos, e.p,String.join(" ",message).trim()),String.valueOf(e.args[0]));
             return;
         }
         if(e.name.equalsIgnoreCase("op=")) {
