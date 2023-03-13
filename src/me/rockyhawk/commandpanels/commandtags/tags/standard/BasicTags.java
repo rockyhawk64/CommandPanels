@@ -81,19 +81,11 @@ public class BasicTags implements Listener {
         }
         if(e.name.equalsIgnoreCase("broadcast-perm=")) {
             e.commandTagUsed();
-            if () {
-            
-               if (e.p.hasPermission(String.valueOf(e.args[0]))) {
-                    
-                    StringBuilder message = new StringBuilder();
-                    for(int i = 1; i < e.args.length; i++){
-                        message.append(e.args[i]).append(" ");
-                    }
-                    Bukkit.broadcastMessage(plugin.tex.placeholders(e.panel, e.pos, e.p,String.join(" ",message).trim());
-                } else {
-                    plugin.tex.sendMessage(e.p, plugin.config.getString("config.format.error") + " " + "commands: " + e.args[0]);
-                }
+            StringBuilder message = new StringBuilder();
+            for(int i = 1; i < e.args.length; i++){
+                message.append(e.args[i]).append(" ");
             }
+            Bukkit.broadcast(plugin.tex.placeholders(e.panel, e.pos, e.p,String.join(" ",message).trim(),String.valueOf(e.args[0]));
             return;
         }
         if(e.name.equalsIgnoreCase("op=")) {
