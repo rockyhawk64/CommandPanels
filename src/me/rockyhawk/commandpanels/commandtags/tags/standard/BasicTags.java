@@ -74,6 +74,21 @@ public class BasicTags implements Listener {
             plugin.tex.sendString(e.panel,e.pos,e.p,String.join(" ",e.args));
             return;
         }
+        if(e.name.equalsIgnoreCase("broadcast=")) {
+            e.commandTagUsed();
+            Bukkit.broadcastMessage(plugin.tex.placeholders(e.panel, e.pos, e.p,String.join(" ",e.args).trim()));
+            return;
+        }
+        if(e.name.equalsIgnoreCase("broadcast-perm=")) {
+            e.commandTagUsed();
+            StringBuilder message = new StringBuilder();
+            for(int i = 1; i < e.args.length; i++){
+                message.append(e.args[i]).append(" ");
+            }
+            // <perm> <message>
+            Bukkit.broadcast(plugin.tex.placeholders(e.panel, e.pos, e.p,String.join(" ",message).trim()),String.valueOf(e.args[0]));
+            return;
+        }
         if(e.name.equalsIgnoreCase("op=")) {
             e.commandTagUsed();
             //if player uses op= it will perform command as op
