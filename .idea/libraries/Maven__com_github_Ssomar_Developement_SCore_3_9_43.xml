@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.github.Ssomar-Developement:SCore:3.9.43">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/Ssomar-Developement/SCore/3.9.43/SCore-3.9.43.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/Ssomar-Developement/SCore/3.9.43/SCore-3.9.43-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/Ssomar-Developement/SCore/3.9.43/SCore-3.9.43-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

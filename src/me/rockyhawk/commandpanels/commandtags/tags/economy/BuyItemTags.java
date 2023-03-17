@@ -1,6 +1,5 @@
 package me.rockyhawk.commandpanels.commandtags.tags.economy;
 
-import de.NeonnBukkit.CoinsAPI.API.CoinsAPI;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
@@ -51,7 +50,7 @@ public class BuyItemTags implements Listener {
             //if player uses tokenbuy= it will be eg. tokenbuy= <price> <item> <amount of item> <ID>
             try {
                 if (plugin.getServer().getPluginManager().isPluginEnabled("TokenManager")) {
-                    TokenManager api = (TokenManager) Bukkit.getServer().getPluginManager().getPlugin("TokenManager");
+                    final TokenManager api = (TokenManager) Bukkit.getServer().getPluginManager().getPlugin("TokenManager");
                     assert api != null;
                     int balance = Integer.parseInt(Long.toString(api.getTokens(e.p).orElse(0)));
                     if (balance >= Double.parseDouble(e.args[0])) {
@@ -66,27 +65,6 @@ public class BuyItemTags implements Listener {
                     }
                 } else {
                     plugin.tex.sendMessage(e.p, ChatColor.RED + "Buying Requires TokenManager to work!");
-                }
-            } catch (Exception buy) {
-                plugin.debug(buy, e.p);
-                plugin.tex.sendMessage(e.p, plugin.config.getString("config.format.error") + " " + "commands: " + e.name);
-            }
-        }
-        if(e.name.equalsIgnoreCase("coinbuy=")) {
-            e.commandTagUsed();
-            //if player uses coinbuy= it will be eg. coinbuy= <price> <item> <amount of item> <ID>
-            try {
-                if (plugin.getServer().getPluginManager().isPluginEnabled("CoinsAPINB")) {
-                    int balance = CoinsAPI.getCoins(e.p.getUniqueId().toString());
-                    if (balance >= Double.parseDouble(e.args[0])) {
-                        CoinsAPI.removeCoins(e.p.getUniqueId().toString(), (int) Long.parseLong(e.args[0]));
-                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.coins.success")).replaceAll("%cp-args%", e.args[0]));
-                        giveItem(e.p,e.args);
-                    } else {
-                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.coins.failure")).replaceAll("%cp-args%", e.args[0]));
-                    }
-                } else {
-                    plugin.tex.sendMessage(e.p, ChatColor.RED + "Buying Requires CoinsAPINB to work!");
                 }
             } catch (Exception buy) {
                 plugin.debug(buy, e.p);

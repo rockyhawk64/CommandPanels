@@ -1,6 +1,5 @@
 package me.rockyhawk.commandpanels.commandtags;
 
-import de.NeonnBukkit.CoinsAPI.API.CoinsAPI;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
@@ -172,7 +171,7 @@ public class CommandTags {
                 //if player uses tokenpaywall= [price]
                 try {
                     if (plugin.getServer().getPluginManager().isPluginEnabled("TokenManager")) {
-                        TokenManager api = (TokenManager) Bukkit.getServer().getPluginManager().getPlugin("TokenManager");
+                        final TokenManager api = (TokenManager) Bukkit.getPluginManager().getPlugin("TokenManager");
                         assert api != null;
                         int balance = Integer.parseInt(Long.toString(api.getTokens(p).orElse(0)));
                         if (balance >= Double.parseDouble(command.split("\\s")[1])) {
@@ -191,34 +190,6 @@ public class CommandTags {
                         }
                     } else {
                         plugin.tex.sendString(p, plugin.tag + ChatColor.RED + "Needs TokenManager to work!");
-                        return PaywallOutput.Blocked;
-                    }
-                } catch (Exception buyc) {
-                    plugin.debug(buyc,p);
-                    plugin.tex.sendString(p, plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + command);
-                    return PaywallOutput.Blocked;
-                }
-            }
-            case "coinpaywall=": {
-                //if player uses coinpaywall= [price]
-                try {
-                    if (plugin.getServer().getPluginManager().isPluginEnabled("CoinsAPINB")) {
-                        int balance = CoinsAPI.getCoins(p.getUniqueId().toString());
-                        if (balance >= Double.parseDouble(command.split("\\s")[1])) {
-                            CoinsAPI.removeCoins(p.getUniqueId().toString(), (int) Long.parseLong(command.split("\\s")[1]));
-                            //if the message is empty don't send
-                            if(plugin.config.getBoolean("purchase.coins.enable")){
-                                plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.coins.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
-                            }
-                            return PaywallOutput.Passed;
-                        } else {
-                            if(plugin.config.getBoolean("purchase.coins.enable")){
-                                plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.coins.failure")).replaceAll("%cp-args%", command.split("\\s")[1]));
-                            }
-                            return PaywallOutput.Blocked;
-                        }
-                    } else {
-                        plugin.tex.sendString(p, plugin.tag + ChatColor.RED + "Needs CoinAPI to work!");
                         return PaywallOutput.Blocked;
                     }
                 } catch (Exception buyc) {

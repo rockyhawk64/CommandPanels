@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Vault">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../Tools/Build Tools/Jar Libraries/Vault.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

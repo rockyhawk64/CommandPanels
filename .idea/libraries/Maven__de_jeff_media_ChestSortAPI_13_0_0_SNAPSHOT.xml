@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: de.jeff_media:ChestSortAPI:13.0.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/jeff_media/ChestSortAPI/13.0.0-SNAPSHOT/ChestSortAPI-13.0.0-20220205.090010-5.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/de/jeff_media/ChestSortAPI/13.0.0-SNAPSHOT/ChestSortAPI-13.0.0-20220205.090010-5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/jeff_media/ChestSortAPI/13.0.0-SNAPSHOT/ChestSortAPI-13.0.0-20220205.090010-5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

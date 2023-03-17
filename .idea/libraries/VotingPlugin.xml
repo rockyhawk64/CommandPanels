@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="VotingPlugin">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../Tools/Build Tools/Jar Libraries/VotingPlugin.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

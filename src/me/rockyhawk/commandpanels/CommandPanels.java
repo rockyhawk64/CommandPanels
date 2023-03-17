@@ -30,8 +30,6 @@ import me.rockyhawk.commandpanels.editor.CommandPanelsEditorTabComplete;
 import me.rockyhawk.commandpanels.interactives.input.UserInputUtils;
 import me.rockyhawk.commandpanels.interactives.Commandpanelrefresher;
 import me.rockyhawk.commandpanels.interactives.OpenOnJoin;
-import me.rockyhawk.commandpanels.ioclasses.Sequence_1_13;
-import me.rockyhawk.commandpanels.ioclasses.Sequence_1_14;
 import me.rockyhawk.commandpanels.ioclasses.nbt.NBTManager;
 import me.rockyhawk.commandpanels.ioclasses.legacy.LegacyVersion;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
@@ -48,6 +46,8 @@ import me.rockyhawk.commandpanels.playerinventoryhandler.InventorySaver;
 import me.rockyhawk.commandpanels.playerinventoryhandler.ItemStackSerializer;
 import me.rockyhawk.commandpanels.updater.Updater;
 import net.milkbowl.vault.economy.Economy;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.CharSequenceReader;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -505,11 +505,8 @@ public class CommandPanels extends JavaPlugin{
 
     public Reader getReaderFromStream(InputStream initialStream) throws IOException {
         //this reads the encrypted resource files in the jar file
-        if(legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_13) || legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_18)){
-            return new Sequence_1_13(this).getReaderFromStream(initialStream);
-        }else{
-            return new Sequence_1_14(this).getReaderFromStream(initialStream);
-        }
+        byte[] buffer = IOUtils.toByteArray(initialStream);
+        return new CharSequenceReader(new String(buffer));
     }
 
     //split lists using \n escape character

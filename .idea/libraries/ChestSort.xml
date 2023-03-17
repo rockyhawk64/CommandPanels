@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="ChestSort">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../Tools/Build Tools/Jar Libraries/ChestSort.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
