@@ -1,9 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="CommandPanels">
-    <output-path>$PROJECT_DIR$/out/artifacts/CommandPanels</output-path>
-    <root id="archive" name="CommandPanels.jar">
-      <element id="file-copy" path="$PROJECT_DIR$/resource/plugin.yml" />
-      <element id="module-output" name="CommandPanels" />
-    </root>
-  </artifact>
-</component>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_17">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -13,7 +13,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="spigot" level="project" />
-    <orderEntry type="library" name="CustomItemsAPI_PLACEHOLDER" level="project" />
     <orderEntry type="library" name="Maven: net.kyori:adventure-text-minimessage:4.11.0" level="project" />
     <orderEntry type="library" name="Maven: net.kyori:adventure-api:4.11.0" level="project" />
     <orderEntry type="library" name="Maven: net.kyori:adventure-key:4.11.0" level="project" />

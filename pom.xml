@@ -8,7 +8,14 @@
     <artifactId>CommandPanels</artifactId>
     <version>DEV</version>
 
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <src.dir>src</src.dir>
+    </properties>
+
     <build>
+        <sourceDirectory>${src.dir}</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -44,13 +51,13 @@
         </plugins>
         <resources>
             <resource>
-                <directory>src/main/resource</directory>
+                <directory>resource</directory>
             </resource>
             <resource>
-                <directory>src/main/resource_editor</directory>
+                <directory>resource_editor</directory>
             </resource>
             <resource>
-                <directory>src/main/resource_example</directory>
+                <directory>resource_example</directory>
             </resource>
         </resources>
     </build>
