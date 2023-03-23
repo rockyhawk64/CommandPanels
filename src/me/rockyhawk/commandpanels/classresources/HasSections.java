@@ -35,8 +35,16 @@ public class HasSections {
                     //ensure the endProcess variable has been reset for another operation
                     endProcess = true;
                     //get the values of this statement
-                    String value = ChatColor.stripColor(plugin.tex.placeholders(panel, position, p, cf.getString(setName + ".value" + a)));
-                    String compare = ChatColor.stripColor(plugin.tex.placeholders(panel, position, p, cf.getString(setName + ".compare" + a)));
+                    String value;
+                    String compare;
+                    try {
+                        value = ChatColor.stripColor(plugin.tex.placeholders(panel, position, p, cf.getString(setName + ".value" + a)));
+                        compare = ChatColor.stripColor(plugin.tex.placeholders(panel, position, p, cf.getString(setName + ".compare" + a)));
+                    }catch (Exception e) {
+                        //if errors getting text return
+                        plugin.debug(e,p);
+                        return "";
+                    }
 
                     String operator = "AND";
                     if(compare.endsWith(" OR")){

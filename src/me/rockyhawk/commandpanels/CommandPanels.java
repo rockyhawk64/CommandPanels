@@ -77,7 +77,6 @@ public class CommandPanels extends JavaPlugin{
     public String tag = "[CommandPanels]";
 
     public List<Player> generateMode = new ArrayList<>(); //players that are currently in generate mode
-    public List<String[]> editorInputStrings = new ArrayList<>();
     public List<Panel> panelList = new ArrayList<>(); //contains all the panels that are included in the panels folder
 
     //get alternate classes
@@ -145,7 +144,7 @@ public class CommandPanels extends JavaPlugin{
 
         //set version to latest version
         if (Objects.requireNonNull(this.config.getString("updater.update-checks")).equalsIgnoreCase("true")) {
-            updater.githubNewUpdate(false);
+            updater.githubNewUpdate(true);
         }
 
         //setup class files
@@ -253,10 +252,6 @@ public class CommandPanels extends JavaPlugin{
             } catch (IOException var11) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not save the example file!");
             }
-        }
-
-        if (Objects.requireNonNull(this.config.getString("config.update-notifications")).equalsIgnoreCase("true")) {
-            updater.githubNewUpdate(true);
         }
 
         //load panelFiles

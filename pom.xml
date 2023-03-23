@@ -102,6 +102,7 @@
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
             <version>4.11.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>de.jeff_media</groupId>
@@ -152,7 +153,7 @@
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
-            <artifactId>MythicLib</artifactId>
+            <artifactId>MythicLib-dist</artifactId>
             <version>1.5.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -171,7 +172,7 @@
         <dependency>
             <groupId>com.arcaniax</groupId>
             <artifactId>HeadDatabase-API</artifactId>
-            <version>LATEST</version>
+            <version>1.3.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

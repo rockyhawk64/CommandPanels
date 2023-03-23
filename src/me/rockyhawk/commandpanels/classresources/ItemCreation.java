@@ -1,6 +1,5 @@
 package me.rockyhawk.commandpanels.classresources;
 
-//import com.jojodmo.customitems.api.CustomItemsAPI;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
@@ -109,12 +108,6 @@ public class ItemCreation {
                 s = mmoitem.newBuilder().build();
                 normalCreation = false;
             }
-
-            //creates Custom Items items
-            /*if(matraw.split("\\s")[0].equalsIgnoreCase("cui=") && plugin.getServer().getPluginManager().isPluginEnabled("CustomItems")){
-                s = CustomItemsAPI.getCustomItem("cui:" + matraw.split("\\s")[1]);
-                normalCreation = false;
-            }*/
 
             //creates a written book item
             if(matraw.split("\\s")[0].equalsIgnoreCase("book=")){

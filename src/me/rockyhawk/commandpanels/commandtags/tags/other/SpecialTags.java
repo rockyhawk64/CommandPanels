@@ -7,6 +7,7 @@ import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -99,32 +100,34 @@ public class SpecialTags implements Listener {
         }
         if(e.name.equalsIgnoreCase("teleport=")) {
             e.commandTagUsed();
-            if (e.args.length == 5) {
-                float x, y, z, yaw, pitch; //pitch is the heads Y axis and yaw is the X axis
+            float x, y, z, yaw = 0, pitch = 0;
+            Player teleportedPlayer = e.p;
+            World teleportedWorld = e.p.getWorld();
+
+            try {
                 x = Float.parseFloat(e.args[0]);
                 y = Float.parseFloat(e.args[1]);
                 z = Float.parseFloat(e.args[2]);
-                yaw = Float.parseFloat(e.args[3]);
-                pitch = Float.parseFloat(e.args[4]);
-                e.p.teleport(new Location(e.p.getWorld(), x, y, z, yaw, pitch));
-            } else if (e.args.length <= 3) {
-                float x, y, z;
-                x = Float.parseFloat(e.args[0]);
-                y = Float.parseFloat(e.args[1]);
-                z = Float.parseFloat(e.args[2]);
-                e.p.teleport(new Location(e.p.getWorld(), x, y, z));
-            } else {
-                try {
-                    Player otherplayer = Bukkit.getPlayer(e.args[3]);
-                    float x, y, z;
-                    x = Float.parseFloat(e.args[0]);
-                    y = Float.parseFloat(e.args[1]);
-                    z = Float.parseFloat(e.args[2]);
-                    assert otherplayer != null;
-                    otherplayer.teleport(new Location(otherplayer.getWorld(), x, y, z));
-                } catch (Exception tpe) {
-                    plugin.tex.sendMessage(e.p,plugin.config.getString("config.format.notitem"));
+                for(String val : e.args) {
+                    if(val.startsWith("world:")) {
+                        teleportedWorld = Bukkit.getWorld(val.substring(6));
+                        continue;
+                    }
+                    if(val.startsWith("yaw:")) {
+                        yaw = Float.parseFloat(val.substring(4));
+                        continue;
+                    }
+                    if(val.startsWith("pitch:")) {
+                        pitch = Float.parseFloat(val.substring(6));
+                        continue;
+                    }
+                    if(val.startsWith("player:")) {
+                        teleportedPlayer = Bukkit.getPlayer(val.substring(7));
+                    }
                 }
+                teleportedPlayer.teleport(new Location(teleportedWorld, x, y, z, yaw, pitch));
+            } catch (Exception tpe) {
+                plugin.debug(tpe,e.p);
             }
             return;
         }

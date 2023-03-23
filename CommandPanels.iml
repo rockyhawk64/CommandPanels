@@ -13,13 +13,13 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="spigot" level="project" />
-    <orderEntry type="library" name="Maven: net.kyori:adventure-text-minimessage:4.11.0" level="project" />
-    <orderEntry type="library" name="Maven: net.kyori:adventure-api:4.11.0" level="project" />
-    <orderEntry type="library" name="Maven: net.kyori:adventure-key:4.11.0" level="project" />
-    <orderEntry type="library" name="Maven: net.kyori:examination-api:1.3.0" level="project" />
-    <orderEntry type="library" name="Maven: net.kyori:examination-string:1.3.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-text-minimessage:4.11.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-api:4.11.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-key:4.11.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:examination-api:1.3.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:examination-string:1.3.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: de.jeff_media:ChestSortAPI:13.0.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains:annotations:19.0.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.jetbrains:annotations:19.0.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.guava:guava:31.1-jre" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.guava:failureaccess:1.0.1" level="project" />
@@ -37,15 +37,25 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.logging.log4j:log4j-api:2.0-beta9" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.code.findbugs:jsr305:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.11.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.bencodez:votingplugin:6.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.bencodez:votingplugin:6.11.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.bstats:bstats-velocity:2.2.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.bstats:bstats-base:2.2.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.bencodez:advancedcore:master-e8f50514b7-1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.bencodez:advancedcore:3.6.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.zaxxer:HikariCP:3.4.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:slf4j-simple:1.7.5" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: xyz.upperlevel.spigot.book:spigot-book-api:1.6" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: me.clip:placeholderapi:2.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: me.clip:placeholderapi:2.11.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.bstats:bstats-bukkit:3.0.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-platform-bukkit:4.3.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-platform-api:4.3.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-text-serializer-bungeecord:4.3.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-text-serializer-legacy:4.13.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-nbt:4.13.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-text-serializer-gson:4.13.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-text-serializer-gson-legacy-impl:4.13.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-platform-facet:4.3.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-platform-viaversion:4.3.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.MilkBowl:VaultAPI:1.7" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.bukkit:bukkit:1.13.1-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: commons-lang:commons-lang:2.6" level="project" />
@@ -53,7 +63,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: junit:junit:4.10" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.Indyuce:MMOItems-API:6.9.2-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: io.lumine:MythicLib:1.5.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.lumine:MythicLib-dist:1.5.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.Realizedd:TokenManager:3.2.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.arcaniax:HeadDatabase-API:1.3.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.Ssomar-Developement:SCore:3.9.43" level="project" />

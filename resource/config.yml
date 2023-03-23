@@ -17,7 +17,6 @@ config:
   server-ping-timeout: 10
   stop-sound: true
   disabled-world-message: true
-  update-notifications: true
   panel-snooper: false
   format:
     tag: '&6[&bCommandPanels&6] '
