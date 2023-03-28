@@ -84,6 +84,10 @@
             <url>https://nexus.bencodez.com/repository/maven-public/</url>
         </repository>
         <repository>
+            <id>ess-repo</id>
+            <url>https://repo.essentialsx.net/releases/</url>
+        </repository>
+        <repository>
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
@@ -136,7 +140,7 @@
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
-            <version>LATEST</version>
+            <version>2.11.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -179,6 +183,12 @@
             <groupId>com.github.Ssomar-Developement</groupId>
             <artifactId>SCore</artifactId>
             <version>LATEST</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.essentialsx</groupId>
+            <artifactId>EssentialsX</artifactId>
+            <version>2.19.7</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

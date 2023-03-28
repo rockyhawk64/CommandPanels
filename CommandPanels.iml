@@ -24,7 +24,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.guava:guava:31.1-jre" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.guava:failureaccess:1.0.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.checkerframework:checker-qual:3.12.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.errorprone:error_prone_annotations:2.11.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.j2objc:j2objc-annotations:1.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.code.gson:gson:2.10" level="project" />
@@ -67,5 +66,16 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.Realizedd:TokenManager:3.2.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.arcaniax:HeadDatabase-API:1.3.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.Ssomar-Developement:SCore:3.9.43" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.essentialsx:EssentialsX:2.19.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.papermc:paperlib:1.0.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.essentialsx:BaseProviders:2.19.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.essentialsx:PaperProvider:2.19.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.essentialsx:NMSReflectionProvider:2.19.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.essentialsx:1_8Provider:2.19.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.essentialsx:1_12Provider:2.19.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.spongepowered:configurate-yaml:4.1.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.spongepowered:configurate-core:4.1.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.leangen.geantyref:geantyref:1.3.11" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.checkerframework:checker-qual:3.14.0" level="project" />
   </component>
 </module>

@@ -32,6 +32,11 @@
       <option name="url" value="https://repo1.maven.org/maven2" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="ess-repo" />
+      <option name="name" value="ess-repo" />
+      <option name="url" value="http://repo.ess3.net/content/groups/essentials" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="BenCodez Repo" />
       <option name="name" value="BenCodez Repo" />
       <option name="url" value="https://nexus.bencodez.com/repository/maven-public/" />
@@ -52,6 +57,11 @@
       <option name="url" value="https://jitpack.io" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="ess-repo" />
+      <option name="name" value="ess-repo" />
+      <option name="url" value="https://repo.essentialsx.net/releases/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="spigot-repo" />
       <option name="name" value="spigot-repo" />
       <option name="url" value="https://hub.spigotmc.org/nexus/content/repositories/snapshots/" />
@@ -60,6 +70,11 @@
       <option name="id" value="vault" />
       <option name="name" value="vault" />
       <option name="url" value="https://dev.bukkit.org/projects/vault" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="ess-repo" />
+      <option name="name" value="ess-repo" />
+      <option name="url" value="https://repo.ess3.net/content/groups/essentials" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="jboss.community" />

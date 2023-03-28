@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.classresources.placeholders;
 
 import com.bencodez.votingplugin.user.UserManager;
+import com.earth2me.essentials.Essentials;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
@@ -14,9 +15,7 @@ import org.bukkit.inventory.meta.Damageable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Placeholders {
@@ -97,8 +96,14 @@ public class Placeholders {
                 return Integer.toString(Bukkit.getServer().getOnlinePlayers().size());
             }
             case("online-players-visible"): {
-                //will filter out players with metadata 'vanished'
-                return Integer.toString(Bukkit.getOnlinePlayers().stream().filter(player -> !player.getMetadata("vanished").get(0).asBoolean()).collect(Collectors.toList()).size());
+                //will not include players that are vanished
+                int count = 0;
+                for(Player temp : Bukkit.getOnlinePlayers()) {
+                    if(!isPlayerVanished(temp)) {
+                        count++;
+                    }
+                }
+                return Integer.toString(count);
             }
             case("panel-position"): {
                 return position.toString();
@@ -328,17 +333,27 @@ public class Placeholders {
         if(identifier.startsWith("player-online-")) {
             try {
                 String playerLocation = identifier.replace("player-online-", "");
-                Player[] playerFind;
                 if (identifier.endsWith("-visible")){
-                    playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().stream().filter(player -> !player.getMetadata("vanished").get(0).asBoolean()).collect(Collectors.toList()).size()]);
+                    //for players that are visible only
+                    //remove -visible from the end of playerLocation
+                    playerLocation = playerLocation.replace("-visible", "");
+                    List<Player> playerList = new ArrayList<>();
+                    for(Player temp : Bukkit.getOnlinePlayers()) {
+                        if(!isPlayerVanished(temp)) {
+                            playerList.add(temp);
+                        }
+                    }
+                    if(playerList.size() >= Integer.parseInt(playerLocation)){
+                        return playerList.get(Integer.parseInt(playerLocation)-1).getName();
+                    }
                 } else {
-                    playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
+                    //for every player whether they are visible or not
+                    if(Bukkit.getOnlinePlayers().toArray().length >= Integer.parseInt(playerLocation)){
+                        return ((Player)Bukkit.getOnlinePlayers().toArray()[Integer.parseInt(playerLocation)-1]).getName();
+                    }
                 }
-                if (Double.parseDouble(playerLocation) > playerFind.length) {
-                    return plugin.tex.colour(Objects.requireNonNull(plugin.config.getString("config.format.offline")));
-                } else {
-                    return playerFind[(int)(Double.parseDouble(playerLocation) - 1)].getName();
-                }
+                //player is not found
+                return plugin.tex.colour(Objects.requireNonNull(plugin.config.getString("config.format.offline")));
             }catch (Exception ex){
                 plugin.debug(ex,p);
                 return "";
@@ -368,5 +383,15 @@ public class Placeholders {
         }
         //end nodes with PlaceHolders
         return "";
+    }
+
+    public boolean isPlayerVanished(Player player) {
+        //check if EssentialsX exists
+        if(!Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+            return false;
+        }
+        //check if player is vanished using essentials
+        Essentials essentials = (Essentials)Bukkit.getPluginManager().getPlugin("Essentials");
+        return essentials.getUser(player).isVanished();
     }
 }
