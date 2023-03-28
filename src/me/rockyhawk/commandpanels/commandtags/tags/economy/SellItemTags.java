@@ -75,10 +75,16 @@ public class SellItemTags implements Listener {
     //returns false if player does not have item
     private boolean removeItem(Player p, String[] args){
         List<ItemStack> cont = new ArrayList<>(Arrays.asList(plugin.inventorySaver.getNormalInventory(p)));
+        List<ItemStack> remCont = new ArrayList<>();
 
+
+        ItemStack sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2]));
+        int RemainingAmount = sellItem.getAmount();
         for (int f = 0; f < 36; f++) {
             ItemStack itm = cont.get(f);
-            if (itm != null && itm.getType().equals(Material.matchMaterial(args[1]))) {
+            ItemStack remItm;
+            if (itm != null && itm.getType().equals(sellItem.getType())) {
+                remItm = new ItemStack(itm.getType(), itm.getAmount(), (short)f);
                 //determine if the command contains parameters for extensions
                 String potion = "false";
                 for(String argsTemp : args){
@@ -115,19 +121,36 @@ public class SellItemTags implements Listener {
                     //skip if it cannot do unless plugin.debug is enabled
                     plugin.debug(exc,p);
                 }
-                if (itm.getAmount() >= new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2])).getAmount()) {
-                    int amt = itm.getAmount() - new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2])).getAmount();
-                    itm.setAmount(amt);
+
+                remCont.add(remItm);
+                RemainingAmount -= remItm.getAmount();
+            }
+        }
+
+        if(RemainingAmount <= 0){
+            for (int f = 0; f <= remCont.size() - 1; f++) {
+                ItemStack remItm = remCont.get(f);
+                if(f == remCont.size() - 1){
                     if(plugin.inventorySaver.hasNormalInventory(p)){
-                        p.getInventory().setItem(f, amt > 0 ? itm : null);
+                        p.getInventory().getItem((int)remItm.getDurability()).setAmount(remItm.getAmount() - sellItem.getAmount());
                         p.updateInventory();
                     }else{
-                        cont.set(f,amt > 0 ? itm : null);
+                        cont.get((int)remItm.getDurability()).setAmount(remItm.getAmount() - sellItem.getAmount());
                         plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
                     }
-                    return true;
+                } else {
+                    if(plugin.inventorySaver.hasNormalInventory(p)){
+                        p.getInventory().getItem(remItm.getDurability()).setAmount(0);
+                        p.updateInventory();
+                    }else{
+                        cont.get((int)remItm.getDurability()).setAmount(0);
+                        plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
+                    }
                 }
+                sellItem.setAmount(sellItem.getAmount() - remItm.getAmount());
             }
+
+            return true;
         }
         return false;
     }
