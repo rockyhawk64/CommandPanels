@@ -124,6 +124,9 @@ public class SellItemTags implements Listener {
 
                 remCont.add(remItm);
                 RemainingAmount -= remItm.getAmount();
+                if(RemainingAmount <= 0){
+                    break;
+                }
             }
         }
 
