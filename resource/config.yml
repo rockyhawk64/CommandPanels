@@ -18,6 +18,8 @@ config:
   stop-sound: true
   disabled-world-message: true
   panel-snooper: false
+  allow-unsafe-mini-message: false
+  disable-unsafe-mm-warning: false
   format:
     tag: '&6[&bCommandPanels&6] '
     perms: '&cNo permission.'
