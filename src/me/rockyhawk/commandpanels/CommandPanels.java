@@ -272,6 +272,9 @@ public class CommandPanels extends JavaPlugin{
 
         //get tag
         tag = tex.colour(config.getString("config.format.tag"));
+        if(config.getBoolean("config.allow-unsafe-mini-message") && !config.getBoolean("config.disable-unsafe-mm-warning")){
+            Bukkit.getLogger().warning("[CommandPanels] Allow unsafe MiniMessage detected! Please proceed with caution as no support will be given for it!");
+        }
 
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loaded!");
     }
