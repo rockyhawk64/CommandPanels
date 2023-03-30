@@ -1,9 +1,8 @@
 # |------------------------------------------------------------------------
 # |                       CommandPanels Config File
 # |                           By RockyHawk v5.2
-# | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
+# |               https://www.spigotmc.org/resources/67788/
 # |
-# |        auto-update and minor-updates-only is HEAVILY RECOMMENDED
 # |------------------------------------------------------------------------
 config:
   refresh-panels: true
@@ -19,7 +18,6 @@ config:
   disabled-world-message: true
   panel-snooper: false
   allow-unsafe-mini-message: false
-  disable-unsafe-mm-warning: false
   format:
     tag: '&6[&bCommandPanels&6] '
     perms: '&cNo permission.'

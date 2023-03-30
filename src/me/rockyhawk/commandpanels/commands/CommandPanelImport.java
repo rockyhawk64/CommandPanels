@@ -44,10 +44,16 @@ public class CommandPanelImport implements CommandExecutor {
         BufferedInputStream in = null;
         FileOutputStream fout = null;
 
+        //add extension if not already added
+        if(!fileName.endsWith(".yml") && !fileName.endsWith(".yaml")) {
+            fileName = fileName + ".yml";
+        }
+
+        //download panel from page contents and add to plugin
         try {
             URL fileUrl = new URL(url);
             in = new BufferedInputStream(fileUrl.openStream());
-            fout = new FileOutputStream(new File(plugin.panelsf, fileName + ".yml"));
+            fout = new FileOutputStream(new File(plugin.panelsf, fileName));
             byte[] data = new byte[1024];
 
             int count;

@@ -137,18 +137,17 @@ public class BasicTags implements Listener {
         }
         if(e.name.equalsIgnoreCase("minimessage=")){
             e.commandTagUsed();
-            if(plugin.legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_18) && Bukkit.getServer().getVersion().contains("Paper")){
+            //get checks
+            boolean isVersionCompatible = plugin.legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_18);
+            boolean isPaper = Bukkit.getServer().getVersion().contains("Paper");
+            boolean allowUnsafeMiniMessage = plugin.config.getBoolean("config.allow-unsafe-mini-message");
+            //do mini message if conditions are met
+            if (isVersionCompatible && (isPaper || allowUnsafeMiniMessage)) {
                 Audience player = (Audience) e.p; // Needed because the basic Player from the Event can't send Paper's Components
-                Component parsedText = SerializerUtils.serializeText(String.join(" ",e.args));
+                Component parsedText = SerializerUtils.serializeText(String.join(" ", e.args));
                 player.sendMessage(parsedText);
-            }else{
-                if(plugin.legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_18) && plugin.config.getBoolean("config.allow-unsafe-mini-message")){
-                    Audience player = (Audience) e.p; // Needed because the basic Player from the Event can't send Paper's Components
-                    Component parsedText = SerializerUtils.serializeText(String.join(" ",e.args));
-                    player.sendMessage(parsedText);
-                }else{
-                    plugin.tex.sendString(e.p, plugin.tag + ChatColor.RED + "MiniMessage-Feature needs Paper 1.18 or newer to work!");
-                }
+            } else {
+                plugin.tex.sendString(e.p, plugin.tag + ChatColor.RED + "MiniMessage-Feature needs Paper 1.18 or newer to work!");
             }
         }
     }

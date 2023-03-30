@@ -33,7 +33,7 @@ public class BuyItemTags implements Listener {
                         plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.currency.success")).replaceAll("%cp-args%", e.args[0]));
                         giveItem(e.p, e.args);
                     } else {
-                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.currency.failure")).replaceAll("%cp-args%", e.args[0]));
+                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.currency.failure")));
 
                     }
                 } else {
@@ -60,7 +60,7 @@ public class BuyItemTags implements Listener {
 
                         giveItem(e.p,e.args);
                     } else {
-                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.failure")).replaceAll("%cp-args%", e.args[0]));
+                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.failure")));
 
                     }
                 } else {
