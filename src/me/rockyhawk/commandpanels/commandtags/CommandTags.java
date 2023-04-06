@@ -200,7 +200,7 @@ public class CommandTags {
                 }
             }
             case "item-paywall=": {
-                //if player uses item-paywall= [Material] [Amount] [Id] [CustomModelData]
+                //if player uses item-paywall= [Material] [Amount] <id:#> <custom-data:#>
                 //player can use item-paywall= [custom-item]
                 List<ItemStack> cont = new ArrayList<>(Arrays.asList(plugin.inventorySaver.getNormalInventory(p)));
                 List<ItemStack> remCont = new ArrayList<>();
@@ -284,6 +284,7 @@ public class CommandTags {
                         } else {
                             //if the item is a standard material
                             if (cont.get(f).getType() == sellItem.getType()) {
+                                //Checking for custom model data. If it does not have or not the correct number go to next in loop.
                                 if(customData != 0){
                                     if(!cont.get(f).hasItemMeta()){
                                         continue;
@@ -293,6 +294,7 @@ public class CommandTags {
                                     }
                                 }
 
+                                //Adding item to the remove list then checking if we have reached the required amount.
                                 ItemStack add = new ItemStack(cont.get(f).getType(), cont.get(f).getAmount(), (short) f);
                                 remainingAmount -= add.getAmount();
                                 remCont.add(add);
@@ -308,6 +310,7 @@ public class CommandTags {
                         for (int f = 0; f <= remCont.size() - 1; f++) {
                             ItemStack remItem = remCont.get(f);
 
+                            //Check if its the last item in the loop and only subtract the remaining amount.
                             if(f == remCont.size() - 1){
                                 if (plugin.inventorySaver.hasNormalInventory(p)) {
                                     p.getInventory().getItem((int)remItem.getDurability()).setAmount(remItem.getAmount() - sellItem.getAmount());
@@ -316,7 +319,7 @@ public class CommandTags {
                                     cont.get((int)remItem.getDurability()).setAmount(remItem.getAmount() - sellItem.getAmount());
                                     plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
                                 }
-                            } else {
+                            } else { //If its anywhere but the last in loop just get rid of the items.
                                 if (plugin.inventorySaver.hasNormalInventory(p)) {
                                     p.getInventory().getItem(remItem.getDurability()).setAmount(0);
                                     p.updateInventory();
