@@ -206,11 +206,11 @@ public class CommandTags {
                 List<ItemStack> remCont = new ArrayList<>();
                 String[] args = command.split("\\s");
                 try {
-                    short id = 0;
+                    byte id = -1;
                     int customData = 0;
                     for(String val : args) {
                         if(val.startsWith("id:")) {
-                            id = Short.parseShort(val.substring(3));
+                            id = Byte.parseByte(val.substring(3));
                             continue;
                         }
                         if(val.startsWith("custom-data:")) {
@@ -223,7 +223,7 @@ public class CommandTags {
                     if (Material.matchMaterial(args[1]) == null) {
                         sellItem = plugin.itemCreate.makeCustomItemFromConfig(panel, PanelPosition.Top, panel.getConfig().getConfigurationSection("custom-item." + args[1]), p, true, true, false);
                     } else {
-                        sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2]), id);
+                        sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2]));
                     }
                     //this is not a boolean because it needs to return an int
                     PaywallOutput removedItem = PaywallOutput.Blocked;
@@ -292,6 +292,11 @@ public class CommandTags {
                                     if(Objects.requireNonNull(cont.get(f).getItemMeta()).getCustomModelData() != customData){
                                         continue;
                                     }
+                                }
+
+                                //Check if the item matches the id set. If not continue to next in loop.
+                                if(id != -1 && cont.get(f).getDurability() != id){
+                                    continue;
                                 }
 
                                 //Adding item to the remove list then checking if we have reached the required amount.
