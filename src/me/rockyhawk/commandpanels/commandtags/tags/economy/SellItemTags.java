@@ -101,6 +101,7 @@ public class SellItemTags implements Listener {
         byte id = -1;
         String potion = "false";
         int customData = 0;
+        boolean noCustom = false;
         for(String argsTemp : args){
             if(argsTemp.startsWith("potion:")){
                 potion = argsTemp.replace("potion:","");
@@ -110,6 +111,9 @@ public class SellItemTags implements Listener {
             }
             if (argsTemp.startsWith("custom-data:")) {
                 customData = Integer.parseInt(argsTemp.replace("custom-data:", ""));
+            }
+            if (argsTemp.contains("NOCUSTOMDATA")) {
+                noCustom = true;
             }
         }
 
@@ -131,11 +135,17 @@ public class SellItemTags implements Listener {
                             return 0;
                         }
                     }
-                    if (id != -1) {
-                        if (itm.getDurability() != id) {
+                    //Check if the item matches the id set. If not continue to next in loop.
+                    if(id != -1 && itm.getDurability() != id){
+                        continue;
+                    }
+                    //Check if noCustom is set and if the item has custom data. If so continue to next in loop.
+                    if(noCustom && cont.get(f).hasItemMeta()){
+                        if(Objects.requireNonNull(cont.get(f).getItemMeta()).hasCustomModelData()){
                             continue;
                         }
                     }
+                    //Check if custom model data is set and if the item has that data. If not continue to next in loop.
                     if (customData != 0) {
                         if (!itm.hasItemMeta()) {
                             continue;
