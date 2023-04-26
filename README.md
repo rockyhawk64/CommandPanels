@@ -6,15 +6,23 @@
   <a href="https://commandpanels.net"><img src="https://i.imgur.com/hg68XFc.png" alt="Editor"></a>Editor Coming Soon...
 </p>
 
-### About
-Minecraft Servers use GUIs for many tasks from lobbies to shops. Command Panels takes a simple approach to YAML scripting to create a powerful yet simple design.
-If you don't feel like scripting, Command Panels is one of the few free plugins you will find that provides a powerful editor. Almost every feature that is available when scripting is included in the editor.
+## About
+Minecraft Servers use GUIs for many different tasks from lobbies to shops. Command Panels takes a simple approach to YAML scripting to create a powerful yet simple design. Use variables, data, placeholders and other powerful tools to fully customize your GUIs.
 
-  - Lightweight
-  - PlaceholderAPI support
-  - Comes with an advanced editor
-  - Unlimited GUIs
-  - Create complex panel systems
+Command Panels treats the inventory as three different sections, you have the Top, Middle and Bottom. Which are the Chest, Player and Hotbar locations. You can have three GUIs running simultaneously, by simply choosing which location you want a panel to open!
+
+Making a plugin? You can use Command Panels as a library to make your own GUIs for your plugins. It's as simple as making a panel, adding the panel YAML file to your plugin and adding one line of code to open the panel.
+
+
+## Main Features
+
+**Online Editor** Offers simple GUI creation, the layout and logic has been simplified for easier usage.
+
+**Animations, Logic, Data** are some of the powerful YAML tools that can be used in your GUIs!
+
+**Player Inventory** allows you to extend the GUI into the player's inventory area underneath, to make advanced menu experiences!
+
+**Developer API** for easy GUI creation in your own plugins (using this as a dependency) or simply to interact with Command Panels.
 
 ### Spigot Page
 You can find the spigot page for the plugin [here](https://www.spigotmc.org/resources/67788/).
