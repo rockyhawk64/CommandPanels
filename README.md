@@ -1,5 +1,11 @@
 ![TitleLogo](https://i.imgur.com/YQMXkoi.png)
 
+<p align="center">
+  <a target="_blank" href="https://discord.gg/eUWBWh7"><img src="https://i.imgur.com/50KoZcJ.png" alt="Discord"></a> 
+  <a target="_blank" href="https://rockyhawk99.gitbook.io/rockyhawk-wiki/"><img src="https://i.imgur.com/kR6n5uw.png" alt="Wiki"></a> 
+  <a target="_blank" href="https://commandpanels.net"><img src="https://i.imgur.com/hg68XFc.png" alt="Editor"></a>
+</p>
+
 ### About
 Minecraft Servers use GUIs for many tasks from lobbies to shops. Command Panels takes a simple approach to YAML scripting to create a powerful yet simple design.
 If you don't feel like scripting, Command Panels is one of the few free plugins you will find that provides a powerful in-game editor. Almost every feature that is available when scripting is included in-game.
