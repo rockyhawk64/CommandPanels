@@ -41,7 +41,7 @@ public class GetCustomHeads {
         return null;
     }
 
-    //getting the head from a Player
+    //getting the head from a Player Name
     @SuppressWarnings("deprecation")
     public ItemStack getPlayerHead(String name) {
         byte id = 0;
@@ -55,6 +55,7 @@ public class GetCustomHeads {
         return itemStack;
     }
 
+    //used to get heads from Base64 Textures
     @SuppressWarnings("deprecation")
     public ItemStack getCustomHead(String b64stringtexture) {
         //get head from base64

@@ -59,7 +59,7 @@ public class Commandpanelrefresher implements Listener {
             public void run() {
                 int animatevalue = -1;
                 if(pn.getConfig().contains("animatevalue")){
-                    animatevalue = pn.getConfig().getInt("animatevalue");
+                    animatevalue = Integer.parseInt(pn.getConfig().getString("animatevalue"));
                 }
                 //counter counts to refresh delay (in seconds) then restarts
                 if(c < refreshDelay){

@@ -201,65 +201,21 @@ public class ItemCreation {
             if(addNBT){
                 s = plugin.nbt.setNBT(s);
             }
-
-            if (itemSection.contains("map")) {
-                /*
-                This will do maps from custom images
-                the maps will be in the 'maps' folder, so
-                CommandPanels/maps/image.png <-- here
-                CommandPanels/panels/example_top.yml
-                The images should be 128x128
-                 */
-                try{
-                    @SuppressWarnings("deprecation")
-                    MapView map = Bukkit.getServer().getMap(0);
-                    try {
-                        map.getRenderers().clear();
-                        map.setCenterX(30000000);
-                        map.setCenterZ(30000000);
-                    }catch(NullPointerException ignore){
-                        //ignore catch
-                    }
-                    if(new File(plugin.getDataFolder().getPath() + File.separator + "maps" + File.separator + itemSection.getString("map")).exists()) {
-                        map.addRenderer(new MapRenderer() {
-                            public void render(MapView view, MapCanvas canvas, Player player) {
-                                canvas.drawImage(0, 0, new ImageIcon(plugin.getDataFolder().getPath() + File.separator + "maps" + File.separator + itemSection.getString("map")).getImage());
-                            }
-                        });
-                        MapMeta meta = (MapMeta) s.getItemMeta();
-                        meta.setMapView(map);
-                        s.setItemMeta(meta);
-                    }else{
-                        p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " map: File not found."));
-                    }
-                }catch(Exception map){
-                    p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " map: " + itemSection.getString("map")));
-                    plugin.debug(map,p);
-                }
-            }
             if (itemSection.contains("enchanted")) {
                 try {
                     ItemMeta EnchantMeta;
                     if(itemSection.isList("enchanted")){
-                        //if there is a list of enchantments to add
+                        //if list contains true, hide enchanted and add KNOCKBACK
                         EnchantMeta = s.getItemMeta();
                         assert EnchantMeta != null;
                         for(String enchantment : itemSection.getStringList("enchanted")){
+                            if(enchantment.equalsIgnoreCase("true")) {
+                                EnchantMeta.addEnchant(Enchantment.KNOCKBACK, 1, false);
+                                EnchantMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                                continue;
+                            }
                             EnchantMeta.addEnchant(Objects.requireNonNull(EnchantmentWrapper.getByKey(NamespacedKey.minecraft(enchantment.split("\\s")[0].toLowerCase()))), Integer.parseInt(enchantment.split("\\s")[1]), true);
                         }
-                        s.setItemMeta(EnchantMeta);
-                    }else if (Objects.requireNonNull(itemSection.getString("enchanted")).trim().equalsIgnoreCase("true")) {
-                        //is used if enchanted is set to true
-                        EnchantMeta = s.getItemMeta();
-                        assert EnchantMeta != null;
-                        EnchantMeta.addEnchant(Enchantment.KNOCKBACK, 1, false);
-                        EnchantMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                        s.setItemMeta(EnchantMeta);
-                    } else if (!Objects.requireNonNull(itemSection.getString("enchanted")).trim().equalsIgnoreCase("false")) {
-                        //if used to ensure enchanted does not equal false but equals something else
-                        EnchantMeta = s.getItemMeta();
-                        assert EnchantMeta != null;
-                        EnchantMeta.addEnchant(Objects.requireNonNull(EnchantmentWrapper.getByKey(NamespacedKey.minecraft(Objects.requireNonNull(itemSection.getString("enchanted")).split("\\s")[0].toLowerCase()))), Integer.parseInt(Objects.requireNonNull(itemSection.getString("enchanted")).split("\\s")[1]), true);
                         s.setItemMeta(EnchantMeta);
                     }
                 } catch (Exception ench) {

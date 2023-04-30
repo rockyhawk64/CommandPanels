@@ -4,6 +4,7 @@ import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.classresources.placeholders.PanelPlaceholders;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -92,11 +93,17 @@ public class Panel{
             }
         }
         ItemStack s = plugin.itemCreate.makeItemFromConfig(this,PanelPosition.Top,getHotbarSection(p), p, true, true, false);
-        int slot = -1;
+        String slot = "-1";
         if(getHotbarSection(p).isSet("stationary")){
-            slot = getHotbarSection(p).getInt("stationary");
+            slot = getHotbarSection(p).getString("stationary");
         }
-        return plugin.nbt.setNBT(s,"CommandPanelsHotbar",panelName + ":" + slot);
+        try {
+            //add NBT to item and return the ItemStack
+            return plugin.nbt.setNBT(s, "CommandPanelsHotbar", panelName + ":" + slot);
+        }catch(Exception e) {
+            //return air if null
+            return new ItemStack(Material.AIR);
+        }
     }
     public ConfigurationSection getHotbarSection(Player p){
         String section = plugin.has.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("open-with-item"), p);
