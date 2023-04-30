@@ -3,8 +3,16 @@
 <p align="center">
   <a href="https://discord.gg/eUWBWh7"><img src="https://i.imgur.com/50KoZcJ.png" alt="Discord"></a> 
   <a href="https://rockyhawk99.gitbook.io/rockyhawk-wiki/"><img src="https://i.imgur.com/kR6n5uw.png" alt="Wiki"></a> 
-  <a href="https://commandpanels.net"><img src="https://i.imgur.com/hg68XFc.png" alt="Editor"></a>Editor Coming Soon...
+  <a href="https://commandpanels.net"><img src="https://i.imgur.com/hg68XFc.png" alt="Editor"></a>
 </p>
+
+## Partner
+ReviveNode is a leading Minecraft hosting provider that offers affordable and high-quality server hosting solutions. Their focus on performance, reliability, and customer support makes them the perfect partner for CommandPanels.
+
+![Partner](https://swagalan.dev/revive/partners/revivenode-logo.png)
+
+We have proudly partnered with [ReviveNode](http://billing.revivenode.com/aff.php?aff=379)!  
+CommandPanels users have been offered 15% off on the first month by using the Promocode: **PANELS**
 
 ## About
 Minecraft Servers use GUIs for many different tasks from lobbies to shops. Command Panels takes a simple approach to YAML scripting to create a powerful yet simple design. Use variables, data, placeholders and other powerful tools to fully customize your GUIs.
