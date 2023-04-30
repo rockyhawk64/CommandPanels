@@ -6,6 +6,8 @@
   <a href="https://commandpanels.net"><img src="https://i.imgur.com/hg68XFc.png" alt="Editor"></a>
 </p>
 
+<img align="center" src="https://i.imgur.com/w8UaAP2.png" alt="Screenshot">
+
 ## Partner
 ReviveNode is a leading Minecraft hosting provider that offers affordable and high-quality server hosting solutions. Their focus on performance, reliability, and customer support makes them the perfect partner for CommandPanels.
 
