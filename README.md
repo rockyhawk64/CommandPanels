@@ -2,8 +2,8 @@
 
 <p align="center">
   <a href="https://discord.gg/eUWBWh7"><img src="https://i.imgur.com/50KoZcJ.png" alt="Discord"></a> 
-  <a href="https://rockyhawk99.gitbook.io/rockyhawk-wiki/"><img src="https://i.imgur.com/kR6n5uw.png" alt="Wiki"></a> 
-  <a href="https://commandpanels.net"><img src="https://i.imgur.com/hg68XFc.png" alt="Editor"></a>
+  <a href="https://commandpanels.net/wiki"><img src="https://i.imgur.com/kR6n5uw.png" alt="Wiki"></a> 
+  <a href="https://commandpanels.net/editor"><img src="https://i.imgur.com/hg68XFc.png" alt="Editor"></a>
 </p>
 
 <img align="center" src="https://i.imgur.com/w8UaAP2.png" alt="Screenshot">
