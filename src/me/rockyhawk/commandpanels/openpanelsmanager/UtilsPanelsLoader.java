@@ -71,6 +71,11 @@ public class UtilsPanelsLoader implements Listener {
 
         //close panels and run commands for Top panel
         plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
+
+        //clear cached textures list on length limit
+        if(plugin.customHeads.playerHeadTextures.size() > 1000) {
+            plugin.customHeads.playerHeadTextures.clear();
+        }
     }
 
     @EventHandler

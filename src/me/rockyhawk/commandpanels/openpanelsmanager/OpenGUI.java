@@ -52,7 +52,7 @@ public class OpenGUI {
                 setItem(null, c, i, p, position);
             }
         }
-            
+
         Set<String> itemList = pconfig.getConfigurationSection("item").getKeys(false);
         HashSet<Integer> takenSlots = new HashSet<>();
         for (String item : itemList) {
@@ -175,11 +175,7 @@ public class OpenGUI {
         } else if (openType == PanelOpenType.Refresh) {
             //openType 0 will just refresh the panel
             if(position == PanelPosition.Top) {
-                Inventory topInventory = p.getOpenInventory().getTopInventory();
-                ItemStack[] items = p.getOpenInventory().getTopInventory().getContents();
-                for (int slot = 0; slot < items.length; ++slot) {
-                    topInventory.setItem(slot, items[slot]);
-                }
+                plugin.legacy.setStorageContents(p, plugin.legacy.getStorageContents(i));
             }
         } else if (openType == PanelOpenType.Return) {
             //will return the inventory, not opening it at all

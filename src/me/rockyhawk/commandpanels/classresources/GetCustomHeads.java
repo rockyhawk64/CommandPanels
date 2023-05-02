@@ -9,9 +9,18 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -20,6 +29,10 @@ public class GetCustomHeads {
     public GetCustomHeads(CommandPanels pl) {
         this.plugin = pl;
     }
+
+    //contains cached player name and then base64 value (clears on /cpr reload)
+    //also will clear if the map reaches a length of 1000 which is roughly 135 KB RAM usage
+    public HashMap<String, String> playerHeadTextures = new HashMap<>();
 
     public String getHeadBase64(ItemStack head) {
         if (plugin.getHeads.ifSkullOrHead(head.getType().toString()) && head.hasItemMeta()) {
@@ -45,14 +58,47 @@ public class GetCustomHeads {
     @SuppressWarnings("deprecation")
     public ItemStack getPlayerHead(String name) {
         byte id = 0;
-        if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
+        if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
             id = 3;
         }
-        ItemStack itemStack = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1,id);
-        SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
-        meta.setOwner(name);
-        itemStack.setItemMeta(meta);
-        return itemStack;
+
+        //get texture if already cached
+        if(playerHeadTextures.containsKey(name)) {
+            return getCustomHead(playerHeadTextures.get(name));
+        }
+
+        try {
+            // Fetch the player UUID from the Mojang API
+            URL uuidUrl = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
+            URLConnection uuidConnection = uuidUrl.openConnection();
+            uuidConnection.setConnectTimeout(2000); // Set connection timeout to 2 seconds
+            uuidConnection.setReadTimeout(2000); // Set read timeout to 2 seconds
+            Reader uuidReader = new InputStreamReader(uuidConnection.getInputStream(), StandardCharsets.UTF_8);
+            JSONObject uuidResponse = (JSONObject) new JSONParser().parse(uuidReader);
+            String uuid = (String) uuidResponse.get("id");
+
+            // Fetch the skin texture from the Mojang API using the player UUID
+            URL texturesUrl = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
+            URLConnection texturesConnection = texturesUrl.openConnection();
+            texturesConnection.setConnectTimeout(2000); // Set connection timeout to 2 seconds
+            texturesConnection.setReadTimeout(2000); // Set read timeout to 2 seconds
+            Reader texturesReader = new InputStreamReader(texturesConnection.getInputStream(), StandardCharsets.UTF_8);
+            JSONObject texturesResponse = (JSONObject) new JSONParser().parse(texturesReader);
+            JSONArray propertiesArray = (JSONArray) texturesResponse.get("properties");
+            JSONObject texturesProperty = (JSONObject) propertiesArray.get(0);
+            String base64Texture = (String) texturesProperty.get("value");
+            playerHeadTextures.put(name, base64Texture);
+
+            // Create a custom head using the Base64 texture string
+            return getCustomHead(base64Texture);
+        } catch (Exception e) {
+            // Fallback to setting the owner if the Mojang API request fails
+            ItemStack itemStack = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1, id);
+            SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
+            meta.setOwner(name);
+            itemStack.setItemMeta(meta);
+            return itemStack;
+        }
     }
 
     //used to get heads from Base64 Textures
