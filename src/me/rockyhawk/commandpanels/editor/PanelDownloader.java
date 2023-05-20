@@ -4,11 +4,10 @@ import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
 public class PanelDownloader {
@@ -24,11 +23,35 @@ public class PanelDownloader {
             fileName = fileName + ".yml";
         }
 
+        //Check if fileName contains file://
+        try {
+            if(URLDecoder.decode(url, StandardCharsets.UTF_8.toString()).contains("file://")) {
+                sender.sendMessage(plugin.tag + ChatColor.RED + "Invalid URL. Using file:// is not supported.");
+                return;
+            }
+        } catch (UnsupportedEncodingException e) {
+            sender.sendMessage(plugin.tag + ChatColor.RED + "UTF-8 support not found.");
+            return;
+        }
+
+        // Create the file object and get its canonical path
+        File file = new File(plugin.panelsf, fileName);
+        try {
+            String canonicalPath = file.getCanonicalPath();
+            if (!canonicalPath.startsWith(plugin.panelsf.getCanonicalPath())) {
+                sender.sendMessage(plugin.tag + ChatColor.RED + "Invalid file name or URL.");
+                return;
+            }
+        } catch (IOException e) {
+            sender.sendMessage(plugin.tag + ChatColor.RED + "Invalid file name or URL.");
+            return;
+        }
+
         //download panel from page contents and add to plugin
         try {
             URL fileUrl = new URL(url);
             in = new BufferedInputStream(fileUrl.openStream());
-            fout = new FileOutputStream(new File(plugin.panelsf, fileName));
+            fout = new FileOutputStream(file);
             byte[] data = new byte[1024];
 
             int count;
@@ -54,8 +77,7 @@ public class PanelDownloader {
             } catch (IOException var20) {
                 this.plugin.getLogger().log(Level.SEVERE, null, var20);
             }
-
         }
-
     }
+
 }

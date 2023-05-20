@@ -27,6 +27,10 @@ public class CommandPanelsEditor implements CommandExecutor {
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender.hasPermission("commandpanel.edit")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Cannot execute command in Console!"));
+                return true;
+            }
             //editor website link
             if (args.length == 0) {
                 sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.GREEN + "Access the web editor at the link below"));
