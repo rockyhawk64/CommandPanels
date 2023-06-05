@@ -84,6 +84,8 @@ public class Updater implements Listener {
               HttpURLConnection connection;
               try {
                   connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/rockyhawk64/CommandPanels/master/resource/plugin.yml").openConnection();
+                  connection.setConnectTimeout(5000); // 5 seconds
+                  connection.setReadTimeout(5000); // 5 seconds
                   connection.connect();
                   cachedLatestVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine().split("\\s")[1];
                   connection.disconnect();

@@ -54,7 +54,10 @@ public class UtilsPanelsLoader implements Listener {
                     public void run() {
                         //end the old panel session and copy a new one
                         plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).isOpen = false;
-                        plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).copy().open(Bukkit.getPlayer(playerName), PanelPosition.Top);
+                        Panel reopenedPanel = plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).copy();
+                        //re-add placeholders as they are not transferred in the Panel object
+                        reopenedPanel.placeholders.keys = plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).placeholders.keys;
+                        reopenedPanel.open(Bukkit.getPlayer(playerName), PanelPosition.Top);
                     }
                 });
                 return;

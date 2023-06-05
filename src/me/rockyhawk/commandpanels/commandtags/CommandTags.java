@@ -201,7 +201,7 @@ public class CommandTags {
             }
             case "item-paywall=": {
                 //if player uses item-paywall= [Material] [Amount] <id:#> <custom-data:#>
-                //player can use item-paywall= [custom-item]
+                //player can use item-paywall= [custom-item] [Amount]
                 List<ItemStack> cont = new ArrayList<>(Arrays.asList(plugin.inventorySaver.getNormalInventory(p)));
                 List<ItemStack> remCont = new ArrayList<>();
                 String[] args = command.split("\\s");
@@ -226,6 +226,7 @@ public class CommandTags {
                     ItemStack sellItem;
                     if (Material.matchMaterial(args[1]) == null) {
                         sellItem = plugin.itemCreate.makeCustomItemFromConfig(panel, PanelPosition.Top, panel.getConfig().getConfigurationSection("custom-item." + args[1]), p, true, true, false);
+                        sellItem.setAmount(Integer.parseInt(args[2]));
                     } else {
                         sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2]));
                     }
