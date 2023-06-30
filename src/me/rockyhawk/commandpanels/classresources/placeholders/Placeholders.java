@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.classresources.placeholders;
 
-import com.bencodez.votingplugin.user.UserManager;
+import com.bencodez.votingplugin.VotingPluginHooks;
 import com.earth2me.essentials.Essentials;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
@@ -378,7 +378,7 @@ public class Placeholders {
         }
         if (plugin.getServer().getPluginManager().isPluginEnabled("VotingPlugin")) {
             if(identifier.equals("votingplugin-points")) {
-                return String.valueOf(UserManager.getInstance().getVotingPluginUser(p).getPoints());
+                return String.valueOf(VotingPluginHooks.getInstance().getUserManager().getVotingPluginUser(p).getPoints());
             }
         }
         //end nodes with PlaceHolders

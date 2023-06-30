@@ -14,12 +14,16 @@ import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
+import org.bukkit.inventory.meta.trim.ArmorTrim;
+import org.bukkit.inventory.meta.trim.TrimMaterial;
+import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -28,10 +32,7 @@ import org.bukkit.potion.PotionType;
 
 import javax.swing.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ItemCreation {
@@ -343,6 +344,31 @@ public class ItemCreation {
                     s = plugin.nbt.setNBT(s,key,itemSection.getString("nbt." + key));
                 }
             }
+            // 1.20 Trim Feature for Player Armor
+            if(plugin.legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20)){
+                // trim: <Material> <Pattern>
+                if(itemSection.contains("trim")){
+                    String trim = itemSection.getString("trim");
+                    String[] trimList = trim.split("\\s");
+                    if(trimList.length == 2){
+                        String trimMaterialString = trimList[0].toLowerCase();
+                        String trimPatternString = trimList[1].toLowerCase();
+
+                        // Check if Material and Pattern are valid and the itemstack is an armor piece
+                        if(isTrimMaterial(trimMaterialString) && isTrimPattern(trimPatternString) && isArmor(s)){
+
+                            // Getting the correct Pattern and Material - Seems to be experimental this way
+                            // Material and Pattern don't have a valueOf-function to get them the easier way.
+                            TrimMaterial trimMaterial = Registry.TRIM_MATERIAL.get(Objects.requireNonNull(NamespacedKey.fromString("minecraft:" + trimMaterialString)));
+                            TrimPattern trimPattern = Registry.TRIM_PATTERN.get(Objects.requireNonNull(NamespacedKey.fromString("minecraft:" + trimPatternString)));
+
+                            ArmorMeta armorMeta = (ArmorMeta) s.getItemMeta();
+                            armorMeta.setTrim(new ArmorTrim(trimMaterial, trimPattern));
+                            s.setItemMeta(armorMeta);
+                        }
+                    }
+                }
+            }
             if (itemSection.contains("stack")) {
                 //change the stack amount (placeholders accepted)
                 s.setAmount((int)Double.parseDouble(Objects.requireNonNull(plugin.tex.placeholders(panel,position,p,itemSection.getString("stack")))));
@@ -512,5 +538,21 @@ public class ItemCreation {
             }
         }
         return true;
+    }
+
+    private boolean isTrimMaterial(String material){
+        List<String> availableMaterial = Arrays.asList("AMETHYST",
+                "COPPER", "DIAMOND", "EMERALD", "GOLD", "IRON","LAPIS", "NETHERITE", "QUARTZ", "REDSTONE");
+        return availableMaterial.contains(material.toUpperCase());
+    }
+
+    private boolean isTrimPattern(String pattern){
+        List<String> availablePattern = Arrays.asList("COAST",
+                "DUNE", "EYE", "HOST", "RAISER", "RIB","SENTRY", "SHAPER", "SILENCE", "SNOUT", "SPIRE", "TIDE","VEX", "WARD", "WAYFINDER", "WILD");
+        return availablePattern.contains(pattern.toUpperCase());
+    }
+
+    private boolean isArmor(ItemStack stack){
+        return EnchantmentTarget.ARMOR.includes(stack);
     }
 }
