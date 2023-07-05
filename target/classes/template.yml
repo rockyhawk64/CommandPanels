@@ -1,0 +1,19 @@
+# |------------------------------------------------------------------------
+# |                       CommandPanels Template File
+# |                            By RockyHawk v1.1
+# | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
+# |------------------------------------------------------------------------
+panels:
+  template:
+    perm: admin
+    rows: 1
+    title: '&8Template Panel'
+    empty: GLASS_PANE
+    item:
+      '4':
+        material: COBBLESTONE
+        stack: 1
+        name: '&fClick Me!'
+        commands:
+        - msg= You clicked the item!
+        - cpc

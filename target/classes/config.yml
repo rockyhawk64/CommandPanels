@@ -1,0 +1,81 @@
+# |------------------------------------------------------------------------
+# |                       CommandPanels Config File
+# |                           By RockyHawk v5.2
+# |               https://www.spigotmc.org/resources/67788/
+# |
+# |------------------------------------------------------------------------
+config:
+  refresh-panels: true
+  refresh-delay: 20
+  panel-blocks: true
+  ingame-editor: true
+  hotbar-items: true
+  custom-commands: true
+  auto-register-commands: false
+  auto-update-panels: false
+  server-ping-timeout: 10
+  stop-sound: true
+  disabled-world-message: true
+  panel-snooper: false
+  allow-unsafe-mini-message: false
+  format:
+    tag: '&6[&bCommandPanels&6] '
+    perms: '&cNo permission.'
+    reload: '&aReloaded.'
+    nopanel: '&cPanel not found.'
+    noitem: '&cPanel doesn''t have clickable item.'
+    notitem: '&cPlayer not found.'
+    error: '&cError found in config.'
+    offline: 'Offline'
+    offlineHeadValue: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU1Mjg2YzQ3MGY2NmZmYTFhMTgzMzFjYmZmYjlhM2MyYTQ0MjRhOGM3MjU5YzQ0MzZmZDJlMzU1ODJhNTIyIn19fQ=='
+    input: '&cYour Input is too long!'
+input:
+  input-cancel: cancel
+  input-cancelled: '&cCancelled!'
+  max-input-length: -1
+  input-message:
+    - '&aEnter Input for Command'
+    - '&cType &4%cp-args% &cto Cancel the command'
+hexcodes:
+  start_tag: '#'
+  end_tag: ''
+placeholders:
+  primary:
+    start: '%'
+    end: '%'
+  secondary:
+    start: '{'
+    end: '}'
+updater:
+  auto-update: false
+  minor-updates-only: true
+  update-checks: true
+purchase:
+  currency:
+    enable: true
+    success: '&aSuccessfully Bought For $%cp-args%'
+    failure: '&cInsufficient Funds!'
+  data:
+    enable: true
+    success: '&aSuccessfully Bought For $%cp-args%'
+    failure: '&cInsufficient Funds!'
+  tokens:
+    enable: true
+    success: '&aSuccessfully Bought For %cp-args% Tokens.'
+    failure: '&cInsufficient Tokens!'
+  coins:
+    enable: true
+    success: '&aSuccessfully Bought For %cp-args% Coins.'
+    failure: '&cInsufficient Coins!'
+  item:
+    enable: true
+    success: '&aSuccessfully Sold %cp-args%.'
+    failure: '&cInsufficient Items!'
+  xp:
+    enable: true
+    success: '&aSuccessfully Bought For %cp-args% Experience.'
+    failure: '&cInsufficient Experience!'
+  permission:
+    enable: true
+    success: "&aYou have successfully passed the permission check for '%cp-args%'"
+    failure: '&cInefficient Permissions'

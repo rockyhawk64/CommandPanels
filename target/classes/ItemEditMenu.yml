@@ -1,0 +1,227 @@
+panels:
+  ItemEditMenu:
+    perm: default
+    rows: 3
+    title: '&8Item Settings'
+    panelType:
+      - static
+    custom-messages:
+      input-message:
+        - "&e[&bCommand Panels Editor&e]"
+        - "&fEnter your value in the chat bar below."
+    item:
+      '4':
+        material: FLINT_AND_STEEL
+        name: '&fPlayer Input'
+        lore:
+          - "&7Add a player input to your item."
+          - ""
+          - "&7Options"
+          - "&7- add [command]"
+          - "&7- edit [line number] [command]"
+          - "&7- insert [line number] [command]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorItem_player-input
+          - cpc
+        player-input:
+          - "event= CPEditor_iteminput %cp-player-input%"
+      '5':
+        material: NAME_TAG
+        name: '&fItem Name'
+        lore:
+          - "&7Choose a name for your item."
+        commands:
+          - event= CPEditorItem_name
+          - cpc
+        player-input:
+          - "event= CPEditor_itemname %cp-player-input%"
+      '6':
+        material: ITEM_FRAME
+        name: '&fItem Stack'
+        lore:
+          - "&7Choose a number from 1 to 64."
+        commands:
+          - event= CPEditorItem_stack
+          - cpc
+        player-input:
+          - "event= CPEditor_itemstack %cp-player-input%"
+      '7':
+        material: ENCHANTED_BOOK
+        name: '&fEnchantments'
+        lore:
+          - "&7Add enchantments to your item."
+          - ""
+          - "&7Options"
+          - "&7- add [type] [level]"
+          - "&7- edit [line number] [type] [level]"
+          - "&7- insert [line number] [type] [level]"
+          - "&7- remove [line number]"
+          - ""
+          - "&7For example: add KNOCKBACK 3"
+        commands:
+          - event= CPEditorItem_enchanted
+          - cpc
+        player-input:
+          - "event= CPEditor_itemenchantment %cp-player-input%"
+      '8':
+        material: PAPER
+        name: '&fItem NBT Data'
+        lore:
+          - "&7You can create custom NBT for your item."
+          - ""
+          - "&7Options"
+          - "&7- add [name] [value]"
+          - "&7- remove [name]"
+          - ""
+          - "&7For example: add example_data this is the value"
+        commands:
+          - cpc
+        player-input:
+          - "event= CPEditor_itemnbt %cp-player-input%"
+      '18':
+        material: LAVA_BUCKET
+        name: '&cDelete Item'
+        lore:
+          - "&7Enter 'confirm' to delete the item."
+        commands:
+          - cpc
+        player-input:
+          - "event= CPEditor_itemdelete %cp-player-input%"
+      '9':
+        material: REDSTONE_BLOCK
+        name: '&fEditing Item: %cp-item-slot%'
+        lore:
+          - "&7Click here to change the"
+          - "&7slot number you are editing."
+        commands:
+          - cpc
+        player-input:
+          - "event= CPEditor_itemslot %cp-player-input%"
+      '0':
+        material: ENDER_CHEST
+        name: '&fMove Item'
+        lore:
+          - "&7Enter a slot to move this item to."
+        commands:
+          - cpc
+        player-input:
+          - "event= CPEditor_itemmove %cp-player-input%"
+      '1':
+        material: STONE
+        name: '&fItem Material'
+        lore:
+          - "&7Choose a material for your item."
+        commands:
+          - event= CPEditorItem_material
+          - cpc
+        player-input:
+          - "event= CPEditor_itemmaterial %cp-player-input%"
+      '13':
+        material: COBBLESTONE
+        name: '&fItem ID'
+        lore:
+          - "&7Material ID for Minecraft 1.12 and below."
+        commands:
+          - event= CPEditorItem_id
+          - cpc
+        player-input:
+          - "event= CPEditor_itemid %cp-player-input%"
+      '14':
+        material: PAINTING
+        name: '&fCustom Model Data'
+        lore:
+          - "&7Enter Custom Model Data for your item."
+        commands:
+          - event= CPEditorItem_customdata
+          - cpc
+        player-input:
+          - "event= CPEditor_itemmodeldata %cp-player-input%"
+      '15':
+        material: ANVIL
+        name: '&fItem Durability'
+        lore:
+          - "&7Enter a number if you want the item to be damaged."
+        commands:
+          - event= CPEditorItem_damage
+          - cpc
+        player-input:
+          - "event= CPEditor_itemdurability %cp-player-input%"
+      '16':
+        material: LEATHER_HELMET
+        name: '&fArmour Colour'
+        lore:
+          - "&7Enter a value for your armour to be coloured."
+        commands:
+          - event= CPEditorItem_leatherarmor
+          - cpc
+        player-input:
+          - "event= CPEditor_itemarmour %cp-player-input%"
+      '17':
+        material: POTION
+        name: '&fPotion Effect'
+        lore:
+          - "&7Choose a potion effect to be applied."
+        commands:
+          - event= CPEditorItem_potion
+          - cpc
+        player-input:
+          - "event= CPEditor_itempotion %cp-player-input%"
+      '23':
+        material: FEATHER
+        name: '&fItem Lore'
+        lore:
+          - "&7Add a lore to your item."
+          - ""
+          - "&7Options"
+          - "&7- add [text]"
+          - "&7- edit [line number] [text]"
+          - "&7- insert [line number] [text]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorItem_lore
+          - cpc
+        player-input:
+          - "event= CPEditor_itemlore %cp-player-input%"
+      '24':
+        material: MAGMA_CREAM
+        name: '&fItem Commands'
+        lore:
+          - "&7Add commands to your item."
+          - ""
+          - "&7Options"
+          - "&7- add [command]"
+          - "&7- edit [line number] [command]"
+          - "&7- insert [line number] [command]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorItem_commands
+          - cpc
+        player-input:
+          - "event= CPEditor_itemcommands %cp-player-input%"
+      '25':
+        material: MELON_SEEDS
+        name: '&fItem Duplicates'
+        lore:
+          - "&7Enter slots to duplicate this item to."
+        commands:
+          - event= CPEditorItem_duplicate
+          - cpc
+        player-input:
+          - "event= CPEditor_itemduplicate %cp-player-input%"
+      '26':
+        material: SLIME_BALL
+        name: '&fItem Types'
+        lore:
+          - "&7Add item types to your item."
+          - ""
+          - "&7Options"
+          - "&7- add [text]"
+          - "&7- edit [line number] [text]"
+          - "&7- insert [line number] [text]"
+          - "&7- remove [line number]"
+        commands:
+          - event= CPEditorItem_itemType
+          - cpc
+        player-input:
+          - "event= CPEditor_itemtypes %cp-player-input%"

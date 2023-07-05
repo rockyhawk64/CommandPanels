@@ -1,0 +1,39 @@
+panels:
+  BottomSettings:
+    perm: default
+    rows: 3
+    title: '&8Bottom Settings'
+    panelType:
+      - static
+    pre-load-commands:
+      - event= CommandPanels_EditorOpened
+    commands-on-close:
+      - event= CommandPanels_EditorClosed
+    item:
+      '0':
+        material: BARRIER
+        stack: 1
+        name: '&cExit'
+        commands:
+          - event= CommandPanels_EditorClosed
+          - cpc
+      '4':
+        material: CHEST
+        stack: 1
+        name: '&fPanel Settings'
+        commands:
+          - "event= CommandPanels_OpenPanelSettings"
+      '6':
+        material: COOKIE
+        stack: 1
+        name: '&fItem Settings'
+        commands:
+          - "event= CommandPanels_OpenItemSettings"
+      #'8':
+      #  material: COMPASS
+      #  stack: 1
+      #  name: '&fItem Sections'
+      #  lore:
+      #    - "&cIN PROGRESS"
+      #  commands:
+      #    - "event= CommandPanels_OpenItemSections"
