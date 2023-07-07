@@ -51,6 +51,9 @@ public class Commandpanelsreload implements CommandExecutor {
                     registerCommands();
                 }
 
+                //clear cached head textures
+                plugin.customHeads.playerHeadTextures.clear();
+
                 sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.reload")));
             }else{
                 sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));

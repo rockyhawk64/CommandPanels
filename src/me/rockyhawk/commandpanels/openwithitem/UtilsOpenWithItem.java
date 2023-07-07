@@ -48,7 +48,7 @@ public class UtilsOpenWithItem implements Listener {
     }
     @EventHandler
     public void onPlayerUse(PlayerInteractEvent e){
-        //item right clicked only (not left because that causes issues when things are interacted with)
+        //item right-clicked only (not left because that causes issues when things are interacted with)
         if(!plugin.openWithItem){
             //if none of the panels have open-with-item
             return;

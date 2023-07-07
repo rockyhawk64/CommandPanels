@@ -28,22 +28,17 @@ public class OpenGUI {
         Inventory i;
         if(position == PanelPosition.Top) {
             String title;
-            if (openType != PanelOpenType.Editor) {
-                if(pconfig.contains("custom-title")) {
-                    //used for titles in the custom-title section, for has sections
-                    String section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("custom-title"), p);
-                    title = plugin.tex.placeholders(panel, position, p, pconfig.getString("custom-title" + section + ".title"));
-                }else {
-                    //regular inventory title
-                    title = plugin.tex.placeholders(panel, position, p, pconfig.getString("title"));
-                }
-            } else {
-                //editor inventory
-                title = "Editing Panel: " + panel.getName();
+            if(pconfig.contains("custom-title")) {
+                //used for titles in the custom-title section, for has sections
+                String section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("custom-title"), p);
+                title = plugin.tex.placeholders(panel, position, p, pconfig.getString("custom-title" + section + ".title"));
+            }else {
+                //regular inventory title
+                title = plugin.tex.placeholders(panel, position, p, pconfig.getString("title"));
             }
 
             if (isNumeric(pconfig.getString("rows"))) {
-                i = Bukkit.createInventory(p, pconfig.getInt("rows") * 9, title);
+                i = Bukkit.createInventory(p, Integer.parseInt(pconfig.getString("rows")) * 9, title);
             } else {
                 i = Bukkit.createInventory(p, InventoryType.valueOf(pconfig.getString("rows")), title);
             }
@@ -57,27 +52,25 @@ public class OpenGUI {
                 setItem(null, c, i, p, position);
             }
         }
-            
+
         Set<String> itemList = pconfig.getConfigurationSection("item").getKeys(false);
         HashSet<Integer> takenSlots = new HashSet<>();
         for (String item : itemList) {
             String section = "";
             //openType needs to not be 3 so the editor won't include hasperm and hasvalue, etc items
-            if (openType != PanelOpenType.Editor) {
-                section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("item." + Integer.parseInt(item)), p);
-                //This section is for animations below here: VISUAL ONLY
+            section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("item." + Integer.parseInt(item)), p);
+            //This section is for animations below here: VISUAL ONLY
 
-                //check for if there is animations inside the items section
+            //check for if there is animations inside the items section
+            if (pconfig.contains("item." + item + section + ".animate" + animateValue)) {
+                //check for if it contains the animate that has the animvatevalue
                 if (pconfig.contains("item." + item + section + ".animate" + animateValue)) {
-                    //check for if it contains the animate that has the animvatevalue
-                    if (pconfig.contains("item." + item + section + ".animate" + animateValue)) {
-                        section = section + ".animate" + animateValue;
-                    }
+                    section = section + ".animate" + animateValue;
                 }
             }
 
             //will only add NBT if not an editor GUI
-            ItemStack s = plugin.itemCreate.makeItemFromConfig(panel,position,Objects.requireNonNull(pconfig.getConfigurationSection("item." + item + section)), p, openType != PanelOpenType.Editor, openType != PanelOpenType.Editor, openType != PanelOpenType.Editor);
+            ItemStack s = plugin.itemCreate.makeItemFromConfig(panel,position,Objects.requireNonNull(pconfig.getConfigurationSection("item." + item + section)), p, true, true, true);
 
             //This is for CUSTOM ITEMS
             if(pconfig.contains("item." + item + section + ".itemType")) {
@@ -96,7 +89,7 @@ public class OpenGUI {
                 takenSlots.add(Integer.parseInt(item));
                 //i.setItem(Integer.parseInt(item), s);
                 //only place duplicate items in without the editor mode. These are merely visual and will not carry over commands
-                if(pconfig.contains("item." + item + section + ".duplicate") && openType != PanelOpenType.Editor) {
+                if(pconfig.contains("item." + item + section + ".duplicate")) {
                     try {
                         String[] duplicateItems = pconfig.getString("item." + item + section + ".duplicate").split(",");
                         for (String tempDupe : duplicateItems) {
@@ -157,10 +150,8 @@ public class OpenGUI {
                 if (empty.getType() != Material.AIR) {
                     for (int c = 0; getInvSize(i,position) > c; ++c) {
                         if (!takenSlots.contains(c)) {
-                            //only place empty items if not editing
-                            if(openType != PanelOpenType.Editor) {
-                                setItem(empty,c,i,p,position);
-                            }
+                            //place empty item
+                            setItem(empty,c,i,p,position);
                         }
                     }
                 }
@@ -181,9 +172,6 @@ public class OpenGUI {
                 p.openInventory(i);
             }
             plugin.openPanels.skipPanelClose.remove(p.getName());
-        } else if (openType == PanelOpenType.Editor) {
-            //The editor will always be at panel position top
-            p.openInventory(i);
         } else if (openType == PanelOpenType.Refresh) {
             //openType 0 will just refresh the panel
             if(position == PanelPosition.Top) {

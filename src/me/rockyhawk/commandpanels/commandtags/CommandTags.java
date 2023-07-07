@@ -200,22 +200,35 @@ public class CommandTags {
                 }
             }
             case "item-paywall=": {
-                //if player uses item-paywall= [Material] [Amount] [Id]
-                //player can use item-paywall= [custom-item]
+                //if player uses item-paywall= [Material] [Amount] <id:#> <custom-data:#>
+                //player can use item-paywall= [custom-item] [Amount]
                 List<ItemStack> cont = new ArrayList<>(Arrays.asList(plugin.inventorySaver.getNormalInventory(p)));
                 List<ItemStack> remCont = new ArrayList<>();
+                String[] args = command.split("\\s");
                 try {
-                    short id = 0;
-                    if (command.split("\\s").length == 4) {
-                        id = Short.parseShort(command.split("\\s")[3]);
+                    byte id = -1;
+                    int customData = 0;
+                    boolean noCustom = false;
+                    for(String val : args) {
+                        if(val.startsWith("id:")) {
+                            id = Byte.parseByte(val.substring(3));
+                            continue;
+                        }
+                        if(val.startsWith("custom-data:")) {
+                            customData = Integer.parseInt(val.substring(12));
+                        }
+                        if(val.contains("NOCUSTOMDATA")) {
+                            noCustom = true;
+                        }
                     }
 
                     //create the item to be removed
                     ItemStack sellItem;
-                    if (Material.matchMaterial(command.split("\\s")[1]) == null) {
-                        sellItem = plugin.itemCreate.makeCustomItemFromConfig(panel, PanelPosition.Top, panel.getConfig().getConfigurationSection("custom-item." + command.split("\\s")[1]), p, true, true, false);
+                    if (Material.matchMaterial(args[1]) == null) {
+                        sellItem = plugin.itemCreate.makeCustomItemFromConfig(panel, PanelPosition.Top, panel.getConfig().getConfigurationSection("custom-item." + args[1]), p, true, true, false);
+                        sellItem.setAmount(Integer.parseInt(args[2]));
                     } else {
-                        sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(command.split("\\s")[1])), Integer.parseInt(command.split("\\s")[2]), id);
+                        sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2]));
                     }
                     //this is not a boolean because it needs to return an int
                     PaywallOutput removedItem = PaywallOutput.Blocked;
@@ -229,9 +242,11 @@ public class CommandTags {
                             continue;
                         }
 
-                        if (Material.matchMaterial(command.split("\\s")[1]) == null) {
+                        ItemStack itm = cont.get(f);
+
+                        if (Material.matchMaterial(args[1]) == null) {
                             //item-paywall is a custom item as it is not a material
-                            if (plugin.itemCreate.isIdentical(sellItem, cont.get(f))) {
+                            if (plugin.itemCreate.isIdentical(sellItem, itm)) {
                                 ItemStack add = new ItemStack(p.getInventory().getItem(f).getType(), p.getInventory().getItem(f).getAmount(), (short) f);
                                 remainingAmount -= add.getAmount();
                                 remCont.add(add);
@@ -243,23 +258,23 @@ public class CommandTags {
 
                             //if custom item is a mmo item (1.14+ for the API)
                             try {
-                                if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems") && panel.getConfig().getString("custom-item." + command.split("\\s")[1] + ".material").startsWith("mmo=")) {
-                                    String customItemMaterial = panel.getConfig().getString("custom-item." + command.split("\\s")[1] + ".material");
+                                if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems") && panel.getConfig().getString("custom-item." + args[1] + ".material").startsWith("mmo=")) {
+                                    String customItemMaterial = panel.getConfig().getString("custom-item." + args[1] + ".material");
                                     String mmoType = customItemMaterial.split("\\s")[1];
                                     String mmoID = customItemMaterial.split("\\s")[2];
 
-                                    if (plugin.isMMOItem(cont.get(f), mmoType, mmoID) && sellItem.getAmount() <= cont.get(f).getAmount()) {
+                                    if (plugin.isMMOItem(itm, mmoType, mmoID) && sellItem.getAmount() <= itm.getAmount()) {
                                         if (plugin.inventorySaver.hasNormalInventory(p)) {
-                                            p.getInventory().getItem(f).setAmount(cont.get(f).getAmount() - sellItem.getAmount());
+                                            p.getInventory().getItem(f).setAmount(itm.getAmount() - sellItem.getAmount());
                                             p.updateInventory();
                                         } else {
-                                            cont.get(f).setAmount(cont.get(f).getAmount() - sellItem.getAmount());
+                                            itm.setAmount(itm.getAmount() - sellItem.getAmount());
                                             plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
                                         }
                                         removedItem = PaywallOutput.Passed;
                                         break;
                                     }
-                                    if (plugin.isMMOItem(cont.get(f), mmoType, mmoID)) {
+                                    if (plugin.isMMOItem(itm, mmoType, mmoID)) {
                                         ItemStack add = new ItemStack(p.getInventory().getItem(f).getType(), p.getInventory().getItem(f).getAmount(), (short) f);
                                         remainingAmount -= add.getAmount();
                                         remCont.add(add);
@@ -275,8 +290,31 @@ public class CommandTags {
 
                         } else {
                             //if the item is a standard material
-                            if (cont.get(f).getType() == sellItem.getType()) {
-                                ItemStack add = new ItemStack(cont.get(f).getType(), cont.get(f).getAmount(), (short) f);
+                            if (itm.getType() == sellItem.getType()) {
+                                //Checking for custom model data. If it does not have or not the correct number go to next in loop.
+                                if(customData != 0){
+                                    if(!itm.hasItemMeta()){
+                                        continue;
+                                    }
+                                    if(Objects.requireNonNull(itm.getItemMeta()).getCustomModelData() != customData){
+                                        continue;
+                                    }
+                                }
+
+                                //Check if the item matches the id set. If not continue to next in loop.
+                                if(id != -1 && itm.getDurability() != id){
+                                    continue;
+                                }
+
+                                //Check if noCustom is set and if the item has custom data. If so continue to next in loop.
+                                if(noCustom && itm.hasItemMeta()){
+                                    if(Objects.requireNonNull(itm.getItemMeta()).hasCustomModelData()){
+                                        continue;
+                                    }
+                                }
+
+                                //Adding item to the remove list then checking if we have reached the required amount.
+                                ItemStack add = new ItemStack(itm.getType(), itm.getAmount(), (short) f);
                                 remainingAmount -= add.getAmount();
                                 remCont.add(add);
                                 if (remainingAmount <= 0) {
@@ -291,6 +329,7 @@ public class CommandTags {
                         for (int f = 0; f <= remCont.size() - 1; f++) {
                             ItemStack remItem = remCont.get(f);
 
+                            //Check if its the last item in the loop and only subtract the remaining amount.
                             if(f == remCont.size() - 1){
                                 if (plugin.inventorySaver.hasNormalInventory(p)) {
                                     p.getInventory().getItem((int)remItem.getDurability()).setAmount(remItem.getAmount() - sellItem.getAmount());
@@ -299,7 +338,7 @@ public class CommandTags {
                                     cont.get((int)remItem.getDurability()).setAmount(remItem.getAmount() - sellItem.getAmount());
                                     plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
                                 }
-                            } else {
+                            } else { //If its anywhere but the last in loop just get rid of the items.
                                 if (plugin.inventorySaver.hasNormalInventory(p)) {
                                     p.getInventory().getItem(remItem.getDurability()).setAmount(0);
                                     p.updateInventory();

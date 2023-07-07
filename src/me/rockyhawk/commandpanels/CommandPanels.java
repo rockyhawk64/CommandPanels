@@ -20,13 +20,10 @@ import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
 import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
 import me.rockyhawk.commandpanels.datamanager.DebugManager;
 import me.rockyhawk.commandpanels.datamanager.PanelDataLoader;
+import me.rockyhawk.commandpanels.editor.*;
 import me.rockyhawk.commandpanels.generatepanels.Commandpanelsgenerate;
 import me.rockyhawk.commandpanels.generatepanels.GenUtils;
 import me.rockyhawk.commandpanels.generatepanels.TabCompleteGenerate;
-import me.rockyhawk.commandpanels.editor.CPEventHandler;
-import me.rockyhawk.commandpanels.editor.CommandPanelsEditorCommand;
-import me.rockyhawk.commandpanels.editor.CommandPanelsEditorMain;
-import me.rockyhawk.commandpanels.editor.CommandPanelsEditorTabComplete;
 import me.rockyhawk.commandpanels.interactives.input.UserInputUtils;
 import me.rockyhawk.commandpanels.interactives.Commandpanelrefresher;
 import me.rockyhawk.commandpanels.interactives.OpenOnJoin;
@@ -80,7 +77,7 @@ public class CommandPanels extends JavaPlugin{
     public List<Panel> panelList = new ArrayList<>(); //contains all the panels that are included in the panels folder
 
     //get alternate classes
-    public CommandPanelsEditorMain editorMain = new CommandPanelsEditorMain(this);
+    public PanelDownloader downloader = new PanelDownloader(this);
 
     public CommandTags commandTags = new CommandTags(this);
     public PanelDataLoader panelData = new PanelDataLoader(this);
@@ -162,6 +159,8 @@ public class CommandPanels extends JavaPlugin{
 
         Objects.requireNonNull(this.getCommand("commandpanelimport")).setExecutor(new CommandPanelImport(this));
         Objects.requireNonNull(this.getCommand("commandpanelimport")).setTabCompleter(new ImportTabComplete(this));
+        Objects.requireNonNull(this.getCommand("commandpaneledit")).setExecutor(new CommandPanelsEditor(this));
+        Objects.requireNonNull(this.getCommand("commandpaneledit")).setTabCompleter(new EditorTabComplete(this));
 
         Objects.requireNonNull(this.getCommand("commandpanelreload")).setExecutor(new Commandpanelsreload(this));
         Objects.requireNonNull(this.getCommand("commandpaneldebug")).setExecutor(new Commandpanelsdebug(this));
@@ -201,13 +200,6 @@ public class CommandPanels extends JavaPlugin{
         //if hotbar-items set to false, don't load this
         if(Objects.requireNonNull(config.getString("config.hotbar-items")).equalsIgnoreCase("true")){
             this.getServer().getPluginManager().registerEvents(new UtilsOpenWithItem(this), this);
-        }
-
-        //if ingame-editor set to false, don't load this
-        if(Objects.requireNonNull(config.getString("config.ingame-editor")).equalsIgnoreCase("true")){
-            this.getServer().getPluginManager().registerEvents(new CPEventHandler(this), this);
-            Objects.requireNonNull(this.getCommand("commandpaneledit")).setTabCompleter(new CommandPanelsEditorTabComplete(this));
-            Objects.requireNonNull(this.getCommand("commandpaneledit")).setExecutor(new CommandPanelsEditorCommand(this));
         }
 
         //if panel-blocks set to false, don't load this
@@ -367,13 +359,13 @@ public class CommandPanels extends JavaPlugin{
         }
 
         //names is a list of the titles for the Panels
-        Set<String> oset = new HashSet<String>(apanels);
+        Set<String> oset = new HashSet<>(apanels);
         if (oset.size() < apanels.size()) {
             //there are duplicate panel names
-            ArrayList<String> opanelsTemp = new ArrayList<String>();
+            ArrayList<String> opanelsTemp = new ArrayList<>();
             for(String tempName : apanels){
                 if(opanelsTemp.contains(tempName)){
-                    sender.sendMessage(tex.colour(tag) + ChatColor.RED + " Error duplicate panel name: " + tempName);
+                    sender.sendMessage(tex.colour(tag) + ChatColor.RED + "Error duplicate panel name: " + tempName);
                     return false;
                 }
                 opanelsTemp.add(tempName);
@@ -452,6 +444,9 @@ public class CommandPanels extends JavaPlugin{
             p.sendMessage(ChatColor.GOLD + "/cpv latest " + ChatColor.WHITE + "Download the latest update upon server reload/restart.");
             p.sendMessage(ChatColor.GOLD + "/cpv [version:cancel] " + ChatColor.WHITE + "Download an update upon server reload/restart.");
         }
+        if (p.hasPermission("commandpanel.edit")) {
+            p.sendMessage(ChatColor.GOLD + "/cpe <panel file> " + ChatColor.WHITE + "Export panel to the Online Editor.");
+        }
         if (p.hasPermission("commandpanel.import")) {
             p.sendMessage(ChatColor.GOLD + "/cpi [file name] [URL] " + ChatColor.WHITE + "Downloads a panel from a raw link online.");
         }
@@ -472,9 +467,6 @@ public class CommandPanels extends JavaPlugin{
         }
         if (p.hasPermission("commandpanel.block.list")) {
             p.sendMessage(ChatColor.GOLD + "/cpb list " + ChatColor.WHITE + "List blocks that will open panels.");
-        }
-        if (p.hasPermission("commandpanel.edit")) {
-            p.sendMessage(ChatColor.GOLD + "/cpe <panel> " + ChatColor.WHITE + "Edit a panel with the Panel Editor.");
         }
     }
 
