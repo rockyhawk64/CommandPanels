@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class BungeeTags implements Listener {
+public class  BungeeTags implements Listener {
     CommandPanels plugin;
     public BungeeTags(CommandPanels pl) {
         this.plugin = pl;

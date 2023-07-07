@@ -29,7 +29,7 @@ public class SellItemTags implements Listener {
     public void commandTag(CommandTagEvent e){
         if(e.name.equalsIgnoreCase("sell=")){
             e.commandTagUsed();
-            //if player uses sell= it will be eg. sell= <total cashback> <item> <amount of item> [enchanted:KNOCKBACK:1] [potion:JUMP]
+            //if player uses sell= it will be eg. sell= <total cashback> <item> <amount of item> [enchanted:KNOCKBACK:1] [potion:JUMP] [custom-data:#]
             try {
                 if (plugin.econ != null) {
                     int sold = removeItem(e.p, e.args, false);
@@ -98,6 +98,24 @@ public class SellItemTags implements Listener {
         //get inventory slots and then an empty list to store slots that have the item to sell
         List<ItemStack> cont = new ArrayList<>(Arrays.asList(plugin.inventorySaver.getNormalInventory(p)));
         List<ItemStack> remCont = new ArrayList<>();
+        byte id = -1;
+        String potion = "false";
+        int customData = 0;
+        boolean noCustom = false;
+        for(String argsTemp : args){
+            if(argsTemp.startsWith("potion:")){
+                potion = argsTemp.replace("potion:","");
+            }
+            if (argsTemp.startsWith("id:")) {
+                id = Byte.parseByte(argsTemp.replace("id:", ""));
+            }
+            if (argsTemp.startsWith("custom-data:")) {
+                customData = Integer.parseInt(argsTemp.replace("custom-data:", ""));
+            }
+            if (argsTemp.contains("NOCUSTOMDATA")) {
+                noCustom = true;
+            }
+        }
 
         //create an itemstack of the item to sell and the amount to sell (0 if all as args[2] will not be an amount)
         ItemStack sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), removeAll ? 0 : Integer.parseInt(args[2]));
@@ -107,23 +125,6 @@ public class SellItemTags implements Listener {
             ItemStack remItm;
             if (itm != null && itm.getType().equals(sellItem.getType())) {
                 remItm = new ItemStack(itm.getType(), itm.getAmount(), (short)f);
-                //determine if the command contains parameters for extensions
-                String potion = "false";
-                for(String argsTemp : args){
-                    if(argsTemp.startsWith("potion:")){
-                        potion = argsTemp.replace("potion:","");
-                    }
-                }
-                //legacy ID
-                byte id = -1;
-                if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
-                    for (String argsTemp : args) {
-                        if (argsTemp.startsWith("id:")) {
-                            id = Byte.parseByte(argsTemp.replace("id:", ""));
-                            break;
-                        }
-                    }
-                }
                 //check to ensure any extensions are checked
                 try {
                     if (!potion.equals("false")) {
@@ -134,9 +135,24 @@ public class SellItemTags implements Listener {
                             return 0;
                         }
                     }
-                    if (id != -1) {
-                        if (itm.getDurability() != id) {
+                    //Check if the item matches the id set. If not continue to next in loop.
+                    if(id != -1 && itm.getDurability() != id){
+                        continue;
+                    }
+                    //Check if noCustom is set and if the item has custom data. If so continue to next in loop.
+                    if(noCustom && cont.get(f).hasItemMeta()){
+                        if(Objects.requireNonNull(cont.get(f).getItemMeta()).hasCustomModelData()){
                             continue;
+                        }
+                    }
+                    //Check if custom model data is set and if the item has that data. If not continue to next in loop.
+                    if (customData != 0) {
+                        if (!itm.hasItemMeta()) {
+                            continue;
+                        } else {
+                            if(Objects.requireNonNull(itm.getItemMeta()).getCustomModelData() != customData){
+                                continue;
+                            }
                         }
                     }
                 }catch(Exception exc){

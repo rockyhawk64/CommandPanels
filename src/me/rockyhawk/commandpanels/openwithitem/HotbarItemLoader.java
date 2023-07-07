@@ -32,7 +32,7 @@ public class HotbarItemLoader {
 
     //return true if found
     public boolean stationaryExecute(int slot, Player p, ClickType click, boolean openPanel){
-        if(stationaryItems.get(p.getUniqueId()).list.containsKey(slot)){
+        if(stationaryItems.get(p.getUniqueId()).list.containsKey(String.valueOf(slot))){
             if(openPanel) {
                 try {
                     if (!plugin.nbt.getNBT(p.getInventory().getItem(slot), "CommandPanelsHotbar").split(":")[1].equals(String.valueOf(slot))) {
@@ -41,7 +41,7 @@ public class HotbarItemLoader {
                 }catch(Exception ex){
                     return false;
                 }
-                Panel panel = stationaryItems.get(p.getUniqueId()).getPanel(slot);
+                Panel panel = stationaryItems.get(p.getUniqueId()).getPanel(String.valueOf(slot));
                 //only open panel automatically if there are no commands and player world is not disabled
                 if(!p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))){
                     return false;
@@ -136,8 +136,8 @@ public class HotbarItemLoader {
             if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm")) && panel.hasHotbarItem()) {
                 ItemStack s = panel.getHotbarItem(p);
                 if(panel.getHotbarSection(p).contains("stationary")) {
-                    p.getInventory().setItem(panel.getHotbarSection(p).getInt("stationary"),s);
-                    stationaryItems.get(p.getUniqueId()).addSlot(panel.getHotbarSection(p).getInt("stationary"),panel);
+                    p.getInventory().setItem(Integer.parseInt(panel.getHotbarSection(p).getString("stationary")),s);
+                    stationaryItems.get(p.getUniqueId()).addSlot(panel.getHotbarSection(p).getString("stationary"),panel);
                 }
             }
         }

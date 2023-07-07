@@ -32,8 +32,8 @@ public class UtilsChestSortEvent implements Listener {
         //If the ChestSort plugin triggers an event
         try {
             if (e.getInventory().getType() == InventoryType.PLAYER) {
-                for (int slot : plugin.hotbar.stationaryItems.get(e.getPlayer().getUniqueId()).list.keySet()) {
-                    e.setUnmovable(slot);
+                for (String slot : plugin.hotbar.stationaryItems.get(e.getPlayer().getUniqueId()).list.keySet()) {
+                    e.setUnmovable(Integer.parseInt(slot));
                 }
             }
         }catch(NullPointerException ex){
