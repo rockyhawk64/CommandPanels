@@ -75,7 +75,3 @@ purchase:
     enable: true
     success: '&aSuccessfully Bought For %cp-args% Experience.'
     failure: '&cInsufficient Experience!'
-  permission:
-    enable: true
-    success: "&aYou have successfully passed the permission check for '%cp-args%'"
-    failure: '&cInefficient Permissions'

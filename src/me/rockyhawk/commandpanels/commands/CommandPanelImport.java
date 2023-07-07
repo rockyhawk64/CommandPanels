@@ -19,7 +19,7 @@ public class CommandPanelImport implements CommandExecutor {
     CommandPanels plugin;
     public CommandPanelImport(CommandPanels pl) { this.plugin = pl; }
 
-    @EventHandler
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender.hasPermission("commandpanel.import")) {
             if (args.length == 2) {

@@ -17,7 +17,7 @@ public class Commandpanel implements CommandExecutor {
         this.plugin = pl;
     }
 
-    @EventHandler
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         //below is going to go through the files and find the right one
         Panel panel = null;

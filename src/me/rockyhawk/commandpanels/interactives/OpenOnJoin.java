@@ -15,19 +15,29 @@ public class OpenOnJoin implements Listener {
     }
     @EventHandler
     public void onWorldLogin(PlayerJoinEvent e){
-        //only opens when the player first logins
-        openOnJoin(e.getPlayer(),"open-on-login.");
+        if (!e.getPlayer().hasPlayedBefore()) {
+            openOnJoin(e.getPlayer(),"open-on-first-login");
+            return;
+        }
+        //only opens when the player logs into the server
+        openOnJoin(e.getPlayer(),"open-on-login");
     }
 
     @EventHandler
     public void onWorldJoin(PlayerChangedWorldEvent e){
         //only opens when the player changes the world internally
-        openOnJoin(e.getPlayer(),"open-on-join.");
+        openOnJoin(e.getPlayer(),"open-on-join");
     }
 
     private void openOnJoin(Player p, String joinType){
-        if(plugin.config.contains(joinType + p.getWorld().getName())){
-            String command = "open= " + plugin.config.getString(joinType + p.getWorld().getName());
+        String world = p.getWorld().getName();
+        // Limited to '1' panel as you can only have '1' inventory open
+        // pass the world as "" to tell the code to not use world
+        if (joinType.equalsIgnoreCase("open-on-first-login")) world="";
+
+        String joinString = joinType + (world.equals("") ? "" : "."+ world);
+        if(plugin.config.contains(joinString)){
+            String command = "open= " + plugin.config.getString(joinString);
             plugin.commandTags.runCommand(null, PanelPosition.Top,p, command);
         }
     }
