@@ -13,8 +13,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class ExecuteOpenVoids {
