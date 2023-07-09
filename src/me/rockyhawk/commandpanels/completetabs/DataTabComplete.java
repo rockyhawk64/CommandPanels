@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.completetabs;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -19,17 +20,23 @@ public class DataTabComplete implements TabCompleter {
         if(sender.hasPermission("commandpanel.data")) {
             ArrayList<String> output = new ArrayList<>();
             if(args.length == 1){
-                output.add("set");
-                output.add("add");
-                output.add("get");
-                output.add("remove");
-                output.add("clear");
+                String arg1 = args[0].toLowerCase();
+                if ("set".startsWith(arg1))output.add("set");
+                if ("add".startsWith(arg1))output.add("add");
+                if ("get".startsWith(arg1))output.add("get");
+                if ("remove".startsWith(arg1))output.add("remove");
+                if ("clear".startsWith(arg1))output.add("clear");
             }else if(args.length == 2){
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (!p.getName().startsWith(args[1])) {
-                        continue;
+                if ("all".startsWith(args[1].toLowerCase()) && !args[0].equalsIgnoreCase("get")) output.add("all");
+
+                for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+                    String name = player.getName();
+                    // don't worry about it saying it may throw a NPE
+                    if (name.toLowerCase().startsWith(args[1])) {
+                        //this will narrow down the panels to what the user types
+                        output.add(name);
                     }
-                    output.add(p.getName());
+
                 }
             }else if(args.length == 3){
                 //the clear function is here as it is the only subcommand with 3 args
