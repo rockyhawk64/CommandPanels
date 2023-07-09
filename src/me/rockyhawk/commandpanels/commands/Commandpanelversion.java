@@ -11,7 +11,7 @@ public class Commandpanelversion implements CommandExecutor {
     CommandPanels plugin;
     public Commandpanelversion(CommandPanels pl) { this.plugin = pl; }
 
-    @EventHandler
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         if (label.equalsIgnoreCase("cpv") || label.equalsIgnoreCase("commandpanelversion") || label.equalsIgnoreCase("cpanelv")) {

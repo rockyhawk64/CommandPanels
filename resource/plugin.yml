@@ -1,4 +1,4 @@
-version: 3.19.0.3
+version: 3.19.0.3-DEV
 main: me.rockyhawk.commandpanels.CommandPanels
 name: CommandPanels
 author: RockyHawk
