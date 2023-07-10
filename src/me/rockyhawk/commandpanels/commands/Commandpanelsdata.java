@@ -26,28 +26,33 @@ public class Commandpanelsdata implements CommandExecutor {
                 args = Arrays.copyOfRange(args, 1, args.length);
                 sendPlayerMessage = false;
             }
+            int count = 0;
             if (args.length == 2) {
                 //for the clear command
                 if (args[0].equals("clear")) {
-                    if (args[1].equalsIgnoreCase("all")) {
+                    if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("online")) {
                         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+                            if (args[1].equalsIgnoreCase("online") && !player.isOnline()) continue;
                             plugin.panelData.clearData(plugin.panelData.getOffline(player.getName()));
+                            count++;
                         }
                     } else
                         plugin.panelData.clearData(plugin.panelData.getOffline(args[1]));
                     if (sendPlayerMessage) {
                         sender.sendMessage(plugin.tex.colour(plugin.tag
                                 + ChatColor.GREEN + "Cleared all data for "
-                                + ChatColor.WHITE + args[1]));
+                                + ChatColor.WHITE + (count == 0 ? args[1] : count + "" + ChatColor.GREEN + " players")));
                     }
                     return true;
                 }
             } else if (args.length == 3) {
                 //for the remove command
                 if (args[0].equals("remove")) {
-                    if (args[1].equalsIgnoreCase("all")) {
+                    if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("online")) {
                         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+                            if (args[1].equalsIgnoreCase("online") && !player.isOnline()) continue;
                             plugin.panelData.delUserData(plugin.panelData.getOffline(player.getName()), args[2]);
+                            count++;
                         }
                     } else
                         plugin.panelData.delUserData(plugin.panelData.getOffline(args[1]), args[2]);
@@ -56,7 +61,7 @@ public class Commandpanelsdata implements CommandExecutor {
                                 + ChatColor.GREEN + "Removed "
                                 + ChatColor.WHITE + args[2]
                                 + ChatColor.GREEN + " from "
-                                + ChatColor.WHITE + args[1]));
+                                + ChatColor.WHITE + (count == 0 ? args[1] : count + "" + ChatColor.GREEN + " players")));
                     }
                     return true;
                 } else if (args[0].equals("get")) {
@@ -69,9 +74,11 @@ public class Commandpanelsdata implements CommandExecutor {
             } else if (args.length == 4) {
                 if (args[0].equals("set")) {
                     //for set command
-                    if (args[1].equalsIgnoreCase("all")) {
+                    if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("online")) {
                         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+                            if (args[1].equalsIgnoreCase("online") && !player.isOnline()) continue;
                             plugin.panelData.setUserData(plugin.panelData.getOffline(player.getName()), args[2], args[3], true);
+                            count++;
                         }
                     } else {
                         plugin.panelData.setUserData(plugin.panelData.getOffline(args[1]), args[2], args[3], true);
@@ -81,13 +88,18 @@ public class Commandpanelsdata implements CommandExecutor {
                                 + ChatColor.GREEN + "Set "
                                 + ChatColor.WHITE + args[2]
                                 + ChatColor.GREEN + " to "
-                                + ChatColor.WHITE + args[3]));
+                                + ChatColor.WHITE + args[3]
+                                + ChatColor.GREEN + " for "
+                                + ChatColor.WHITE + (count == 0 ? args[1] : count + "" + ChatColor.GREEN + " players")));
                     }
                 } else {
                     //for add command
-                    if (args[1].equalsIgnoreCase("all")) {
+                    if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("online")) {
+
                         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+                            if (args[1].equalsIgnoreCase("online") && !player.isOnline()) continue;
                             plugin.panelData.setUserData(plugin.panelData.getOffline(player.getName()), args[2], args[3], false);
+                            count++;
                         }
                     } else
                         plugin.panelData.setUserData(plugin.panelData.getOffline(args[1]), args[2], args[3], false);
@@ -97,7 +109,9 @@ public class Commandpanelsdata implements CommandExecutor {
                                 + ChatColor.WHITE + args[2]
                                 + ChatColor.GREEN + " to "
                                 + ChatColor.WHITE + args[3])
-                                + ChatColor.GREEN + " if it did not exist already");
+                                + ChatColor.GREEN + " for "
+                                + ChatColor.WHITE + (count == 0 ? args[1] : count + "" + ChatColor.GREEN + " players")
+                                + " if it did not exist already");
                     }
                 }
                 return true;

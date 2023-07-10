@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels;
 
+import com.bencodez.votingplugin.VotingPluginHooks;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import me.rockyhawk.commandpanels.api.CommandPanelsAPI;
 import me.rockyhawk.commandpanels.api.Panel;
@@ -66,6 +67,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 public class CommandPanels extends JavaPlugin{
+    public VotingPluginHooks votingPlugin;
     public YamlConfiguration config;
     public Economy econ = null;
     public boolean openWithItem = false; //this will be true if there is a panel with open-with-item
@@ -213,7 +215,10 @@ public class CommandPanels extends JavaPlugin{
         if (!Bukkit.getVersion().contains("1.8")) {
             this.getServer().getPluginManager().registerEvents(new SwapItemEvent(this), this);
         }
-
+        //if VotingPlugin is enabled
+        if (getServer().getPluginManager().isPluginEnabled("VotingPlugin")) {
+            votingPlugin= VotingPluginHooks.getInstance();
+        }
         //if plugin ChestSort is enabled
         if(getServer().getPluginManager().isPluginEnabled("ChestSort")){
             this.getServer().getPluginManager().registerEvents(new UtilsChestSortEvent(this), this);

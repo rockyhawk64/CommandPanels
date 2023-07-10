@@ -379,7 +379,7 @@ public class Placeholders {
         }
         if (plugin.getServer().getPluginManager().isPluginEnabled("VotingPlugin")) {
             if(identifier.equals("votingplugin-points")) {
-                return String.valueOf(VotingPluginMain.plugin.getVotingPluginUserManager().getVotingPluginUser(p).getPoints());
+                return String.valueOf(plugin.votingPlugin.getUserManager().getVotingPluginUser(p).getPoints());
             }
         }
         //end nodes with PlaceHolders
