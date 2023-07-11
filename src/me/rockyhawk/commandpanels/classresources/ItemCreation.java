@@ -345,27 +345,25 @@ public class ItemCreation {
                 }
             }
             // 1.20 Trim Feature for Player Armor
-            if(plugin.legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20)){
+            if(plugin.legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && itemSection.contains("trim")){
                 // trim: <Material> <Pattern>
-                if(itemSection.contains("trim")){
-                    String trim = itemSection.getString("trim");
-                    String[] trimList = trim.split("\\s");
-                    if(trimList.length == 2){
-                        String trimMaterialString = trimList[0].toLowerCase();
-                        String trimPatternString = trimList[1].toLowerCase();
+                String trim = itemSection.getString("trim");
+                String[] trimList = trim.split("\\s");
+                if(trimList.length == 2){
+                    String trimMaterialString = trimList[0].toLowerCase();
+                    String trimPatternString = trimList[1].toLowerCase();
 
-                        // Check if Material and Pattern are valid and the itemstack is an armor piece
-                        if(isTrimMaterial(trimMaterialString) && isTrimPattern(trimPatternString) && isArmor(s)){
+                    // Check if Material and Pattern are valid and the itemstack is an armor piece
+                    if(isTrimMaterial(trimMaterialString) && isTrimPattern(trimPatternString) && isArmor(s)){
 
-                            // Getting the correct Pattern and Material - Seems to be experimental this way
-                            // Material and Pattern don't have a valueOf-function to get them the easier way.
-                            TrimMaterial trimMaterial = Registry.TRIM_MATERIAL.get(Objects.requireNonNull(NamespacedKey.fromString("minecraft:" + trimMaterialString)));
-                            TrimPattern trimPattern = Registry.TRIM_PATTERN.get(Objects.requireNonNull(NamespacedKey.fromString("minecraft:" + trimPatternString)));
+                        // Getting the correct Pattern and Material - Seems to be experimental this way
+                        // Material and Pattern don't have a valueOf-function to get them the easier way.
+                        TrimMaterial trimMaterial = Registry.TRIM_MATERIAL.get(Objects.requireNonNull(NamespacedKey.fromString("minecraft:" + trimMaterialString)));
+                        TrimPattern trimPattern = Registry.TRIM_PATTERN.get(Objects.requireNonNull(NamespacedKey.fromString("minecraft:" + trimPatternString)));
 
-                            ArmorMeta armorMeta = (ArmorMeta) s.getItemMeta();
-                            armorMeta.setTrim(new ArmorTrim(trimMaterial, trimPattern));
-                            s.setItemMeta(armorMeta);
-                        }
+                        ArmorMeta armorMeta = (ArmorMeta) s.getItemMeta();
+                        armorMeta.setTrim(new ArmorTrim(trimMaterial, trimPattern));
+                        s.setItemMeta(armorMeta);
                     }
                 }
             }
