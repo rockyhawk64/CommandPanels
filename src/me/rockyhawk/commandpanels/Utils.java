@@ -142,8 +142,12 @@ public class Utils implements Listener {
                         commands.set(i, commands.get(i).replaceAll("%cp-clicked%", "AIR"));
                     }
                 }
-
-                plugin.commandTags.runCommands(panel,position,p,commands,e.getClick());
+                if (panel.getConfig().contains("item." + clickedSlot + section + ".multi-paywall")) {
+                    plugin.commandTags.runMultiPaywall(panel,position,p,
+                            panel.getConfig().getStringList("item." + clickedSlot + section + ".multi-paywall"),
+                            commands,e.getClick());
+                } else
+                    plugin.commandTags.runCommands(panel,position,p,commands,e.getClick());
             }
         }
     }

@@ -1,7 +1,6 @@
 package me.rockyhawk.commandpanels.classresources.placeholders;
 
-import com.bencodez.votingplugin.VotingPluginMain;
-import com.bencodez.votingplugin.user.UserManager;
+
 import com.earth2me.essentials.Essentials;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;

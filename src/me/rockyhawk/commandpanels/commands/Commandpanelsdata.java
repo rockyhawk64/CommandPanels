@@ -116,7 +116,7 @@ public class Commandpanelsdata implements CommandExecutor {
                 }
                 return true;
             }
-            sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cpdata <set:add:get:remove:clear> <player|all> <data> [value]"));
+            sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cpdata <set:add:get:remove:clear> <player|all|online> <data> [value]"));
         } else {
             sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
         }
