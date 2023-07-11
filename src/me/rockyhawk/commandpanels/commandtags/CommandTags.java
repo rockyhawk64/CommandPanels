@@ -185,6 +185,22 @@ public class CommandTags {
                     return PaywallOutput.Blocked;
                 }
             }
+            case "hasperm=": {
+                //if player uses hasperm= [perm]
+                if (p.hasPermission(String.valueOf(command.split("\\s")[1]))) {
+                    if (plugin.config.getBoolean("purchase.permission.enable") && removal) {
+                        plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.permission.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
+                    }
+                    return PaywallOutput.Passed;
+                } else {
+                    if (plugin.config.getBoolean("purchase.currency.enable")) {
+                        plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.permission.failure")));
+                    }
+                    return PaywallOutput.Blocked;
+                }
+
+
+            }
             case "tokenpaywall=": {
                 //if player uses tokenpaywall= [price]
                 try {
