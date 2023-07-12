@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Placeholders {
     CommandPanels plugin;

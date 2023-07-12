@@ -1,6 +1,6 @@
 name: Need help
 description: Create an issue for a problem you are having.
-labels: ["help wanted"]
+labels: [ "help wanted" ]
 body:
   - type: checkboxes
     id: searched
@@ -32,12 +32,24 @@ body:
         - 1.18
         - 1.19
     validations:
-     required: true
+      required: true
   - type: dropdown
     id: commandpanels_version
     attributes:
       label: What CommandPanels version are you using?
       options:
+        - latest
+        - 3.19.0.3
+        - 3.19.0.2
+        - 3.19.0.1
+        - 3.19.0.0
+        - 3.18.6.2
+        - 3.18.6.1
+        - 3.18.6.0
+        - 3.18.5.1
+        - 3.18.5.0
+        - 3.18.4.1
+        - 3.18.4.0
         - 3.18.3.0
         - 3.18.2.0
         - 3.18.1.4
@@ -64,7 +76,7 @@ body:
         - 3.17.1.0
         - Any other version
     validations:
-     required: true
+      required: true
   - type: dropdown
     id: server_software
     attributes:
@@ -82,7 +94,7 @@ body:
         - Velocity
         - Travertine
     validations:
-     required: true
+      required: true
   - type: textarea
     id: what-happened
     attributes:

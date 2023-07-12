@@ -24,7 +24,7 @@ public class CommandPanelsEditor implements CommandExecutor {
         this.plugin = pl;
     }
 
-    @EventHandler
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender.hasPermission("commandpanel.edit")) {
             if (!(sender instanceof Player)) {

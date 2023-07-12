@@ -41,7 +41,7 @@ public class CommandTags {
                 continue;
             }
 
-            PaywallOutput val = plugin.commandTags.commandPayWall(panel, p, command);
+            PaywallOutput val = plugin.commandTags.commandPayWall(panel, p, command, true);
             if (val == PaywallOutput.Blocked) {
                 break;
             }
@@ -53,7 +53,7 @@ public class CommandTags {
 
     public void runCommands(Panel panel, PanelPosition position, Player p, List<String> commands) {
         for (String command : commands) {
-            PaywallOutput val = plugin.commandTags.commandPayWall(panel, p, command);
+            PaywallOutput val = plugin.commandTags.commandPayWall(panel, p, command, true);
             if (val == PaywallOutput.Blocked) {
                 break;
             }
@@ -61,6 +61,23 @@ public class CommandTags {
                 plugin.commandTags.runCommand(panel, position, p, command);
             }
         }
+    }
+
+    public void runMultiPaywall(Panel panel, PanelPosition position, Player p, List<String> paywalls, List<String> commands, ClickType click) {
+        List<String> cmds = new ArrayList<String>();
+        for (String command : paywalls) {
+            PaywallOutput val = plugin.commandTags.commandPayWall(panel, p, command, false);
+            // Stop the for loop if 1 of the outputs is blocked
+            if (val == PaywallOutput.Blocked) {
+                break;
+            }
+            // add the paywall so it will be executed in runCommands
+            cmds.add(command);
+        }
+        // Add the commands last so paywalls run first
+        cmds.addAll(commands);
+        plugin.commandTags.runCommands(panel, position, p, cmds, click);
+
     }
 
     public void runCommand(Panel panel, PanelPosition position, Player p, String commandRAW) {
@@ -137,7 +154,7 @@ public class CommandTags {
     }
 
     @SuppressWarnings("deprecation")
-    public PaywallOutput commandPayWall(Panel panel, Player p, String rawCommand) { //return 0 means no funds, 1 is they passed and 2 means paywall is not this command
+    public PaywallOutput commandPayWall(Panel panel, Player p, String rawCommand, boolean removal) { //return 0 means no funds, 1 is they passed and 2 means paywall is not this command
 
         //create new instance of command but with placeholders parsed
         String command = plugin.tex.placeholders(panel, PanelPosition.Top, p, rawCommand);
@@ -147,8 +164,8 @@ public class CommandTags {
                 try {
                     if (plugin.econ != null) {
                         if (plugin.econ.getBalance(p) >= Double.parseDouble(command.split("\\s")[1])) {
-                            plugin.econ.withdrawPlayer(p, Double.parseDouble(command.split("\\s")[1]));
-                            if (plugin.config.getBoolean("purchase.currency.enable")) {
+                            if (removal) plugin.econ.withdrawPlayer(p, Double.parseDouble(command.split("\\s")[1]));
+                            if (plugin.config.getBoolean("purchase.currency.enable") && removal) {
                                 plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.currency.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                             }
                             return PaywallOutput.Passed;
@@ -168,6 +185,22 @@ public class CommandTags {
                     return PaywallOutput.Blocked;
                 }
             }
+            case "hasperm=": {
+                //if player uses hasperm= [perm]
+                if (p.hasPermission(String.valueOf(command.split("\\s")[1]))) {
+                    if (plugin.config.getBoolean("purchase.permission.enable") && removal) {
+                        plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.permission.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
+                    }
+                    return PaywallOutput.Passed;
+                } else {
+                    if (plugin.config.getBoolean("purchase.currency.enable")) {
+                        plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.permission.failure")));
+                    }
+                    return PaywallOutput.Blocked;
+                }
+
+
+            }
             case "tokenpaywall=": {
                 //if player uses tokenpaywall= [price]
                 try {
@@ -176,9 +209,9 @@ public class CommandTags {
                         assert api != null;
                         int balance = Integer.parseInt(Long.toString(api.getTokens(p).orElse(0)));
                         if (balance >= Double.parseDouble(command.split("\\s")[1])) {
-                            api.removeTokens(p, Long.parseLong(command.split("\\s")[1]));
+                            if (removal) api.removeTokens(p, Long.parseLong(command.split("\\s")[1]));
                             //if the message is empty don't send
-                            if (plugin.config.getBoolean("purchase.tokens.enable")) {
+                            if (plugin.config.getBoolean("purchase.tokens.enable") && removal) {
                                 plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                             }
 
@@ -209,15 +242,15 @@ public class CommandTags {
                     byte id = -1;
                     int customData = 0;
                     boolean noCustom = false;
-                    for(String val : args) {
-                        if(val.startsWith("id:")) {
+                    for (String val : args) {
+                        if (val.startsWith("id:")) {
                             id = Byte.parseByte(val.substring(3));
                             continue;
                         }
-                        if(val.startsWith("custom-data:")) {
+                        if (val.startsWith("custom-data:")) {
                             customData = Integer.parseInt(val.substring(12));
                         }
-                        if(val.contains("NOCUSTOMDATA")) {
+                        if (val.contains("NOCUSTOMDATA")) {
                             noCustom = true;
                         }
                     }
@@ -249,7 +282,7 @@ public class CommandTags {
                             if (plugin.itemCreate.isIdentical(sellItem, itm)) {
                                 ItemStack add = new ItemStack(p.getInventory().getItem(f).getType(), p.getInventory().getItem(f).getAmount(), (short) f);
                                 remainingAmount -= add.getAmount();
-                                remCont.add(add);
+                                if (removal) remCont.add(add);
                                 if (remainingAmount <= 0) {
                                     removedItem = PaywallOutput.Passed;
                                     break;
@@ -265,10 +298,11 @@ public class CommandTags {
 
                                     if (plugin.isMMOItem(itm, mmoType, mmoID) && sellItem.getAmount() <= itm.getAmount()) {
                                         if (plugin.inventorySaver.hasNormalInventory(p)) {
-                                            p.getInventory().getItem(f).setAmount(itm.getAmount() - sellItem.getAmount());
+                                            if (removal)
+                                                p.getInventory().getItem(f).setAmount(itm.getAmount() - sellItem.getAmount());
                                             p.updateInventory();
                                         } else {
-                                            itm.setAmount(itm.getAmount() - sellItem.getAmount());
+                                            if (removal) itm.setAmount(itm.getAmount() - sellItem.getAmount());
                                             plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
                                         }
                                         removedItem = PaywallOutput.Passed;
@@ -277,7 +311,7 @@ public class CommandTags {
                                     if (plugin.isMMOItem(itm, mmoType, mmoID)) {
                                         ItemStack add = new ItemStack(p.getInventory().getItem(f).getType(), p.getInventory().getItem(f).getAmount(), (short) f);
                                         remainingAmount -= add.getAmount();
-                                        remCont.add(add);
+                                        if (removal) remCont.add(add);
                                         if (remainingAmount <= 0) {
                                             removedItem = PaywallOutput.Passed;
                                             break;
@@ -292,23 +326,23 @@ public class CommandTags {
                             //if the item is a standard material
                             if (itm.getType() == sellItem.getType()) {
                                 //Checking for custom model data. If it does not have or not the correct number go to next in loop.
-                                if(customData != 0){
-                                    if(!itm.hasItemMeta()){
+                                if (customData != 0) {
+                                    if (!itm.hasItemMeta()) {
                                         continue;
                                     }
-                                    if(Objects.requireNonNull(itm.getItemMeta()).getCustomModelData() != customData){
+                                    if (Objects.requireNonNull(itm.getItemMeta()).getCustomModelData() != customData) {
                                         continue;
                                     }
                                 }
 
                                 //Check if the item matches the id set. If not continue to next in loop.
-                                if(id != -1 && itm.getDurability() != id){
+                                if (id != -1 && itm.getDurability() != id) {
                                     continue;
                                 }
 
                                 //Check if noCustom is set and if the item has custom data. If so continue to next in loop.
-                                if(noCustom && itm.hasItemMeta()){
-                                    if(Objects.requireNonNull(itm.getItemMeta()).hasCustomModelData()){
+                                if (noCustom && itm.hasItemMeta()) {
+                                    if (Objects.requireNonNull(itm.getItemMeta()).hasCustomModelData()) {
                                         continue;
                                     }
                                 }
@@ -316,7 +350,7 @@ public class CommandTags {
                                 //Adding item to the remove list then checking if we have reached the required amount.
                                 ItemStack add = new ItemStack(itm.getType(), itm.getAmount(), (short) f);
                                 remainingAmount -= add.getAmount();
-                                remCont.add(add);
+                                if (removal) remCont.add(add);
                                 if (remainingAmount <= 0) {
                                     removedItem = PaywallOutput.Passed;
                                     break;
@@ -330,25 +364,27 @@ public class CommandTags {
                             ItemStack remItem = remCont.get(f);
 
                             //Check if its the last item in the loop and only subtract the remaining amount.
-                            if(f == remCont.size() - 1){
+                            if (f == remCont.size() - 1) {
                                 if (plugin.inventorySaver.hasNormalInventory(p)) {
-                                    p.getInventory().getItem((int)remItem.getDurability()).setAmount(remItem.getAmount() - sellItem.getAmount());
+                                    if (removal)
+                                        p.getInventory().getItem((int) remItem.getDurability()).setAmount(remItem.getAmount() - sellItem.getAmount());
                                     p.updateInventory();
                                 } else {
-                                    cont.get((int)remItem.getDurability()).setAmount(remItem.getAmount() - sellItem.getAmount());
+                                    if (removal)
+                                        cont.get((int) remItem.getDurability()).setAmount(remItem.getAmount() - sellItem.getAmount());
                                     plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
                                 }
                             } else { //If its anywhere but the last in loop just get rid of the items.
                                 if (plugin.inventorySaver.hasNormalInventory(p)) {
-                                    p.getInventory().getItem(remItem.getDurability()).setAmount(0);
+                                    if (removal) p.getInventory().getItem(remItem.getDurability()).setAmount(0);
                                     p.updateInventory();
                                 } else {
-                                    cont.get((int)remItem.getDurability()).setAmount(0);
+                                    if (removal) cont.get((int) remItem.getDurability()).setAmount(0);
                                     plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
                                 }
                             }
 
-                            sellItem.setAmount(sellItem.getAmount() - remItem.getAmount());
+                            if (removal) sellItem.setAmount(sellItem.getAmount() - remItem.getAmount());
                         }
 
                         removedItem = PaywallOutput.Passed;
@@ -361,7 +397,7 @@ public class CommandTags {
                             plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.item.failure")));
                         }
                     } else {
-                        if (plugin.config.getBoolean("purchase.item.enable")) {
+                        if (plugin.config.getBoolean("purchase.item.enable") && removal) {
                             //item was removed
                             plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.item.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                         }
@@ -384,12 +420,12 @@ public class CommandTags {
                     }
                     if (balance >= Integer.parseInt(command.split("\\s")[1])) {
                         if (command.split("\\s")[2].startsWith("level")) {
-                            p.setLevel(p.getLevel() - Integer.parseInt(command.split("\\s")[1]));
+                            if (removal) p.setLevel(p.getLevel() - Integer.parseInt(command.split("\\s")[1]));
                         } else {
-                            removePlayerExp(p, Integer.parseInt(command.split("\\s")[1]));
+                            if (removal) removePlayerExp(p, Integer.parseInt(command.split("\\s")[1]));
                         }
                         //if the message is empty don't send
-                        if (plugin.config.getBoolean("purchase.xp.enable")) {
+                        if (plugin.config.getBoolean("purchase.xp.enable") && removal) {
                             plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.xp.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
                         }
                         return PaywallOutput.Passed;
@@ -409,7 +445,8 @@ public class CommandTags {
                 //if player uses data-paywall= <data> <amount>
                 try {
                     if (Double.parseDouble(plugin.panelData.getUserData(p.getUniqueId(), command.split("\\s")[1])) >= Double.parseDouble(command.split("\\s")[2])) {
-                        plugin.panelData.doDataMath(p.getUniqueId(), command.split("\\s")[1], "-" + plugin.tex.placeholdersNoColour(panel, PanelPosition.Top, p, command.split("\\s")[2]));
+                        if (removal)
+                            plugin.panelData.doDataMath(p.getUniqueId(), command.split("\\s")[1], "-" + plugin.tex.placeholdersNoColour(panel, PanelPosition.Top, p, command.split("\\s")[2]));
                         //if the message is empty don't send
                         if (plugin.config.getBoolean("purchase.data.enable")) {
                             plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.data.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
