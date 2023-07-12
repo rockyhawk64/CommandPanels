@@ -24,14 +24,9 @@ import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
-import org.bukkit.map.MapCanvas;
-import org.bukkit.map.MapRenderer;
-import org.bukkit.map.MapView;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
-import javax.swing.*;
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -240,7 +235,6 @@ public class ItemCreation {
                         patterns.add(new Pattern(DyeColor.valueOf(dyePattern[0]), PatternType.valueOf(dyePattern[1]))); //load patterns in config: RED,STRIPE_TOP
                     }
                     bannerMeta.setPatterns(patterns);
-                    bannerMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
                     s.setItemMeta(bannerMeta);
                 }
             }catch(Exception ignore){
@@ -303,7 +297,6 @@ public class ItemCreation {
                     PotionData newData = new PotionData(PotionType.valueOf(effectType[0].toUpperCase()),extended,upgraded);
                     //set meta
                     potionMeta.setBasePotionData(newData);
-                    potionMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
                     s.setItemMeta(potionMeta);
                 } catch (Exception er) {
                     //don't add the effect
