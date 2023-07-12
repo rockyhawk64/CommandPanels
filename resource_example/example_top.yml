@@ -1,6 +1,6 @@
 # |------------------------------------------------------------------------
 # |                       CommandPanels Example File
-# |                            By RockyHawk v3.1
+# |                          Official Panel v3.2
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
 # |------------------------------------------------------------------------
 panels:
@@ -84,7 +84,8 @@ panels:
       '24':
         material: BOW
         name: '&fThis bow is enchanted'
-        enchanted: true
+        enchanted:
+          - true
       '26':
         material: LEATHER_CHESTPLATE
         name: '&eYellow &fArmor'

@@ -457,7 +457,9 @@ public class ItemCreation {
                 }
                 file.set("panels." + panelName + ".item." + i + ".stack", cont.getAmount());
                 if(!cont.getEnchantments().isEmpty()){
-                    file.set("panels." + panelName + ".item." + i + ".enchanted", "true");
+                    List<String> enchantments = new ArrayList<>();
+                    enchantments.add("true");
+                    file.set("panels." + panelName + ".item." + i + ".enchanted", enchantments);
                 }
                 file.set("panels." + panelName + ".item." + i + ".name", Objects.requireNonNull(cont.getItemMeta()).getDisplayName());
                 file.set("panels." + panelName + ".item." + i + ".lore", Objects.requireNonNull(cont.getItemMeta()).getLore());

@@ -1,6 +1,6 @@
 # |------------------------------------------------------------------------
 # |                    CommandPanels Legacy Example File
-# |                            By RockyHawk v2.3
+# |                           Official Panel v2.4
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
 # |------------------------------------------------------------------------
 panels:
@@ -107,7 +107,8 @@ panels:
       '32':
         material: COMPASS
         stack: 12
-        enchanted: true
+        enchanted:
+          - true
         name: '&cClick Me'
         lore:
           - '&fI will teleport you home!'

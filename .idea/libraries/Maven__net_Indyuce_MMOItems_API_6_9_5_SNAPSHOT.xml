@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: net.Indyuce:MMOItems-API:6.9.5-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/Indyuce/MMOItems-API/6.9.5-SNAPSHOT/MMOItems-API-6.9.5-20230712.173835-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/net/Indyuce/MMOItems-API/6.9.5-SNAPSHOT/MMOItems-API-6.9.5-20230712.173835-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/Indyuce/MMOItems-API/6.9.5-SNAPSHOT/MMOItems-API-6.9.5-20230712.173835-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

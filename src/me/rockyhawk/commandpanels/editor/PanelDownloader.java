@@ -75,8 +75,8 @@ public class PanelDownloader {
                 } else {
 
                     BaseComponent[] components = new ComponentBuilder(plugin.tag +
-                            net.md_5.bungee.api.ChatColor.GREEN + "Finished downloading, " +
-                            ChatColor.UNDERLINE + "Panel '" + fileName + "'.\n" +
+                            net.md_5.bungee.api.ChatColor.GREEN + "Finished downloading " +
+                            ChatColor.UNDERLINE + "'" + fileName + "'.\n" +
                             ChatColor.YELLOW + ChatColor.UNDERLINE + " Click Here to open the panel.")
                             .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/cp " +
                                     panels.getConfigurationSection("panels").getKeys(false).toArray()[0]))
