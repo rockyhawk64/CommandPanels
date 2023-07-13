@@ -310,6 +310,10 @@ public class CommandPanels extends JavaPlugin{
                 renamedMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                 renamedMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
                 renamedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                //HIDE_ARMOR_TRIM was added into 1.20 api
+                if(legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20)){
+                    renamedMeta.addItemFlags(ItemFlag.HIDE_ARMOR_TRIM);
+                }
                 //HIDE_DYE was added into 1.17 api
                 if(legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_17)){
                     renamedMeta.addItemFlags(ItemFlag.HIDE_DYE);
