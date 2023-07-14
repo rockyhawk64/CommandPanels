@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -68,6 +69,13 @@ public class GetCustomHeads {
         }
 
         try {
+            //send debug message
+            if(plugin.debug.consoleDebug){
+                plugin.getServer().getConsoleSender().sendMessage(plugin.tex.colour(plugin.tag +
+                        ChatColor.WHITE +
+                        "Attempting to Download & Cache Head Texture for " + name));
+            }
+
             // Fetch the player UUID from the Mojang API
             URL uuidUrl = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
             URLConnection uuidConnection = uuidUrl.openConnection();

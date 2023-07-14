@@ -52,15 +52,18 @@ public class Commandpanelrefresher implements Listener {
             }
         }
 
+        //calculate the animate value if there is a custom value in the panel
+        int animatevaluetemp = -1;
+        if(pn.getConfig().contains("animatevalue")){
+            animatevaluetemp = Integer.parseInt(pn.getConfig().getString("animatevalue"));
+        }
+        final int animatevalue = animatevaluetemp;
+
         new BukkitRunnable(){
             int c = 0;
             int animatecount = 0;
             @Override
             public void run() {
-                int animatevalue = -1;
-                if(pn.getConfig().contains("animatevalue")){
-                    animatevalue = Integer.parseInt(pn.getConfig().getString("animatevalue"));
-                }
                 //counter counts to refresh delay (in seconds) then restarts
                 if(c < refreshDelay){
                     c+=1;
