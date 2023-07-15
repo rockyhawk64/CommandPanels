@@ -75,7 +75,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: junit:junit:4.10" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.Indyuce:MMOItems-API:6.9.5-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: io.lumine:MythicLib-dist:1.5.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.lumine:MythicLib-dist:1.5.2-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.Realizedd:TokenManager:3.2.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.arcaniax:HeadDatabase-API:1.3.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.Ssomar-Developement:SCore:3.9.59" level="project" />
