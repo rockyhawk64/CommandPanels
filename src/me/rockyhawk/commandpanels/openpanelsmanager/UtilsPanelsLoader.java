@@ -14,7 +14,10 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class UtilsPanelsLoader implements Listener {
     CommandPanels plugin;
@@ -75,9 +78,10 @@ public class UtilsPanelsLoader implements Listener {
         //close panels and run commands for Top panel
         plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
 
-        //clear cached textures list on length limit
-        if(plugin.customHeads.playerHeadTextures.size() > 1000) {
-            plugin.customHeads.playerHeadTextures.clear();
+        //clear cached textures list until length limit is reached
+        while (plugin.customHeads.playerHeadTextures.size() > 2000) {
+            List<String> keys = new ArrayList<>(plugin.customHeads.playerHeadTextures.keySet());
+            plugin.customHeads.playerHeadTextures.remove(keys.get(0));
         }
     }
 

@@ -31,8 +31,7 @@ public class GetCustomHeads {
         this.plugin = pl;
     }
 
-    //contains cached player name and then base64 value (clears on /cpr reload)
-    //also will clear if the map reaches a length of 1000 which is roughly 135 KB RAM usage
+    //will not go above 2000 elements in the list which is roughly 270 KB RAM usage
     public HashMap<String, String> playerHeadTextures = new HashMap<>();
 
     public String getHeadBase64(ItemStack head) {
