@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -14,6 +15,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Field;
@@ -55,7 +57,6 @@ public class GetCustomHeads {
     }
 
     //getting the head from a Player Name
-    @SuppressWarnings("deprecation")
     public ItemStack getPlayerHead(String name) {
         byte id = 0;
         if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
@@ -67,45 +68,57 @@ public class GetCustomHeads {
             return getCustomHead(playerHeadTextures.get(name));
         }
 
-        try {
-            //send debug message
-            if(plugin.debug.consoleDebug){
-                plugin.getServer().getConsoleSender().sendMessage(plugin.tex.colour(plugin.tag +
-                        ChatColor.WHITE +
-                        "Attempting to Download & Cache Head Texture for " + name));
+        //create ItemStack
+        ItemStack itemStack = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1, id);
+
+        //Run fallback code, if API call fails, use legacy setOwner
+        SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
+        meta.setOwner(name);
+        itemStack.setItemMeta(meta);
+
+        // Fetch and cache the texture asynchronously
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                if(plugin.debug.consoleDebug){
+                    plugin.getServer().getConsoleSender().sendMessage(plugin.tex.colour(plugin.tag +
+                            ChatColor.WHITE +
+                            "Attempting to Download & Cache Head Texture for " + name));
+                }
+
+                // Fetch the player UUID from the Mojang API
+                URL uuidUrl = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
+                URLConnection uuidConnection = uuidUrl.openConnection();
+                uuidConnection.setConnectTimeout(2000); // Set connection timeout to 2 seconds
+                uuidConnection.setReadTimeout(2000); // Set read timeout to 2 seconds
+                Reader uuidReader = new InputStreamReader(uuidConnection.getInputStream(), StandardCharsets.UTF_8);
+                JSONObject uuidResponse = (JSONObject) new JSONParser().parse(uuidReader);
+                String uuid = (String) uuidResponse.get("id");
+
+                // Fetch the skin texture from the Mojang API using the player UUID
+                URL texturesUrl = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
+                URLConnection texturesConnection = texturesUrl.openConnection();
+                texturesConnection.setConnectTimeout(2000); // Set connection timeout to 2 seconds
+                texturesConnection.setReadTimeout(2000); // Set read timeout to 2 seconds
+                Reader texturesReader = new InputStreamReader(texturesConnection.getInputStream(), StandardCharsets.UTF_8);
+                JSONObject texturesResponse = (JSONObject) new JSONParser().parse(texturesReader);
+                JSONArray propertiesArray = (JSONArray) texturesResponse.get("properties");
+                JSONObject texturesProperty = (JSONObject) propertiesArray.get(0);
+                String base64Texture = (String) texturesProperty.get("value");
+                playerHeadTextures.put(name, base64Texture);
+
+                // Once the API call is finished, update the ItemStack on the main thread
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    itemStack.setItemMeta(getCustomHead(base64Texture).getItemMeta());
+                });
+            } catch (Exception e) {
+                // Handle exceptions
+                if(plugin.debug.consoleDebug) {
+                    plugin.debug(e,null);
+                }
             }
+        });
 
-            // Fetch the player UUID from the Mojang API
-            URL uuidUrl = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
-            URLConnection uuidConnection = uuidUrl.openConnection();
-            uuidConnection.setConnectTimeout(2000); // Set connection timeout to 2 seconds
-            uuidConnection.setReadTimeout(2000); // Set read timeout to 2 seconds
-            Reader uuidReader = new InputStreamReader(uuidConnection.getInputStream(), StandardCharsets.UTF_8);
-            JSONObject uuidResponse = (JSONObject) new JSONParser().parse(uuidReader);
-            String uuid = (String) uuidResponse.get("id");
-
-            // Fetch the skin texture from the Mojang API using the player UUID
-            URL texturesUrl = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
-            URLConnection texturesConnection = texturesUrl.openConnection();
-            texturesConnection.setConnectTimeout(2000); // Set connection timeout to 2 seconds
-            texturesConnection.setReadTimeout(2000); // Set read timeout to 2 seconds
-            Reader texturesReader = new InputStreamReader(texturesConnection.getInputStream(), StandardCharsets.UTF_8);
-            JSONObject texturesResponse = (JSONObject) new JSONParser().parse(texturesReader);
-            JSONArray propertiesArray = (JSONArray) texturesResponse.get("properties");
-            JSONObject texturesProperty = (JSONObject) propertiesArray.get(0);
-            String base64Texture = (String) texturesProperty.get("value");
-            playerHeadTextures.put(name, base64Texture);
-
-            // Create a custom head using the Base64 texture string
-            return getCustomHead(base64Texture);
-        } catch (Exception e) {
-            // Fallback to setting the owner if the Mojang API request fails
-            ItemStack itemStack = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1, id);
-            SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
-            meta.setOwner(name);
-            itemStack.setItemMeta(meta);
-            return itemStack;
-        }
+        return itemStack;
     }
 
     //used to get heads from Base64 Textures

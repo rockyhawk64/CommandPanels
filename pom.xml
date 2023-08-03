@@ -64,8 +64,8 @@
 
     <repositories>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
         <repository>
             <id>minecraft-repo</id>
@@ -92,12 +92,12 @@
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-        <repository>
             <id>phoenix</id>
             <url>https://nexus.phoenixdevt.fr/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
@@ -105,7 +105,7 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
-            <version>4.11.0</version>
+            <version>4.13.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -9,8 +9,5 @@
         <module name="CommandPanels" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="CommandPanels" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

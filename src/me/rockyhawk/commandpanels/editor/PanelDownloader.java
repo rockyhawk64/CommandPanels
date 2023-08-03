@@ -70,8 +70,8 @@ public class PanelDownloader {
             if (sender instanceof Player) {
                 YamlConfiguration panels = YamlConfiguration.loadConfiguration(file);
                 if (panels.getConfigurationSection("panels").getKeys(false).size()>1) {
-                    sender.sendMessage(plugin.tag + ChatColor.GREEN + "Finished downloading," +
-                            ChatColor.UNDERLINE +ChatColor.YELLOW+ " Panel '" + fileName + "'");
+                    sender.sendMessage(plugin.tag + ChatColor.GREEN + "Finished downloading panel "
+                            + ChatColor.YELLOW + "'" + fileName + "'");
                 } else {
 
                     BaseComponent[] components = new ComponentBuilder(plugin.tag +
