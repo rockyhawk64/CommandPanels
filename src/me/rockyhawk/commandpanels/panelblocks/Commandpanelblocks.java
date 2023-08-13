@@ -65,7 +65,7 @@ public class Commandpanelblocks implements CommandExecutor {
                         }
                         //make the material name look okay
                         String coordinates = blockLocation.getBlockX() + ", " + blockLocation.getBlockY() + ", " + blockLocation.getBlockZ();
-                        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.WHITE + args[1] + ChatColor.GREEN + "will now open when right clicking a block in the coordinates " + ChatColor.WHITE + coordinates));
+                        sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.WHITE + args[1] + ChatColor.GREEN + " will now open when right clicking a block in the coordinates " + ChatColor.WHITE + coordinates));
                     }else{
                         sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
                     }
