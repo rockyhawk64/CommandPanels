@@ -64,20 +64,16 @@ public class CommandTags {
     }
 
     public void runMultiPaywall(Panel panel, PanelPosition position, Player p, List<String> paywalls, List<String> commands, ClickType click) {
-        List<String> cmds = new ArrayList<String>();
-        for (String command : paywalls) {
-            PaywallOutput val = plugin.commandTags.commandPayWall(panel, p, command, false);
-            // Stop the for loop if 1 of the outputs is blocked
-            if (val == PaywallOutput.Blocked) {
-                break;
-            }
-            // add the paywall so it will be executed in runCommands
-            cmds.add(command);
-        }
-        // Add the commands last so paywalls run first
-        cmds.addAll(commands);
-        plugin.commandTags.runCommands(panel, position, p, cmds, click);
+        boolean allPaywallsValid = paywalls.stream()
+                .map(command -> plugin.commandTags.commandPayWall(panel, p, command, false))
+                .allMatch(val -> val != PaywallOutput.Blocked);
 
+        if (allPaywallsValid) {
+            List<String> cmds = new ArrayList<>();
+            cmds.addAll(paywalls);
+            cmds.addAll(commands);
+            plugin.commandTags.runCommands(panel, position, p, cmds, click);
+        }
     }
 
     public void runCommand(Panel panel, PanelPosition position, Player p, String commandRAW) {
@@ -209,7 +205,9 @@ public class CommandTags {
                         assert api != null;
                         int balance = Integer.parseInt(Long.toString(api.getTokens(p).orElse(0)));
                         if (balance >= Double.parseDouble(command.split("\\s")[1])) {
-                            if (removal) api.removeTokens(p, Long.parseLong(command.split("\\s")[1]));
+                            if (removal) {
+                                api.removeTokens(p, Long.parseLong(command.split("\\s")[1]));
+                            }
                             //if the message is empty don't send
                             if (plugin.config.getBoolean("purchase.tokens.enable") && removal) {
                                 plugin.tex.sendString(panel, PanelPosition.Top, p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", command.split("\\s")[1]));
@@ -298,8 +296,9 @@ public class CommandTags {
 
                                     if (plugin.isMMOItem(itm, mmoType, mmoID) && sellItem.getAmount() <= itm.getAmount()) {
                                         if (plugin.inventorySaver.hasNormalInventory(p)) {
-                                            if (removal)
+                                            if (removal) {
                                                 p.getInventory().getItem(f).setAmount(itm.getAmount() - sellItem.getAmount());
+                                            }
                                             p.updateInventory();
                                         } else {
                                             if (removal) itm.setAmount(itm.getAmount() - sellItem.getAmount());
@@ -367,7 +366,7 @@ public class CommandTags {
                             if (f == remCont.size() - 1) {
                                 if (plugin.inventorySaver.hasNormalInventory(p)) {
                                     if (removal)
-                                        p.getInventory().getItem((int) remItem.getDurability()).setAmount(remItem.getAmount() - sellItem.getAmount());
+                                        p.getInventory().getItem(remItem.getDurability()).setAmount(remItem.getAmount() - sellItem.getAmount());
                                     p.updateInventory();
                                 } else {
                                     if (removal)
@@ -379,7 +378,7 @@ public class CommandTags {
                                     if (removal) p.getInventory().getItem(remItem.getDurability()).setAmount(0);
                                     p.updateInventory();
                                 } else {
-                                    if (removal) cont.get((int) remItem.getDurability()).setAmount(0);
+                                    if (removal) cont.get(remItem.getDurability()).setAmount(0);
                                     plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
                                 }
                             }

@@ -122,7 +122,7 @@ public class Utils implements Listener {
 
         if(panel.getConfig().contains("item." + clickedSlot + section + ".commands")) {
             List<String> commands = panel.getConfig().getStringList("item." + clickedSlot + section + ".commands");
-            if (commands.size() != 0) {
+            if (!commands.isEmpty()) {
                 //this will replace a sequence tag command with the commands from the sequence
                 List<String> commandsAfterSequence = commands;
                 for (int i = 0; commands.size() - 1 >= i; i++) {
@@ -146,8 +146,9 @@ public class Utils implements Listener {
                     plugin.commandTags.runMultiPaywall(panel,position,p,
                             panel.getConfig().getStringList("item." + clickedSlot + section + ".multi-paywall"),
                             commands,e.getClick());
-                } else
-                    plugin.commandTags.runCommands(panel,position,p,commands,e.getClick());
+                } else {
+                    plugin.commandTags.runCommands(panel, position, p, commands, e.getClick());
+                }
             }
         }
     }

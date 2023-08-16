@@ -2,7 +2,6 @@ package me.rockyhawk.commandpanels.commandtags.tags.other;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -24,7 +23,7 @@ public class PlaceholderTags implements Listener {
                 return;
             }
 
-            Character[] cm = ArrayUtils.toObject(cmd.toCharArray());
+            Character[] cm = convertToCharacterArray(cmd.toCharArray());
             for(int i = 0; i < cm.length; i++){
                 if(cm[i].equals('[')){
                     String contents = cmd.substring(i+1, i+cmd.substring(i).indexOf(']'));
@@ -48,7 +47,7 @@ public class PlaceholderTags implements Listener {
                 return;
             }
 
-            Character[] cm = ArrayUtils.toObject(cmd.toCharArray());
+            Character[] cm = convertToCharacterArray(cmd.toCharArray());
             for (int i = 0; i < cm.length; i++) {
                 if (cm[i].equals('[')) {
                     String contents = cmd.substring(i + 1, i + cmd.substring(i).indexOf(']'));
@@ -64,5 +63,13 @@ public class PlaceholderTags implements Listener {
                 }
             }
         }
+    }
+
+    private Character[] convertToCharacterArray(char[] charArray) {
+        Character[] characterArray = new Character[charArray.length];
+        for (int i = 0; i < charArray.length; i++) {
+            characterArray[i] = charArray[i];
+        }
+        return characterArray;
     }
 }
