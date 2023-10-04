@@ -111,7 +111,6 @@ public class CommandTags {
                     break;
                 }
                 case "rightshift=": {
-                    //if commands is for right clicking, remove the 'right=' and continue
                     command = command.replace("rightshift= ", "");
                     if (click != ClickType.SHIFT_RIGHT) {
                         return "";
@@ -119,7 +118,6 @@ public class CommandTags {
                     break;
                 }
                 case "left=": {
-                    //if commands is for right clicking, remove the 'right=' and continue
                     command = command.replace("left= ", "");
                     if (click != ClickType.LEFT) {
                         return "";
@@ -127,7 +125,6 @@ public class CommandTags {
                     break;
                 }
                 case "leftshift=": {
-                    //if commands is for right clicking, remove the 'right=' and continue
                     command = command.replace("leftshift= ", "");
                     if (click != ClickType.SHIFT_LEFT) {
                         return "";

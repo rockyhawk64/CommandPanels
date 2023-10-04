@@ -10,14 +10,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class InventorySaver implements Listener {
     public YamlConfiguration inventoryConfig;
@@ -42,6 +42,15 @@ public class InventorySaver implements Listener {
             addInventory(e.getPlayer());
         }
     }
+
+    //do not allow INTERACTIONS while panel is open
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e){
+        if(inventoryConfig.contains(e.getPlayer().getUniqueId().toString())){
+            e.setCancelled(true);
+        }
+    }
+
 
     @EventHandler
     public void onDeath(PlayerDeathEvent e){

@@ -21,10 +21,13 @@ public class Commandpanelsdata implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender.hasPermission("commandpanel.data")) {
             boolean sendPlayerMessage = true;
+            //check to make sure args isn't empty first
             //if the first argument is -s it will not send a message to the sender
-            if (args[0].equalsIgnoreCase("-s")) {
-                args = Arrays.copyOfRange(args, 1, args.length);
-                sendPlayerMessage = false;
+            if(args.length != 0) {
+                if (args[0].equalsIgnoreCase("-s")) {
+                    args = Arrays.copyOfRange(args, 1, args.length);
+                    sendPlayerMessage = false;
+                }
             }
             int count = 0;
             if (args.length == 2) {

@@ -12,9 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -119,16 +116,11 @@ public class GetCustomHeads {
         return itemStack;
     }
 
-    private String inputStreamToString(InputStream inputStream) {
-        Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name()).useDelimiter("\\A");
-        return scanner.hasNext() ? scanner.next() : "";
-    }
-
     //used to get heads from Base64 Textures
     @SuppressWarnings("deprecation")
     public ItemStack getCustomHead(String b64stringtexture) {
         //get head from base64
-        GameProfile profile = new GameProfile(UUID.randomUUID(), "");
+        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
         PropertyMap propertyMap = profile.getProperties();
         if (propertyMap == null) {
             throw new IllegalStateException("Profile doesn't contain a property map");
