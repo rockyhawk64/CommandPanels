@@ -128,7 +128,7 @@ public class GetCustomHeads {
     @SuppressWarnings("deprecation")
     public ItemStack getCustomHead(String b64stringtexture) {
         //get head from base64
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+        GameProfile profile = new GameProfile(UUID.randomUUID(), "");
         PropertyMap propertyMap = profile.getProperties();
         if (propertyMap == null) {
             throw new IllegalStateException("Profile doesn't contain a property map");
