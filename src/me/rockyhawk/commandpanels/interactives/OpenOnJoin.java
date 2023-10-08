@@ -15,12 +15,14 @@ public class OpenOnJoin implements Listener {
     }
     @EventHandler
     public void onWorldLogin(PlayerJoinEvent e){
-        if (!e.getPlayer().hasPlayedBefore()) {
-            openOnJoin(e.getPlayer(),"open-on-first-login");
+        if (!e.getPlayer().hasPlayedBefore() && plugin.config.contains("open-on-first-login")) {
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () ->
+                    openOnJoin(e.getPlayer(), "open-on-first-login"), 40L);  // 2 seconds delay
             return;
         }
         //only opens when the player logs into the server
-        openOnJoin(e.getPlayer(),"open-on-login");
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () ->
+                openOnJoin(e.getPlayer(),"open-on-login"), 20L);  // 1 seconds delay
     }
 
     @EventHandler
@@ -35,7 +37,7 @@ public class OpenOnJoin implements Listener {
         // pass the world as "" to tell the code to not use world
         if (joinType.equalsIgnoreCase("open-on-first-login")) world="";
 
-        String joinString = joinType + (world.equals("") ? "" : "."+ world);
+        String joinString = joinType + (world.isEmpty() ? "" : "."+ world);
         if(plugin.config.contains(joinString)){
             String command = "open= " + plugin.config.getString(joinString);
             plugin.commandTags.runCommand(null, PanelPosition.Top,p, command);
