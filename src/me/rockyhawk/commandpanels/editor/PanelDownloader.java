@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -60,13 +61,31 @@ public class PanelDownloader {
         try {
             URL fileUrl = new URL(url);
             in = new BufferedInputStream(fileUrl.openStream());
-            fout = new FileOutputStream(file);
-            byte[] data = new byte[1024];
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
+            byte[] data = new byte[1024];
             int count;
             while ((count = in.read(data, 0, 1024)) != -1) {
-                fout.write(data, 0, count);
+                baos.write(data, 0, count);
             }
+
+            String yamlData = baos.toString(StandardCharsets.UTF_8.name());
+            YamlConfiguration yamlConfig = new YamlConfiguration();
+
+            try {
+                yamlConfig.loadFromString(yamlData);
+            } catch (InvalidConfigurationException e) {
+                // Handle invalid YAML data
+                sender.sendMessage(plugin.tag + ChatColor.RED + "Downloaded data is not a valid YAML file.");
+                return;
+            }
+
+            // If parsing is successful, save the YAML data to the file
+            File outputFile = new File(plugin.panelsf, fileName);
+            try (FileOutputStream outputFileOut = new FileOutputStream(outputFile)) {
+                outputFileOut.write(yamlData.getBytes(StandardCharsets.UTF_8));
+            }
+
             if (sender instanceof Player) {
                 YamlConfiguration panels = YamlConfiguration.loadConfiguration(file);
                 if (panels.getConfigurationSection("panels").getKeys(false).size()>1) {
@@ -87,8 +106,8 @@ public class PanelDownloader {
                 }
 
             } else {
-                sender.sendMessage(plugin.tag + ChatColor.GREEN + "Finished downloading, " +
-                        ChatColor.UNDERLINE +ChatColor.YELLOW+ "Panel '" + fileName + "'");
+                sender.sendMessage(plugin.tag + ChatColor.GREEN + "Finished downloading panel " +
+                         ChatColor.YELLOW+ "'" + fileName + "'");
             }
         } catch (Exception var22) {
             sender.sendMessage(plugin.tag + ChatColor.RED + "Could not download panel.");
