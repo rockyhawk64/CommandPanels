@@ -137,20 +137,33 @@ public class GetCustomHeads {
             Field profileField;
             Method setProfileMethod = null;
             try {
+                // Attempt to access the 'profile' field directly
+                // Also writes to 'serializedProfile' field as one cannot be null while the other is not
+                // This block is mainly for 1.20.2+ versions
                 profileField = headMeta.getClass().getDeclaredField("profile");
+                Field serializedProfileField = headMeta.getClass().getDeclaredField("serializedProfile");
+
                 profileField.setAccessible(true);
+                serializedProfileField.setAccessible(true);
+
                 profileField.set(headMeta, profile);
+                serializedProfileField.set(headMeta, profile); // Assuming serializedProfile is of the same type
             } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
                 try {
+                    // This block covers versions that have a 'setProfile' method instead of direct field access
+                    // Likely for versions prior to 1.20.2
                     setProfileMethod = headMeta.getClass().getDeclaredMethod("setProfile", GameProfile.class);
                 } catch (NoSuchMethodException ignore) {}
             } catch (SecurityException ignored) {}
             try {
                 if (setProfileMethod == null) {
+                    // Attempt to access the 'profile' field directly
+                    // This block is a generic fallback for versions lacking the 'setProfile' method
                     profileField = headMeta.getClass().getDeclaredField("profile");
                     profileField.setAccessible(true);
                     profileField.set(headMeta, profile);
                 } else {
+                    // Use the 'setProfile' method if it was found
                     setProfileMethod.setAccessible(true);
                     setProfileMethod.invoke(headMeta, profile);
                 }
