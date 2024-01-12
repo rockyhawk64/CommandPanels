@@ -121,7 +121,7 @@ public class HasSections {
             if(value.endsWith(" HASPERM")) {
                 return Bukkit.getPlayer(value.substring(0, value.length()-8)).hasPermission(compare) == outputValue;
             }else if(value.endsWith(" ISGREATER")) {
-                return (new BigDecimal(compare).compareTo(new BigDecimal(value.substring(0, value.length()-10))) <= 0 == outputValue);
+                return (new BigDecimal(compare).compareTo(new BigDecimal(value.substring(0, value.length()-10).replace(",",""))) <= 0 == outputValue);
             }else{
                 return compare.equals(value) == outputValue;
             }
