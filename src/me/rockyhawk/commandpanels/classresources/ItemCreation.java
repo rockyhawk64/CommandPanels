@@ -448,6 +448,18 @@ public class ItemCreation {
                     //not a banner
                     file.set("panels." + panelName + ".item." + i + ".banner", null);
                 }
+                try {
+                    PotionMeta potionMeta = (PotionMeta) cont.getItemMeta();
+                    assert potionMeta != null;
+                    PotionData potionData = potionMeta.getBasePotionData();
+                    PotionType potionType = potionData.getType(); // Gets the potion type as a string rather than bukkit type
+                    boolean level = potionData.isUpgraded(); // Check if the potion is level II
+                    boolean extended = potionData.isExtended(); // Check if the potion is extended
+                    file.set("panels." + panelName + ".item." + i + ".potion", potionType + " " + extended + " " + level);
+                }catch(Exception ignore){
+                    //not a banner
+                    file.set("panels." + panelName + ".item." + i + ".potion", null);
+                }
                 file.set("panels." + panelName + ".item." + i + ".stack", cont.getAmount());
                 if(!cont.getEnchantments().isEmpty()){
                     List<String> enchantments = new ArrayList<>();
