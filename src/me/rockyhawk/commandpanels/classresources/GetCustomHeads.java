@@ -46,6 +46,26 @@ public class GetCustomHeads {
                         return var5.getValue();
                     }
                 }
+
+                if (meta.hasOwner()) {
+                    Field fld = meta.getClass().getDeclaredField("profile");
+                    fld.setAccessible(true);
+                    GameProfile prof = (GameProfile) fld.get(meta);
+                    Iterator itr = prof.getProperties().get("textures").iterator();
+                    if (itr.hasNext()) {
+                        Property var5 = (Property) itr.next();
+                        String var5string = var5.toString();
+                        var5string = var5string.replace("Property[","");
+                        var5string = var5string.replace("]","");
+                        String[] var5strings = var5string.split(",");
+                        for(String var : var5strings){
+                            if(var.contains("value= ")){
+                                var = var.replace("value= ", "");
+                                return var;
+                            }
+                        }
+                    }
+                }
             }catch(Exception exc){/*skip return null*/}
         }
         return null;
