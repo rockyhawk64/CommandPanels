@@ -18,6 +18,10 @@ public class CommandPanelImport implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender.hasPermission("commandpanel.import")) {
+            if(!plugin.config.getString("config.enable-import-command").equalsIgnoreCase("true")){
+                sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.disabled")));
+                return true;
+            }
             if (args.length == 2) {
                 //import command
                 new BukkitRunnable() {
