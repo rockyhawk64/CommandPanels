@@ -45,9 +45,7 @@ public class GetCustomHeads {
                         Property var5 = (Property) itr.next();
                         return var5.getValue();
                     }
-                }
-
-                if (meta.hasOwner()) {
+                }else{
                     Field fld = meta.getClass().getDeclaredField("profile");
                     fld.setAccessible(true);
                     GameProfile prof = (GameProfile) fld.get(meta);

@@ -64,7 +64,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.*;
-import java.util.concurrent.Callable;
 
 public class CommandPanels extends JavaPlugin{
     public VotingPluginHooks votingPlugin;
@@ -149,7 +148,6 @@ public class CommandPanels extends JavaPlugin{
         //setup class files
         this.setupEconomy();
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        new Metrics(this);
         Objects.requireNonNull(this.getCommand("commandpanel")).setExecutor(new Commandpanel(this));
         Objects.requireNonNull(this.getCommand("commandpanel")).setTabCompleter(new CpTabComplete(this));
 
@@ -256,16 +254,6 @@ public class CommandPanels extends JavaPlugin{
 
         //do hotbar items
         hotbar.reloadHotbarSlots();
-
-        //add custom charts bStats
-        Metrics metrics = new Metrics(this);
-        metrics.addCustomChart(new Metrics.SingleLineChart("panels_amount", new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                //this is the total panels loaded
-                return panelList.size();
-            }
-        }));
 
         //get tag
         tag = tex.colour(config.getString("config.format.tag"));

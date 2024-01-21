@@ -63,7 +63,7 @@ public class ItemTags implements Listener {
                     EditItem.addEnchantment(enchant, Integer.parseInt(e.args[4]));
                     return;
                 } catch (Exception err){
-                    //Some sort of message for player or console?
+                    plugin.debug(err,e.p);
                 }
             }
 
@@ -74,7 +74,7 @@ public class ItemTags implements Listener {
                     EditItem.removeEnchantment(enchant);
                     return;
                 } catch (Exception err){
-                    //Some sort of message for player or console?
+                    plugin.debug(err,e.p);
                 }
             }
 
@@ -85,7 +85,7 @@ public class ItemTags implements Listener {
                         EditItem.removeEnchantment(enchant);
                     }
                 } catch (Exception err){
-                    //Some sort of message for player or console?
+                    plugin.debug(err,e.p);
                 }
             }
 
@@ -111,7 +111,7 @@ public class ItemTags implements Listener {
                     Objects.requireNonNull(EditItem.getItemMeta()).setCustomModelData(Integer.valueOf(e.args[2]));
                 }
             } catch (Exception err){
-                //Some sort of message for player or console?
+                plugin.debug(err,e.p);
             }
 
             return;

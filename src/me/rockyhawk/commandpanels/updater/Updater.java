@@ -93,7 +93,7 @@ public class Updater implements Listener {
                   Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Could not access github.");
               }
           }
-        }.runTask(plugin);
+        }.runTaskAsynchronously(plugin);
 
         if(cachedLatestVersion.contains("-")){
             if(sendMessages) {

@@ -36,7 +36,7 @@ public class ItemFallManager implements Listener {
                             }
 
                             e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(),stack);
-                        }else if(e.getPanel().getConfig().getStringList("item." + item + ".itemType").contains("returnItem") || e.getPanel().getConfig().getStringList("item." + item + ".itemType").contains("removeItem")){
+                        }else if(e.getPanel().getConfig().getStringList("item." + item + ".itemType").contains("returnItem")){
                             //Remove item is listed just because website is not updated yet.
                             ItemStack stack = e.getPlayer().getOpenInventory().getTopInventory().getItem(Integer.parseInt(item));
                             if(stack == null || stack.getType() == Material.AIR){
