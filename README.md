@@ -11,8 +11,6 @@
 ## Partner
 ReviveNode is a leading Minecraft hosting provider that offers affordable and high-quality server hosting solutions. Their focus on performance, reliability, and customer support makes them the perfect partner for CommandPanels.
 
-![Partner](https://swagalan.dev/revive/partners/revivenode-logo.png)
-
 We have proudly partnered with [ReviveNode](http://billing.revivenode.com/aff.php?aff=379)!  
 CommandPanels users have been offered 15% off on the first month by using the Promocode: **PANELS**
 
