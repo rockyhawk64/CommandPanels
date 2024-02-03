@@ -147,9 +147,9 @@ public class CommandTags {
     public PaywallOutput commandPayWall(Panel panel, Player p, String rawCommand, boolean removal) { //return 0 means no funds, 1 is they passed and 2 means paywall is not this command
 
         //create new instance of command but with placeholders parsed
-        String command = plugin.tex.placeholders(panel, PanelPosition.Top, p, rawCommand);
-        switch (command.split("\\s")[0]) {
+        switch (rawCommand.split("\\s")[0]) {
             case "paywall=": {
+                String command = plugin.tex.placeholders(panel, PanelPosition.Top, p, rawCommand);
                 //if player uses paywall= [price]
                 try {
                     if (plugin.econ != null) {
@@ -176,6 +176,7 @@ public class CommandTags {
                 }
             }
             case "hasperm=": {
+                String command = plugin.tex.placeholders(panel, PanelPosition.Top, p, rawCommand);
                 //if player uses hasperm= [perm]
                 if (p.hasPermission(String.valueOf(command.split("\\s")[1]))) {
                     if (plugin.config.getBoolean("purchase.permission.enable") && removal) {
@@ -192,6 +193,7 @@ public class CommandTags {
 
             }
             case "tokenpaywall=": {
+                String command = plugin.tex.placeholders(panel, PanelPosition.Top, p, rawCommand);
                 //if player uses tokenpaywall= [price]
                 try {
                     if (plugin.getServer().getPluginManager().isPluginEnabled("TokenManager")) {
@@ -225,6 +227,7 @@ public class CommandTags {
                 }
             }
             case "item-paywall=": {
+                String command = plugin.tex.placeholders(panel, PanelPosition.Top, p, rawCommand);
                 //if player uses item-paywall= [Material] [Amount] <id:#> WILL NOT TAKE CUSTOM ITEMS
                 //player can use item-paywall= [custom-item] [Amount]
                 List<ItemStack> cont = new ArrayList<>(Arrays.asList(plugin.inventorySaver.getNormalInventory(p)));
@@ -372,6 +375,7 @@ public class CommandTags {
                 }
             }
             case "xp-paywall=": {
+                String command = plugin.tex.placeholders(panel, PanelPosition.Top, p, rawCommand);
                 //if player uses xp-paywall= <price> <levels:points>
                 try {
                     int balance;
@@ -404,6 +408,7 @@ public class CommandTags {
                 }
             }
             case "data-paywall=": {
+                String command = plugin.tex.placeholders(panel, PanelPosition.Top, p, rawCommand);
                 //if player uses data-paywall= <data> <amount>
                 try {
                     if (Double.parseDouble(plugin.panelData.getUserData(p.getUniqueId(), command.split("\\s")[1])) >= Double.parseDouble(command.split("\\s")[2])) {
