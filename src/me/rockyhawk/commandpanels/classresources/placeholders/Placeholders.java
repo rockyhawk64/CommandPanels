@@ -11,6 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -152,6 +154,30 @@ public class Placeholders {
             }catch (Exception ex){
                 plugin.debug(ex,p);
                 return "";
+            }
+        }
+
+        // Placeholder to check if an item has POTION data %cp-potion-slot%
+        if (identifier.startsWith("potion-")) {
+            try {
+                String slot_key = identifier.replace("potion-", "");
+                int slotIndex = (int) Double.parseDouble(slot_key);
+
+                // Get the item in the specified slot
+                ItemStack item = p.getOpenInventory().getTopInventory().getItem(slotIndex);
+
+                // Check if the item is not null and has potion meta
+                if (item != null && item.hasItemMeta() && item.getItemMeta() instanceof PotionMeta) {
+                    PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
+
+                    //Returns the value like this <Type>:<Extended>:<Upgraded> Example SLOWNESS:true:false
+                    return potionMeta.getBasePotionData().getType() + ":" + potionMeta.getBasePotionData().isExtended() + ":" + potionMeta.getBasePotionData().isUpgraded();
+                } else {
+                    return "empty"; // Item is either null or doesn't have potion meta
+                }
+            } catch (Exception ex) {
+                plugin.debug(ex, p);
+                return ""; // Handle exceptions as needed
             }
         }
 
