@@ -55,6 +55,9 @@ public class UtilsPanelsLoader implements Listener {
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
                         //end the old panel session and copy a new one
+                        if(plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top) == null){
+                            return;
+                        }
                         plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).isOpen = false;
                         Panel reopenedPanel = plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).copy();
                         //re-add placeholders as they are not transferred in the Panel object
