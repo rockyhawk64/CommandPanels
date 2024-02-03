@@ -18,6 +18,7 @@ import me.rockyhawk.commandpanels.classresources.placeholders.Placeholders;
 import me.rockyhawk.commandpanels.commands.*;
 import me.rockyhawk.commandpanels.commandtags.CommandTags;
 import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
+import me.rockyhawk.commandpanels.completetabs.UpdateTabComplete;
 import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
 import me.rockyhawk.commandpanels.datamanager.DebugManager;
 import me.rockyhawk.commandpanels.datamanager.PanelDataLoader;
@@ -159,6 +160,9 @@ public class CommandPanels extends JavaPlugin{
 
         Objects.requireNonNull(this.getCommand("commandpaneldata")).setTabCompleter(new DataTabComplete(this));
         Objects.requireNonNull(this.getCommand("commandpaneldata")).setExecutor(new Commandpanelsdata(this));
+
+        Objects.requireNonNull(this.getCommand("commandpanelupdate")).setTabCompleter(new UpdateTabComplete(this));
+        Objects.requireNonNull(this.getCommand("commandpanelupdate")).setExecutor(new Commandpanelsupdate(this));
 
         Objects.requireNonNull(this.getCommand("commandpanelimport")).setExecutor(new CommandPanelImport(this));
         Objects.requireNonNull(this.getCommand("commandpanelimport")).setTabCompleter(new ImportTabComplete(this));
