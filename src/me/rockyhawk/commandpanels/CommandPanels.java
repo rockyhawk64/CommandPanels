@@ -46,6 +46,8 @@ import me.rockyhawk.commandpanels.updater.Updater;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CharSequenceReader;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -146,6 +148,7 @@ public class CommandPanels extends JavaPlugin{
         }
 
         //setup class files
+        new Metrics(this, 5097);
         this.setupEconomy();
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         Objects.requireNonNull(this.getCommand("commandpanel")).setExecutor(new Commandpanel(this));
@@ -254,6 +257,13 @@ public class CommandPanels extends JavaPlugin{
 
         //do hotbar items
         hotbar.reloadHotbarSlots();
+
+        //add custom charts bStats
+        Metrics metrics = new Metrics(this, 5097);
+        metrics.addCustomChart(new SingleLineChart("panels_amount", () -> {
+            //this is the total panels loaded
+            return panelList.size();
+        }));
 
         //get tag
         tag = tex.colour(config.getString("config.format.tag"));
