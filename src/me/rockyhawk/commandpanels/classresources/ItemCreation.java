@@ -1,5 +1,8 @@
 package me.rockyhawk.commandpanels.classresources;
 
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
@@ -194,8 +197,13 @@ public class ItemCreation {
                 }
             }
 
-            if(addNBT){
-                s = plugin.nbt.setNBT(s);
+            if(addNBT && itemSection.contains("nbt")){
+                for(String key : Objects.requireNonNull(itemSection.getConfigurationSection("nbt")).getKeys(true)){
+                    if(itemSection.isConfigurationSection("nbt." + key)){
+                        continue;
+                    }
+                    s = plugin.nbt.setNBT(s,key,plugin.tex.attachPlaceholders(panel, position, p, Objects.requireNonNull(itemSection.getString("nbt." + key)))); //itemSection.getString("nbt." + key));
+                }
             }
             if (itemSection.contains("enchanted")) {
                 try {
@@ -333,8 +341,11 @@ public class ItemCreation {
                 }
             }
             if (itemSection.contains("nbt")) {
-                for(String key : itemSection.getConfigurationSection("nbt").getKeys(false)){
-                    s = plugin.nbt.setNBT(s,key,itemSection.getString("nbt." + key));
+                for(String key : Objects.requireNonNull(itemSection.getConfigurationSection("nbt")).getKeys(true)){
+                    if(itemSection.isConfigurationSection("nbt." + key)){
+                        continue;
+                    }
+                    s = plugin.nbt.setNBT(s,key,plugin.tex.attachPlaceholders(panel, position, p, Objects.requireNonNull(itemSection.getString("nbt." + key)))); //itemSection.getString("nbt." + key));
                 }
             }
             // 1.20 Trim Feature for Player Armor
@@ -474,6 +485,13 @@ public class ItemCreation {
                 if(plugin.legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
                     file.set("panels." + panelName + ".item." + i + ".customdata", Objects.requireNonNull(cont.getItemMeta()).getCustomModelData());
                 }
+                try {
+                    ReadWriteNBT nbt = NBT.itemStackToNBT(cont);
+                    file.set("panels." + panelName + ".item." + i + ".nbt", nbt.toString());
+                }catch(Exception ignore){
+                    //no nbt or error
+                    file.set("panels." + panelName + ".item." + i + ".nbt", null);
+                }
             }catch(Exception n){
                 //skip over an item that spits an error
             }
@@ -487,9 +505,12 @@ public class ItemCreation {
     Material, Name, Lore, Enchanted, Potion
      */
     @SuppressWarnings("deprecation")
-    public boolean isIdentical(ItemStack one, ItemStack two){
+    public boolean isIdentical(ItemStack one, ItemStack two, Boolean nbtCheck){
         //check material
         if (one.getType() != two.getType()) {
+            return false;
+        }
+        if(one.hasItemMeta() != two.hasItemMeta()){
             return false;
         }
         //check for name
@@ -508,6 +529,17 @@ public class ItemCreation {
                 }
             }
         }catch(Exception ignore){}
+        //check for nbt
+        if(nbtCheck) {
+            try {
+                NBTItem nbtitem1 = new NBTItem(one);
+                NBTItem nbtitem2 = new NBTItem(two);
+
+                if (!nbtitem1.equals(nbtitem2)) {
+                    return false;
+                }
+            } catch (Exception ignore) {}
+        }
         //check for damage
         try {
             if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){

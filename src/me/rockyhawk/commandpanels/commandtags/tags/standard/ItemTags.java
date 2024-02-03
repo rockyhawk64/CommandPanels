@@ -23,6 +23,13 @@ public class ItemTags implements Listener {
         if(e.name.equalsIgnoreCase("give-item=")){
             e.commandTagUsed();
             ItemStack itm = plugin.itemCreate.makeCustomItemFromConfig(null,e.pos,e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0]), e.p, true, true, false);
+            if(e.args.length == 2){
+                try{
+                    itm.setAmount(Integer.parseInt(e.args[1]));
+                } catch (Exception err){
+                    plugin.debug(err,e.p);
+                }
+            }
             plugin.inventorySaver.addItem(e.p,itm);
             return;
         }

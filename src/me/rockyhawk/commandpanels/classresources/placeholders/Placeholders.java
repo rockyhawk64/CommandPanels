@@ -11,6 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -145,13 +147,37 @@ public class Placeholders {
                 String slot_key = identifier.replace("nbt-", "");
                 String value;
                 value = plugin.nbt.getNBT(p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(slot_key.split(":")[0])),slot_key.split(":")[1]);
-                if(value == null){
+                if(value.isEmpty()){
                     value = "empty";
                 }
                 return value;
             }catch (Exception ex){
                 plugin.debug(ex,p);
                 return "";
+            }
+        }
+
+        // Placeholder to check if an item has POTION data %cp-potion-slot%
+        if (identifier.startsWith("potion-")) {
+            try {
+                String slot_key = identifier.replace("potion-", "");
+                int slotIndex = (int) Double.parseDouble(slot_key);
+
+                // Get the item in the specified slot
+                ItemStack item = p.getOpenInventory().getTopInventory().getItem(slotIndex);
+
+                // Check if the item is not null and has potion meta
+                if (item != null && item.hasItemMeta() && item.getItemMeta() instanceof PotionMeta) {
+                    PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
+
+                    //Returns the value like this <Type>:<Extended>:<Upgraded> Example SLOWNESS:true:false
+                    return potionMeta.getBasePotionData().getType() + ":" + potionMeta.getBasePotionData().isExtended() + ":" + potionMeta.getBasePotionData().isUpgraded();
+                } else {
+                    return "empty"; // Item is either null or doesn't have potion meta
+                }
+            } catch (Exception ex) {
+                plugin.debug(ex, p);
+                return ""; // Handle exceptions as needed
             }
         }
 
@@ -249,7 +275,7 @@ public class Placeholders {
                 try {
                     //if it is a regular custom item
                     ItemStack confItm = plugin.itemCreate.makeItemFromConfig(panel,position,panel.getConfig().getConfigurationSection("custom-item." + matLoc),p,true,true, false);
-                    if(plugin.itemCreate.isIdentical(confItm,itm)){
+                    if(plugin.itemCreate.isIdentical(confItm,itm, Objects.requireNonNull(panel.getConfig().getConfigurationSection("custom-item." + matLoc)).contains("nbt"))){
                         isIdentical = true;
                     }
 

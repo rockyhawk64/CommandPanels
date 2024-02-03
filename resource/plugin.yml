@@ -18,6 +18,10 @@ commands:
       description: Change data values for players
       usage: /commandpaneldata
       aliases: [cpdata]
+   commandpanelupdate:
+      description: Refresh/update panel/s for player
+      usage: /commandpanelupdate
+      aliases: [ cpu, cpanelu ]
    commandpaneldebug:
       description: Enable and Disable debug mode globally
       usage: /commandpaneldebug
@@ -72,6 +76,8 @@ permissions:
    commandpanel.update:
       default: op
    commandpanel.data:
+      default: op
+   commandpanel.refresh:
       default: op
    commandpanel.edit:
       default: op

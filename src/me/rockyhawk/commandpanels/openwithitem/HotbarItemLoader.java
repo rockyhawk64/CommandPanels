@@ -10,6 +10,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 public class HotbarItemLoader {
@@ -63,7 +64,7 @@ public class HotbarItemLoader {
     //return true if found
     public boolean itemCheckExecute(ItemStack invItem, Player p, boolean openPanel, boolean stationaryOnly){
         try {
-            if (plugin.nbt.getNBT(invItem, "CommandPanelsHotbar") == null) {
+            if (Objects.equals(plugin.nbt.getNBT(invItem, "CommandPanelsHotbar"), "")) {
                 return false;
             }
         }catch(IllegalArgumentException | NullPointerException nu){
@@ -119,7 +120,7 @@ public class HotbarItemLoader {
         stationaryItems.put(p.getUniqueId(),new HotbarPlayerManager());
         for(int i = 0; i <= 35; i++){
             try {
-                if (plugin.nbt.getNBT(p.getInventory().getItem(i), "CommandPanelsHotbar") != null) {
+                if (!Objects.equals(plugin.nbt.getNBT(p.getInventory().getItem(i), "CommandPanelsHotbar"), "")) {
                     //do not remove items that are not stationary
                     if(!plugin.nbt.getNBT(p.getInventory().getItem(i), "CommandPanelsHotbar").endsWith("-1")) {
                         p.getInventory().setItem(i, new ItemStack(Material.AIR));
