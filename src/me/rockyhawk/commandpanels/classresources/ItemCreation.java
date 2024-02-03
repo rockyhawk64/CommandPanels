@@ -492,6 +492,9 @@ public class ItemCreation {
         if (one.getType() != two.getType()) {
             return false;
         }
+        if(one.hasItemMeta() != two.hasItemMeta()){
+            return false;
+        }
         //check for name
         try {
             if (!one.getItemMeta().getDisplayName().equals(two.getItemMeta().getDisplayName())) {
