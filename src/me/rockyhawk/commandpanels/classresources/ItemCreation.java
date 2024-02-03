@@ -197,14 +197,12 @@ public class ItemCreation {
                 }
             }
 
-            if(addNBT){
-                if (itemSection.contains("nbt")) {
-                    for(String key : Objects.requireNonNull(itemSection.getConfigurationSection("nbt")).getKeys(true)){
-                        if(itemSection.isConfigurationSection("nbt." + key)){
-                            continue;
-                        }
-                        s = plugin.nbt.setNBT(s,key,plugin.tex.attachPlaceholders(panel, position, p, Objects.requireNonNull(itemSection.getString("nbt." + key)))); //itemSection.getString("nbt." + key));
+            if(addNBT && itemSection.contains("nbt")){
+                for(String key : Objects.requireNonNull(itemSection.getConfigurationSection("nbt")).getKeys(true)){
+                    if(itemSection.isConfigurationSection("nbt." + key)){
+                        continue;
                     }
+                    s = plugin.nbt.setNBT(s,key,plugin.tex.attachPlaceholders(panel, position, p, Objects.requireNonNull(itemSection.getString("nbt." + key)))); //itemSection.getString("nbt." + key));
                 }
             }
             if (itemSection.contains("enchanted")) {
@@ -539,7 +537,6 @@ public class ItemCreation {
 
                 if (!nbtitem1.equals(nbtitem2)) {
                     return false;
-
                 }
             } catch (Exception ignore) {}
         }

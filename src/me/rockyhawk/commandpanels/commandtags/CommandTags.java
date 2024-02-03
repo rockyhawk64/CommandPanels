@@ -148,6 +148,9 @@ public class CommandTags {
 
         //create new instance of command but with placeholders parsed
         switch (rawCommand.split("\\s")[0]) {
+            default: {
+                return PaywallOutput.NotApplicable;
+            }
             case "paywall=": {
                 String command = plugin.tex.placeholders(panel, PanelPosition.Top, p, rawCommand);
                 //if player uses paywall= [price]
@@ -432,7 +435,6 @@ public class CommandTags {
                 }
             }
         }
-        return PaywallOutput.NotApplicable;
     }
 
     //Experience math is a bit doggy doo doo so these will help to calculate values

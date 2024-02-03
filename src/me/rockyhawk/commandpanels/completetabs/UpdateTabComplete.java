@@ -18,10 +18,6 @@ public class UpdateTabComplete implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         if(sender.hasPermission("commandpanel.refresh")) {
             ArrayList<String> output = new ArrayList<>();
-            if (args.length>=1 && args[0].equalsIgnoreCase("-s")) {
-
-                    args = Arrays.copyOfRange(args, 1, args.length);
-            }
             if(args.length == 1){
                 for(Player player : Bukkit.getOnlinePlayers()){
                     output.add(player.getName());
