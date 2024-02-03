@@ -275,7 +275,7 @@ public class Placeholders {
                 try {
                     //if it is a regular custom item
                     ItemStack confItm = plugin.itemCreate.makeItemFromConfig(panel,position,panel.getConfig().getConfigurationSection("custom-item." + matLoc),p,true,true, false);
-                    if(plugin.itemCreate.isIdentical(confItm,itm)){
+                    if(plugin.itemCreate.isIdentical(confItm,itm, Objects.requireNonNull(panel.getConfig().getConfigurationSection("custom-item." + matLoc)).contains("nbt"))){
                         isIdentical = true;
                     }
 

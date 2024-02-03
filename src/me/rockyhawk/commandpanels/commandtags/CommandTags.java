@@ -265,7 +265,7 @@ public class CommandTags {
 
                         if (Material.matchMaterial(args[1]) == null) {
                             //item-paywall is a custom item as it is not a material
-                            if (plugin.itemCreate.isIdentical(sellItem, itm)) {
+                            if (plugin.itemCreate.isIdentical(sellItem, itm, Objects.requireNonNull(panel.getConfig().getConfigurationSection("custom-item." + args[1])).contains("nbt"))) {
                                 ItemStack add = new ItemStack(p.getInventory().getItem(f).getType(), p.getInventory().getItem(f).getAmount());
                                 remainingAmount -= add.getAmount();
                                 if (removal) remCont.put(f,add);
