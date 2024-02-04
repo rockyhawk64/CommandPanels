@@ -64,7 +64,7 @@ public class Commandpanelrefresher implements Listener {
             int animatecount = 0;
             @Override
             public void run() {
-                //counter counts to refresh delay (in seconds) then restarts
+                //counter counts to refresh delay (in ticks) then restarts
                 if(c < refreshDelay){
                     c+=1;
                 }else{

@@ -123,18 +123,6 @@ public class Utils implements Listener {
         if(panel.getConfig().contains("item." + clickedSlot + section + ".commands")) {
             List<String> commands = panel.getConfig().getStringList("item." + clickedSlot + section + ".commands");
             if (!commands.isEmpty()) {
-                //this will replace a sequence tag command with the commands from the sequence
-                List<String> commandsAfterSequence = commands;
-                for (int i = 0; commands.size() - 1 >= i; i++) {
-                    if(commands.get(i).startsWith("sequence=")){
-                        String locationOfSequence = commands.get(i).split("\\s")[1];
-                        List<String> commandsSequence = panel.getConfig().getStringList(locationOfSequence);
-                        commandsAfterSequence.remove(i);
-                        commandsAfterSequence.addAll(i,commandsSequence);
-                    }
-                }
-                commands = commandsAfterSequence;
-
                 for (int i = 0; commands.size() > i; i++) {
                     try {
                         commands.set(i, commands.get(i).replaceAll("%cp-clicked%", e.getCurrentItem().getType().toString()));
