@@ -451,6 +451,9 @@ public class CommandPanels extends JavaPlugin{
         if (p.hasPermission("commandpanel.version")) {
             p.sendMessage(ChatColor.GOLD + "/cpv " + ChatColor.WHITE + "Display the current version.");
         }
+        if (p.hasPermission("commandpanel.refresh")) {
+            p.sendMessage(ChatColor.GOLD + "/cpu [player] [position:all] " + ChatColor.WHITE + "Update a panel for a player while it is still open.");
+        }
         if (p.hasPermission("commandpanel.update")) {
             p.sendMessage(ChatColor.GOLD + "/cpv latest " + ChatColor.WHITE + "Download the latest update upon server reload/restart.");
             p.sendMessage(ChatColor.GOLD + "/cpv [version:cancel] " + ChatColor.WHITE + "Download an update upon server reload/restart.");

@@ -27,6 +27,11 @@
       <option name="url" value="https://oss.sonatype.org/content/groups/public/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="codemc-repo" />
+      <option name="name" value="codemc-repo" />
+      <option name="url" value="https://repo.codemc.io/repository/maven-public/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="placeholderapi" />
       <option name="name" value="placeholderapi" />
       <option name="url" value="https://repo.extendedclip.com/content/repositories/placeholderapi/" />

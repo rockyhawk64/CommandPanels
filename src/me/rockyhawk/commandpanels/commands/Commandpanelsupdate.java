@@ -20,7 +20,7 @@ public class Commandpanelsupdate implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (label.equalsIgnoreCase("cpu") || label.equalsIgnoreCase("commandpanelupdate") || label.equalsIgnoreCase("cpanelu")) {
             if (sender.hasPermission("commandpanel.refresh")) {
-                //command /cpu
+                //command /cpu (uses .refresh permission node)
                 // /cpu <Playername> <Position/ALL>
 
                 String name;
