@@ -485,13 +485,13 @@ public class ItemCreation {
                 if(plugin.legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
                     file.set("panels." + panelName + ".item." + i + ".customdata", Objects.requireNonNull(cont.getItemMeta()).getCustomModelData());
                 }
-                try {
-                    ReadWriteNBT nbt = NBT.itemStackToNBT(cont);
-                    file.set("panels." + panelName + ".item." + i + ".nbt", nbt.toString());
-                }catch(Exception ignore){
-                    //no nbt or error
-                    file.set("panels." + panelName + ".item." + i + ".nbt", null);
-                }
+//                try {
+//                    ReadWriteNBT nbt = NBT.itemStackToNBT(cont);
+//                    file.set("panels." + panelName + ".item." + i + ".nbt", nbt.toString());
+//                }catch(Exception ignore){
+//                    //no nbt or error
+//                    file.set("panels." + panelName + ".item." + i + ".nbt", null);
+//                }
             }catch(Exception n){
                 //skip over an item that spits an error
             }
