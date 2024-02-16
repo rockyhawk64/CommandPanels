@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -62,6 +63,21 @@ public class UtilsOpenWithItem implements Listener {
         }
         Player p = e.getPlayer();
         if(plugin.hotbar.itemCheckExecute(e.getItem(),p,true,false)){
+            e.setCancelled(true);
+            p.updateInventory();
+        }
+    }
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent e)
+    {
+        //item right-clicked only (not left because that causes issues when things are interacted with)
+        if(!plugin.openWithItem){
+            //if none of the panels have open-with-item
+            return;
+        }
+
+        Player p = e.getPlayer();
+        if(plugin.hotbar.itemCheckExecute(e.getPlayer().getInventory().getItemInMainHand(),p,false,false)){
             e.setCancelled(true);
             p.updateInventory();
         }
