@@ -83,7 +83,7 @@ public class UtilsOpenWithItem implements Listener {
         //a new list instance has to be created with the dropped items to avoid ConcurrentModificationException
         for(ItemStack s : new ArrayList<>(e.getDrops())){
             try {
-                if (plugin.nbt.getNBT(s, "CommandPanelsHotbar") != null) {
+                if (!plugin.nbt.getNBT(s, "CommandPanelsHotbar").isEmpty()) {
                     //do not remove items that are not stationary
                     if(!plugin.nbt.getNBT(s, "CommandPanelsHotbar").endsWith("-1")) {
                         e.getDrops().remove(s);
