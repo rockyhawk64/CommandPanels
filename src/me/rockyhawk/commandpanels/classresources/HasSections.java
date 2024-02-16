@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Objects;
 
 public class HasSections {
     CommandPanels plugin;
