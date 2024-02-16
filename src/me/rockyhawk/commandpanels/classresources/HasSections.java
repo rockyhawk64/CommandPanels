@@ -119,7 +119,11 @@ public class HasSections {
         //the current has section with all the functions implemented inside it
         if(setName.startsWith("has")) {
             if(value.endsWith(" HASPERM")) {
-                return Bukkit.getPlayer(value.substring(0, value.length()-8)).hasPermission(compare) == outputValue;
+                String playername = value.substring(0, value.length()-8);
+                Player player = Bukkit.getPlayerExact(playername);
+                if(player != null){
+                    return player.hasPermission(compare) == outputValue;
+                }
             }else if(value.endsWith(" ISGREATER")) {
                 return (new BigDecimal(compare).compareTo(new BigDecimal(value.substring(0, value.length()-10).replace(",",""))) <= 0 == outputValue);
             }else{
