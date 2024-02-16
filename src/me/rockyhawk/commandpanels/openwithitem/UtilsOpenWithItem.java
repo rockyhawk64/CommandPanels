@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -67,6 +68,21 @@ public class UtilsOpenWithItem implements Listener {
         }
     }
     @EventHandler
+    public void onBlockPlace(BlockPlaceEvent e)
+    {
+        //item right-clicked only (not left because that causes issues when things are interacted with)
+        if(!plugin.openWithItem){
+            //if none of the panels have open-with-item
+            return;
+        }
+
+        Player p = e.getPlayer();
+        if(plugin.hotbar.itemCheckExecute(e.getPlayer().getInventory().getItemInMainHand(),p,false,false)){
+            e.setCancelled(true);
+            p.updateInventory();
+        }
+    }
+    @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e){
         plugin.hotbar.updateHotbarItems(e.getPlayer());
     }
@@ -83,7 +99,7 @@ public class UtilsOpenWithItem implements Listener {
         //a new list instance has to be created with the dropped items to avoid ConcurrentModificationException
         for(ItemStack s : new ArrayList<>(e.getDrops())){
             try {
-                if (plugin.nbt.getNBT(s, "CommandPanelsHotbar") != null) {
+                if (!plugin.nbt.getNBT(s, "CommandPanelsHotbar").isEmpty()) {
                     //do not remove items that are not stationary
                     if(!plugin.nbt.getNBT(s, "CommandPanelsHotbar").endsWith("-1")) {
                         e.getDrops().remove(s);
