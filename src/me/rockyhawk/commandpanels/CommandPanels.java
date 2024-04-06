@@ -26,6 +26,7 @@ import me.rockyhawk.commandpanels.editor.*;
 import me.rockyhawk.commandpanels.generatepanels.Commandpanelsgenerate;
 import me.rockyhawk.commandpanels.generatepanels.GenUtils;
 import me.rockyhawk.commandpanels.generatepanels.TabCompleteGenerate;
+import me.rockyhawk.commandpanels.interactives.OutsideClickEvent;
 import me.rockyhawk.commandpanels.interactives.input.UserInputUtils;
 import me.rockyhawk.commandpanels.interactives.Commandpanelrefresher;
 import me.rockyhawk.commandpanels.interactives.OpenOnJoin;
@@ -180,6 +181,7 @@ public class CommandPanels extends JavaPlugin{
         this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
         this.getServer().getPluginManager().registerEvents(new ItemFallManager(this), this);
         this.getServer().getPluginManager().registerEvents(new OpenOnJoin(this), this);
+        this.getServer().getPluginManager().registerEvents(new OutsideClickEvent(this), this);
 
         //load in the updater if requested
         if (Objects.requireNonNull(config.getString("updater.update-checks")).equalsIgnoreCase("true")) {

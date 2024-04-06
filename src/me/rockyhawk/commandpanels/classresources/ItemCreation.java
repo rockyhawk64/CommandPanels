@@ -9,6 +9,7 @@ import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import net.Indyuce.mmoitems.MMOItems;
+import net.Indyuce.mmoitems.api.MMOItemsAPI;
 import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
 import net.Indyuce.mmoitems.manager.ItemManager;
 import org.bukkit.*;
