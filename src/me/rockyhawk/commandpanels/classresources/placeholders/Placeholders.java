@@ -191,7 +191,7 @@ public class Placeholders {
                     material = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getType().toString();
                     if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                         //add the ID to the end if it is legacy (eg, material:id)
-                        material = material + ":" + p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getType().getId();
+                        material = material + ":" + p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getData().getData();
                     }
                 } catch (NullPointerException er) {
                     material = "AIR";
