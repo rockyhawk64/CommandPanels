@@ -77,10 +77,18 @@ public class UtilsOpenWithItem implements Listener {
         }
 
         Player p = e.getPlayer();
-        if(plugin.hotbar.itemCheckExecute(e.getPlayer().getInventory().getItemInMainHand(),p,false,false)){
-            e.setCancelled(true);
-            p.updateInventory();
+        if(Bukkit.getVersion().contains("1.8")){
+            if(plugin.hotbar.itemCheckExecute(e.getPlayer().getItemInHand(),p,false,false)){
+                e.setCancelled(true);
+                p.updateInventory();
+            }
+        }else{
+            if(plugin.hotbar.itemCheckExecute(e.getPlayer().getInventory().getItemInMainHand(),p,false,false)){
+                e.setCancelled(true);
+                p.updateInventory();
+            }
         }
+
     }
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e){
