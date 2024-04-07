@@ -3,8 +3,6 @@ package me.rockyhawk.commandpanels.playerinventoryhandler;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
-import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
