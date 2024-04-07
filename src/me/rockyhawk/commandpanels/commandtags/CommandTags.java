@@ -231,7 +231,7 @@ public class CommandTags {
             }
             case "item-paywall=": {
                 String command = plugin.tex.placeholders(panel, PanelPosition.Top, p, rawCommand);
-                //if player uses item-paywall= [Material] [Amount] <id:#> WILL NOT TAKE CUSTOM ITEMS
+                //if player uses item-paywall= [Material] [Amount] <id:#> <IGNORENBT> WILL NOT TAKE CUSTOM ITEMS. IGNORENBT lets nbt items through. Useful for spawner edge cases.
                 //player can use item-paywall= [custom-item] [Amount]
                 List<ItemStack> cont = new ArrayList<>(Arrays.asList(plugin.inventorySaver.getNormalInventory(p)));
                 HashMap<Integer, ItemStack> remCont = new HashMap<>();
@@ -254,6 +254,8 @@ public class CommandTags {
                     }
                     //this is not a boolean because it needs to return an int
                     PaywallOutput removedItem = PaywallOutput.Blocked;
+                    //This is here for when people want to take nbt items like spawners with types in a check for spawners.
+                    boolean ignoreNBT = command.contains("IGNORENBT");
 
                     int remainingAmount = sellItem.getAmount();
                     //loop through items in the inventory
@@ -267,17 +269,6 @@ public class CommandTags {
                         ItemStack itm = cont.get(f);
 
                         if (Material.matchMaterial(args[1]) == null) {
-                            //item-paywall is a custom item as it is not a material
-                            if (plugin.itemCreate.isIdentical(sellItem, itm, Objects.requireNonNull(panel.getConfig().getConfigurationSection("custom-item." + args[1])).contains("nbt"))) {
-                                ItemStack add = new ItemStack(p.getInventory().getItem(f).getType(), p.getInventory().getItem(f).getAmount());
-                                remainingAmount -= add.getAmount();
-                                if (removal) remCont.put(f,add);
-                                if (remainingAmount <= 0) {
-                                    removedItem = PaywallOutput.Passed;
-                                    break;
-                                }
-                            }
-
                             //if custom item is a mmo item (1.14+ for the API)
                             try {
                                 if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems") && panel.getConfig().getString("custom-item." + args[1] + ".material").startsWith("mmo=")) {
@@ -294,15 +285,27 @@ public class CommandTags {
                                             break;
                                         }
                                     }
+                                    continue; //This stops the other custom item section from reading and adding false numbers.
                                 }
                             } catch (Exception ex) {
                                 plugin.debug(ex, p);
                             }
 
+                            //item-paywall is a custom item as it is not a material
+                            if (plugin.itemCreate.isIdentical(sellItem, itm, Objects.requireNonNull(panel.getConfig().getConfigurationSection("custom-item." + args[1])).contains("nbt"))) {
+                                ItemStack add = new ItemStack(p.getInventory().getItem(f).getType(), p.getInventory().getItem(f).getAmount());
+                                remainingAmount -= add.getAmount();
+                                if (removal) remCont.put(f,add);
+                                if (remainingAmount <= 0) {
+                                    removedItem = PaywallOutput.Passed;
+                                    break;
+                                }
+                            }
+
                         } else {
                             //if the item is a standard material
                             if (itm.getType() == sellItem.getType()) {
-                                if(itm.hasItemMeta()){
+                                if(itm.hasItemMeta() && !ignoreNBT){
                                     //If item has custom meta continue to next item.
                                     continue;
                                 }
