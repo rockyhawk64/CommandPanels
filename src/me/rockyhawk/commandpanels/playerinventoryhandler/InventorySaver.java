@@ -3,6 +3,8 @@ package me.rockyhawk.commandpanels.playerinventoryhandler;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -56,7 +58,9 @@ public class InventorySaver implements Listener {
         //drop the players inventory if a panel is open in the inventory
         if (plugin.openPanels.hasPanelOpen(e.getEntity().getName(), PanelPosition.Middle) || plugin.openPanels.hasPanelOpen(e.getEntity().getName(), PanelPosition.Bottom)) {
             e.getDrops().clear();
-            e.getDrops().addAll(Arrays.asList(plugin.inventorySaver.getNormalInventory(e.getEntity())));
+            if (!e.getKeepInventory()) {
+                e.getDrops().addAll(Arrays.asList(plugin.inventorySaver.getNormalInventory(e.getEntity())));
+            }
         }
     }
 
