@@ -98,22 +98,28 @@ public class UtilsOpenWithItem implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent e){
         plugin.hotbar.updateHotbarItems(e.getPlayer());
     }
+
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e){
         if(!plugin.openWithItem){
             //if none of the panels have open-with-item
             return;
         }
+
         //a new list instance has to be created with the dropped items to avoid ConcurrentModificationException
-        for(ItemStack s : new ArrayList<>(e.getDrops())){
-            try {
-                if (!plugin.nbt.getNBT(s, "CommandPanelsHotbar").isEmpty()) {
-                    //do not remove items that are not stationary
-                    if(!plugin.nbt.getNBT(s, "CommandPanelsHotbar").endsWith("-1")) {
-                        e.getDrops().remove(s);
+        try {
+            for (ItemStack s : new ArrayList<>(e.getDrops())) {
+                try {
+                    if (!plugin.nbt.getNBT(s, "CommandPanelsHotbar").isEmpty()) {
+                        //do not remove items that are not stationary
+                        if (!plugin.nbt.getNBT(s, "CommandPanelsHotbar").endsWith("-1")) {
+                            e.getDrops().remove(s);
+                        }
                     }
-                }
-            }catch(NullPointerException | IllegalArgumentException ignore){}
+                } catch (NullPointerException | IllegalArgumentException ignore) {}
+            }
+        }catch (NullPointerException ignore){
+            System.out.println("crapped out");
         }
     }
     @EventHandler

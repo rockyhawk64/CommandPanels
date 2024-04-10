@@ -116,6 +116,10 @@
             <url>https://repo.codemc.io/repository/maven-public/</url>
             <layout>default</layout>
         </repository>
+        <repository>
+            <id>opencollab-snapshot</id>
+            <url>https://repo.opencollab.dev/main/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -223,6 +227,18 @@
             <groupId>net.essentialsx</groupId>
             <artifactId>EssentialsX</artifactId>
             <version>2.20.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geysermc.geyser</groupId>
+            <artifactId>api</artifactId>
+            <version>2.2.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geysermc.floodgate</groupId>
+            <artifactId>api</artifactId>
+            <version>2.2.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

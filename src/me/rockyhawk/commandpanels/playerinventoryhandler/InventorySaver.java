@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -17,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InventorySaver implements Listener {
     public YamlConfiguration inventoryConfig;
@@ -50,13 +52,26 @@ public class InventorySaver implements Listener {
         }
     }
 
-
-    @EventHandler
+    /*
+    Run LOW event priority to run first ensuring other plugins and event handlers do not
+    use the CommandPanels panel instead of the players inventory when making decisions
+    */
+    @EventHandler(priority = EventPriority.LOW)
     public void onDeath(PlayerDeathEvent e){
-        //drop the players inventory if a panel is open in the inventory
+        //drop the players inventory if a mutli panel is open in the inventory
         if (plugin.openPanels.hasPanelOpen(e.getEntity().getName(), PanelPosition.Middle) || plugin.openPanels.hasPanelOpen(e.getEntity().getName(), PanelPosition.Bottom)) {
+            if(e.getKeepInventory()) return;
+
             e.getDrops().clear();
-            e.getDrops().addAll(Arrays.asList(plugin.inventorySaver.getNormalInventory(e.getEntity())));
+
+            // Retrieve the inventory, filter out null items, and then add them to e.getDrops()
+            // e.getDrops() will just return Null in general, just by containing null items in it
+            ItemStack[] inventoryItems = plugin.inventorySaver.getNormalInventory(e.getEntity());
+            List<ItemStack> nonNullItems = Arrays.stream(inventoryItems)
+                    .filter(Objects::nonNull) // Filter out null items
+                    .collect(Collectors.toList()); // Collect the remaining items into a list
+
+            e.getDrops().addAll(nonNullItems);
         }
     }
 

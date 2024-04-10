@@ -32,6 +32,11 @@
       <option name="url" value="https://repo.codemc.io/repository/maven-public/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="opencollab-snapshot" />
+      <option name="name" value="opencollab-snapshot" />
+      <option name="url" value="https://repo.opencollab.dev/main/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="placeholderapi" />
       <option name="name" value="placeholderapi" />
       <option name="url" value="https://repo.extendedclip.com/content/repositories/placeholderapi/" />

@@ -85,6 +85,7 @@ public class CommandPanelsEditor implements CommandExecutor {
             }
         }else{
             sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
+            return true;
         }
         sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cpe <parameters>"));
         return true;

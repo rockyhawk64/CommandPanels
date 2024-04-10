@@ -130,13 +130,9 @@ public class Updater implements Listener {
             //return if auto-update is false
             return;
         }
-        if(Objects.equals(plugin.config.getString("updater.minor-updates-only"), "true")){
-            //only update versions that will not break
-            if(thisVersion.split("\\.")[1].equals(latestVersion.split("\\.")[1]) && thisVersion.split("\\.")[0].equals(latestVersion.split("\\.")[0])){
-                //the first and second number of the version is the same, updates: [major.major.minor.minor]
-                downloadFile(latestVersion,pluginFileName);
-            }
-        }else{
+        if(thisVersion.split("\\.")[1].equals(latestVersion.split("\\.")[1]) && thisVersion.split("\\.")[0].equals(latestVersion.split("\\.")[0])){
+            //only update if the latest version is a minor update
+            //the first and second number of the version is the same, updates: [major.major.minor.minor]
             downloadFile(latestVersion,pluginFileName);
         }
     }

@@ -23,6 +23,7 @@ import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
 import me.rockyhawk.commandpanels.datamanager.DebugManager;
 import me.rockyhawk.commandpanels.datamanager.PanelDataLoader;
 import me.rockyhawk.commandpanels.editor.*;
+import me.rockyhawk.commandpanels.floodgatecp.OpenFloodgateGUI;
 import me.rockyhawk.commandpanels.generatepanels.Commandpanelsgenerate;
 import me.rockyhawk.commandpanels.generatepanels.GenUtils;
 import me.rockyhawk.commandpanels.generatepanels.TabCompleteGenerate;
@@ -108,6 +109,7 @@ public class CommandPanels extends JavaPlugin{
     public InventorySaver inventorySaver = new InventorySaver(this);
     public ItemStackSerializer itemSerializer = new ItemStackSerializer(this);
     public UserInputUtils inputUtils = new UserInputUtils(this);
+    public OpenFloodgateGUI floodgateOpenGUI = new OpenFloodgateGUI(this);
 
     public File panelsf = new File(this.getDataFolder() + File.separator + "panels");
     public YamlConfiguration blockConfig; //where panel block locations are stored
@@ -182,6 +184,7 @@ public class CommandPanels extends JavaPlugin{
         this.getServer().getPluginManager().registerEvents(new ItemFallManager(this), this);
         this.getServer().getPluginManager().registerEvents(new OpenOnJoin(this), this);
         this.getServer().getPluginManager().registerEvents(new OutsideClickEvent(this), this);
+        this.getServer().getPluginManager().registerEvents(new OpenFloodgateGUI(this), this);
 
         //load in the updater if requested
         if (Objects.requireNonNull(config.getString("updater.update-checks")).equalsIgnoreCase("true")) {

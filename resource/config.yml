@@ -49,7 +49,6 @@ placeholders:
     end: '}'
 updater:
   auto-update: false
-  minor-updates-only: true
   update-checks: true
 purchase:
   currency:
