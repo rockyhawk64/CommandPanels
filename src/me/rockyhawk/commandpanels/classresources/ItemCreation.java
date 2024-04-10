@@ -523,6 +523,14 @@ public class ItemCreation {
                 }
             }
         }catch(Exception ignore){}
+        //check for custom model data
+        try {
+            if (one.getItemMeta().getCustomModelData() != (two.getItemMeta().getCustomModelData())) {
+                if(one.getItemMeta().hasCustomModelData()) {
+                    return false;
+                }
+            }
+        }catch(Exception ignore){}
         //check for nbt
         if(nbtCheck) {
             try {
