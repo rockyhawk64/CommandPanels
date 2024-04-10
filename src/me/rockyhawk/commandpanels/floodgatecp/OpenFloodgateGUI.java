@@ -45,9 +45,10 @@ public class OpenFloodgateGUI implements Listener {
     }
 
     private void createAndSendSimpleForm(PanelOpenedEvent e, FloodgatePlayer fgPlayer, ConfigurationSection fgPanel) {
+        //replace for multi-line support in simpleform content title
         SimpleForm.Builder form = SimpleForm.builder()
                 .title(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), e.getPanel().getConfig().getString("title"))))
-                .content(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fgPanel.getString("simple"))));
+                .content(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fgPanel.getString("simple")).replaceAll("\\\\n", "\n")));
 
         List<String> buttonCommands;
         try {
