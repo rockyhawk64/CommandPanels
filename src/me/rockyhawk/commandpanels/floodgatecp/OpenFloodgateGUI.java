@@ -18,7 +18,9 @@ import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OpenFloodgateGUI implements Listener {
     private CommandPanels plugin;
@@ -71,13 +73,12 @@ public class OpenFloodgateGUI implements Listener {
     }
 
     private List<String> processButtons(ConfigurationSection fgPanel, SimpleForm.Builder form, Panel panel, Player p) {
-        List<String> commandsOrder = new ArrayList<>();
-        fgPanel.getKeys(false).stream()
+        return fgPanel.getKeys(false).stream()
                 .filter(key -> key.matches("\\d+"))
-                .sorted()
-                .forEach(key -> {
+                .sorted(Comparator.comparingInt(Integer::parseInt))  // Ensure numeric sorting
+                .map(key -> {
                     ConfigurationSection buttonConfig = fgPanel.getConfigurationSection(key);
-                    if (buttonConfig == null) return;
+                    if (buttonConfig == null) return null;
 
                     String buttonContent = plugin.tex.placeholders(panel, null, p, buttonConfig.getString("text"));
                     if (!buttonConfig.contains("icon")) {
@@ -87,9 +88,10 @@ public class OpenFloodgateGUI implements Listener {
                         String texture = plugin.tex.placeholders(panel, null, p, buttonConfig.getString("icon.texture"));
                         form.button(buttonContent, type, texture);
                     }
-                    commandsOrder.add(key);
-                });
-        return commandsOrder;
+                    return key;
+                })
+                .filter(key -> key != null)
+                .collect(Collectors.toList());
     }
 
     private void createAndSendCustomForm(PanelOpenedEvent e, FloodgatePlayer fgPlayer, ConfigurationSection fgPanel) {
