@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.commandtags.tags.standard;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
@@ -22,14 +23,27 @@ public class ItemTags implements Listener {
     public void commandTag(CommandTagEvent e){
         if(e.name.equalsIgnoreCase("give-item=")){
             e.commandTagUsed();
-            ItemStack itm = plugin.itemCreate.makeCustomItemFromConfig(null,e.pos,e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0]), e.p, true, true, false);
-            if(e.args.length == 2){
-                try{
-                    itm.setAmount(Integer.parseInt(e.args[1]));
-                } catch (Exception err){
-                    plugin.debug(err,e.p);
+            ItemStack itm;
+            if (Material.matchMaterial(e.args[0]) == null) {
+                itm = plugin.itemCreate.makeCustomItemFromConfig(null,e.pos,e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0]), e.p, true, true, false);
+                if(e.args.length == 2){
+                    try{
+                        itm.setAmount(Integer.parseInt(e.args[1]));
+                    } catch (Exception err){
+                        plugin.debug(err,e.p);
+                    }
+                }
+            } else {
+                itm = new ItemStack(Objects.requireNonNull(Material.matchMaterial(e.args[0])));
+                if(e.args.length == 2){
+                    try{
+                        itm.setAmount(Integer.parseInt(e.args[1]));
+                    } catch (Exception err){
+                        plugin.debug(err,e.p);
+                    }
                 }
             }
+
             plugin.inventorySaver.addItem(e.p,itm);
             return;
         }
