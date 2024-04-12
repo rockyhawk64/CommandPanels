@@ -52,18 +52,26 @@ public class CommandPanelsEditor implements CommandExecutor {
 
                         // Prepend "fileName: {name}" and "filePath: {relativePath}" to the YAML content
                         String yamlWithFileNameAndPath = "fileName: " + (relativePath.replaceFirst("[.][^.]+$", "")) + "\n" + fileContents;
+                        byte[] contentBytes = yamlWithFileNameAndPath.getBytes(StandardCharsets.UTF_8);
 
-                        // Create a clickable text component with the modified YAML content
-                        BaseComponent[] components = new ComponentBuilder(plugin.tag +
-                                net.md_5.bungee.api.ChatColor.GREEN + "Click here to copy " +
-                                net.md_5.bungee.api.ChatColor.WHITE + panel.getFile().getName() +
-                                net.md_5.bungee.api.ChatColor.GREEN + " to the clipboard!")
-                                .event(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, yamlWithFileNameAndPath))
-                                .create();
+                        //65535 is maximum value that can be represented by an unsigned 16-bit binary number
+                        if (contentBytes.length > 65535) {
+                            // If the content is too large, notify the player to use a different method
+                            sender.sendMessage(plugin.tag + ChatColor.RED +
+                                    "Content too long to paste in chat. Please copy and paste the panel file into the editor manually.");
+                        } else {
+                            // Safe to send
+                            BaseComponent[] components = new ComponentBuilder(plugin.tag +
+                                    net.md_5.bungee.api.ChatColor.GREEN + "Click here to copy " +
+                                    net.md_5.bungee.api.ChatColor.WHITE + panel.getFile().getName() +
+                                    net.md_5.bungee.api.ChatColor.GREEN + " to the clipboard!")
+                                    .event(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, yamlWithFileNameAndPath))
+                                    .create();
 
-                        // Send the clickable text to the player
-                        Player player = (Player) sender;
-                        player.spigot().sendMessage(components);
+                            Player player = (Player) sender;
+                            player.spigot().sendMessage(components);
+                        }
+
                         return true;
                     }
                 }
