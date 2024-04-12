@@ -184,7 +184,10 @@ public class CommandPanels extends JavaPlugin{
         this.getServer().getPluginManager().registerEvents(new ItemFallManager(this), this);
         this.getServer().getPluginManager().registerEvents(new OpenOnJoin(this), this);
         this.getServer().getPluginManager().registerEvents(new OutsideClickEvent(this), this);
-        this.getServer().getPluginManager().registerEvents(new OpenFloodgateGUI(this), this);
+
+        if (this.getServer().getPluginManager().isPluginEnabled("floodgate")) {
+            this.getServer().getPluginManager().registerEvents(new OpenFloodgateGUI(this), this);
+        }
 
         //load in the updater if requested
         if (Objects.requireNonNull(config.getString("updater.update-checks")).equalsIgnoreCase("true")) {

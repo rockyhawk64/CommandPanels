@@ -4,7 +4,7 @@ name: CommandPanels
 author: RockyHawk
 api-version: '1.13'
 description: Fully Custom GUIs. Make your Server Professional.
-softdepend: [Essentials, PlaceholderAPI, Vault, HeadDatabase, TokenManager, VotingPlugin, MMOItems, ChestSort]
+softdepend: [Essentials, PlaceholderAPI, Vault, HeadDatabase, TokenManager, VotingPlugin, MMOItems, ChestSort, floodgate]
 commands:
    commandpanel:
       description: Open a command panel.
