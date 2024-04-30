@@ -104,7 +104,7 @@ public class Updater implements Listener {
     }
 
     //the pluginFileName can only be obtained from the main class
-    public void autoUpdatePlugin(String pluginFileName){
+    public void updatePlugin(String pluginFileName){
         if (Objects.requireNonNull(plugin.config.getString("updater.update-checks")).equalsIgnoreCase("false")) {
             return;
         }
@@ -113,21 +113,18 @@ public class Updater implements Listener {
         String thisVersion = plugin.getDescription().getVersion();
 
         //manual download, only if it was requested
-        if(downloadVersionManually != null) {
-            if (downloadVersionManually.equals("latest")) {
-                downloadFile(latestVersion, pluginFileName);
-            }else{
-                downloadFile(downloadVersionManually, pluginFileName);
-            }
+        if(downloadVersionManually == null) {
             return;
+        }
+
+        if (downloadVersionManually.equals("latest")) {
+            downloadFile(latestVersion, pluginFileName);
+        }else{
+            downloadFile(downloadVersionManually, pluginFileName);
         }
 
         if(latestVersion.equals(thisVersion) || thisVersion.contains("-")){
             //no need to update or running custom version
-            return;
-        }
-        if (Objects.requireNonNull(plugin.config.getString("updater.auto-update")).equalsIgnoreCase("false")) {
-            //return if auto-update is false
             return;
         }
         if(thisVersion.split("\\.")[1].equals(latestVersion.split("\\.")[1]) && thisVersion.split("\\.")[0].equals(latestVersion.split("\\.")[0])){
