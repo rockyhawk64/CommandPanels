@@ -130,9 +130,9 @@ public class OpenPanelsLoader {
         }
     }
 
-    public boolean isNBTInjected(ItemStack itm){
+    public boolean isContainerInjected(ItemStack itm){
         if(itm != null){
-            return plugin.nbt.hasNBT(itm);
+            return plugin.nbt.hasData(itm,"CommandPanelsItem");
         }
         return false;
     }

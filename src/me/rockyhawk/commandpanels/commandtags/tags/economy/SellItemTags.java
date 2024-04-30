@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.commandtags.tags.economy;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
-import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -130,7 +129,7 @@ public class SellItemTags implements Listener {
                     if (!potion.equals("false")) {
                         PotionMeta potionMeta = (PotionMeta) itm.getItemMeta();
                         assert potionMeta != null;
-                        if (!potionMeta.getBasePotionData().getType().name().equalsIgnoreCase(potion)) {
+                        if (!potionMeta.getBasePotionType().name().equalsIgnoreCase(potion)) {
                             p.sendMessage(plugin.tex.colour( plugin.tag + ChatColor.RED + "Your item has the wrong potion effect"));
                             return 0;
                         }

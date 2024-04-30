@@ -32,7 +32,7 @@ public class UtilsPanelsLoader implements Listener {
         p.updateInventory();
         for(ItemStack itm : p.getInventory().getContents()){
             if(itm != null){
-                if (plugin.nbt.hasNBT(itm)) {
+                if (plugin.nbt.hasData(itm, "CommandPanelsItem")) {
                     p.getInventory().remove(itm);
                 }
             }
@@ -93,7 +93,7 @@ public class UtilsPanelsLoader implements Listener {
         Player p = (Player)e.getWhoClicked();
         if(!plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             for(ItemStack itm : p.getInventory().getContents()){
-                if(plugin.openPanels.isNBTInjected(itm)){
+                if(plugin.openPanels.isContainerInjected(itm)){
                     p.getInventory().remove(itm);
                 }
             }

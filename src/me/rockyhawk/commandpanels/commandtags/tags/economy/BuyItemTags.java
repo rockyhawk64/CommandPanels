@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.commandtags.tags.economy;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
-import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -73,18 +72,7 @@ public class BuyItemTags implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void giveItem(Player p, String[] args){
-        //legacy ID
-        byte id = 0;
-        if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
-            for (String argsTemp : args) {
-                if (argsTemp.startsWith("id:")) {
-                    id = Byte.parseByte(argsTemp.replace("id:", ""));
-                    break;
-                }
-            }
-        }
-        plugin.inventorySaver.addItem(p,new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2]),id));
+        plugin.inventorySaver.addItem(p,new ItemStack(Objects.requireNonNull(Material.matchMaterial(args[1])), Integer.parseInt(args[2])));
     }
 }
