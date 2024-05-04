@@ -4,7 +4,6 @@ import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.PanelCommandEvent;
 import me.rockyhawk.commandpanels.classresources.SerializerUtils;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
-import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import net.kyori.adventure.audience.Audience;
@@ -138,11 +137,10 @@ public class BasicTags implements Listener {
         if(e.name.equalsIgnoreCase("minimessage=")){
             e.commandTagUsed();
             //get checks
-            boolean isVersionCompatible = plugin.legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_18);
             boolean isPaper = Bukkit.getServer().getVersion().contains("Paper");
             boolean allowUnsafeMiniMessage = plugin.config.getBoolean("config.allow-unsafe-mini-message");
             //do mini message if conditions are met
-            if (isVersionCompatible && (isPaper || allowUnsafeMiniMessage)) {
+            if (isPaper || allowUnsafeMiniMessage) {
                 Audience player = (Audience) e.p; // Needed because the basic Player from the Event can't send Paper's Components
                 Component parsedText = SerializerUtils.serializeText(String.join(" ", e.args));
                 player.sendMessage(parsedText);

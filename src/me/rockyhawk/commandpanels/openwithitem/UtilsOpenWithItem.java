@@ -1,8 +1,6 @@
 package me.rockyhawk.commandpanels.openwithitem;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.ioclasses.GetItemInHand;
-import me.rockyhawk.commandpanels.ioclasses.GetItemInHand_Legacy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -110,17 +108,15 @@ public class UtilsOpenWithItem implements Listener {
         try {
             for (ItemStack s : new ArrayList<>(e.getDrops())) {
                 try {
-                    if (!plugin.nbt.getNBT(s, "CommandPanelsHotbar").isEmpty()) {
+                    if (!plugin.nbt.getData(s, "CommandPanelsHotbar").isEmpty()) {
                         //do not remove items that are not stationary
-                        if (!plugin.nbt.getNBT(s, "CommandPanelsHotbar").endsWith("-1")) {
+                        if (!plugin.nbt.getData(s, "CommandPanelsHotbar").endsWith("-1")) {
                             e.getDrops().remove(s);
                         }
                     }
                 } catch (NullPointerException | IllegalArgumentException ignore) {}
             }
-        }catch (NullPointerException ignore){
-            System.out.println("crapped out");
-        }
+        }catch (NullPointerException ignore){}
     }
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e){
@@ -152,11 +148,7 @@ public class UtilsOpenWithItem implements Listener {
         //cancel everything if holding item (item frames eg)
         Player p = e.getPlayer();
         ItemStack clicked;
-        if(Bukkit.getVersion().contains("1.8")){
-            clicked =  new GetItemInHand_Legacy(plugin).itemInHand(p);
-        }else{
-            clicked = new GetItemInHand(plugin).itemInHand(p);
-        }
+        clicked = p.getInventory().getItemInMainHand();
         if(plugin.hotbar.itemCheckExecute(clicked,p,true,false)){
             e.setCancelled(true);
             p.updateInventory();

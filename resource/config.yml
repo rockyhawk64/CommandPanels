@@ -48,7 +48,6 @@ placeholders:
     start: '{'
     end: '}'
 updater:
-  auto-update: false
   update-checks: true
 purchase:
   currency:

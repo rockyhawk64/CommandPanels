@@ -75,7 +75,7 @@ panels:
       '21':
         material: POTION
         name: '&fClick to heal the player'
-        potion: INSTANT_HEAL
+        potion: HEALING
         lore:
           - '&7Uses the /heal command so that'
           - '&7the player needs permission'

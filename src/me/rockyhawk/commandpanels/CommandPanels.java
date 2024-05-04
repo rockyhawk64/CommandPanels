@@ -31,10 +31,6 @@ import me.rockyhawk.commandpanels.interactives.OutsideClickEvent;
 import me.rockyhawk.commandpanels.interactives.input.UserInputUtils;
 import me.rockyhawk.commandpanels.interactives.Commandpanelrefresher;
 import me.rockyhawk.commandpanels.interactives.OpenOnJoin;
-import me.rockyhawk.commandpanels.ioclasses.nbt.NBTManager;
-import me.rockyhawk.commandpanels.ioclasses.legacy.LegacyVersion;
-import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
-import me.rockyhawk.commandpanels.ioclasses.legacy.PlayerHeads;
 import me.rockyhawk.commandpanels.openpanelsmanager.*;
 import me.rockyhawk.commandpanels.openwithitem.HotbarItemLoader;
 import me.rockyhawk.commandpanels.openwithitem.SwapItemEvent;
@@ -43,6 +39,7 @@ import me.rockyhawk.commandpanels.openwithitem.UtilsOpenWithItem;
 import me.rockyhawk.commandpanels.panelblocks.BlocksTabComplete;
 import me.rockyhawk.commandpanels.panelblocks.Commandpanelblocks;
 import me.rockyhawk.commandpanels.panelblocks.PanelBlockOnClick;
+import me.rockyhawk.commandpanels.nbt.NBTManager;
 import me.rockyhawk.commandpanels.playerinventoryhandler.InventorySaver;
 import me.rockyhawk.commandpanels.playerinventoryhandler.ItemStackSerializer;
 import me.rockyhawk.commandpanels.updater.Updater;
@@ -97,19 +94,17 @@ public class CommandPanels extends JavaPlugin{
     public HasSections has = new HasSections(this);
     public GetCustomHeads customHeads = new GetCustomHeads(this);
     public Updater updater = new Updater(this);
-    public PlayerHeads getHeads = new PlayerHeads(this);
-    public LegacyVersion legacy = new LegacyVersion(this);
 
     public OpenPanelsLoader openPanels = new OpenPanelsLoader(this);
     public OpenGUI createGUI = new OpenGUI(this);
     public PanelPermissions panelPerms = new PanelPermissions(this);
     public HotbarItemLoader hotbar = new HotbarItemLoader(this);
-    public NBTManager nbt = new NBTManager(this);
 
     public InventorySaver inventorySaver = new InventorySaver(this);
     public ItemStackSerializer itemSerializer = new ItemStackSerializer(this);
     public UserInputUtils inputUtils = new UserInputUtils(this);
     public OpenFloodgateGUI floodgateOpenGUI = new OpenFloodgateGUI(this);
+    public NBTManager nbt = new NBTManager(this);
 
     public File panelsf = new File(this.getDataFolder() + File.separator + "panels");
     public YamlConfiguration blockConfig; //where panel block locations are stored
@@ -184,7 +179,11 @@ public class CommandPanels extends JavaPlugin{
         this.getServer().getPluginManager().registerEvents(new ItemFallManager(this), this);
         this.getServer().getPluginManager().registerEvents(new OpenOnJoin(this), this);
         this.getServer().getPluginManager().registerEvents(new OutsideClickEvent(this), this);
-        this.getServer().getPluginManager().registerEvents(new OpenFloodgateGUI(this), this);
+        this.getServer().getPluginManager().registerEvents(new SwapItemEvent(this), this);
+
+        if (this.getServer().getPluginManager().isPluginEnabled("floodgate")) {
+            this.getServer().getPluginManager().registerEvents(new OpenFloodgateGUI(this), this);
+        }
 
         //load in the updater if requested
         if (Objects.requireNonNull(config.getString("updater.update-checks")).equalsIgnoreCase("true")) {
@@ -221,10 +220,6 @@ public class CommandPanels extends JavaPlugin{
             this.getServer().getPluginManager().registerEvents(new PanelBlockOnClick(this), this);
         }
 
-        //if 1.8 don't use this
-        if (!Bukkit.getVersion().contains("1.8")) {
-            this.getServer().getPluginManager().registerEvents(new SwapItemEvent(this), this);
-        }
         //if VotingPlugin is enabled
         if (getServer().getPluginManager().isPluginEnabled("VotingPlugin")) {
             votingPlugin= VotingPluginHooks.getInstance();
@@ -237,23 +232,19 @@ public class CommandPanels extends JavaPlugin{
         //save the example_top.yml file and the template.yml file
         if (!this.panelsf.exists()) {
             try {
-                if(legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
-                    FileConfiguration exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("exampleLegacy.yml")));
-                    exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example.yml"));
-                }else {
-                    //top
-                    FileConfiguration exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example_top.yml")));
-                    exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example_top.yml"));
-                    //middle one
-                    exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example_middle_one.yml")));
-                    exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example_middle_one.yml"));
-                    //middle two
-                    exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example_middle_two.yml")));
-                    exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example_middle_two.yml"));
-                    //bottom
-                    exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example_bottom.yml")));
-                    exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example_bottom.yml"));
-                }
+                //top
+                FileConfiguration exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example_top.yml")));
+                exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example_top.yml"));
+                //middle one
+                exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example_middle_one.yml")));
+                exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example_middle_one.yml"));
+                //middle two
+                exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example_middle_two.yml")));
+                exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example_middle_two.yml"));
+                //bottom
+                exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("example_bottom.yml")));
+                exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example_bottom.yml"));
+
                 FileConfiguration templateFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("template.yml")));
                 templateFileConfiguration.save(new File(this.panelsf + File.separator + "template.yml"));
             } catch (IOException var11) {
@@ -292,7 +283,7 @@ public class CommandPanels extends JavaPlugin{
         //save files
         panelData.saveDataFile();
         inventorySaver.saveInventoryFile();
-        updater.autoUpdatePlugin(this.getFile().getName());
+        updater.updatePlugin(this.getFile().getName());
         Bukkit.getLogger().info("RockyHawk's CommandPanels Plugin Disabled, aww man.");
     }
 
@@ -315,16 +306,9 @@ public class CommandPanels extends JavaPlugin{
             //hiding attributes will add an NBT tag
             if(hideAttributes) {
                 renamedMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-                renamedMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
                 renamedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                //HIDE_ARMOR_TRIM was added into 1.20 api
-                if(legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20)){
-                    renamedMeta.addItemFlags(ItemFlag.HIDE_ARMOR_TRIM);
-                }
-                //HIDE_DYE was added into 1.17 api
-                if(legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_17)){
-                    renamedMeta.addItemFlags(ItemFlag.HIDE_DYE);
-                }
+                renamedMeta.addItemFlags(ItemFlag.HIDE_ARMOR_TRIM);
+                renamedMeta.addItemFlags(ItemFlag.HIDE_DYE);
             }
             if (customName != null) {
                 renamedMeta.setDisplayName(customName);
@@ -457,7 +441,7 @@ public class CommandPanels extends JavaPlugin{
             p.sendMessage(ChatColor.GOLD + "/cpv " + ChatColor.WHITE + "Display the current version.");
         }
         if (p.hasPermission("commandpanel.refresh")) {
-            p.sendMessage(ChatColor.GOLD + "/cpu [player] [position:all] " + ChatColor.WHITE + "Update a panel for a player while it is still open.");
+            p.sendMessage(ChatColor.GOLD + "/cpu <player> [position:all] " + ChatColor.WHITE + "Update a panel for a player while it is still open.");
         }
         if (p.hasPermission("commandpanel.update")) {
             p.sendMessage(ChatColor.GOLD + "/cpv latest " + ChatColor.WHITE + "Download the latest update upon server reload/restart.");
@@ -467,7 +451,7 @@ public class CommandPanels extends JavaPlugin{
             p.sendMessage(ChatColor.GOLD + "/cpe <panel file> " + ChatColor.WHITE + "Export panel to the Online Editor.");
         }
         if (p.hasPermission("commandpanel.import")) {
-            p.sendMessage(ChatColor.GOLD + "/cpi [file name] [URL] " + ChatColor.WHITE + "Downloads a panel from a raw link online.");
+            p.sendMessage(ChatColor.GOLD + "/cpi <file name> <URL> " + ChatColor.WHITE + "Downloads a panel from a raw link online.");
         }
         if (p.hasPermission("commandpanel.list")) {
             p.sendMessage(ChatColor.GOLD + "/cpl " + ChatColor.WHITE + "Lists the currently loaded panels.");

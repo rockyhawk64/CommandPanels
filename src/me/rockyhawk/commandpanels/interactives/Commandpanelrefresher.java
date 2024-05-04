@@ -115,7 +115,7 @@ public class Commandpanelrefresher implements Listener {
                     if(plugin.inventorySaver.hasNormalInventory(p)) {
                         for (ItemStack itm : p.getInventory().getContents()) {
                             if (itm != null) {
-                                if (plugin.nbt.hasNBT(itm)) {
+                                if (plugin.nbt.hasData(itm,"CommandPanelsItem")) {
                                     p.getInventory().remove(itm);
                                 }
                             }

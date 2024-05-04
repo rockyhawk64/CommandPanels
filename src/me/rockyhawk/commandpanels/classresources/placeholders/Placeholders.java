@@ -5,14 +5,12 @@ import com.earth2me.essentials.Essentials;
 import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionEffect;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -141,18 +139,18 @@ public class Placeholders {
             }
         }
 
-        //placeholder to check if an item has NBT %cp-nbt-slot:key%
+        //placeholder to check if an item has a container %cp-container-slot:key%
         if(identifier.startsWith("nbt-")) {
             try {
                 String slot_key = identifier.replace("nbt-", "");
                 String value;
-                value = plugin.nbt.getNBT(p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(slot_key.split(":")[0])),slot_key.split(":")[1]);
+                value = plugin.nbt.getData(p.getOpenInventory().getTopInventory().getItem((int) Double.parseDouble(slot_key.split(":")[0])), slot_key.split(":")[1]);
                 if(value.isEmpty()){
-                    value = "empty";
+                    value = "";
                 }
                 return value;
             }catch (Exception ex){
-                plugin.debug(ex,p);
+                //nbt does not exist or slot does not exist
                 return "";
             }
         }
@@ -170,8 +168,8 @@ public class Placeholders {
                 if (item != null && item.hasItemMeta() && item.getItemMeta() instanceof PotionMeta) {
                     PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
 
-                    //Returns the value like this <Type>:<Extended>:<Upgraded> Example SLOWNESS:true:false
-                    return potionMeta.getBasePotionData().getType() + ":" + potionMeta.getBasePotionData().isExtended() + ":" + potionMeta.getBasePotionData().isUpgraded();
+                    //Returns the value like this <Type> Example SLOWNESS
+                    return potionMeta.getBasePotionType().toString();
                 } else {
                     return "empty"; // Item is either null or doesn't have potion meta
                 }
@@ -189,10 +187,6 @@ public class Placeholders {
                 String material;
                 try {
                     material = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getType().toString();
-                    if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
-                        //add the ID to the end if it is legacy (eg, material:id)
-                        material = material + ":" + p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getData().getData();
-                    }
                 } catch (NullPointerException er) {
                     material = "AIR";
                 }
@@ -238,17 +232,11 @@ public class Placeholders {
         if(identifier.startsWith("damaged-")) {
             try {
                 String matNumber = identifier.replace("damaged-", "");
-                boolean damaged = false;
+                boolean damaged;
                 ItemStack itm = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber));
                 try {
-                    if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
-                        if(itm.getType().getMaxDurability() != 0) {
-                            damaged = (itm.getType().getMaxDurability() - itm.getDurability()) < itm.getType().getMaxDurability();
-                        }
-                    }else {
-                        Damageable itemDamage = (Damageable) itm.getItemMeta();
-                        damaged = itemDamage.hasDamage();
-                    }
+                    Damageable itemDamage = (Damageable) itm.getItemMeta();
+                    damaged = itemDamage.hasDamage();
                 } catch (NullPointerException er) {
                     damaged = false;
                 }

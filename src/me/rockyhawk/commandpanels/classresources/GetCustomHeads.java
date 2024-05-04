@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -32,7 +31,7 @@ public class GetCustomHeads {
     public HashMap<String, String> playerHeadTextures = new HashMap<>();
 
     public String getHeadBase64(ItemStack head) {
-        if (plugin.getHeads.ifSkullOrHead(head.getType().toString()) && head.hasItemMeta()) {
+        if ((head.getType() == Material.PLAYER_HEAD) && head.hasItemMeta()) {
             try {
                 SkullMeta meta = (SkullMeta) head.getItemMeta();
                 assert meta != null;
@@ -71,18 +70,13 @@ public class GetCustomHeads {
 
     //getting the head from a Player Name
     public ItemStack getPlayerHead(String name) {
-        byte id = 0;
-        if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
-            id = 3;
-        }
-
         //get texture if already cached
         if(playerHeadTextures.containsKey(name)) {
             return getCustomHead(playerHeadTextures.get(name));
         }
 
         //create ItemStack
-        ItemStack itemStack = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1, id);
+        ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD, 1);
 
         //Run fallback code, if API call fails, use legacy setOwner
         SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
@@ -144,11 +138,7 @@ public class GetCustomHeads {
             throw new IllegalStateException("Profile doesn't contain a property map");
         } else {
             propertyMap.put("textures", new Property("textures", b64stringtexture));
-            byte id = 0;
-            if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
-                id = 3;
-            }
-            ItemStack head = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1,id);
+            ItemStack head = new ItemStack(Material.PLAYER_HEAD, 1);
             ItemMeta headMeta = head.getItemMeta();
             assert headMeta != null;
 

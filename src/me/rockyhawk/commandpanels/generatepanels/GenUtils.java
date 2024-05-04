@@ -2,7 +2,6 @@ package me.rockyhawk.commandpanels.generatepanels;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -93,12 +92,7 @@ public class GenUtils implements Listener {
 
         file.set("panels." + date + ".title", "&8Generated " + date);
         file.addDefault("panels." + date + ".command", date);
-        if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
-            file.set("panels." + date + ".empty", "STAINED_GLASS_PANE");
-            file.set("panels." + date + ".emptyID", "15");
-        }else{
-            file.set("panels." + date + ".empty", "BLACK_STAINED_GLASS_PANE");
-        }
+        file.set("panels." + date + ".empty", "BLACK_STAINED_GLASS_PANE");
         //add items
         file = plugin.itemCreate.generatePanelFile(date,inv,file);
 

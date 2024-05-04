@@ -106,16 +106,6 @@ public class HasSections {
             outputValue = false;
         }
 
-        //the original has sections as TinyTank800 wanted to keep them
-        if(setName.startsWith("hasvalue")) {
-            return compare.equals(value) == outputValue;
-        }
-        if(setName.startsWith("hasperm")) {
-            return p.hasPermission(value) == outputValue;
-        }
-        if(setName.startsWith("hasgreater")) {
-            return (Long.parseLong(compare) >= Long.parseLong(value)) == outputValue;
-        }
         //the current has section with all the functions implemented inside it
         if(setName.startsWith("has")) {
             if(value.endsWith(" HASPERM")) {
