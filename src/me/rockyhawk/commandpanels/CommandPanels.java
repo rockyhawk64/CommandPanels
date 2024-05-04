@@ -112,6 +112,16 @@ public class CommandPanels extends JavaPlugin{
     public void onEnable() {
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loading...");
 
+        // Check if Server is not supported by this version of CP
+        if(MinecraftVersions.lessThanOrEqualTo("1.20.5")){
+            Bukkit.getLogger().warning("======================================================");
+            Bukkit.getLogger().warning("CommandPanels v" + this.getDescription().getVersion() + " is developed for Minecraft 1.20.5 and newer!");
+            Bukkit.getLogger().warning("You're running on: " + Bukkit.getServer().getVersion());
+            Bukkit.getLogger().warning("Please Upgrade the server or downgrade the plugin!");
+            Bukkit.getLogger().warning("You can find other versions of the plugin on: https://commandpanels.net/download");
+            Bukkit.getLogger().warning("======================================================");
+        }
+
         //register config files
         this.blockConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "blocks.yml"));
         panelData.dataConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "data.yml"));
@@ -519,17 +529,17 @@ public class CommandPanels extends JavaPlugin{
     }
 
     //returns true if the item is the MMO Item
-    public boolean isMMOItem(ItemStack itm, String type, String id){
+    public boolean isMMOItem(ItemStack itm, String type, String id) {
         try {
             if (getServer().getPluginManager().isPluginEnabled("MMOItems")) {
                 NBTItem nbt = NBTItem.get(itm);
-                if (nbt.getType().equalsIgnoreCase(type) && nbt.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(id)){
+                if (nbt.getType().equalsIgnoreCase(type) && nbt.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(id)) {
                     return true;
                 }
                 itm.getType();
             }
-        }catch (Exception ex){
-            debug(ex,null);
+        } catch (Exception ex) {
+            debug(ex, null);
         }
         return false;
     }
