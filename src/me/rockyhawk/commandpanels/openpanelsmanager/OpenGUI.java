@@ -26,11 +26,20 @@ public class OpenGUI {
         ConfigurationSection pconfig = panel.getConfig();
 
         Inventory i;
+        String title = "";
         if(position == PanelPosition.Top) {
-            String title;
             if(pconfig.contains("custom-title")) {
                 //used for titles in the custom-title section, for has sections
                 String section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("custom-title"), p);
+
+                //check for if there is animations inside the custom-title section
+                if (pconfig.contains("custom-title" + section + ".animate" + animateValue)) {
+                    //check for if it contains the animate that has the animvatevalue
+                    if (pconfig.contains("custom-title" + section + ".animate" + animateValue)) {
+                        section = section + ".animate" + animateValue;
+                    }
+                }
+
                 title = plugin.tex.placeholders(panel, position, p, pconfig.getString("custom-title" + section + ".title"));
             }else {
                 //regular inventory title
@@ -175,6 +184,9 @@ public class OpenGUI {
         } else if (openType == PanelOpenType.Refresh) {
             //openType 0 will just refresh the panel
             if(position == PanelPosition.Top) {
+                if(!p.getOpenInventory().getTitle().equals(title) && !title.isEmpty()){
+                    p.getOpenInventory().setTitle(title);
+                }
                 p.getOpenInventory().getTopInventory().setContents(i.getContents());
             }
         } else if (openType == PanelOpenType.Return) {
