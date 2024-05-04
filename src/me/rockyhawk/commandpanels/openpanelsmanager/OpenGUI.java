@@ -34,10 +34,7 @@ public class OpenGUI {
 
                 //check for if there is animations inside the custom-title section
                 if (pconfig.contains("custom-title" + section + ".animate" + animateValue)) {
-                    //check for if it contains the animate that has the animvatevalue
-                    if (pconfig.contains("custom-title" + section + ".animate" + animateValue)) {
                         section = section + ".animate" + animateValue;
-                    }
                 }
 
                 title = plugin.tex.placeholders(panel, position, p, pconfig.getString("custom-title" + section + ".title"));
