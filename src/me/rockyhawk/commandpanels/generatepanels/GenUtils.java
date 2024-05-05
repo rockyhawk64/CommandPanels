@@ -32,6 +32,9 @@ public class GenUtils implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
         Player p = (Player)e.getPlayer();
+        if (!this.plugin.generateMode.contains(p)) {
+            return;
+        }
         if(!ChatColor.stripColor(e.getView().getTitle()).equals("Generate New Panel")){
             return;
         }
