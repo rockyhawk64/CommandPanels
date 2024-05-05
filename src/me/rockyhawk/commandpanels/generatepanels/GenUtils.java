@@ -31,7 +31,7 @@ public class GenUtils implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
         Player p = (Player)e.getPlayer();
-        if(!this.plugin.generateMode.contains(p)){
+        if(!p.hasPermission("commandpanel.generate")){
             return;
         }
         if(!ChatColor.stripColor(e.getView().getTitle()).equals("Generate New Panel")){
@@ -52,7 +52,7 @@ public class GenUtils implements Listener {
     public void onInventoryOpenEvent(InventoryOpenEvent e) {
         HumanEntity h = e.getPlayer();
         Player p = Bukkit.getPlayer(h.getName());
-        if (this.plugin.generateMode.contains(p)) {
+        if (this.plugin.generateMode.contains(p) && p.hasPermission("commandpanel.generate")) {
             this.plugin.generateMode.remove(p);
             generatePanel(p,e.getInventory());
         }

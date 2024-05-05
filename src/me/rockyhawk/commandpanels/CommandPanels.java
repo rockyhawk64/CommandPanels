@@ -305,6 +305,7 @@ public class CommandPanels extends JavaPlugin{
             assert renamedMeta != null;
             //hiding attributes will add an NBT tag
             if(hideAttributes) {
+                renamedMeta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
                 renamedMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                 renamedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 renamedMeta.addItemFlags(ItemFlag.HIDE_ARMOR_TRIM);
