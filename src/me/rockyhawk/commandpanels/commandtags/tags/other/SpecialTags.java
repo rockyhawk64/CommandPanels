@@ -70,6 +70,20 @@ public class SpecialTags implements Listener {
             }
             return;
         }
+        if(e.name.equalsIgnoreCase("panel-title=")) {
+            e.commandTagUsed();
+            //added into the 1.20 API
+            //will set the open panel title to the provided string panel-title= <VALUE>
+            //AS OF TINYTANK800's pull this only works on static panels!
+            if(e.args.length >= 1){
+                StringBuilder title = new StringBuilder();
+                for(String args : e.args){
+                    title.append(args).append(" ");
+                }
+                e.p.getOpenInventory().setTitle(title.toString());
+            }
+            return;
+        }
         if(e.name.equalsIgnoreCase("title=")) {
             e.commandTagUsed();
             //added into the 1.11 API

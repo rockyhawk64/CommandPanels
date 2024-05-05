@@ -143,7 +143,7 @@ public class InventorySaver implements Listener {
                 p.getInventory().addItem(item);
                 return;
             }
-        }else {
+        } else {
             List<ItemStack> cont = new ArrayList<>(Arrays.asList(getNormalInventory(p)));
             boolean found = false;
             for (int i = 0; 36 > i; i++){
