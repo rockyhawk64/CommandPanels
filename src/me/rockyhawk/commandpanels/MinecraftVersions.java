@@ -66,11 +66,7 @@ public class MinecraftVersions {
         if(serverMajorVersion < specifiedMajorVersion){
             return true;
         } // If Major version equal and Minor Version is less or equal than specified version.
-        else if (serverMajorVersion == specifiedMajorVersion && serverMinorVersion <= specifiedMinorVersion) {
-            return true;
-        }else{
-            return false;
-        }
+        else return serverMajorVersion == specifiedMajorVersion && serverMinorVersion <= specifiedMinorVersion;
     }
 
     /**
@@ -96,10 +92,6 @@ public class MinecraftVersions {
         if(serverMajorVersion > specifiedMajorVersion){
             return true;
         } // If Major version equal and Minor Version is less or equal than specified version.
-        else if (serverMajorVersion == specifiedMajorVersion && serverMinorVersion >= specifiedMinorVersion) {
-            return true;
-        }else{
-            return false;
-        }
+        else return serverMajorVersion == specifiedMajorVersion && serverMinorVersion >= specifiedMinorVersion;
     }
 }
