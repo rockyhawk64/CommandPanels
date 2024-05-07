@@ -41,10 +41,12 @@ public class ItemPaywall implements Listener {
                 //create the item to be removed
                 ItemStack sellItem;
                 if (Material.matchMaterial(e.args[0]) == null) {
+                    //If custom item set to custom item data.
                     sellItem = plugin.itemCreate.makeCustomItemFromConfig(e.panel, PanelPosition.Top, e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0]), e.p, true, true, false);
                     sellItem.setAmount(Integer.parseInt(e.args[1]));
                 } else {
-                    sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(e.args[1])), Integer.parseInt(e.args[2]));
+                    //If normal just set material.
+                    sellItem = new ItemStack(Objects.requireNonNull(Material.matchMaterial(e.args[0])), Integer.parseInt(e.args[1]));
                 }
                 //this is not a boolean because it needs to return an int
                 PaywallOutput removedItem = PaywallOutput.Blocked;
@@ -58,91 +60,53 @@ public class ItemPaywall implements Listener {
                         continue;
                     }
 
-                    ItemStack itm = cont.get(f);
+                    ItemStack itm = cont.get(f); //Get item/slot
 
-                    if (Material.matchMaterial(e.args[0]) == null) {
-                        //if custom item is a mmo item (1.14+ for the API)
-                        try {
-                            if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems") && e.panel.getConfig().getString("custom-item." + e.args[0] + ".material").startsWith("mmo=")) {
-                                String customItemMaterial = e.panel.getConfig().getString("custom-item." + e.args[0] + ".material");
-                                String mmoType = customItemMaterial.split("\\s")[1];
-                                String mmoID = customItemMaterial.split("\\s")[2];
+                    //Check if the item matches the id set. If not continue to next in loop.
+                    if (id != -1 && itm.getDurability() != id) {
+                        continue;
+                    }
 
-                                if (plugin.isMMOItem(itm, mmoType, mmoID)) {
-                                    ItemStack add = new ItemStack(e.p.getInventory().getItem(f).getType(), e.p.getInventory().getItem(f).getAmount());
-                                    remainingAmount -= add.getAmount();
-                                    if (e.doDelete) remCont.put(f,add);
-                                    if (remainingAmount <= 0) {
-                                        removedItem = PaywallOutput.Passed;
-                                        break;
-                                    }
-                                }
-                                continue; //This stops the other custom item section from reading and adding false numbers.
-                            }
-                        } catch (Exception ex) {
-                            plugin.debug(ex, e.p);
-                        }
-
-                        //item-paywall is a custom item as it is not a material
-                        if (plugin.itemCreate.isIdentical(sellItem, itm, Objects.requireNonNull(e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0])).contains("nbt"))) {
-                            ItemStack add = new ItemStack(e.p.getInventory().getItem(f).getType(), e.p.getInventory().getItem(f).getAmount());
-                            remainingAmount -= add.getAmount();
-                            if (e.doDelete) remCont.put(f,add);
-                            if (remainingAmount <= 0) {
-                                removedItem = PaywallOutput.Passed;
-                                break;
-                            }
-                        }
-
-                    } else {
-                        //if the item is a standard material
-                        if (itm.getType() == sellItem.getType()) {
-                            if(itm.hasItemMeta() && !ignoreNBT){
-                                //If item has custom meta continue to next item.
-                                continue;
-                            }
-
-                            //Check if the item matches the id set. If not continue to next in loop.
-                            if (id != -1 && itm.getDurability() != id) {
-                                continue;
-                            }
-
-                            //Adding item to the remove list then checking if we have reached the required amount.
-                            ItemStack add = new ItemStack(itm.getType(), itm.getAmount());
-                            remainingAmount -= add.getAmount();
-                            if (e.doDelete) remCont.put(f,add);
-                            if (remainingAmount <= 0) {
-                                removedItem = PaywallOutput.Passed;
-                                break;
-                            }
+                    if(plugin.itemCreate.isIdentical(sellItem,itm, !ignoreNBT)){ //Check if both sell item and item in slot are identical
+                        //Adding item to the remove list then checking if we have reached the required amount.
+                        ItemStack add = new ItemStack(itm.getType(), itm.getAmount());
+                        remainingAmount -= add.getAmount();
+                        if (e.doDelete) remCont.put(f,add);
+                        if (remainingAmount <= 0) {
+                            removedItem = PaywallOutput.Passed;
+                            break;
                         }
                     }
                 }
 
                 if (remainingAmount <= 0) {
+                    //If we have reached the end of the paywall.
                     for(Map.Entry<Integer, ItemStack> entry : remCont.entrySet()) {
                         ItemStack remItem = entry.getValue();
 
-                        //Check if its the last item in the loop and only subtract the remaining amount.
+                        //Check if it's the last item in the loop and only subtract the remaining amount.
                         if (sellItem.getAmount() < remItem.getAmount()) {
                             if (plugin.inventorySaver.hasNormalInventory(e.p)) {
                                 if (e.doDelete)
+                                    //Normal inventory
                                     e.p.getInventory().getItem(entry.getKey()).setAmount(remItem.getAmount() - sellItem.getAmount());
                                 e.p.updateInventory();
                             } else {
                                 if (e.doDelete)
+                                    //Saved inventory
                                     cont.get(entry.getKey()).setAmount(remItem.getAmount() - sellItem.getAmount());
                                 plugin.inventorySaver.inventoryConfig.set(e.p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
                             }
                         } else { //If its anywhere but the last in loop just get rid of the items.
                             if (plugin.inventorySaver.hasNormalInventory(e.p)) {
-                                if (e.doDelete) e.p.getInventory().setItem(entry.getKey(), null);
-                                //p.getInventory().remove(entry.getValue());
-                                //p.getInventory().getItem(entry.getKey()).setAmount(0);
+                                if (e.doDelete)
+                                    //Normal inventory
+                                    e.p.getInventory().setItem(entry.getKey(), null);
                                 e.p.updateInventory();
                             } else {
-                                if (e.doDelete) cont.remove(entry.getValue());
-                                //cont.get(entry.getKey()).setAmount(0);
+                                if (e.doDelete)
+                                    //Saved inventory
+                                    cont.remove(entry.getValue());
                                 plugin.inventorySaver.inventoryConfig.set(e.p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
                             }
                         }
