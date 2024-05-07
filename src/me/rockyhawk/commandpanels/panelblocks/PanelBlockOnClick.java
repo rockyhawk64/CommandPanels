@@ -61,7 +61,7 @@ public class PanelBlockOnClick implements Listener {
                 if(plugin.blockConfig.contains("blocks." + configLocation + ".commands")){
                     if(!isVoid) {
                         for (String command : plugin.blockConfig.getStringList("blocks." + configLocation + ".commands")) {
-                            plugin.commandTags.runCommand(null, PanelPosition.Top, p, command);
+                            plugin.commandRunner.runCommand(null, PanelPosition.Top, p, command);
                         }
                     }
                     return true;
@@ -69,7 +69,7 @@ public class PanelBlockOnClick implements Listener {
                 //uses the open= tag because it will open a panel with panel names, but also works with open= features like placeholders
                 if(!isVoid) {
                     String command = "open= " + plugin.blockConfig.getString("blocks." + configLocation + ".panel");
-                    plugin.commandTags.runCommand(null, PanelPosition.Top, p, command);
+                    plugin.commandRunner.runCommand(null, PanelPosition.Top, p, command);
                 }
                 return true;
             }

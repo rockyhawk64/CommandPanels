@@ -16,7 +16,7 @@ import me.rockyhawk.commandpanels.classresources.placeholders.CreateText;
 import me.rockyhawk.commandpanels.classresources.placeholders.HexColours;
 import me.rockyhawk.commandpanels.classresources.placeholders.Placeholders;
 import me.rockyhawk.commandpanels.commands.*;
-import me.rockyhawk.commandpanels.commandtags.CommandTags;
+import me.rockyhawk.commandpanels.commandtags.CommandRunner;
 import me.rockyhawk.commandpanels.completetabs.CpTabComplete;
 import me.rockyhawk.commandpanels.completetabs.UpdateTabComplete;
 import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
@@ -35,6 +35,7 @@ import me.rockyhawk.commandpanels.ioclasses.nbt.NBTManager;
 import me.rockyhawk.commandpanels.ioclasses.legacy.LegacyVersion;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.ioclasses.legacy.PlayerHeads;
+import me.rockyhawk.commandpanels.ioclasses.potions.LegacyPotionData;
 import me.rockyhawk.commandpanels.openpanelsmanager.*;
 import me.rockyhawk.commandpanels.openwithitem.HotbarItemLoader;
 import me.rockyhawk.commandpanels.openwithitem.SwapItemEvent;
@@ -85,7 +86,7 @@ public class CommandPanels extends JavaPlugin{
     //get alternate classes
     public PanelDownloader downloader = new PanelDownloader(this);
 
-    public CommandTags commandTags = new CommandTags(this);
+    public CommandRunner commandRunner = new CommandRunner(this);
     public PanelDataLoader panelData = new PanelDataLoader(this);
     public Placeholders placeholders = new Placeholders(this);
     public DebugManager debug = new DebugManager(this);
@@ -98,6 +99,7 @@ public class CommandPanels extends JavaPlugin{
     public GetCustomHeads customHeads = new GetCustomHeads(this);
     public Updater updater = new Updater(this);
     public PlayerHeads getHeads = new PlayerHeads(this);
+    public LegacyPotionData legacyPotion = new LegacyPotionData(this);
     public LegacyVersion legacy = new LegacyVersion(this);
 
     public OpenPanelsLoader openPanels = new OpenPanelsLoader(this);
@@ -200,7 +202,7 @@ public class CommandPanels extends JavaPlugin{
         }
 
         //load in all built in command tags
-        commandTags.registerBuiltInTags();
+        commandRunner.registerBuiltInTags();
 
         //if refresh-panels set to false, don't load this
         if(Objects.requireNonNull(config.getString("config.refresh-panels")).equalsIgnoreCase("true")){
@@ -240,7 +242,7 @@ public class CommandPanels extends JavaPlugin{
         //save the example_top.yml file and the template.yml file
         if (!this.panelsf.exists()) {
             try {
-                if(legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+                if(legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                     FileConfiguration exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(this.getResource("exampleLegacy.yml")));
                     exampleFileConfiguration.save(new File(this.panelsf + File.separator + "example.yml"));
                 }else {
@@ -318,14 +320,23 @@ public class CommandPanels extends JavaPlugin{
             //hiding attributes will add an NBT tag
             if(hideAttributes) {
                 renamedMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-                renamedMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
                 renamedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                //HIDE_ADDITIONAL_TOOLTIP was added into 1.20.5 api
+                if(legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) ||
+                        (legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && legacy.MINOR_VERSION >= 5)){
+                    renamedMeta.addItemFlags(ItemFlag.valueOf("HIDE_ADDITIONAL_TOOLTIP"));
+                }
+                //HIDE_POTION_EFFECTS was removed in the 1.20.5 api
+                if(legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
+                        (legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && legacy.MINOR_VERSION <= 4)){
+                    renamedMeta.addItemFlags(ItemFlag.valueOf("HIDE_POTION_EFFECTS"));
+                }
                 //HIDE_ARMOR_TRIM was added into 1.20 api
-                if(legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20)){
+                if(legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20)){
                     renamedMeta.addItemFlags(ItemFlag.HIDE_ARMOR_TRIM);
                 }
                 //HIDE_DYE was added into 1.17 api
-                if(legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_17)){
+                if(legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_17)){
                     renamedMeta.addItemFlags(ItemFlag.HIDE_DYE);
                 }
             }
@@ -460,7 +471,7 @@ public class CommandPanels extends JavaPlugin{
             p.sendMessage(ChatColor.GOLD + "/cpv " + ChatColor.WHITE + "Display the current version.");
         }
         if (p.hasPermission("commandpanel.refresh")) {
-            p.sendMessage(ChatColor.GOLD + "/cpu [player] [position:all] " + ChatColor.WHITE + "Update a panel for a player while it is still open.");
+            p.sendMessage(ChatColor.GOLD + "/cpu <player> [position:all] " + ChatColor.WHITE + "Update a panel for a player while it is still open.");
         }
         if (p.hasPermission("commandpanel.update")) {
             p.sendMessage(ChatColor.GOLD + "/cpv latest " + ChatColor.WHITE + "Download the latest update upon server reload/restart.");
@@ -470,7 +481,7 @@ public class CommandPanels extends JavaPlugin{
             p.sendMessage(ChatColor.GOLD + "/cpe <panel file> " + ChatColor.WHITE + "Export panel to the Online Editor.");
         }
         if (p.hasPermission("commandpanel.import")) {
-            p.sendMessage(ChatColor.GOLD + "/cpi [file name] [URL] " + ChatColor.WHITE + "Downloads a panel from a raw link online.");
+            p.sendMessage(ChatColor.GOLD + "/cpi <file name> <URL> " + ChatColor.WHITE + "Downloads a panel from a raw link online.");
         }
         if (p.hasPermission("commandpanel.list")) {
             p.sendMessage(ChatColor.GOLD + "/cpl " + ChatColor.WHITE + "Lists the currently loaded panels.");

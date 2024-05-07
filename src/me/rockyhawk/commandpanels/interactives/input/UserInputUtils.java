@@ -50,7 +50,7 @@ public class UserInputUtils implements Listener {
 
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 public void run() {
-                    plugin.commandTags.runCommands(playerInput.get(e.getPlayer()).panel, PanelPosition.Top,e.getPlayer(), playerInput.get(e.getPlayer()).commands,playerInput.get(e.getPlayer()).click); //I have to do this to run regular Bukkit voids in an ASYNC Event
+                    plugin.commandRunner.runCommands(playerInput.get(e.getPlayer()).panel, PanelPosition.Top,e.getPlayer(), playerInput.get(e.getPlayer()).commands,playerInput.get(e.getPlayer()).click); //I have to do this to run regular Bukkit voids in an ASYNC Event
                     playerInput.remove(e.getPlayer());
                 }
             });

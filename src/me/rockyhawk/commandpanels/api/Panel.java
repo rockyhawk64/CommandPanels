@@ -87,7 +87,7 @@ public class Panel{
     public ItemStack getHotbarItem(Player p){
         if (this.getConfig().contains("open-with-item.pre-load-commands")) {
             try {
-                plugin.commandTags.runCommands(this,PanelPosition.Top,p, this.getConfig().getStringList("open-with-item.pre-load-commands"));
+                plugin.commandRunner.runCommands(this,PanelPosition.Top,p, this.getConfig().getStringList("open-with-item.pre-load-commands"), null);
             }catch(Exception s){
                 plugin.debug(s,p);
             }

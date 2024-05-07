@@ -72,7 +72,7 @@ public class GetCustomHeads {
     //getting the head from a Player Name
     public ItemStack getPlayerHead(String name) {
         byte id = 0;
-        if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
+        if (plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
             id = 3;
         }
 
@@ -123,11 +123,8 @@ public class GetCustomHeads {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     itemStack.setItemMeta(getCustomHead(value).getItemMeta());
                 });
-            } catch (Exception e) {
-                // Handle exceptions
-                if(plugin.debug.consoleDebug) {
-                    plugin.debug(e,null);
-                }
+            } catch (Exception ignore) {
+                // Ignore as errors should be skipped and no need to show in console
             }
         });
 
@@ -145,7 +142,7 @@ public class GetCustomHeads {
         } else {
             propertyMap.put("textures", new Property("textures", b64stringtexture));
             byte id = 0;
-            if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
+            if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
                 id = 3;
             }
             ItemStack head = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1,id);

@@ -32,7 +32,7 @@ public class UtilsPanelsLoader implements Listener {
         p.updateInventory();
         for(ItemStack itm : p.getInventory().getContents()){
             if(itm != null){
-                if (plugin.nbt.hasNBT(itm)) {
+                if (plugin.nbt.hasNBT(itm, "CommandPanelsItem")) {
                     p.getInventory().remove(itm);
                 }
             }

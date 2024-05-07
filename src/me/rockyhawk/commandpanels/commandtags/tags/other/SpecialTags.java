@@ -66,7 +66,7 @@ public class SpecialTags implements Listener {
                 plugin.openPanels.closePanelForLoader(e.p.getName(),PanelPosition.Bottom);
             }else if(position == PanelPosition.Top && plugin.openPanels.hasPanelOpen(e.p.getName(),position)){
                 //closing top closes all
-                plugin.commandTags.runCommand(e.panel,e.pos,e.p,"cpc");
+                plugin.commandRunner.runCommand(e.panel,e.pos,e.p,"cpc");
             }
             return;
         }
@@ -139,7 +139,7 @@ public class SpecialTags implements Listener {
                 @Override
                 public void run() {
                     try {
-                        plugin.commandTags.runCommand(e.panel,e.pos, e.p, finalCommand);
+                        plugin.commandRunner.runCommand(e.panel,e.pos, e.p, finalCommand);
                     } catch (Exception ex) {
                         //if there are any errors, cancel so that it doesn't loop errors
                         plugin.debug(ex, e.p);

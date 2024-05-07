@@ -96,7 +96,7 @@ public class GenUtils implements Listener {
 
         file.set("panels." + date + ".title", "&8Generated " + date);
         file.addDefault("panels." + date + ".command", date);
-        if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
+        if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
             file.set("panels." + date + ".empty", "STAINED_GLASS_PANE");
             file.set("panels." + date + ".emptyID", "15");
         }else{

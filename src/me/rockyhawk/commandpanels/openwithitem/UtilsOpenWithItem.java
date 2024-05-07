@@ -1,8 +1,8 @@
 package me.rockyhawk.commandpanels.openwithitem;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.ioclasses.GetItemInHand;
-import me.rockyhawk.commandpanels.ioclasses.GetItemInHand_Legacy;
+import me.rockyhawk.commandpanels.ioclasses.iteminhand.GetItemInHand;
+import me.rockyhawk.commandpanels.ioclasses.iteminhand.GetItemInHand_Legacy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

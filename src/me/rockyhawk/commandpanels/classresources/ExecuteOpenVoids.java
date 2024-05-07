@@ -82,7 +82,7 @@ public class ExecuteOpenVoids {
                 //execute commands once the panel opens
                 if (panel.getConfig().contains("commands-on-open")) {
                     try {
-                        plugin.commandTags.runCommands(panel,position,p, panel.getConfig().getStringList("commands-on-open"));
+                        plugin.commandRunner.runCommands(panel,position,p, panel.getConfig().getStringList("commands-on-open"), null);
                     }catch(Exception s){
                         p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " " + "commands-on-open: " + panel.getConfig().getString("commands-on-open")));
                     }
@@ -155,7 +155,7 @@ public class ExecuteOpenVoids {
     public void beforeLoadCommands(Panel panel,PanelPosition pos, Player p){
         if (panel.getConfig().contains("pre-load-commands")) {
             try {
-                plugin.commandTags.runCommands(panel,pos,p, panel.getConfig().getStringList("pre-load-commands"));
+                plugin.commandRunner.runCommands(panel,pos,p, panel.getConfig().getStringList("pre-load-commands"), null);
             }catch(Exception s){
                 plugin.debug(s,p);
             }

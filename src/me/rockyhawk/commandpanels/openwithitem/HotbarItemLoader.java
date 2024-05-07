@@ -51,7 +51,7 @@ public class HotbarItemLoader {
                     return false;
                 }
                 if(panel.getHotbarSection(p).contains("commands")){
-                    plugin.commandTags.runCommands(panel,PanelPosition.Top,p,panel.getHotbarSection(p).getStringList("commands"),click);
+                    plugin.commandRunner.runCommands(panel,PanelPosition.Top,p,panel.getHotbarSection(p).getStringList("commands"),click);
                     return true;
                 }
                 panel.open(p, PanelPosition.Top);
@@ -87,7 +87,7 @@ public class HotbarItemLoader {
                         }
                         if(panel.getHotbarSection(p).contains("commands")){
                             for(String command : panel.getHotbarSection(p).getStringList("commands")){
-                                plugin.commandTags.runCommand(panel,PanelPosition.Top,p, command);
+                                plugin.commandRunner.runCommand(panel,PanelPosition.Top,p, command);
                             }
                             return true;
                         }

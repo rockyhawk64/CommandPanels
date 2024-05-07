@@ -65,7 +65,7 @@ public class OpenFloodgateGUI implements Listener {
             int clickedButtonId = response.clickedButtonId();
             String configKey = buttonCommands.get(clickedButtonId);
             if(fgPanel.contains(configKey + ".commands")) {
-                plugin.commandTags.runCommands(e.getPanel(), PanelPosition.Top, e.getPlayer(), fgPanel.getStringList(configKey + ".commands"));
+                plugin.commandRunner.runCommands(e.getPanel(), PanelPosition.Top, e.getPlayer(), fgPanel.getStringList(configKey + ".commands"), null);
             }
         });
 
@@ -153,7 +153,7 @@ public class OpenFloodgateGUI implements Listener {
                     for (String command : commands) {
                         processedCommands.add(command.replaceAll("%cp-input%", value));  // Replace the placeholder in each command
                     }
-                    plugin.commandTags.runCommands(e.getPanel(), PanelPosition.Top, e.getPlayer(), processedCommands);  // Execute the processed commands
+                    plugin.commandRunner.runCommands(e.getPanel(), PanelPosition.Top, e.getPlayer(), processedCommands, null);  // Execute the processed commands
                 }
             }
         });

@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class CommandTagEvent extends Event {
+public class PaywallEvent extends Event {
 
     public final Player p;
     public final Panel panel;
@@ -16,9 +16,10 @@ public class CommandTagEvent extends Event {
     public String[] args;
     public String name;
     public PanelPosition pos;
-    public boolean commandTagUsed = false;
+    public boolean doDelete = true; //if payment should be removed or not
+    public PaywallOutput PAYWALL_OUTPUT = PaywallOutput.NotApplicable; //the final output
 
-    public CommandTagEvent(CommandPanels plugin, Panel panel1, PanelPosition position, Player player, String rawCommand1) {
+    public PaywallEvent(CommandPanels plugin, Panel panel1, PanelPosition position, Player player, String rawCommand1) {
         this.p = player;
         this.panel = panel1;
         this.pos = position;
@@ -43,10 +44,6 @@ public class CommandTagEvent extends Event {
             this.args = ChatColor.translateAlternateColorCodes('&',plugin.placeholders.setPlaceholders(panel, pos, p,split[1].trim(),false)).split("\\s");
             this.args = ChatColor.translateAlternateColorCodes('&',plugin.placeholders.setPlaceholders(panel, pos, p,split[1].trim(),true)).split("\\s");
         }
-    }
-
-    public void commandTagUsed(){
-        commandTagUsed = true;
     }
 
     private static final HandlerList HANDLERS = new HandlerList();

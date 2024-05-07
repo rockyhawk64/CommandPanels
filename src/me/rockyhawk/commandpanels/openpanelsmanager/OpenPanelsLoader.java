@@ -123,7 +123,7 @@ public class OpenPanelsLoader {
         if (panel.getConfig().contains("commands-on-close")) {
             //execute commands on panel close
             try {
-                plugin.commandTags.runCommands(panel,position,Bukkit.getPlayer(playerName),panel.getConfig().getStringList("commands-on-close"));
+                plugin.commandRunner.runCommands(panel,position,Bukkit.getPlayer(playerName),panel.getConfig().getStringList("commands-on-close"), null);
             }catch(Exception s){
                 plugin.debug(s,null);
             }
@@ -132,7 +132,7 @@ public class OpenPanelsLoader {
 
     public boolean isNBTInjected(ItemStack itm){
         if(itm != null){
-            return plugin.nbt.hasNBT(itm);
+            return plugin.nbt.hasNBT(itm,"CommandPanelsItem");
         }
         return false;
     }

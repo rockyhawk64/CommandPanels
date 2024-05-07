@@ -40,7 +40,7 @@ public class OpenOnJoin implements Listener {
         String joinString = joinType + (world.isEmpty() ? "" : "."+ world);
         if(plugin.config.contains(joinString)){
             String command = "open= " + plugin.config.getString(joinString);
-            plugin.commandTags.runCommand(null, PanelPosition.Top,p, command);
+            plugin.commandRunner.runCommand(null, PanelPosition.Top,p, command);
         }
     }
 }

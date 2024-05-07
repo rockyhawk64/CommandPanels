@@ -13,7 +13,7 @@ public class PlayerHeads {
     }
 
     public String playerHeadString() {
-        if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+        if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
             return "SKULL_ITEM";
         }else{
             return "PLAYER_HEAD";

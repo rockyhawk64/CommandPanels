@@ -45,7 +45,7 @@ public class Utils implements Listener {
             //if the panel is clicked on the outside area of the GUI
             if (panel.getConfig().contains("outside-commands")) {
                 try {
-                    plugin.commandTags.runCommands(panel,PanelPosition.Top,p, panel.getConfig().getStringList("outside-commands"),e.getClick());
+                    plugin.commandRunner.runCommands(panel,PanelPosition.Top,p, panel.getConfig().getStringList("outside-commands"),e.getClick());
                 }catch(Exception s){
                     plugin.debug(s,p);
                 }
@@ -131,11 +131,11 @@ public class Utils implements Listener {
                     }
                 }
                 if (panel.getConfig().contains("item." + clickedSlot + section + ".multi-paywall")) {
-                    plugin.commandTags.runMultiPaywall(panel,position,p,
+                    plugin.commandRunner.runMultiPaywall(panel,position,p,
                             panel.getConfig().getStringList("item." + clickedSlot + section + ".multi-paywall"),
                             commands,e.getClick());
                 } else {
-                    plugin.commandTags.runCommands(panel, position, p, commands, e.getClick());
+                    plugin.commandRunner.runCommands(panel, position, p, commands, e.getClick());
                 }
             }
         }

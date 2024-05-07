@@ -28,7 +28,7 @@ public class OutsideClickEvent implements Listener {
             //if the panel is clicked on the outside area of the GUI
             if (plugin.config.contains("outside-commands")) {
                 try {
-                    plugin.commandTags.runCommands(null,PanelPosition.Top,p, plugin.config.getStringList("outside-commands"),e.getClick());
+                    plugin.commandRunner.runCommands(null,PanelPosition.Top,p, plugin.config.getStringList("outside-commands"),e.getClick());
                 }catch(Exception s){
                     plugin.debug(s,p);
                 }

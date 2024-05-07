@@ -1,15 +1,11 @@
 package me.rockyhawk.commandpanels.classresources;
 
-import de.tr7zw.changeme.nbtapi.NBT;
-import de.tr7zw.changeme.nbtapi.NBTItem;
-import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import net.Indyuce.mmoitems.MMOItems;
-import net.Indyuce.mmoitems.api.MMOItemsAPI;
 import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
 import net.Indyuce.mmoitems.manager.ItemManager;
 import org.bukkit.*;
@@ -28,7 +24,6 @@ import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
 import java.util.*;
@@ -86,7 +81,7 @@ public class ItemCreation {
             if (matraw.split("\\s")[0].equalsIgnoreCase("cps=") || matraw.split("\\s")[0].toLowerCase().equals("cpo=")) {
                 skullname = p.getUniqueId().toString();
                 mat = plugin.getHeads.playerHeadString();
-                if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+                if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                     id = 3;
                 }
             }
@@ -94,7 +89,7 @@ public class ItemCreation {
             if (matraw.split("\\s")[0].equalsIgnoreCase("hdb=")) {
                 skullname = "hdb";
                 mat = plugin.getHeads.playerHeadString();
-                if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+                if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                     id = 3;
                 }
             }
@@ -138,7 +133,7 @@ public class ItemCreation {
                     if (matraw.split("\\s")[1].equalsIgnoreCase("self")) {
                         //if cps= self
                         meta = (SkullMeta) s.getItemMeta();
-                        if(!plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
+                        if(!plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                             try {
                                 assert meta != null;
                                 meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(skullname)));
@@ -286,37 +281,30 @@ public class ItemCreation {
 
             if (itemSection.contains("potion")) {
                 //if the item is a potion, give it an effect
-                try {
-                    PotionMeta potionMeta = (PotionMeta)s.getItemMeta();
-                    String[] effectType = plugin.tex.placeholdersNoColour(panel,position,p,itemSection.getString("potion")).split("\\s");
-                    assert potionMeta != null;
-                    boolean extended = false;
-                    boolean upgraded = false;
-                    //create data
-                    if(effectType.length >= 2){
-                        if(effectType[1].equalsIgnoreCase("true")){
-                            extended = true;
-                        }
-                        if(effectType.length == 3){
-                            if(effectType[2].equalsIgnoreCase("true")){
-                                upgraded = true;
-                            }
-                        }
+                String[] effectType = plugin.tex.placeholdersNoColour(panel,position,p,itemSection.getString("potion")).split("\\s");
+                //potion legacy or current
+                if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
+                        (plugin.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && plugin.legacy.MINOR_VERSION <= 4)){
+                    plugin.legacyPotion.applyPotionEffect(p,s,effectType);
+                }else{
+                    try {
+                        PotionMeta potionMeta = (PotionMeta)s.getItemMeta();
+                        assert potionMeta != null;
+                        PotionType newData = PotionType.valueOf(effectType[0].toUpperCase());
+                        //set meta
+                        potionMeta.setBasePotionType(newData);
+                        s.setItemMeta(potionMeta);
+                    } catch (Exception er) {
+                        //don't add the effect
+                        plugin.debug(er,p);
+                        p.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + plugin.config.getString("config.format.error") + " potion: " + itemSection.getString("potion")));
                     }
-                    PotionData newData = new PotionData(PotionType.valueOf(effectType[0].toUpperCase()),extended,upgraded);
-                    //set meta
-                    potionMeta.setBasePotionData(newData);
-                    s.setItemMeta(potionMeta);
-                } catch (Exception er) {
-                    //don't add the effect
-                    plugin.debug(er,p);
-                    p.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + plugin.config.getString("config.format.error") + " potion: " + itemSection.getString("potion")));
                 }
             }
             if (itemSection.contains("damage")) {
                 //change the damage amount (placeholders accepted)
                 //if the damage is not unbreakable and should be a value
-                if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
+                if (plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                     try {
                         s.setDurability(Short.parseShort(Objects.requireNonNull(plugin.tex.placeholders(panel,position,p, itemSection.getString("damage")))));
                     } catch (Exception e) {
@@ -350,7 +338,7 @@ public class ItemCreation {
                 }
             }
             // 1.20 Trim Feature for Player Armor
-            if(plugin.legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && itemSection.contains("trim")){
+            if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && itemSection.contains("trim")){
                 // trim: <Material> <Pattern>
                 String trim = itemSection.getString("trim");
                 String[] trimList = trim.split("\\s");
@@ -380,7 +368,7 @@ public class ItemCreation {
             //check that the panel is already open and not running commands when opening
             if (itemSection.contains("refresh-commands") && plugin.openPanels.hasPanelOpen(p.getName(), panel.getName(), position)) {
                 try {
-                    plugin.commandTags.runCommands(panel,position,p,itemSection.getStringList("refresh-commands"));
+                    plugin.commandRunner.runCommands(panel,position,p,itemSection.getStringList("refresh-commands"), null);
                 }catch(Exception ex){
                     plugin.debug(ex,p);
                 }
@@ -421,7 +409,7 @@ public class ItemCreation {
                         }
                     }
                 }
-                if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+                if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                     if (cont.getDurability() != 0 && !cont.getType().toString().equals("SKULL_ITEM")) {
                         file.set("panels." + panelName + ".item." + i + ".ID", cont.getDurability());
                     }
@@ -440,7 +428,7 @@ public class ItemCreation {
                 if(plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
                     if(!Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("%") && !Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("=")) {
                         SkullMeta meta = (SkullMeta) cont.getItemMeta();
-                        if (plugin.customHeads.getHeadBase64(cont) != null && !plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
+                        if (plugin.customHeads.getHeadBase64(cont) != null && !plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                             //inject base64 here, disable for legacy as is not working
                             file.set("panels." + panelName + ".item." + i + ".material", "cps= " + plugin.customHeads.getHeadBase64(cont));
                         } else if (meta.hasOwner()) {
@@ -461,13 +449,16 @@ public class ItemCreation {
                     file.set("panels." + panelName + ".item." + i + ".banner", null);
                 }
                 try {
-                    PotionMeta potionMeta = (PotionMeta) cont.getItemMeta();
-                    assert potionMeta != null;
-                    PotionData potionData = potionMeta.getBasePotionData();
-                    PotionType potionType = potionData.getType(); // Gets the potion type as a string rather than bukkit type
-                    boolean level = potionData.isUpgraded(); // Check if the potion is level II
-                    boolean extended = potionData.isExtended(); // Check if the potion is extended
-                    file.set("panels." + panelName + ".item." + i + ".potion", potionType + " " + extended + " " + level);
+                    //potion legacy PotionData or current PotionType
+                    if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
+                            (plugin.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && plugin.legacy.MINOR_VERSION <= 4)){
+                        file.set("panels." + panelName + ".item." + i + ".potion", plugin.legacyPotion.retrievePotionData(cont));
+                    }else{
+                        PotionMeta potionMeta = (PotionMeta) cont.getItemMeta();
+                        assert potionMeta != null;
+                        String potionType = potionMeta.getBasePotionType().toString(); // Gets the potion type as a string rather than bukkit type
+                        file.set("panels." + panelName + ".item." + i + ".potion", potionType);
+                    }
                 }catch(Exception ignore){
                     //not a banner
                     file.set("panels." + panelName + ".item." + i + ".potion", null);
@@ -483,7 +474,7 @@ public class ItemCreation {
                 }
                 file.set("panels." + panelName + ".item." + i + ".name", Objects.requireNonNull(cont.getItemMeta()).getDisplayName());
                 file.set("panels." + panelName + ".item." + i + ".lore", Objects.requireNonNull(cont.getItemMeta()).getLore());
-                if(plugin.legacy.LOCAL_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
+                if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
                     file.set("panels." + panelName + ".item." + i + ".customdata", Objects.requireNonNull(cont.getItemMeta()).getCustomModelData());
                 }
             }catch(Exception n){
@@ -534,17 +525,14 @@ public class ItemCreation {
         //check for nbt
         if(nbtCheck) {
             try {
-                NBTItem nbtitem1 = new NBTItem(one);
-                NBTItem nbtitem2 = new NBTItem(two);
-
-                if (!nbtitem1.equals(nbtitem2)) {
+                if (!plugin.nbt.hasSameNBT(one, two)) {
                     return false;
                 }
             } catch (Exception ignore) {}
         }
         //check for damage
         try {
-            if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+            if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                 if(one.getDurability() != two.getDurability()) {
                     return false;
                 }
@@ -558,19 +546,21 @@ public class ItemCreation {
         } catch (Exception ignore) {}
         //check for potions
         try {
-            PotionMeta meta1 = (PotionMeta) one.getItemMeta();
-            PotionMeta meta2 = (PotionMeta) two.getItemMeta();
-            //different duration
-            if(meta1.getBasePotionData().isExtended() != meta2.getBasePotionData().isExtended()){
-                return false;
-            }
-            //different upgrade
-            if(meta1.getBasePotionData().isUpgraded() != meta2.getBasePotionData().isUpgraded()){
-                return false;
-            }
-            //different potion type
-            if (meta1.getBasePotionData().getType().compareTo(meta2.getBasePotionData().getType()) != 0){
-                return false;
+            //choose between legacy PotionData (pre 1.20.5) or PotionType
+            if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
+                    (plugin.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && plugin.legacy.MINOR_VERSION <= 4)){
+                String potionOne = plugin.legacyPotion.retrievePotionData(one);
+                String potionTwo = plugin.legacyPotion.retrievePotionData(two);
+                if(!potionOne.equals(potionTwo)){
+                    return false;
+                }
+            }else{
+                //post 1.20.5 compare
+                PotionMeta meta1 = (PotionMeta) one.getItemMeta();
+                PotionMeta meta2 = (PotionMeta) two.getItemMeta();
+                if (meta1.getBasePotionType().toString().compareTo(meta2.getBasePotionType().toString()) != 0){
+                    return false;
+                }
             }
         }catch(Exception ignore){}
         //check for enchantments

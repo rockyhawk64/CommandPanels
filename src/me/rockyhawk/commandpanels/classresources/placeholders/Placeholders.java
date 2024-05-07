@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionEffect;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -168,10 +167,16 @@ public class Placeholders {
 
                 // Check if the item is not null and has potion meta
                 if (item != null && item.hasItemMeta() && item.getItemMeta() instanceof PotionMeta) {
-                    PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
-
-                    //Returns the value like this <Type>:<Extended>:<Upgraded> Example SLOWNESS:true:false
-                    return potionMeta.getBasePotionData().getType() + ":" + potionMeta.getBasePotionData().isExtended() + ":" + potionMeta.getBasePotionData().isUpgraded();
+                    //choose between legacy PotionData (pre 1.20.5) or PotionType
+                    if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
+                            (plugin.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && plugin.legacy.MINOR_VERSION <= 4)){
+                        //Returns the value like this <Type>:<Extended>:<Upgraded> Example SLOWNESS:true:false
+                        return plugin.legacyPotion.retrievePotionData(item).replaceAll("\\s",":");
+                    }else{
+                        //post 1.20.5 compare just return PotionType
+                        PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
+                        return potionMeta.getBasePotionType().toString();
+                    }
                 } else {
                     return "empty"; // Item is either null or doesn't have potion meta
                 }
@@ -189,7 +194,7 @@ public class Placeholders {
                 String material;
                 try {
                     material = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getType().toString();
-                    if (plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
+                    if (plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                         //add the ID to the end if it is legacy (eg, material:id)
                         material = material + ":" + p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getData().getData();
                     }
@@ -241,7 +246,7 @@ public class Placeholders {
                 boolean damaged = false;
                 ItemStack itm = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber));
                 try {
-                    if(plugin.legacy.LOCAL_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
+                    if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
                         if(itm.getType().getMaxDurability() != 0) {
                             damaged = (itm.getType().getMaxDurability() - itm.getDurability()) < itm.getType().getMaxDurability();
                         }
@@ -334,7 +339,7 @@ public class Placeholders {
             try {
                 String point_value = identifier.replace("cp-setdata-", "");
                 String command = "set-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
-                plugin.commandTags.runCommand(panel,position,p, command);
+                plugin.commandRunner.runCommand(panel,position,p, command);
                 return "";
             }catch (Exception ex){
                 plugin.debug(ex,p);
@@ -346,7 +351,7 @@ public class Placeholders {
             try {
                 String point_value = identifier.replace("mathdata-", "");
                 String command = "math-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
-                plugin.commandTags.runCommand(panel,position,p,command);
+                plugin.commandRunner.runCommand(panel,position,p,command);
                 return "";
             }catch (Exception ex){
                 plugin.debug(ex,p);

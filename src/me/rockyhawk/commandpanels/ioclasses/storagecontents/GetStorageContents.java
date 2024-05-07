@@ -1,4 +1,4 @@
-package me.rockyhawk.commandpanels.ioclasses;
+package me.rockyhawk.commandpanels.ioclasses.storagecontents;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.entity.Player;

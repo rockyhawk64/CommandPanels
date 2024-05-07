@@ -73,12 +73,11 @@ panels:
             - placeholder= [item:APPLE]
             - refresh
       '21':
-        material: POTION
+        material: GOLDEN_APPLE
         name: '&fClick to heal the player'
-        potion: INSTANT_HEAL
         lore:
-          - '&7Uses the /heal command so that'
-          - '&7the player needs permission'
+          - '&7Uses the /heal command if'
+          - '&7the player has permission'
         commands:
           - heal
       '24':

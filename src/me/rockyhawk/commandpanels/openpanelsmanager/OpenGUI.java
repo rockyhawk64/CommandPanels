@@ -2,12 +2,14 @@ package me.rockyhawk.commandpanels.openpanelsmanager;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -27,15 +29,7 @@ public class OpenGUI {
 
         Inventory i;
         if(position == PanelPosition.Top) {
-            String title;
-            if(pconfig.contains("custom-title")) {
-                //used for titles in the custom-title section, for has sections
-                String section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("custom-title"), p);
-                title = plugin.tex.placeholders(panel, position, p, pconfig.getString("custom-title" + section + ".title"));
-            }else {
-                //regular inventory title
-                title = plugin.tex.placeholders(panel, position, p, pconfig.getString("title"));
-            }
+            String title = getTitle(p, pconfig, panel, position);
 
             if (isNumeric(pconfig.getString("rows"))) {
                 i = Bukkit.createInventory(p, Integer.parseInt(pconfig.getString("rows")) * 9, title);
@@ -141,7 +135,7 @@ public class OpenGUI {
                     empty = plugin.itemCreate.makeItemFromConfig(panel,position,pconfig.getConfigurationSection("custom-item." + pconfig.getString("empty")),p,true,true,true);
                 }else{
                     empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(pconfig.getString("empty").toUpperCase())), 1,id);
-                    empty = plugin.nbt.setNBT(empty);
+                    empty = plugin.nbt.setNBT(empty, "CommandPanelsItem", "true");
                     ItemMeta renamedMeta = empty.getItemMeta();
                     assert renamedMeta != null;
                     renamedMeta.setDisplayName(" ");
@@ -173,7 +167,12 @@ public class OpenGUI {
             }
             plugin.openPanels.skipPanelClose.remove(p.getName());
         } else if (openType == PanelOpenType.Refresh) {
-            //openType 0 will just refresh the panel
+            //openType Refresh will just refresh the panel
+            if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) ||
+                    (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && plugin.legacy.MINOR_VERSION >= 5)){
+                //Title refresh ability added in 1.20.5 api
+                p.getOpenInventory().setTitle(getTitle(p, pconfig, panel, position));
+            }
             if(position == PanelPosition.Top) {
                 plugin.legacy.setStorageContents(p, plugin.legacy.getStorageContents(i));
             }
@@ -217,5 +216,18 @@ public class OpenGUI {
             return false;
         }
         return true;
+    }
+
+    private String getTitle(Player p, ConfigurationSection pconfig, Panel panel, PanelPosition position){
+        String title;
+        if(pconfig.contains("custom-title")) {
+            //used for titles in the custom-title section, for has sections
+            String section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("custom-title"), p);
+            title = plugin.tex.placeholders(panel, position, p, pconfig.getString("custom-title" + section + ".title"));
+        }else {
+            //regular inventory title
+            title = plugin.tex.placeholders(panel, position, p, pconfig.getString("title"));
+        }
+        return title;
     }
 }
