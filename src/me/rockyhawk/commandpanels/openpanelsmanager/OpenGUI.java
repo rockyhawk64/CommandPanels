@@ -171,7 +171,9 @@ public class OpenGUI {
             if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) ||
                     (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && plugin.legacy.MINOR_VERSION >= 5)){
                 //Title refresh ability added in 1.20.5 api
-                p.getOpenInventory().setTitle(getTitle(p, pconfig, panel, position));
+                if(position == PanelPosition.Top) {
+                    p.getOpenInventory().setTitle(getTitle(p, pconfig, panel, position));
+                }
             }
             if(position == PanelPosition.Top) {
                 plugin.legacy.setStorageContents(p, plugin.legacy.getStorageContents(i));
