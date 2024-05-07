@@ -47,7 +47,7 @@ public class ItemCreation {
             return null;
         }
         ItemStack s = null;
-        boolean hideAttributes = true;
+        boolean hideAttributes = false;
         String mat;
         String matraw;
         String skullname;
@@ -168,7 +168,7 @@ public class ItemCreation {
             if(itemSection.contains("itemType")){
                 //if hidden, reverse
                 if(itemSection.getStringList("itemType").contains("noAttributes")){
-                    hideAttributes = false;
+                    hideAttributes = true; /// Swapped for better isIdentical checks.
                 }
                 if(itemSection.getStringList("itemType").contains("noNBT")){
                     addNBT = false;
@@ -348,7 +348,7 @@ public class ItemCreation {
             p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " material: " + itemSection.getString("material")));
             return null;
         }
-        plugin.setName(panel,s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours, hideAttributes);
+        s = plugin.setName(panel,s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours, hideAttributes);
         return s;
     }
 

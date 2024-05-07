@@ -33,6 +33,7 @@ public class NBTManager {
     public String getData(ItemStack item, String key){
         NBTItem nbti = new NBTItem(item);
         if(!nbti.hasNBTData()) return "";
-        return nbti.getString(key);
+        //nbti.getOrDefault(key, "");
+        return nbti.getOrDefault(key, "");
     }
 }
