@@ -194,12 +194,8 @@ public class ItemCreation {
             }
 
             if(addNBT && itemSection.contains("nbt")){
-                for(String key : Objects.requireNonNull(itemSection.getConfigurationSection("nbt")).getKeys(true)){
-                    if(itemSection.isConfigurationSection("nbt." + key)){
-                        continue;
-                    }
-                    s = plugin.nbt.setNBT(s,key,plugin.tex.attachPlaceholders(panel, position, p, Objects.requireNonNull(itemSection.getString("nbt." + key)))); //itemSection.getString("nbt." + key));
-                }
+
+                plugin.nbt.applyNBTRecursively("", itemSection, s, p, panel, position);
             }
             if (itemSection.contains("enchanted")) {
                 try {
