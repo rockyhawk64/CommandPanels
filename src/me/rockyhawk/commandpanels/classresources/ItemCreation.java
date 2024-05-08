@@ -502,6 +502,13 @@ public class ItemCreation {
                 }
             }
         }catch(Exception ignore){}
+        //check for ID 1.12.2 and below
+        try {
+            if (plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12) &&
+                    (one.getDurability() != two.getDurability())) {
+                return false;
+            }
+        }catch(Exception ignore){}
         //check for lore
         try {
             if (!one.getItemMeta().getLore().equals(two.getItemMeta().getLore())) {
@@ -512,9 +519,11 @@ public class ItemCreation {
         }catch(Exception ignore){}
         //check for custom model data
         try {
-            if (one.getItemMeta().getCustomModelData() != (two.getItemMeta().getCustomModelData())) {
-                if(one.getItemMeta().hasCustomModelData()) {
-                    return false;
+            if (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
+                if (one.getItemMeta().getCustomModelData() != (two.getItemMeta().getCustomModelData())) {
+                    if(one.getItemMeta().hasCustomModelData()) {
+                        return false;
+                    }
                 }
             }
         }catch(Exception ignore){}
