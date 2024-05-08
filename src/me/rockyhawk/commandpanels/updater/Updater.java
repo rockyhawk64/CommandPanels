@@ -83,7 +83,7 @@ public class Updater implements Listener {
           public void run(){
               HttpURLConnection connection;
               try {
-                  connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/rockyhawk64/CommandPanels/master/resource/plugin.yml").openConnection();
+                  connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/rockyhawk64/CommandPanels/latest/resource/plugin.yml").openConnection();
                   connection.setConnectTimeout(5000); // 5 seconds
                   connection.setReadTimeout(5000); // 5 seconds
                   connection.connect();

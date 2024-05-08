@@ -46,6 +46,8 @@ import me.rockyhawk.commandpanels.panelblocks.Commandpanelblocks;
 import me.rockyhawk.commandpanels.panelblocks.PanelBlockOnClick;
 import me.rockyhawk.commandpanels.playerinventoryhandler.InventorySaver;
 import me.rockyhawk.commandpanels.playerinventoryhandler.ItemStackSerializer;
+import me.rockyhawk.commandpanels.playerinventoryhandler.pickupevent.EntityPickupEvent;
+import me.rockyhawk.commandpanels.playerinventoryhandler.pickupevent.legacyPlayerEvent;
 import me.rockyhawk.commandpanels.updater.Updater;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.io.IOUtils;
@@ -179,7 +181,14 @@ public class CommandPanels extends JavaPlugin{
         Objects.requireNonNull(this.getCommand("commandpanelversion")).setExecutor(new Commandpanelversion(this));
         Objects.requireNonNull(this.getCommand("commandpanellist")).setExecutor(new Commandpanelslist(this));
         this.getServer().getPluginManager().registerEvents(new Utils(this), this);
+
         this.getServer().getPluginManager().registerEvents(inventorySaver, this);
+        if(this.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_12)){
+            this.getServer().getPluginManager().registerEvents(new EntityPickupEvent(this), this);
+        }else{
+            this.getServer().getPluginManager().registerEvents(new legacyPlayerEvent(this), this);
+        }
+
         this.getServer().getPluginManager().registerEvents(inputUtils, this);
         this.getServer().getPluginManager().registerEvents(new UtilsPanelsLoader(this), this);
         this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
