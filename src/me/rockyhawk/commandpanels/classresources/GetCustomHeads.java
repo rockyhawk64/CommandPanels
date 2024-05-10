@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.classresources;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import org.bukkit.Bukkit;
@@ -17,10 +18,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
 
 public class GetCustomHeads {
     CommandPanels plugin;
@@ -33,38 +31,38 @@ public class GetCustomHeads {
 
     public String getHeadBase64(ItemStack head) {
         if (plugin.getHeads.ifSkullOrHead(head.getType().toString()) && head.hasItemMeta()) {
+            //check if the head is a HeadDatabase head first
+            if(plugin.getServer().getPluginManager().isPluginEnabled("HeadDatabase")) {
+                HeadDatabaseAPI api = new HeadDatabaseAPI();
+                try {
+                    String base64 = api.getBase64(head);
+                    if(base64 != null){
+                        return base64;
+                    }
+                } catch (Exception ignore) {}
+            }
+            //try getting Base64 of a custom head
+            if (!(head.getItemMeta() instanceof SkullMeta)) return null;
+            SkullMeta meta = (SkullMeta) head.getItemMeta();
+            if (meta == null) return null;
+
             try {
-                SkullMeta meta = (SkullMeta) head.getItemMeta();
-                assert meta != null;
-                if (!meta.hasOwner()) {
-                    Field fld = meta.getClass().getDeclaredField("profile");
-                    fld.setAccessible(true);
-                    GameProfile prof = (GameProfile) fld.get(meta);
-                    Iterator itr = prof.getProperties().get("textures").iterator();
-                    if (itr.hasNext()) {
-                        Property var5 = (Property) itr.next();
-                        return var5.getValue();
-                    }
-                }else{
-                    Field fld = meta.getClass().getDeclaredField("profile");
-                    fld.setAccessible(true);
-                    GameProfile prof = (GameProfile) fld.get(meta);
-                    Iterator itr = prof.getProperties().get("textures").iterator();
-                    if (itr.hasNext()) {
-                        Property var5 = (Property) itr.next();
-                        String var5string = var5.toString();
-                        var5string = var5string.replace("Property[","");
-                        var5string = var5string.replace("]","");
-                        String[] var5strings = var5string.split(",");
-                        for(String var : var5strings){
-                            if(var.contains("value= ")){
-                                var = var.replace("value= ", "");
-                                return var;
-                            }
-                        }
-                    }
+                Field profileField = meta.getClass().getDeclaredField("profile");
+                profileField.setAccessible(true);
+                GameProfile profile = (GameProfile) profileField.get(meta);
+
+                Collection<Property> textures = profile.getProperties().get("textures");
+                if (!textures.isEmpty()) {
+                    // Directly accessing fields within the Property object via reflection.
+                    Property textureProperty = textures.iterator().next();
+                    Field valueField = textureProperty.getClass().getDeclaredField("value");
+                    valueField.setAccessible(true);
+                    return (String) valueField.get(textureProperty);
                 }
-            }catch(Exception exc){/*skip return null*/}
+
+            } catch (Exception error) {
+                plugin.debug(error, null);
+            }
         }
         return null;
     }

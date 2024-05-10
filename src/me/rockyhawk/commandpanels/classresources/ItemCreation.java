@@ -424,12 +424,12 @@ public class ItemCreation {
                 if(plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
                     if(!Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("%") && !Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("=")) {
                         SkullMeta meta = (SkullMeta) cont.getItemMeta();
-                        if (plugin.customHeads.getHeadBase64(cont) != null && !plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
+                        if (plugin.customHeads.getHeadBase64(cont) != null) {
                             //inject base64 here, disable for legacy as is not working
                             file.set("panels." + panelName + ".item." + i + ".material", "cps= " + plugin.customHeads.getHeadBase64(cont));
-                        } else if (meta.hasOwner()) {
-                            //check for skull owner
-                            file.set("panels." + panelName + ".item." + i + ".material", "cps= " + meta.getOwner());
+                        } else{
+                            //return blank head
+                            file.set("panels." + panelName + ".item." + i + ".material", plugin.getHeads.playerHeadString());
                         }
                     }
                 }
@@ -448,7 +448,9 @@ public class ItemCreation {
                     //potion legacy PotionData or current PotionType
                     if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
                             (plugin.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && plugin.legacy.MINOR_VERSION <= 4)){
-                        file.set("panels." + panelName + ".item." + i + ".potion", plugin.legacyPotion.retrievePotionData(cont));
+                        if(plugin.legacyPotion.retrievePotionData(cont) != null) {
+                            file.set("panels." + panelName + ".item." + i + ".potion", plugin.legacyPotion.retrievePotionData(cont));
+                        }
                     }else{
                         PotionMeta potionMeta = (PotionMeta) cont.getItemMeta();
                         assert potionMeta != null;

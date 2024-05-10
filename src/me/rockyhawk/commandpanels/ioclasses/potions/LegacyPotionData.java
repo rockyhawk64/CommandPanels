@@ -2,7 +2,6 @@ package me.rockyhawk.commandpanels.ioclasses.potions;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -73,7 +72,7 @@ public class LegacyPotionData {
             return potionType.name() + " " + extended + " " + level;
         } catch (Exception e) {
             plugin.debug(e, null);
-            return "Failed to retrieve potion data";
+            return null;
         }
     }
 }
