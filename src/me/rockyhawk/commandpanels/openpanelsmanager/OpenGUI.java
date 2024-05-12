@@ -29,7 +29,7 @@ public class OpenGUI {
 
         Inventory i;
         if(position == PanelPosition.Top) {
-            String title = getTitle(p, pconfig, panel, position);
+            String title = getTitle(p, pconfig, panel, position, animateValue);
 
             if (isNumeric(pconfig.getString("rows"))) {
                 i = Bukkit.createInventory(p, Integer.parseInt(pconfig.getString("rows")) * 9, title);
@@ -172,7 +172,7 @@ public class OpenGUI {
                     (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && plugin.legacy.MINOR_VERSION >= 5)){
                 //Title refresh ability added in 1.20.5 api
                 if(position == PanelPosition.Top) {
-                    p.getOpenInventory().setTitle(getTitle(p, pconfig, panel, position));
+                    p.getOpenInventory().setTitle(getTitle(p, pconfig, panel, position, animateValue));
                 }
             }
             if(position == PanelPosition.Top) {
@@ -220,11 +220,17 @@ public class OpenGUI {
         return true;
     }
 
-    private String getTitle(Player p, ConfigurationSection pconfig, Panel panel, PanelPosition position){
+    private String getTitle(Player p, ConfigurationSection pconfig, Panel panel, PanelPosition position, Integer animateValue){
         String title;
         if(pconfig.contains("custom-title")) {
             //used for titles in the custom-title section, for has sections
             String section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("custom-title"), p);
+
+            //check for if there is animations inside the custom-title section
+            if (pconfig.contains("custom-title" + section + ".animate" + animateValue)) {
+                section = section + ".animate" + animateValue;
+            }
+
             title = plugin.tex.placeholders(panel, position, p, pconfig.getString("custom-title" + section + ".title"));
         }else {
             //regular inventory title

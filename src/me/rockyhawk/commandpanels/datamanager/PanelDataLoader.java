@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 public class PanelDataLoader {
     CommandPanels plugin;
@@ -26,14 +25,6 @@ public class PanelDataLoader {
         if(!overwrite && dataConfig.isSet("playerData." + playerUUID + "." + dataPoint)){
             return;
         }
-
-        //check if string is numeric
-        Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
-        if(pattern.matcher(dataValue).matches()){
-            doDataMath(playerUUID, dataPoint, dataValue);
-            return;
-        }
-
         dataConfig.set("playerData." + playerUUID + "." + dataPoint, dataValue);
     }
 

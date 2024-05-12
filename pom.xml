@@ -241,10 +241,5 @@
             <version>2.2.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.github.rockyhawk64</groupId>
-            <artifactId>CommandPanels</artifactId>
-            <version>3.19.1.2</version>
-        </dependency>
     </dependencies>
 </project>

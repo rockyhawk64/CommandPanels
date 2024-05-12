@@ -83,6 +83,7 @@ public class CommandRunner {
     //do this on startup to load listeners
     public void registerBuiltInTags() {
         plugin.getServer().getPluginManager().registerEvents(new Paywall(plugin), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new TokenPaywall(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new ItemPaywall(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new Hasperm(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new XpPaywall(plugin), plugin);
