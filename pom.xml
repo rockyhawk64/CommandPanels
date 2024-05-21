@@ -213,12 +213,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.Ssomar-Developement</groupId>
-            <artifactId>SCore</artifactId>
-            <version>4.24.3.5</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>io.papermc</groupId>
             <artifactId>paperlib</artifactId>
             <version>1.0.8</version>
