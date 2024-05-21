@@ -215,7 +215,7 @@
         <dependency>
             <groupId>com.github.Ssomar-Developement</groupId>
             <artifactId>SCore</artifactId>
-            <version>LATEST</version>
+            <version>4.24.3.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
