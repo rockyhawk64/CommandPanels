@@ -37,7 +37,7 @@ public class ItemTags implements Listener {
             e.commandTagUsed();
             //if player uses setitem= [custom item] [slot] [position] it will change the item slot to something, used for placeable items
             //make a section in the panel called "custom-item" then whatever the title of the item is, put that here
-            ItemStack s = plugin.itemCreate.makeItemFromConfig(null, e.pos,e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0]), e.p, true, true, true);
+            ItemStack s = plugin.itemCreate.makeItemFromConfig(null, e.pos,e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0]), e.p, true, true, false);
             PanelPosition position = PanelPosition.valueOf(e.args[2]);
             if(position == PanelPosition.Top) {
                 e.p.getOpenInventory().getTopInventory().setItem(Integer.parseInt(e.args[1]), s);

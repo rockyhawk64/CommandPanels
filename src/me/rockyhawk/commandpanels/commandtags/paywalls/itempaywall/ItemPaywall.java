@@ -1,4 +1,4 @@
-package me.rockyhawk.commandpanels.commandtags.paywalls;
+package me.rockyhawk.commandpanels.commandtags.paywalls.itempaywall;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.commandtags.PaywallEvent;
@@ -74,37 +74,34 @@ public class ItemPaywall implements Listener {
     }
 
     public boolean removeItem(Player p, ItemStack itemToRemove, boolean ignoreNBT) {
-        boolean result;
+        InventoryOperationResult result;
 
         if (plugin.inventorySaver.hasNormalInventory(p)) {
             result = removeItemFromInventory(p.getInventory().getContents(), itemToRemove, ignoreNBT);
+            p.getInventory().setContents(result.getInventory());
         } else {
-            // Load the saved inventory from config, manipulate it, and save it back
             ItemStack[] savedInventory = plugin.inventorySaver.getNormalInventory(p);
             result = removeItemFromInventory(savedInventory, itemToRemove, ignoreNBT);
-            plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(savedInventory));
+            plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(result.getInventory()));
         }
 
-        return result;  // Return true if the items were successfully removed, otherwise false
+        return result.isSuccess();  // Return the success status of the inventory operation
     }
 
-    private boolean removeItemFromInventory(ItemStack[] inventory, ItemStack itemToRemove, boolean ignoreNBT) {
+    private InventoryOperationResult removeItemFromInventory(ItemStack[] inventory, ItemStack itemToRemove, boolean ignoreNBT) {
         int amountToRemove = itemToRemove.getAmount();
-        int count = 0;  // To count how many of the required items are present
+        int count = 0;
 
-        // First pass: count the items to ensure there are enough
         for (ItemStack item : inventory) {
             if (item != null && plugin.itemCreate.isIdentical(item, itemToRemove, !ignoreNBT)) {
                 count += item.getAmount();
             }
         }
 
-        // If not enough items, return false and do not modify the inventory
         if (count < amountToRemove) {
-            return false;
+            return new InventoryOperationResult(false, inventory);  // Not enough items, return with original inventory unchanged
         }
 
-        // Second pass: remove the items if there are enough
         for (int i = 0; i < inventory.length; i++) {
             ItemStack currentItem = inventory[i];
             if (currentItem != null && plugin.itemCreate.isIdentical(currentItem, itemToRemove, !ignoreNBT)) {
@@ -112,18 +109,16 @@ public class ItemPaywall implements Listener {
                 currentItem.setAmount(currentItem.getAmount() - removeAmount);
                 amountToRemove -= removeAmount;
 
-                // Remove the item stack if it becomes empty
                 if (currentItem.getAmount() == 0) {
                     inventory[i] = null;
                 }
 
-                // If removed all needed, break out of the loop
                 if (amountToRemove == 0) {
                     break;
                 }
             }
         }
 
-        return true;  // Return true as items were successfully removed
+        return new InventoryOperationResult(true, inventory);  // Return true and the modified inventory
     }
 }

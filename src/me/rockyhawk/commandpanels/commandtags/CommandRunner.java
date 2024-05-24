@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.commandtags;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.commandtags.paywalls.*;
+import me.rockyhawk.commandpanels.commandtags.paywalls.itempaywall.ItemPaywall;
 import me.rockyhawk.commandpanels.commandtags.tags.other.DataTags;
 import me.rockyhawk.commandpanels.commandtags.tags.other.PlaceholderTags;
 import me.rockyhawk.commandpanels.commandtags.tags.other.SpecialTags;

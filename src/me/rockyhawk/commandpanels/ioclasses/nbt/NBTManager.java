@@ -25,10 +25,12 @@ public class NBTManager {
         return nbtitem1.equals(nbtitem2);
     }
 
-    public ItemStack setNBT(ItemStack item, String key, String value){
-        NBT.modify(item, nbt -> {
-            nbt.setString(key, value);
-        });
+    public ItemStack setNBT(ItemStack item, String key, String value) {
+        if (item != null) {
+            NBT.modify(item, nbt -> {
+                nbt.setString(key, value);
+            });
+        }
         return item;
     }
 

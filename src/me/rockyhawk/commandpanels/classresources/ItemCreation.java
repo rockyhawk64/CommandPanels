@@ -119,7 +119,7 @@ public class ItemCreation {
 
             //creates item from custom-items section of panel
             if(matraw.split("\\s")[0].equalsIgnoreCase("cpi=")){
-                s = makeCustomItemFromConfig(panel,position,panel.getConfig().getConfigurationSection("custom-item." + matraw.split("\\s")[1]), p, true, true, true);
+                s = makeCustomItemFromConfig(panel,position,panel.getConfig().getConfigurationSection("custom-item." + matraw.split("\\s")[1]), p, true, true, false);
                 normalCreation = false;
             }
 
@@ -185,18 +185,18 @@ public class ItemCreation {
                 if(itemSection.getStringList("itemType").contains("noAttributes")){
                     hideAttributes = true;
                 }
-                if(itemSection.getStringList("itemType").contains("noNBT")){
-                    addNBT = false;
-                }
                 if(itemSection.getStringList("itemType").contains("placeable")){
                     addNBT = false;
                 }
             }
 
-            if(addNBT && itemSection.contains("nbt")){
-
+            if(itemSection.contains("nbt")){
                 plugin.nbt.applyNBTRecursively("", itemSection, s, p, panel, position);
             }
+            if(addNBT){
+                plugin.nbt.setNBT(s, "CommandPanelsItem", "true");
+            }
+
             if (itemSection.contains("enchanted")) {
                 try {
                     ItemMeta EnchantMeta;
@@ -323,14 +323,6 @@ public class ItemCreation {
                         plugin.debug(e, p);
                         p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
                     }
-                }
-            }
-            if (itemSection.contains("nbt")) {
-                for(String key : Objects.requireNonNull(itemSection.getConfigurationSection("nbt")).getKeys(true)){
-                    if(itemSection.isConfigurationSection("nbt." + key)){
-                        continue;
-                    }
-                    s = plugin.nbt.setNBT(s,key,plugin.tex.attachPlaceholders(panel, position, p, Objects.requireNonNull(itemSection.getString("nbt." + key)))); //itemSection.getString("nbt." + key));
                 }
             }
             // 1.20 Trim Feature for Player Armor

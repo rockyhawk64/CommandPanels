@@ -63,7 +63,6 @@ public class OpenGUI {
                 }
             }
 
-            //will only add NBT if not an editor GUI
             ItemStack s = plugin.itemCreate.makeItemFromConfig(panel,position,Objects.requireNonNull(pconfig.getConfigurationSection("item." + item + section)), p, true, true, true);
 
             //This is for CUSTOM ITEMS
@@ -135,7 +134,6 @@ public class OpenGUI {
                     empty = plugin.itemCreate.makeItemFromConfig(panel,position,pconfig.getConfigurationSection("custom-item." + pconfig.getString("empty")),p,true,true,true);
                 }else{
                     empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(pconfig.getString("empty").toUpperCase())), 1,id);
-                    empty = plugin.nbt.setNBT(empty, "CommandPanelsItem", "true");
                     ItemMeta renamedMeta = empty.getItemMeta();
                     assert renamedMeta != null;
                     renamedMeta.setDisplayName(" ");
