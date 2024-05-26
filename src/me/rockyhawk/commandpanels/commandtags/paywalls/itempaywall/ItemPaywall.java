@@ -46,10 +46,8 @@ public class ItemPaywall implements Listener {
 
                 //try to remove the item and determine outcome
                 PaywallOutput removedItem = PaywallOutput.Blocked;
-                if (e.doDelete){
-                    if(removeItem(e.p, sellItem, ignoreNBT)){
-                        removedItem = PaywallOutput.Passed;
-                    }
+                if(removeItem(e.p, sellItem, ignoreNBT, e.doDelete)){
+                    removedItem = PaywallOutput.Passed;
                 }
 
                 //send message and return
@@ -73,22 +71,22 @@ public class ItemPaywall implements Listener {
         }
     }
 
-    public boolean removeItem(Player p, ItemStack itemToRemove, boolean ignoreNBT) {
+    public boolean removeItem(Player p, ItemStack itemToRemove, boolean ignoreNBT, boolean doDelete) {
         InventoryOperationResult result;
 
         if (plugin.inventorySaver.hasNormalInventory(p)) {
-            result = removeItemFromInventory(p.getInventory().getContents(), itemToRemove, ignoreNBT);
+            result = removeItemFromInventory(p.getInventory().getContents(), itemToRemove, ignoreNBT, doDelete);
             p.getInventory().setContents(result.getInventory());
         } else {
             ItemStack[] savedInventory = plugin.inventorySaver.getNormalInventory(p);
-            result = removeItemFromInventory(savedInventory, itemToRemove, ignoreNBT);
+            result = removeItemFromInventory(savedInventory, itemToRemove, ignoreNBT, doDelete);
             plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(result.getInventory()));
         }
 
         return result.isSuccess();  // Return the success status of the inventory operation
     }
 
-    private InventoryOperationResult removeItemFromInventory(ItemStack[] inventory, ItemStack itemToRemove, boolean ignoreNBT) {
+    private InventoryOperationResult removeItemFromInventory(ItemStack[] inventory, ItemStack itemToRemove, boolean ignoreNBT, boolean doDelete) {
         int amountToRemove = itemToRemove.getAmount();
         int count = 0;
 
@@ -98,8 +96,14 @@ public class ItemPaywall implements Listener {
             }
         }
 
+        //return false if the player doesn't have enough items
         if (count < amountToRemove) {
             return new InventoryOperationResult(false, inventory);  // Not enough items, return with original inventory unchanged
+        }
+
+        //return true because there are enough items, but don't run the code to remove them
+        if(!doDelete){
+            return new InventoryOperationResult(true, inventory);
         }
 
         for (int i = 0; i < inventory.length; i++) {

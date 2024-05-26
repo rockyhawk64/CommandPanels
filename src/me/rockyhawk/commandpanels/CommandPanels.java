@@ -5,7 +5,7 @@ import io.lumine.mythic.lib.api.item.NBTItem;
 import me.rockyhawk.commandpanels.api.CommandPanelsAPI;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.classresources.ExecuteOpenVoids;
-import me.rockyhawk.commandpanels.classresources.GetCustomHeads;
+import me.rockyhawk.commandpanels.classresources.customheads.GetCustomHeads;
 import me.rockyhawk.commandpanels.classresources.HasSections;
 import me.rockyhawk.commandpanels.classresources.ItemCreation;
 import me.rockyhawk.commandpanels.classresources.placeholders.expansion.CpPlaceholderExpansion;

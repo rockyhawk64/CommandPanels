@@ -1,4 +1,4 @@
-package me.rockyhawk.commandpanels.classresources;
+package me.rockyhawk.commandpanels.classresources.customheads;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -26,8 +26,8 @@ public class GetCustomHeads {
         this.plugin = pl;
     }
 
-    //will not go above 2000 elements in the list which is roughly 270 KB RAM usage
-    public HashMap<String, String> playerHeadTextures = new HashMap<>();
+    //will not go above 2000 elements in the list
+    public HashSet<SavedCustomHead> savedCustomHeads = new HashSet<>();
 
     public String getHeadBase64(ItemStack head) {
         if (plugin.getHeads.ifSkullOrHead(head.getType().toString()) && head.hasItemMeta()) {
@@ -75,8 +75,11 @@ public class GetCustomHeads {
         }
 
         //get texture if already cached
-        if(playerHeadTextures.containsKey(name)) {
-            return getCustomHead(playerHeadTextures.get(name));
+        for(SavedCustomHead head : savedCustomHeads){
+            if(head.playerName == null) {continue;}
+            if(head.playerName.equals(name)){
+                return head.headItem;
+            }
         }
 
         //create ItemStack
@@ -115,11 +118,11 @@ public class GetCustomHeads {
                 String valueReader = new Scanner(texturesConnection.getInputStream(),
                         StandardCharsets.UTF_8.name()).useDelimiter("\\A").next();
                 String value = valueReader.split("\"value\" : \"")[1].split("\"")[0];
-                playerHeadTextures.put(name, value);
 
                 // Once the API call is finished, update the ItemStack on the main thread
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     itemStack.setItemMeta(getCustomHead(value).getItemMeta());
+                    savedCustomHeads.add(new SavedCustomHead(itemStack, value, name));
                 });
             } catch (Exception ignore) {
                 // Ignore as errors should be skipped and no need to show in console
@@ -132,6 +135,13 @@ public class GetCustomHeads {
     //used to get heads from Base64 Textures
     @SuppressWarnings("deprecation")
     public ItemStack getCustomHead(String b64stringtexture) {
+        //check for any saved heads
+        for(SavedCustomHead head : savedCustomHeads){
+            if(head.base64.equals(b64stringtexture)){
+                return head.headItem;
+            }
+        }
+
         //get head from base64
         GameProfile profile = new GameProfile(UUID.randomUUID(), "");
         PropertyMap propertyMap = profile.getProperties();

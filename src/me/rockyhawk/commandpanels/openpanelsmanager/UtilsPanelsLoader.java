@@ -3,7 +3,9 @@ package me.rockyhawk.commandpanels.openpanelsmanager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelClosedEvent;
+import me.rockyhawk.commandpanels.classresources.customheads.SavedCustomHead;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,10 +14,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class UtilsPanelsLoader implements Listener {
@@ -30,13 +30,7 @@ public class UtilsPanelsLoader implements Listener {
         plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
         Player p = e.getPlayer();
         p.updateInventory();
-        for(ItemStack itm : p.getInventory().getContents()){
-            if(itm != null){
-                if (plugin.nbt.hasNBT(itm, "CommandPanelsItem")) {
-                    p.getInventory().remove(itm);
-                }
-            }
-        }
+        plugin.openPanels.deleteCommandPanelsItems(p);
     }
 
     //tell panel loader that player has closed the panel (there is also one of these in EditorUtils)
@@ -81,9 +75,10 @@ public class UtilsPanelsLoader implements Listener {
         plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
 
         //clear cached textures list until length limit is reached
-        while (plugin.customHeads.playerHeadTextures.size() > 2000) {
-            List<String> keys = new ArrayList<>(plugin.customHeads.playerHeadTextures.keySet());
-            plugin.customHeads.playerHeadTextures.remove(keys.get(0));
+        Iterator<SavedCustomHead> iterator = plugin.customHeads.savedCustomHeads.iterator();
+        while (plugin.customHeads.savedCustomHeads.size() > 2000 && iterator.hasNext()) {
+            iterator.next(); // Move to next element
+            iterator.remove(); // Remove the element
         }
     }
 
@@ -92,10 +87,10 @@ public class UtilsPanelsLoader implements Listener {
         //this will check to ensure an item is not from CommandPanels on inventory open
         Player p = (Player)e.getWhoClicked();
         if(!plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
-            for(ItemStack itm : p.getInventory().getContents()){
-                if(plugin.openPanels.isNBTInjected(itm)){
-                    p.getInventory().remove(itm);
-                }
+            if(e.getCurrentItem() == null){return;}
+            if(e.getCurrentItem().getType() == Material.AIR){return;}
+            if(plugin.openPanels.isCommandPanelsItem(e.getCurrentItem())){
+                p.getInventory().remove(e.getCurrentItem());
             }
         }
     }

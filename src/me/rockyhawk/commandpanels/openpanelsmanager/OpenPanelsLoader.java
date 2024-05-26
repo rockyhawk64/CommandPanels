@@ -5,6 +5,7 @@ import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelClosedEvent;
 import me.rockyhawk.commandpanels.api.PanelsInterface;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -130,7 +131,18 @@ public class OpenPanelsLoader {
         }
     }
 
-    public boolean isNBTInjected(ItemStack itm){
+    //if any CommandPanels items exist outside a panel, they will be removed
+    public void deleteCommandPanelsItems(Player p){
+        for(ItemStack itm : p.getInventory().getContents()){
+            if(itm != null){
+                if (plugin.nbt.hasNBT(itm, "CommandPanelsItem")) {
+                    p.getInventory().remove(itm);
+                }
+            }
+        }
+    }
+    //checks if an item is from cpanel or not
+    public boolean isCommandPanelsItem(ItemStack itm){
         if(itm != null){
             return plugin.nbt.hasNBT(itm,"CommandPanelsItem");
         }

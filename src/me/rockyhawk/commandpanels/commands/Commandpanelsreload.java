@@ -54,8 +54,8 @@ public class Commandpanelsreload implements CommandExecutor {
                     registerCommands();
                 }
 
-                //pre-cache any player head textures from panels
-                reloadCachedHeads(sender);
+                //pre-cache any player head textures from panels will be reloaded
+                plugin.customHeads.savedCustomHeads.clear();
 
                 sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.reload")));
             }else{
@@ -111,49 +111,6 @@ public class Commandpanelsreload implements CommandExecutor {
             cmdCF.save(commandsLoc);
         } catch (IOException var10) {
             Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " WARNING: Could not register custom commands!");
-        }
-    }
-
-    //reload player heads
-    public void reloadCachedHeads(CommandSender sender){
-        new BukkitRunnable() {
-            public void run() {
-                for (Panel temp : plugin.panelList) {
-                    ConfigurationSection yaml = temp.getConfig();
-                    //look through yaml for player heads
-                    if(sender instanceof Player) {
-                        Player player = ((Player) sender).getPlayer();
-                        checkKeysRecursive(temp, player, yaml);
-                    }else{
-                        checkKeysRecursive(temp, null, yaml);
-                    }
-                }
-            }
-        }.runTaskAsynchronously(this.plugin);
-    }
-
-    //this will recursively check through all the keys in a panel for cps= values and find ones with Player names
-    private void checkKeysRecursive(Panel panel, Player player, ConfigurationSection section) {
-        for (String key : section.getKeys(false)) {
-            if (key.equals("material")) {
-                String value = section.getString(key);
-                //if value is a custom head
-                if (value.startsWith("cps=")) {
-                    String[] words = value.split("\\s");
-                    //if value is the length of a players name
-                    if (!words[1].equalsIgnoreCase("self") && words[1].length() <= 16) {
-                        try {
-                            String tempName = plugin.tex.placeholdersNoColour(panel, PanelPosition.Top, player, words[1]);
-                            plugin.customHeads.getPlayerHead(tempName); //get the head cached
-                        }catch (Exception ignore){} //ignore heads that cannot be cached without the panel being open
-                    }
-                }
-            }
-
-            if (section.isConfigurationSection(key)) {
-                // Recursive call to check nested sections
-                checkKeysRecursive(panel, player, section.getConfigurationSection(key));
-            }
         }
     }
 
