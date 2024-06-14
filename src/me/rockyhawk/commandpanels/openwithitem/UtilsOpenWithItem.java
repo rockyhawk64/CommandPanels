@@ -110,9 +110,9 @@ public class UtilsOpenWithItem implements Listener {
         try {
             for (ItemStack s : new ArrayList<>(e.getDrops())) {
                 try {
-                    if (!plugin.nbt.getNBT(s, "CommandPanelsHotbar").isEmpty()) {
+                    if (!String.valueOf(plugin.nbt.getNBT(s, "CommandPanelsHotbar", "string")).isEmpty()) {
                         //do not remove items that are not stationary
-                        if (!plugin.nbt.getNBT(s, "CommandPanelsHotbar").endsWith("-1")) {
+                        if (!String.valueOf(plugin.nbt.getNBT(s, "CommandPanelsHotbar", "string")).endsWith("-1")) {
                             e.getDrops().remove(s);
                         }
                     }

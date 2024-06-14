@@ -191,10 +191,10 @@ public class ItemCreation {
             }
 
             if(itemSection.contains("nbt")){
-                plugin.nbt.applyNBTRecursively("", itemSection, s, p, panel, position);
+                plugin.nbt.applyNBTRecursively("", itemSection.getConfigurationSection("nbt"), s, p, panel, position);
             }
             if(addNBT){
-                plugin.nbt.setNBT(s, "CommandPanelsItem", "true");
+                plugin.nbt.setNBT(s, "CommandPanelsItem","boolean", "true");
             }
 
             if (itemSection.contains("enchanted")) {

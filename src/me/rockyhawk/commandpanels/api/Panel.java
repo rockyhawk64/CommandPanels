@@ -99,7 +99,7 @@ public class Panel{
         }
         try {
             //add NBT to item and return the ItemStack
-            return plugin.nbt.setNBT(s, "CommandPanelsHotbar", panelName + ":" + slot);
+            return plugin.nbt.setNBT(s, "CommandPanelsHotbar", "string", panelName + ":" + slot);
         }catch(Exception e) {
             //return air if null
             return new ItemStack(Material.AIR);

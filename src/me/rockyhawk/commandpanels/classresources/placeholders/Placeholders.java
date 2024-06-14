@@ -140,19 +140,23 @@ public class Placeholders {
             }
         }
 
-        //placeholder to check if an item has NBT %cp-nbt-slot:key%
-        if(identifier.startsWith("nbt-")) {
+        //placeholder to check if an item has NBT %cp-nbt-slot:type:key%
+        if (identifier.startsWith("nbt-")) {
             try {
                 String slot_key = identifier.replace("nbt-", "");
-                String value;
-                value = plugin.nbt.getNBT(p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(slot_key.split(":")[0])),slot_key.split(":")[1]);
-                if(value.isEmpty()){
-                    value = "empty";
-                }
-                return value;
-            }catch (Exception ex){
-                plugin.debug(ex,p);
-                return "";
+                Object value;
+                value = plugin.nbt.getNBT(
+                        p.getOpenInventory().getTopInventory().getItem(
+                                (int) Double.parseDouble(slot_key.split(":")[0])
+                        ),
+                        slot_key.split(":")[2],
+                        slot_key.split(":")[1]
+                );
+                // Convert any object type to a string, handle null explicitly if desired
+                return value == null ? "empty" : String.valueOf(value);
+            } catch (Exception ex) {
+                plugin.debug(ex, p);
+                return ""; // Consider returning "error" or some other indicative string
             }
         }
 
