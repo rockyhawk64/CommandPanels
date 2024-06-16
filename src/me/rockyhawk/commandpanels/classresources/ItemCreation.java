@@ -191,10 +191,12 @@ public class ItemCreation {
             }
 
             if(itemSection.contains("nbt")){
-                plugin.nbt.applyNBTRecursively("", itemSection.getConfigurationSection("nbt"), s, p, panel, position);
+                //ItemStack item, ConfigurationSection section, Player player, Panel panel, PanelPosition position
+                plugin.nbt.applyNBTRecursively(s, itemSection.getConfigurationSection("nbt"), p, panel, position);
+                //plugin.nbt.applyNBTRecursively("", itemSection.getConfigurationSection("nbt"), s, p, panel, position);
             }
             if(addNBT){
-                plugin.nbt.setNBT(s, "CommandPanelsItem","boolean", "true");
+                plugin.nbt.setNBT(s, "CommandPanelsItem","boolean_" + "true");
             }
 
             if (itemSection.contains("enchanted")) {
