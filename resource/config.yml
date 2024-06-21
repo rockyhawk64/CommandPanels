@@ -16,7 +16,6 @@ config:
   stop-sound: true
   disabled-world-message: true
   panel-snooper: false
-  allow-unsafe-mini-message: false
   enable-import-command: false
   format:
     tag: '&6[&bCommandPanels&6] '

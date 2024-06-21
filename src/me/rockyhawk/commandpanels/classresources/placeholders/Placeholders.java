@@ -329,7 +329,7 @@ public class Placeholders {
                 if(dataPoint.contains(",")){
                     String dataName = dataPoint.split(",")[0];
                     String playerName = dataPoint.split(",")[1];
-                    return plugin.panelData.getUserData(Bukkit.getOfflinePlayer(playerName).getUniqueId(),dataName);
+                    return plugin.panelData.getUserData(plugin.panelDataPlayers.getOffline(playerName),dataName);
                 }else{
                     return plugin.panelData.getUserData(p.getUniqueId(),dataPoint);
                 }
@@ -338,10 +338,24 @@ public class Placeholders {
                 return "";
             }
         }
+        //returns if a player is found
+        if(identifier.startsWith("uuid-")) {
+            try {
+                String dataPoint = identifier.replace("uuid-", "");
+                //get data from other user
+                if(plugin.panelDataPlayers.getOffline(dataPoint) == null){
+                    return "unknown";
+                }
+                return plugin.panelDataPlayers.getOffline(dataPoint).toString();
+            }catch (Exception ex){
+                plugin.debug(ex,p);
+                return "";
+            }
+        }
         //edits data via placeholder execution (will return empty output)
         if(identifier.startsWith("setdata-")) {
             try {
-                String point_value = identifier.replace("cp-setdata-", "");
+                String point_value = identifier.replace("setdata-", "");
                 String command = "set-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
                 plugin.commandRunner.runCommand(panel,position,p, command);
                 return "";

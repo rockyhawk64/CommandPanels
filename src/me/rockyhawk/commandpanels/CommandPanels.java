@@ -22,6 +22,7 @@ import me.rockyhawk.commandpanels.completetabs.UpdateTabComplete;
 import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
 import me.rockyhawk.commandpanels.datamanager.DebugManager;
 import me.rockyhawk.commandpanels.datamanager.PanelDataLoader;
+import me.rockyhawk.commandpanels.datamanager.PanelDataPlayerManager;
 import me.rockyhawk.commandpanels.editor.*;
 import me.rockyhawk.commandpanels.floodgatecp.OpenFloodgateGUI;
 import me.rockyhawk.commandpanels.generatepanels.Commandpanelsgenerate;
@@ -90,6 +91,8 @@ public class CommandPanels extends JavaPlugin{
 
     public CommandRunner commandRunner = new CommandRunner(this);
     public PanelDataLoader panelData = new PanelDataLoader(this);
+    public PanelDataPlayerManager panelDataPlayers = new PanelDataPlayerManager(this);
+
     public Placeholders placeholders = new Placeholders(this);
     public DebugManager debug = new DebugManager(this);
     public CreateText tex = new CreateText(this);
@@ -190,6 +193,7 @@ public class CommandPanels extends JavaPlugin{
         }
 
         this.getServer().getPluginManager().registerEvents(inputUtils, this);
+        this.getServer().getPluginManager().registerEvents(panelDataPlayers, this);
         this.getServer().getPluginManager().registerEvents(new UtilsPanelsLoader(this), this);
         this.getServer().getPluginManager().registerEvents(new GenUtils(this), this);
         this.getServer().getPluginManager().registerEvents(new ItemFallManager(this), this);
@@ -280,6 +284,9 @@ public class CommandPanels extends JavaPlugin{
 
         //do hotbar items
         hotbar.reloadHotbarSlots();
+
+        //load all known players for data
+        panelDataPlayers.reloadAllPlayers();
 
         //add custom charts bStats
         Metrics metrics = new Metrics(this, 5097);

@@ -6,7 +6,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 
 import java.util.*;
 
@@ -47,13 +46,13 @@ public class DataTabComplete implements TabCompleter {
                 try {
 
                     if (!args[1].equalsIgnoreCase("all") && !args[1].equalsIgnoreCase("online"))
-                        return new ArrayList<>(plugin.panelData.dataConfig.getConfigurationSection("playerData." + plugin.panelData.getOffline(args[1])).getKeys(false));
+                        return new ArrayList<>(plugin.panelData.dataConfig.getConfigurationSection("playerData." + plugin.panelDataPlayers.getOffline(args[1])).getKeys(false));
 
                     else {
                         Set<String> set = new HashSet<>();
                         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                             if (!player.isOnline()&&args[1].equalsIgnoreCase("online")) continue;
-                            set.addAll(plugin.panelData.dataConfig.getConfigurationSection("playerData." + plugin.panelData.getOffline(player.getName())).getKeys(false));
+                            set.addAll(plugin.panelData.dataConfig.getConfigurationSection("playerData." + plugin.panelDataPlayers.getOffline(player.getName())).getKeys(false));
 
                         }
                         String[] finalArgs = args;
