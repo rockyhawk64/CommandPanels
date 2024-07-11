@@ -315,15 +315,15 @@ public class ItemCreation {
                         ItemMeta unbreak = s.getItemMeta();
                         unbreak.setUnbreakable(true);
                         s.setItemMeta(unbreak);
-                    }
-
-                    try {
-                        Damageable itemDamage = (Damageable) s.getItemMeta();
-                        itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(plugin.tex.placeholders(panel,position,p, itemSection.getString("damage")))));
-                        s.setItemMeta((ItemMeta) itemDamage);
-                    } catch (Exception e) {
-                        plugin.debug(e, p);
-                        p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
+                    }else {
+                        try {
+                            Damageable itemDamage = (Damageable) s.getItemMeta();
+                            itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(plugin.tex.placeholders(panel, position, p, itemSection.getString("damage")))));
+                            s.setItemMeta((ItemMeta) itemDamage);
+                        } catch (Exception e) {
+                            plugin.debug(e, p);
+                            p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
+                        }
                     }
                 }
             }

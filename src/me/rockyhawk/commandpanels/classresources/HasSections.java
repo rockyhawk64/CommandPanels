@@ -19,73 +19,65 @@ public class HasSections {
         plugin = pl;
     }
 
-    public String hasSection(Panel panel, PanelPosition position, ConfigurationSection cf, Player p){
-        for (int count = 0; cf.getKeys(false).size() > count; count++) {
-            String setName;
-            if(cf.isSet("has" + count)) {
-                setName = "has" + count;
-            }else{
-                continue;
-            }
+    public String hasSection(Panel panel, PanelPosition position, ConfigurationSection cf, Player p) {
+        for (String setName : cf.getKeys(false)) {
+            if (!cf.isConfigurationSection(setName)) continue;
 
-            boolean endProcess = true;
-            //loop through possible values and compares for hypothetical and operators
-            for (int a = 0; cf.getConfigurationSection(setName).getKeys(false).size() > a; a++) {
-                if(cf.isSet(setName + ".value" + a) && cf.isSet(setName + ".compare" + a)){
-                    //ensure the endProcess variable has been reset for another operation
-                    endProcess = true;
-                    //get the values of this statement
-                    String value;
-                    String compare;
-                    try {
-                        value = ChatColor.stripColor(plugin.tex.placeholders(panel, position, p, cf.getString(setName + ".value" + a)));
-                        compare = ChatColor.stripColor(plugin.tex.placeholders(panel, position, p, cf.getString(setName + ".compare" + a)));
-                    }catch (Exception e) {
-                        //if errors getting text return
-                        plugin.debug(e,p);
-                        return "";
-                    }
+            ConfigurationSection currentSection = cf.getConfigurationSection(setName);
+            int numberOfConditions = currentSection.getKeys(false).size();
 
-                    String operator = "AND";
-                    if(compare.endsWith(" OR")){
-                        compare = compare.substring(0, compare.length()-3);
-                        operator = "OR";
-                    }else if(compare.endsWith(" AND")){
-                        compare = compare.substring(0, compare.length()-4);
-                    }
+            Boolean currentBlockResult = null; // This will store the result of the current block (a set of conditions combined by AND or OR).
+            String previousOperator = "AND"; // Default logical operator to start with.
 
-                    //list of values with the or operator
-                    HashSet<String> values = doOperators(new HashSet<>(Collections.singletonList(value)));
-                    //go through all values with the or operator
-                    for(String val : values){
-                        if (hasProcess(setName, val, compare, p)) {
-                            endProcess = false;
-                            //if it is true and it is OR, there is no need to check the next value in the line
-                            if(operator.equals("OR")){
-                                a++;
-                            }
-                        }
-                    }
-                    if(endProcess){
-                        //check if the operator link between the next value/compare is OR
-                        if(operator.equals("OR")){
-                            //I can just continue because the algorithm already assumes the last sequence was true
-                            endProcess = false;
-                            continue;
-                        }
+            for (int a = 0; a < numberOfConditions; a++) {
+                if (!currentSection.isSet("value" + a) || !currentSection.isSet("compare" + a)) {
+                    continue;
+                }
+
+                String value = ChatColor.stripColor(plugin.tex.placeholders(panel, position, p, currentSection.getString("value" + a)));
+                String compare = ChatColor.stripColor(plugin.tex.placeholders(panel, position, p, currentSection.getString("compare" + a)));
+
+                String operator = "AND"; // Default operator for the current condition.
+                if (compare.endsWith(" OR")) {
+                    compare = compare.substring(0, compare.length() - 3);
+                    operator = "OR";
+                } else if (compare.endsWith(" AND")) {
+                    compare = compare.substring(0, compare.length() - 4);
+                }
+
+                HashSet<String> values = doOperators(new HashSet<>(Collections.singletonList(value)));
+                boolean localResult = false; // This tracks the result of the current condition.
+                for (String val : values) {
+                    if (hasProcess(setName, val, compare, p)) {
+                        localResult = true;
                         break;
                     }
                 }
+
+                if (currentBlockResult == null) {
+                    // Initialize the result of the block with the result of the first condition.
+                    currentBlockResult = localResult;
+                } else {
+                    // Combine the result of the current condition with the block result based on the previous operator.
+                    if (previousOperator.equals("AND")) {
+                        currentBlockResult = currentBlockResult && localResult;
+                    } else if (previousOperator.equals("OR")) {
+                        currentBlockResult = currentBlockResult || localResult;
+                    }
+                }
+
+                previousOperator = operator; // Update the operator for the next condition.
             }
-            //if the has section is false move to the next has section
-            if(endProcess){
-                continue;
+
+            if (currentBlockResult != null && currentBlockResult) {
+                // If the result of this section is true, check nested sections.
+                return "." + setName + hasSection(panel, position, currentSection, p);
             }
-            //proceed if none of the values were false
-            return "." + setName + hasSection(panel, position, cf.getConfigurationSection(setName), p);
+            // If the result is false, continue to the next 'has' section.
         }
         return "";
     }
+
 
     private HashSet<String> doOperators(HashSet<String> value){
         for(String val : value){

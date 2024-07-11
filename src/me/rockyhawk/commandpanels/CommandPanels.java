@@ -335,8 +335,8 @@ public class CommandPanels extends JavaPlugin{
             assert renamedMeta != null;
             //hiding attributes will add an NBT tag
             if(hideAttributes) {
-                renamedMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                 renamedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                renamedMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                 //HIDE_ADDITIONAL_TOOLTIP was added into 1.20.5 api
                 if(legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) ||
                         (legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && legacy.MINOR_VERSION >= 5)){
@@ -354,6 +354,10 @@ public class CommandPanels extends JavaPlugin{
                 //HIDE_DYE was added into 1.17 api
                 if(legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_17)){
                     renamedMeta.addItemFlags(ItemFlag.HIDE_DYE);
+                }
+                //setAttributeModifiers was added into 1.14 api
+                if(legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
+                    renamedMeta.setAttributeModifiers(null);
                 }
             }
             if (customName != null) {
