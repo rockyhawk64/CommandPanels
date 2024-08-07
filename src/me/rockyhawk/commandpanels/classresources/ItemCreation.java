@@ -283,7 +283,11 @@ public class ItemCreation {
                 //potion legacy or current
                 if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
                         (plugin.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && plugin.legacy.MINOR_VERSION <= 4)){
-                    plugin.legacyPotion.applyPotionEffect(p,s,effectType);
+                    if(plugin.legacy.MAJOR_VERSION.equals(MinecraftVersions.v1_8)){
+                        plugin.classicPotion.applyPotionEffect(p, s, effectType);
+                    }else {
+                        plugin.legacyPotion.applyPotionEffect(p, s, effectType);
+                    }
                 }else{
                     try {
                         PotionMeta potionMeta = (PotionMeta)s.getItemMeta();
@@ -299,6 +303,18 @@ public class ItemCreation {
                     }
                 }
             }
+
+            if(itemSection.contains("potion-color")){
+                if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_11)){
+                    String[] rgb = Objects.requireNonNull(itemSection.getString("potion-color")).split(",");
+                    Color color = Color.fromRGB(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
+                    PotionMeta potionMeta = (PotionMeta)s.getItemMeta();
+                    assert potionMeta != null;
+                    potionMeta.setColor(color);
+                    s.setItemMeta(potionMeta);
+                }
+            }
+
             if (itemSection.contains("damage")) {
                 //change the damage amount (placeholders accepted)
                 //if the damage is not unbreakable and should be a value

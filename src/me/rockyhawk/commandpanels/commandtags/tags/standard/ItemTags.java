@@ -8,8 +8,8 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Objects;
 import java.util.Set;
 
 public class ItemTags implements Listener {
@@ -102,21 +102,19 @@ public class ItemTags implements Listener {
             e.commandTagUsed();
             //if player uses setcustomdata= [slot] [position] [data] it will change the custom model data of the item
             PanelPosition position = PanelPosition.valueOf(e.args[1]);
-            ItemStack EditItem;
+            ItemStack editItem;
             if(position == PanelPosition.Top) {
-                EditItem = e.p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(e.args[0]));
+                editItem = e.p.getOpenInventory().getTopInventory().getItem(Integer.parseInt(e.args[0]));
             }else if(position == PanelPosition.Middle) {
-                EditItem = e.p.getInventory().getItem(Integer.parseInt(e.args[0])+9);
+                editItem = e.p.getInventory().getItem(Integer.parseInt(e.args[0])+9);
             }else{
-                EditItem = e.p.getInventory().getItem(Integer.parseInt(e.args[0]));
+                editItem = e.p.getInventory().getItem(Integer.parseInt(e.args[0]));
             }
 
-            assert EditItem != null;
-
             try{
-                if(EditItem.hasItemMeta()){
-                    Objects.requireNonNull(EditItem.getItemMeta()).setCustomModelData(Integer.valueOf(e.args[2]));
-                }
+                ItemMeta itemMeta = editItem.getItemMeta();
+                itemMeta.setCustomModelData(Integer.valueOf(e.args[2]));
+                editItem.setItemMeta(itemMeta);
             } catch (Exception err){
                 plugin.debug(err,e.p);
             }

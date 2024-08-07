@@ -16,6 +16,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 
 public class UtilsPanelsLoader implements Listener {
@@ -75,10 +76,10 @@ public class UtilsPanelsLoader implements Listener {
         plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
 
         //clear cached textures list until length limit is reached
-        Iterator<SavedCustomHead> iterator = plugin.customHeads.savedCustomHeads.iterator();
+        Iterator<Map.Entry<String, SavedCustomHead>> iterator = plugin.customHeads.savedCustomHeads.entrySet().iterator();
         while (plugin.customHeads.savedCustomHeads.size() > 2000 && iterator.hasNext()) {
-            iterator.next(); // Move to next element
-            iterator.remove(); // Remove the element
+            iterator.next(); // Move to next entry
+            iterator.remove(); // Remove the entry
         }
     }
 

@@ -26,8 +26,7 @@ public class GetCustomHeads {
         this.plugin = pl;
     }
 
-    //will not go above 2000 elements in the list
-    public HashSet<SavedCustomHead> savedCustomHeads = new HashSet<>();
+    public HashMap<String, SavedCustomHead> savedCustomHeads = new HashMap<>();
 
     public String getHeadBase64(ItemStack head) {
         if (plugin.getHeads.ifSkullOrHead(head.getType().toString()) && head.hasItemMeta()) {
@@ -75,10 +74,13 @@ public class GetCustomHeads {
         }
 
         //get texture if already cached
-        for(SavedCustomHead head : savedCustomHeads){
-            if(head.playerName == null) {continue;}
-            if(head.playerName.equals(name)){
-                return head.headItem;
+        if (savedCustomHeads.containsKey(name)) {
+            if (!savedCustomHeads.get(name).isValid && (System.currentTimeMillis() - savedCustomHeads.get(name).lastAttempt) < 60000) {
+                // If the last attempt was less than 60 seconds ago and was invalid, return null or a default item
+                return new ItemStack(Material.valueOf(plugin.getHeads.playerHeadString()));
+            }
+            if(savedCustomHeads.get(name).isValid) {
+                return savedCustomHeads.get(name).headItem; // Return cached item if valid
             }
         }
 
@@ -96,7 +98,7 @@ public class GetCustomHeads {
                 if(plugin.debug.consoleDebug){
                     plugin.getServer().getConsoleSender().sendMessage(plugin.tex.colour(plugin.tag +
                             ChatColor.WHITE +
-                            "Attempting to Download & Cache Head Texture for " + name));
+                            "Download & Cache Head Texture for " + name));
                 }
 
                 // Fetch the player UUID from the Mojang API
@@ -121,27 +123,40 @@ public class GetCustomHeads {
 
                 // Once the API call is finished, update the ItemStack on the main thread
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    itemStack.setItemMeta(getCustomHead(value).getItemMeta());
-                    savedCustomHeads.add(new SavedCustomHead(itemStack, value, name));
+                    itemStack.setItemMeta(getCustomHead(name, value).getItemMeta());
+                    savedCustomHeads.put(name, new SavedCustomHead(itemStack, value, true));
                 });
             } catch (Exception ignore) {
-                // Ignore as errors should be skipped and no need to show in console
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    //do not overwrite a valid cached head
+                    if(savedCustomHeads.containsKey(name) && savedCustomHeads.get(name).isValid){
+                        return;
+                    }
+                    savedCustomHeads.put(name, new SavedCustomHead(null, null, false)); // Mark as invalid
+                });
             }
         });
 
         return itemStack;
     }
 
+    //will also use cached heads feature to get heads if player name is provided
+    public ItemStack getCustomHead(String playerName, String b64stringtexture) {
+        //check for any saved heads
+        if(savedCustomHeads.containsKey(playerName)) {
+            if (savedCustomHeads.get(playerName).base64 != null) {
+                return savedCustomHeads.get(playerName).headItem;
+            }
+            savedCustomHeads.get(playerName).isValid = false;
+        }
+
+        //if saved head is not found from player name, get head manually
+        return getCustomHead(b64stringtexture);
+    }
+
     //used to get heads from Base64 Textures
     @SuppressWarnings("deprecation")
     public ItemStack getCustomHead(String b64stringtexture) {
-        //check for any saved heads
-        for(SavedCustomHead head : savedCustomHeads){
-            if(head.base64.equals(b64stringtexture)){
-                return head.headItem;
-            }
-        }
-
         //get head from base64
         GameProfile profile = new GameProfile(UUID.randomUUID(), "");
         PropertyMap propertyMap = profile.getProperties();

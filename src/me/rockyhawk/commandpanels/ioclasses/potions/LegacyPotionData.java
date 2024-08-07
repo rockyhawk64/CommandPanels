@@ -10,6 +10,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 public class LegacyPotionData {
+    /*
+     * To be used in Minecraft 1.9 to 1.20.4
+     * */
     private CommandPanels plugin;
 
     public LegacyPotionData(CommandPanels plugin) {

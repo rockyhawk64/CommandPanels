@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels;
 
 import com.bencodez.votingplugin.VotingPluginHooks;
+import com.google.common.collect.ImmutableMultimap;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import me.rockyhawk.commandpanels.api.CommandPanelsAPI;
 import me.rockyhawk.commandpanels.api.Panel;
@@ -36,6 +37,7 @@ import me.rockyhawk.commandpanels.ioclasses.nbt.NBTManager;
 import me.rockyhawk.commandpanels.ioclasses.legacy.LegacyVersion;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.ioclasses.legacy.PlayerHeads;
+import me.rockyhawk.commandpanels.ioclasses.potions.ClassicPotionData;
 import me.rockyhawk.commandpanels.ioclasses.potions.LegacyPotionData;
 import me.rockyhawk.commandpanels.openpanelsmanager.*;
 import me.rockyhawk.commandpanels.openwithitem.HotbarItemLoader;
@@ -104,6 +106,7 @@ public class CommandPanels extends JavaPlugin{
     public GetCustomHeads customHeads = new GetCustomHeads(this);
     public Updater updater = new Updater(this);
     public PlayerHeads getHeads = new PlayerHeads(this);
+    public ClassicPotionData classicPotion = new ClassicPotionData(this);
     public LegacyPotionData legacyPotion = new LegacyPotionData(this);
     public LegacyVersion legacy = new LegacyVersion(this);
 
@@ -357,7 +360,7 @@ public class CommandPanels extends JavaPlugin{
                 }
                 //setAttributeModifiers was added into 1.14 api
                 if(legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
-                    renamedMeta.setAttributeModifiers(null);
+                    renamedMeta.setAttributeModifiers(ImmutableMultimap.of());
                 }
             }
             if (customName != null) {

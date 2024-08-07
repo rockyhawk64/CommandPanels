@@ -64,8 +64,12 @@ public class OpenFloodgateGUI implements Listener {
         form.validResultHandler((SimpleFormResponse response) -> {
             int clickedButtonId = response.clickedButtonId();
             String configKey = buttonCommands.get(clickedButtonId);
-            if(fgPanel.contains(configKey + ".commands")) {
-                plugin.commandRunner.runCommands(e.getPanel(), PanelPosition.Top, e.getPlayer(), fgPanel.getStringList(configKey + ".commands"), null);
+
+            String section = plugin.has.hasSection(e.getPanel(), PanelPosition.Top, fgPanel.getConfigurationSection(configKey), e.getPlayer());
+            ConfigurationSection buttonConfig = fgPanel.getConfigurationSection(configKey + section);
+
+            if(buttonConfig.contains("commands")) {
+                plugin.commandRunner.runCommands(e.getPanel(), PanelPosition.Top, e.getPlayer(), buttonConfig.getStringList("commands"), null);
             }
         });
 
@@ -77,7 +81,8 @@ public class OpenFloodgateGUI implements Listener {
                 .filter(key -> key.matches("\\d+"))
                 .sorted(Comparator.comparingInt(Integer::parseInt))  // Ensure numeric sorting
                 .map(key -> {
-                    ConfigurationSection buttonConfig = fgPanel.getConfigurationSection(key);
+                    String section = plugin.has.hasSection(panel, PanelPosition.Top, fgPanel.getConfigurationSection(key), p);
+                    ConfigurationSection buttonConfig = fgPanel.getConfigurationSection(key + section);
                     if (buttonConfig == null) return null;
 
                     String buttonContent = plugin.tex.placeholders(panel, null, p, buttonConfig.getString("text"));
@@ -101,7 +106,9 @@ public class OpenFloodgateGUI implements Listener {
         List<String> commandsOrder = new ArrayList<>();
         fgPanel.getKeys(false).forEach(key -> {
             if (key.matches("\\d+")) {
-                ConfigurationSection fieldConfig = fgPanel.getConfigurationSection(key);
+                String section = plugin.has.hasSection(e.getPanel(), e.getPosition(), fgPanel.getConfigurationSection(key), e.getPlayer());
+                ConfigurationSection fieldConfig = fgPanel.getConfigurationSection(key + section);
+
                 try {
                     String type = "toggle";
                     if(fieldConfig.contains("type")) {
@@ -145,10 +152,13 @@ public class OpenFloodgateGUI implements Listener {
                 if (!response.hasNext()) {
                     break;  // Safety check to prevent NoSuchElementException
                 }
-                if(fgPanel.contains(configKey + ".commands")) {
+                String section = plugin.has.hasSection(e.getPanel(), e.getPosition(), fgPanel.getConfigurationSection(configKey), e.getPlayer());
+                ConfigurationSection fieldConfig = fgPanel.getConfigurationSection(configKey + section);
+
+                if(fieldConfig.contains("commands")) {
                     Object fieldValue = response.next();  // Retrieve the next response value
                     String value = String.valueOf(fieldValue);  // Convert the field value to String
-                    List<String> commands = fgPanel.getStringList(configKey + ".commands");  // Retrieve commands for this field
+                    List<String> commands = fieldConfig.getStringList("commands");  // Retrieve commands for this field
                     List<String> processedCommands = new ArrayList<>();
                     for (String command : commands) {
                         processedCommands.add(command.replaceAll("%cp-input%", value));  // Replace the placeholder in each command
