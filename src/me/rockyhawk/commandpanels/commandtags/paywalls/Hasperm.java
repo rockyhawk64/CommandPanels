@@ -31,5 +31,20 @@ public class Hasperm implements Listener {
                 e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
             }
         }
+
+        if(e.name.equalsIgnoreCase("hasnoperm=")){
+            //if player uses hasnoperm= [perm]
+            if (!e.p.hasPermission(e.args[0])) {
+                if (plugin.config.getBoolean("purchase.permission.enable") && e.doDelete) {
+                    plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.permission.success")).replaceAll("%cp-args%", e.args[0]));
+                }
+                e.PAYWALL_OUTPUT = PaywallOutput.Passed;
+            } else {
+                if (plugin.config.getBoolean("purchase.currency.enable")) {
+                    plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.permission.failure")));
+                }
+                e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
+            }
+        }
     }
 }
