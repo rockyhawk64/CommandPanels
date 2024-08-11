@@ -47,14 +47,14 @@
       <option name="url" value="https://repo1.maven.org/maven2" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="BenCodez Repo" />
-      <option name="name" value="BenCodez Repo" />
-      <option name="url" value="https://nexus.bencodez.com/repository/maven-public/" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="phoenix" />
       <option name="name" value="phoenix" />
       <option name="url" value="https://nexus.phoenixdevt.fr/repository/maven-public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="BenCodez Repo" />
+      <option name="name" value="BenCodez Repo" />
+      <option name="url" value="https://nexus.bencodez.com/repository/maven-public/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="ess-repo" />

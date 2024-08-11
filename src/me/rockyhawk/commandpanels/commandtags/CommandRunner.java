@@ -56,7 +56,7 @@ public class CommandRunner {
         }
     }
 
-    public void runMultiPaywall(Panel panel, PanelPosition position, Player p, List<String> paywalls, List<String> commands, ClickType click) {
+    public boolean runMultiPaywall(Panel panel, PanelPosition position, Player p, List<String> paywalls, List<String> commands, ClickType click) {
         boolean allPaywallsValid = true;
 
         // New list combining paywalls and commands
@@ -79,6 +79,9 @@ public class CommandRunner {
         if (allPaywallsValid) {
             plugin.commandRunner.runCommands(panel, position, p, allCommands, click);
         }
+
+        // Return output as boolean for usage if applicable
+        return allPaywallsValid;
     }
 
     //do this on startup to load listeners

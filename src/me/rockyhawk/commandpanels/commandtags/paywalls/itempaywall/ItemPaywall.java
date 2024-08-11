@@ -21,7 +21,7 @@ public class ItemPaywall implements Listener {
     @EventHandler
     public void commandTag(PaywallEvent e){
         if(e.name.equalsIgnoreCase("item-paywall=")){
-            //if player uses item-paywall= [Material] [Amount] <id:#> <IGNORENBT> WILL NOT TAKE CUSTOM ITEMS. IGNORENBT lets nbt items through. Useful for spawner edge cases.
+            //if player uses item-paywall= [Material] [Amount] <IGNORENBT> WILL NOT TAKE CUSTOM ITEMS. IGNORENBT lets nbt items through. Useful for spawner edge cases.
             //player can use item-paywall= [custom-item] [Amount]
             try {
                 boolean ignoreNBT = false;
