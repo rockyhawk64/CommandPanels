@@ -51,6 +51,10 @@ import me.rockyhawk.commandpanels.playerinventoryhandler.ItemStackSerializer;
 import me.rockyhawk.commandpanels.playerinventoryhandler.pickupevent.EntityPickupEvent;
 import me.rockyhawk.commandpanels.playerinventoryhandler.pickupevent.legacyPlayerEvent;
 import me.rockyhawk.commandpanels.updater.Updater;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CharSequenceReader;
@@ -74,6 +78,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CommandPanels extends JavaPlugin{
     public YamlConfiguration config;
@@ -121,6 +126,8 @@ public class CommandPanels extends JavaPlugin{
 
     public File panelsf = new File(this.getDataFolder() + File.separator + "panels");
     public YamlConfiguration blockConfig; //where panel block locations are stored
+    public boolean paper; //if the server is running paper
+    public LegacyComponentSerializer legacyComponentSerializer;
 
     public void onEnable() {
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loading...");
@@ -130,6 +137,15 @@ public class CommandPanels extends JavaPlugin{
         panelData.dataConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "data.yml"));
         inventorySaver.inventoryConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "inventories.yml"));
         this.config = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + File.separator + "config.yml"));
+
+        try {
+            //check if the server is running paper
+            Class.forName("com.destroystokyo.paper.event.player.PlayerJumpEvent");
+            paper = true;
+            legacyComponentSerializer = LegacyComponentSerializer.builder().hexColors().character('&').build();
+        } catch (ClassNotFoundException e) {
+            paper = false;
+        }
 
         //save the config.yml file
         File configFile = new File(this.getDataFolder() + File.separator + "config.yml");
@@ -358,7 +374,11 @@ public class CommandPanels extends JavaPlugin{
                 }
             }
             if (customName != null) {
-                renamedMeta.setDisplayName(customName);
+                if(paper) {
+                    renamedMeta.displayName(deserialize(customName));
+                } else {
+                    renamedMeta.setDisplayName(customName);
+                }
             }
 
             List<String> re_lore;
@@ -372,11 +392,27 @@ public class CommandPanels extends JavaPlugin{
                 }else{
                     re_lore = lore;
                 }
-                renamedMeta.setLore(splitListWithEscape(re_lore));
+                if (paper) {
+                    renamedMeta.lore(deserialize(re_lore));
+                } else {
+                    renamedMeta.setLore(splitListWithEscape(re_lore));
+                }
             }
             renamed.setItemMeta(renamedMeta);
         } catch (Exception ignored) {}
         return renamed;
+    }
+
+    private Component deserialize(String string) {
+        Component component = legacyComponentSerializer.deserialize(string.replace('§', '&'));
+        return MiniMessage.miniMessage().deserialize(MiniMessage.miniMessage().serialize(component.decoration(TextDecoration.ITALIC, false))
+                .replace("\\<", "<").replace("\\", "").replace("\n", "<br>")).decoration(TextDecoration.ITALIC, false);
+    }
+
+    private List<Component> deserialize(List<String> strings) {
+        return strings.stream()
+                .map(this::deserialize)
+                .collect(Collectors.toList());
     }
 
     private void setupEconomy() {
