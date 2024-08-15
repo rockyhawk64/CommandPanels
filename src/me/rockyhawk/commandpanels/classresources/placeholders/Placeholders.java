@@ -210,6 +210,52 @@ public class Placeholders {
                 return "";
             }
         }
+        //get name value from slot in current open inventory (panel)
+        if(identifier.startsWith("name-")) {
+            try {
+                String nameNumber = identifier.replace("name-", "");
+                String name;
+                try {
+                    ItemStack item = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(nameNumber));
+                    name = item.getType().toString().replace("_"," ");
+                    if(item.hasItemMeta()){
+                        if(item.getItemMeta().hasDisplayName()){
+                            name = item.getItemMeta().getDisplayName();
+                        }
+                    }
+                } catch (NullPointerException er) {
+                    name = "";
+                }
+                return name;
+            } catch (Exception ex) {
+                plugin.debug(ex,p);
+                return "";
+            }
+        }
+        //get lore value from slot in current open inventory (panel)
+        if(identifier.startsWith("lore-")) {
+            try {
+                String loreNumber = identifier.replace("lore-", "");
+                String lore = "";
+                try {
+                    ItemStack item = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(loreNumber));
+                    if(item.hasItemMeta()){
+                        if(item.getItemMeta().hasLore()){
+                            List<String> ListLore = item.getItemMeta().getLore();
+                            for(String list : ListLore){
+                                lore = lore + list + "\n";
+                            }
+                        }
+                    }
+                } catch (NullPointerException er) {
+                    lore = "";
+                }
+                return lore;
+            } catch (Exception ex) {
+                plugin.debug(ex,p);
+                return "";
+            }
+        }
         //get stack amount from slot in current open inventory (panel)
         if(identifier.startsWith("stack-")) {
             try {

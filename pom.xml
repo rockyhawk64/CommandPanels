@@ -73,7 +73,7 @@
     <repositories>
         <repository>
             <id>io.papermc</id>
-            <url>https://papermc.io/repo/repository/maven-releases/</url>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
             <id>jitpack.io</id>

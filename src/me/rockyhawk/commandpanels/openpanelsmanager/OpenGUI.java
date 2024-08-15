@@ -50,6 +50,8 @@ public class OpenGUI {
         Set<String> itemList = pconfig.getConfigurationSection("item").getKeys(false);
         HashSet<Integer> takenSlots = new HashSet<>();
         for (String item : itemList) {
+            item = plugin.tex.attachPlaceholders(panel,position,p,item);
+            Bukkit.getLogger().info("formatted number: " + item);
             String section = "";
             //openType needs to not be 3 so the editor won't include hasperm and hasvalue, etc items
             section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("item." + Integer.parseInt(item)), p);

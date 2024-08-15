@@ -5,6 +5,7 @@ import io.lumine.mythic.lib.api.item.NBTItem;
 import me.rockyhawk.commandpanels.api.CommandPanelsAPI;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.classresources.ExecuteOpenVoids;
+import me.rockyhawk.commandpanels.classresources.SerializerUtils;
 import me.rockyhawk.commandpanels.classresources.customheads.GetCustomHeads;
 import me.rockyhawk.commandpanels.classresources.HasSections;
 import me.rockyhawk.commandpanels.classresources.ItemCreation;
@@ -358,7 +359,12 @@ public class CommandPanels extends JavaPlugin{
                 }
             }
             if (customName != null) {
-                renamedMeta.setDisplayName(customName);
+                if(SerializerUtils.isPaperServer()){
+                    renamedMeta.setDisplayName(SerializerUtils.doMiniMessageLegacy(customName));
+                } else {
+                    renamedMeta.setDisplayName(customName);
+                }
+
             }
 
             List<String> re_lore;
@@ -372,7 +378,11 @@ public class CommandPanels extends JavaPlugin{
                 }else{
                     re_lore = lore;
                 }
-                renamedMeta.setLore(splitListWithEscape(re_lore));
+                if(SerializerUtils.isPaperServer()){
+                    renamedMeta.setLore(SerializerUtils.doMiniMessageLegacy(re_lore));
+                } else {
+                    renamedMeta.setLore(splitListWithEscape(re_lore));
+                }
             }
             renamed.setItemMeta(renamedMeta);
         } catch (Exception ignored) {}
