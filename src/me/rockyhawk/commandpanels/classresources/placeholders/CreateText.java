@@ -86,6 +86,9 @@ public class CreateText {
     //regular string papi, but only colours so Player doesn't need to be there
     public String colour(String setpapi) {
         try {
+            if(plugin.miniMessage != null){
+                setpapi = plugin.miniMessage.doMiniMessageLegacy(setpapi);
+            }
             setpapi = ChatColor.translateAlternateColorCodes('&', setpapi);
             setpapi = plugin.hex.translateHexColorCodes(setpapi);
             return setpapi;
@@ -108,7 +111,11 @@ public class CreateText {
     public String placeholders(Panel panel, PanelPosition position, Player p, String setpapi) {
         try {
             setpapi = attachPlaceholders(panel,position, p,setpapi);
-            setpapi = plugin.hex.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', setpapi));
+            if(plugin.miniMessage != null){
+                setpapi = plugin.miniMessage.doMiniMessageLegacy(setpapi);
+            }
+            setpapi = ChatColor.translateAlternateColorCodes('&', setpapi);
+            setpapi = plugin.hex.translateHexColorCodes(setpapi);
             return setpapi;
         }catch(NullPointerException e){
             return setpapi;

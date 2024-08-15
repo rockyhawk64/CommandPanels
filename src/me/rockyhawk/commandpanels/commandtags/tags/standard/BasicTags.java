@@ -2,7 +2,7 @@ package me.rockyhawk.commandpanels.commandtags.tags.standard;
 
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.PanelCommandEvent;
-import me.rockyhawk.commandpanels.classresources.SerializerUtils;
+import me.rockyhawk.commandpanels.classresources.MiniMessageUtils;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
@@ -140,7 +140,7 @@ public class BasicTags implements Listener {
             //do mini message if conditions are met
             if (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_18)) {
                 Audience player = (Audience) e.p; // Needed because the basic Player from the Event can't send Paper's Components
-                Component parsedText = SerializerUtils.doMiniMessage(String.join(" ", e.args));
+                Component parsedText = plugin.miniMessage.doMiniMessage(String.join(" ", e.args));
                 player.sendMessage(parsedText);
             } else {
                 plugin.tex.sendString(e.p, plugin.tag + ChatColor.RED + "MiniMessage-Feature needs Paper 1.18 or newer to work!");

@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.classresources;
 
+import dev.lone.itemsadder.api.CustomStack;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
@@ -91,6 +92,16 @@ public class ItemCreation {
                 mat = plugin.getHeads.playerHeadString();
                 if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                     id = 3;
+                }
+            }
+
+            //ItemsAdder support, needs namespaceID (eg, money:coin)
+            if (matraw.split("\\s")[0].equalsIgnoreCase("itemsadder=")) {
+                String namespaceID = matraw.split("\\s")[1];
+                CustomStack stack = CustomStack.getInstance(namespaceID);
+                if(stack != null) {
+                    s = stack.getItemStack().clone();
+                    normalCreation = false;
                 }
             }
 

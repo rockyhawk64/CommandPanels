@@ -87,23 +87,24 @@ public class Utils implements Listener {
         panel = plugin.openPanels.getOpenPanel(p.getName(),position);
 
         //this loops through all the items in the panel
-        boolean foundSlot = false;
-        for(String slot : Objects.requireNonNull(panel.getConfig().getConfigurationSection("item")).getKeys(false)){
+        String foundSlot = null;
+        for(String item : Objects.requireNonNull(panel.getConfig().getConfigurationSection("item")).getKeys(false)){
+            String slot = plugin.tex.placeholdersNoColour(panel, position, p, item);
             if (slot.equals(Integer.toString(clickedSlot))) {
-                foundSlot = true;
+                foundSlot = item;
                 break;
             }
         }
-        if(!foundSlot){
+        if(foundSlot == null){
             e.setCancelled(true);
             return;
         }
 
         //get the section of the slot that was clicked
-        String section = plugin.has.hasSection(panel,position,panel.getConfig().getConfigurationSection("item." + clickedSlot), p);
+        String section = plugin.has.hasSection(panel,position,panel.getConfig().getConfigurationSection("item." + foundSlot), p);
 
-        if(panel.getConfig().contains("item." + clickedSlot + section + ".itemType")){
-            if(panel.getConfig().getStringList("item." + clickedSlot + section + ".itemType").contains("placeable")){
+        if(panel.getConfig().contains("item." + foundSlot + section + ".itemType")){
+            if(panel.getConfig().getStringList("item." + foundSlot + section + ".itemType").contains("placeable")){
                 //skip if the item is a placeable
                 e.setCancelled(false);
                 return;
@@ -115,13 +116,13 @@ public class Utils implements Listener {
         p.updateInventory();
 
         //if an item has an area for input instead of commands
-        if(panel.getConfig().contains("item." + clickedSlot + section + ".player-input")) {
-            plugin.inputUtils.playerInput.put(p,new PlayerInput(panel,panel.getConfig().getStringList("item." + clickedSlot + section + ".player-input"),e.getClick()));
+        if(panel.getConfig().contains("item." + foundSlot + section + ".player-input")) {
+            plugin.inputUtils.playerInput.put(p,new PlayerInput(panel,panel.getConfig().getStringList("item." + foundSlot + section + ".player-input"),e.getClick()));
             plugin.inputUtils.sendMessage(panel,position,p);
         }
 
-        if(panel.getConfig().contains("item." + clickedSlot + section + ".commands")) {
-            List<String> commands = panel.getConfig().getStringList("item." + clickedSlot + section + ".commands");
+        if(panel.getConfig().contains("item." + foundSlot + section + ".commands")) {
+            List<String> commands = panel.getConfig().getStringList("item." + foundSlot + section + ".commands");
             if (!commands.isEmpty()) {
                 for (int i = 0; commands.size() > i; i++) {
                     try {
@@ -130,9 +131,9 @@ public class Utils implements Listener {
                         commands.set(i, commands.get(i).replaceAll("%cp-clicked%", "AIR"));
                     }
                 }
-                if (panel.getConfig().contains("item." + clickedSlot + section + ".multi-paywall")) {
+                if (panel.getConfig().contains("item." + foundSlot + section + ".multi-paywall")) {
                     plugin.commandRunner.runMultiPaywall(panel,position,p,
-                            panel.getConfig().getStringList("item." + clickedSlot + section + ".multi-paywall"),
+                            panel.getConfig().getStringList("item." + foundSlot + section + ".multi-paywall"),
                             commands,e.getClick());
                 } else {
                     plugin.commandRunner.runCommands(panel, position, p, commands, e.getClick());

@@ -22,6 +22,10 @@ public class Commandpanelrefresher implements Listener {
     }
     @EventHandler
     public void onPanelOpen(PanelOpenedEvent e){ //Handles when Players open inventory
+        if(e.isCancelled()){
+            return;
+        }
+
         if (plugin.config.contains("config.refresh-panels")) {
             if (Objects.requireNonNull(plugin.config.getString("config.refresh-panels")).trim().equalsIgnoreCase("false")) {
                 return;

@@ -37,7 +37,7 @@ input:
     - '&aEnter Input for Command'
     - '&cType &4%cp-args% &cto Cancel the command'
 hexcodes:
-  start_tag: '#'
+  start_tag: '&#'
   end_tag: ''
 placeholders:
   primary:

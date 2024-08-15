@@ -9,7 +9,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -50,11 +49,9 @@ public class OpenGUI {
         Set<String> itemList = pconfig.getConfigurationSection("item").getKeys(false);
         HashSet<Integer> takenSlots = new HashSet<>();
         for (String item : itemList) {
-            item = plugin.tex.attachPlaceholders(panel,position,p,item);
-            Bukkit.getLogger().info("formatted number: " + item);
-            String section = "";
+            String section;
             //openType needs to not be 3 so the editor won't include hasperm and hasvalue, etc items
-            section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("item." + Integer.parseInt(item)), p);
+            section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("item." + item), p);
             //This section is for animations below here: VISUAL ONLY
 
             //check for if there is animations inside the items section
@@ -72,17 +69,16 @@ public class OpenGUI {
                 //this is for contents in the itemType section
                 if (pconfig.getStringList("item." + item + section + ".itemType").contains("placeable") && openType == PanelOpenType.Refresh) {
                     //keep item the same, openType == 0 meaning panel is refreshing
-                    setItem(p.getOpenInventory().getItem(Integer.parseInt(item)),Integer.parseInt(item),i,p,position);
-                    takenSlots.add(Integer.parseInt(item));
+                    setItem(p.getOpenInventory().getItem(Integer.parseInt(plugin.tex.placeholdersNoColour(panel,position,p,item))), item, i, p, position);
+                    takenSlots.add(Integer.parseInt(plugin.tex.placeholdersNoColour(panel,position,p,item)));
                     continue;
                 }
             }
 
             try {
                 //place item into the GUI
-                setItem(s,Integer.parseInt(item),i,p,position);
-                takenSlots.add(Integer.parseInt(item));
-                //i.setItem(Integer.parseInt(item), s);
+                setItem(s,item,i,p,position);
+                takenSlots.add(Integer.parseInt(plugin.tex.placeholdersNoColour(panel,position,p,item)));
                 //only place duplicate items in without the editor mode. These are merely visual and will not carry over commands
                 if(pconfig.contains("item." + item + section + ".duplicate")) {
                     try {
@@ -193,6 +189,12 @@ public class OpenGUI {
         }else{
             return 9;
         }
+    }
+
+    //allows for a string to be used instead of integer, for placeholders
+    private void setItem(ItemStack item, String slotName, Inventory inv, Player p, PanelPosition position) throws ArrayIndexOutOfBoundsException{
+        int slot = Integer.parseInt(plugin.tex.placeholdersNoColour(null, position, p, slotName));
+        setItem(item, slot, inv, p, position);
     }
     private void setItem(ItemStack item, int slot, Inventory inv, Player p, PanelPosition position) throws ArrayIndexOutOfBoundsException{
         if(position == PanelPosition.Top){
