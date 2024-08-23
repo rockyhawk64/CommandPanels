@@ -85,7 +85,7 @@ public class OpenFloodgateGUI implements Listener {
                     ConfigurationSection buttonConfig = fgPanel.getConfigurationSection(key + section);
                     if (buttonConfig == null) return null;
 
-                    String buttonContent = plugin.tex.placeholders(panel, null, p, buttonConfig.getString("text"));
+                    String buttonContent = plugin.tex.placeholders(panel, null, p, buttonConfig.getString("text").replaceAll("\\\\n", "\n"));
                     if (!buttonConfig.contains("icon")) {
                         form.button(buttonContent);
                     } else {
@@ -116,12 +116,12 @@ public class OpenFloodgateGUI implements Listener {
                     }
                     switch (type) {
                         case "toggle":
-                            form.toggle(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text")),
+                            form.toggle(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
                                     Boolean.parseBoolean(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("default"))));
                             commandsOrder.add(key);
                             break;
                         case "slider":
-                            form.slider(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text")),
+                            form.slider(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
                                     Long.parseLong(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("min"))),
                                     Long.parseLong(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("max"))),
                                     Long.parseLong(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("step"))),
@@ -129,13 +129,13 @@ public class OpenFloodgateGUI implements Listener {
                             commandsOrder.add(key);
                             break;
                         case "input":
-                            form.input(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text")),
+                            form.input(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
                                     plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("placeholder")),
                                     plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("default")));
                             commandsOrder.add(key);
                             break;
                         case "dropdown":
-                            form.dropdown(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text")),
+                            form.dropdown(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
                                     plugin.tex.placeholdersList(e.getPanel(), null, e.getPlayer(), fieldConfig.getStringList("options"), true));
                             commandsOrder.add(key);
                             break;

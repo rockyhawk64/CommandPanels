@@ -197,8 +197,11 @@ public class CommandPanels extends JavaPlugin{
         }
 
         try {
-            // Check for a class that exists only in Paper
-            Class.forName("com.destroystokyo.paper.PaperConfig");
+            // Check all the minimessage classes exist before loading
+            Class.forName("net.kyori.adventure.text.Component");
+            Class.forName("net.kyori.adventure.text.format.TextDecoration");
+            Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+            Class.forName("net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer");
             miniMessage = new MiniMessageUtils(this);
         } catch (ClassNotFoundException ignore) {
             //do not initialise miniMessage
