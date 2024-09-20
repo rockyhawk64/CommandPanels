@@ -1,6 +1,8 @@
 package me.rockyhawk.commandpanels.classresources;
 
 import dev.lone.itemsadder.api.CustomStack;
+import io.th0rgal.oraxen.api.OraxenItems;
+import io.th0rgal.oraxen.items.ItemBuilder;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
@@ -101,6 +103,16 @@ public class ItemCreation {
                 CustomStack stack = CustomStack.getInstance(namespaceID);
                 if(stack != null) {
                     s = stack.getItemStack().clone();
+                    normalCreation = false;
+                }
+            }
+
+            //Oraxen support, needs item ID
+            if(matraw.split("\\s")[0].equalsIgnoreCase("oraxen=")){
+                String itemID = matraw.split("\\s")[1];
+                ItemBuilder b = OraxenItems.getItemById(itemID);
+                if (b != null) {
+                    s = b.build();
                     normalCreation = false;
                 }
             }
