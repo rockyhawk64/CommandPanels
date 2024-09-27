@@ -52,7 +52,7 @@ public class CommandRunner {
         CommandTagEvent tags = new CommandTagEvent(plugin, panel, position, p, commandRAW);
         Bukkit.getPluginManager().callEvent(tags);
         if (!tags.commandTagUsed) {
-            Bukkit.dispatchCommand(p, plugin.tex.placeholders(panel, position, p, commandRAW.trim()));
+            Bukkit.dispatchCommand(p, plugin.tex.attachPlaceholders(panel, position, p, commandRAW.trim()));
         }
     }
 

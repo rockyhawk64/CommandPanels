@@ -1,7 +1,6 @@
 package me.rockyhawk.commandpanels.classresources.placeholders;
 
 import com.earth2me.essentials.Essentials;
-import me.realized.tokenmanager.api.TokenManager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
@@ -461,13 +460,6 @@ public class Placeholders {
             }
         } catch (Exception place) {
             //skip
-        }
-        if (plugin.getServer().getPluginManager().isPluginEnabled("TokenManager")) {
-            TokenManager api = (TokenManager) Bukkit.getServer().getPluginManager().getPlugin("TokenManager");
-            assert api != null;
-            if(identifier.equals("tokenmanager-balance")) {
-                return Long.toString(api.getTokens(p).orElse(0));
-            }
         }
         //end nodes with PlaceHolders
         return "";

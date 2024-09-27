@@ -4,6 +4,7 @@ import dev.lone.itemsadder.api.CustomStack;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.classresources.customheads.SavedCustomHead;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import net.Indyuce.mmoitems.MMOItems;
@@ -27,6 +28,7 @@ import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.potion.PotionType;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -95,7 +97,41 @@ public class ItemCreation {
                 }
             }
 
-            //ItemsAdder support, needs namespaceID (eg, money:coin)
+            //Oraxen support, uses itemID (eg, oraxen= coin)
+            if (matraw.split("\\s")[0].equalsIgnoreCase("oraxen=")) {
+                String itemID = matraw.split("\\s")[1];
+                try {
+                    // Load the OraxenItems class
+                    Class<?> oraxenItemsClass = Class.forName("io.th0rgal.oraxen.api.OraxenItems");
+
+                    // Retrieve the 'getItemById' method from the OraxenItems class
+                    Method getItemByIdMethod = oraxenItemsClass.getMethod("getItemById", String.class);
+                    getItemByIdMethod.setAccessible(true);
+
+                    // Invoke the 'getItemById' method with the itemID
+                    Object oraxenItem = getItemByIdMethod.invoke(null, itemID); // static method, so pass 'null'
+
+                    // Ensure that the method returned a valid Oraxen item
+                    if (oraxenItem != null) {
+                        // Now we need to invoke 'getReferenceClone' on the OraxenItem object
+                        Method getReferenceCloneMethod = oraxenItem.getClass().getMethod("getReferenceClone");
+                        getReferenceCloneMethod.setAccessible(true);
+                        ItemStack stack = (ItemStack) getReferenceCloneMethod.invoke(oraxenItem);
+
+                        // Check if stack is not null
+                        if (stack != null) {
+                            s = stack;
+                            normalCreation = false;
+                        }
+                    }
+                } catch (Exception e) {
+                    plugin.debug(e, null);
+                    // Handle the error or inform the player
+                }
+
+            }
+
+            //ItemsAdder support, needs namespaceID (eg, itemsadder= money:coin)
             if (matraw.split("\\s")[0].equalsIgnoreCase("itemsadder=")) {
                 String namespaceID = matraw.split("\\s")[1];
                 CustomStack stack = CustomStack.getInstance(namespaceID);
@@ -444,14 +480,7 @@ public class ItemCreation {
                 }
                 if(plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
                     if(!Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("%") && !Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("=")) {
-                        SkullMeta meta = (SkullMeta) cont.getItemMeta();
-                        if (plugin.customHeads.getHeadBase64(cont) != null) {
-                            //inject base64 here, disable for legacy as is not working
-                            file.set("panels." + panelName + ".item." + i + ".material", "cps= " + plugin.customHeads.getHeadBase64(cont));
-                        } else{
-                            //return blank head
-                            file.set("panels." + panelName + ".item." + i + ".material", plugin.getHeads.playerHeadString());
-                        }
+                        file.set("panels." + panelName + ".item." + i + ".material", plugin.getHeads.playerHeadString());
                     }
                 }
                 try {

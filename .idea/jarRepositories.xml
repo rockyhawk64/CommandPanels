@@ -52,6 +52,11 @@
       <option name="url" value="https://repo1.maven.org/maven2" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="oraxen" />
+      <option name="name" value="Oraxen Repository" />
+      <option name="url" value="https://repo.oraxen.com/#/releases" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="phoenix" />
       <option name="name" value="phoenix" />
       <option name="url" value="https://nexus.phoenixdevt.fr/repository/maven-public/" />
@@ -60,6 +65,16 @@
       <option name="id" value="BenCodez Repo" />
       <option name="name" value="BenCodez Repo" />
       <option name="url" value="https://nexus.bencodez.com/repository/maven-public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="oraxen" />
+      <option name="name" value="Oraxen Repository" />
+      <option name="url" value="https://repo.oraxen.com/releases" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="jitpack-repo" />
+      <option name="name" value="jitpack-repo" />
+      <option name="url" value="https://jitpack.io" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="ess-repo" />

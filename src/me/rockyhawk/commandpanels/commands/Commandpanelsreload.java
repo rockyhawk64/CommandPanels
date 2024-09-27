@@ -54,9 +54,6 @@ public class Commandpanelsreload implements CommandExecutor {
                     registerCommands();
                 }
 
-                //pre-cache any player head textures from panels will be reloaded
-                plugin.customHeads.savedCustomHeads.clear();
-
                 sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.reload")));
             }else{
                 sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));

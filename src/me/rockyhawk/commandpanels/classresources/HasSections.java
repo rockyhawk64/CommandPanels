@@ -9,9 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 
 public class HasSections {
     CommandPanels plugin;
@@ -20,10 +18,29 @@ public class HasSections {
     }
 
     public String hasSection(Panel panel, PanelPosition position, ConfigurationSection cf, Player p) {
-        for (String setName : cf.getKeys(false)) {
-            if (!cf.isConfigurationSection(setName)) continue;
+        // Use a TreeMap to automatically sort the sections by the extracted number.
+        Map<Integer, String> sortedSections = new TreeMap<>();
 
-            ConfigurationSection currentSection = cf.getConfigurationSection(setName);
+        // Loop through the section names and filter for the ones starting with "has".
+        for (String key : cf.getKeys(false)) {
+            if (!cf.isConfigurationSection(key)) continue;
+
+            // Check if the section starts with "has" and is followed by a number.
+            if (key.startsWith("has")) {
+                try {
+                    // Extract the number after "has" and put it in the map for sorting.
+                    int number = Integer.parseInt(key.substring(3));
+                    sortedSections.put(number, key);
+                } catch (NumberFormatException ignore) {
+                    // If the section name doesn't have a valid number after "has", skip it.
+                }
+            }
+        }
+
+        for (String hasSection : sortedSections.values()) {
+            if (!cf.isConfigurationSection(hasSection)) continue;
+
+            ConfigurationSection currentSection = cf.getConfigurationSection(hasSection);
             int numberOfConditions = currentSection.getKeys(false).size();
 
             Boolean currentBlockResult = null; // This will store the result of the current block (a set of conditions combined by AND or OR).
@@ -48,7 +65,7 @@ public class HasSections {
                 HashSet<String> values = doOperators(new HashSet<>(Collections.singletonList(value)));
                 boolean localResult = false; // This tracks the result of the current condition.
                 for (String val : values) {
-                    if (hasProcess(setName, val, compare, p)) {
+                    if (hasProcess(val, compare)) {
                         localResult = true;
                         break;
                     }
@@ -71,7 +88,7 @@ public class HasSections {
 
             if (currentBlockResult != null && currentBlockResult) {
                 // If the result of this section is true, check nested sections.
-                return "." + setName + hasSection(panel, position, currentSection, p);
+                return "." + hasSection + hasSection(panel, position, currentSection, p);
             }
             // If the result is false, continue to the next 'has' section.
         }
@@ -90,7 +107,7 @@ public class HasSections {
         return value;
     }
 
-    private boolean hasProcess(String setName, String value, String compare,Player p){
+    private boolean hasProcess(String value, String compare){
         //check to see if the value should be reversed
         boolean outputValue = true;
         if(value.startsWith("NOT ")){
@@ -99,18 +116,16 @@ public class HasSections {
         }
 
         //the current has section with all the functions implemented inside it
-        if(setName.startsWith("has")) {
-            if(value.endsWith(" HASPERM")) {
-                String playername = value.substring(0, value.length()-8);
-                Player player = Bukkit.getPlayerExact(playername);
-                if(player != null){
-                    return player.hasPermission(compare) == outputValue;
-                }
-            }else if(value.endsWith(" ISGREATER")) {
-                return (new BigDecimal(compare).compareTo(new BigDecimal(value.substring(0, value.length()-10).replace(",",""))) <= 0 == outputValue);
-            }else{
-                return compare.equals(value) == outputValue;
+        if(value.endsWith(" HASPERM")) {
+            String playername = value.substring(0, value.length()-8);
+            Player player = Bukkit.getPlayerExact(playername);
+            if(player != null){
+                return player.hasPermission(compare) == outputValue;
             }
+        }else if(value.endsWith(" ISGREATER")) {
+            return (new BigDecimal(compare).compareTo(new BigDecimal(value.substring(0, value.length()-10).replace(",",""))) <= 0 == outputValue);
+        }else{
+            return compare.equals(value) == outputValue;
         }
         return false;
     }

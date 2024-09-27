@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.openpanelsmanager;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelClosedEvent;
-import me.rockyhawk.commandpanels.classresources.customheads.SavedCustomHead;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -15,8 +14,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Objects;
 
 public class UtilsPanelsLoader implements Listener {
@@ -74,13 +71,6 @@ public class UtilsPanelsLoader implements Listener {
 
         //close panels and run commands for Top panel
         plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
-
-        //clear cached textures list until length limit is reached
-        Iterator<Map.Entry<String, SavedCustomHead>> iterator = plugin.customHeads.savedCustomHeads.entrySet().iterator();
-        while (plugin.customHeads.savedCustomHeads.size() > 2000 && iterator.hasNext()) {
-            iterator.next(); // Move to next entry
-            iterator.remove(); // Remove the entry
-        }
     }
 
     @EventHandler

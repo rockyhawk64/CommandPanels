@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.commandtags;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -40,8 +39,8 @@ public class CommandTagEvent extends Event {
         if(doApiPlaceholders) {
             this.args = plugin.tex.attachPlaceholders(panel1,pos, player, split[1].trim()).split("\\s");
         }else{
-            this.args = ChatColor.translateAlternateColorCodes('&',plugin.placeholders.setPlaceholders(panel, pos, p,split[1].trim(),false)).split("\\s");
-            this.args = ChatColor.translateAlternateColorCodes('&',plugin.placeholders.setPlaceholders(panel, pos, p,split[1].trim(),true)).split("\\s");
+            this.args = plugin.placeholders.setPlaceholders(panel, pos, p,split[1].trim(),false).split("\\s");
+            this.args = plugin.placeholders.setPlaceholders(panel, pos, p,split[1].trim(),true).split("\\s");
         }
     }
 

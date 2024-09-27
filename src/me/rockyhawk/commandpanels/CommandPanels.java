@@ -7,6 +7,7 @@ import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.classresources.ExecuteOpenVoids;
 import me.rockyhawk.commandpanels.classresources.MiniMessageUtils;
 import me.rockyhawk.commandpanels.classresources.customheads.GetCustomHeads;
+import me.rockyhawk.commandpanels.classresources.customheads.methods.CustomHeadGameProfile;
 import me.rockyhawk.commandpanels.classresources.HasSections;
 import me.rockyhawk.commandpanels.classresources.ItemCreation;
 import me.rockyhawk.commandpanels.classresources.placeholders.expansion.CpPlaceholderExpansion;
@@ -120,13 +121,15 @@ public class CommandPanels extends JavaPlugin{
     public InventorySaver inventorySaver = new InventorySaver(this);
     public ItemStackSerializer itemSerializer = new ItemStackSerializer(this);
     public UserInputUtils inputUtils = new UserInputUtils(this);
-    public OpenFloodgateGUI floodgateOpenGUI = new OpenFloodgateGUI(this);
 
     public File panelsf = new File(this.getDataFolder() + File.separator + "panels");
     public YamlConfiguration blockConfig; //where panel block locations are stored
 
     public void onEnable() {
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loading...");
+
+        //Initialise classes that are not used externally
+        new OpenFloodgateGUI(this);
 
         //register config files
         this.blockConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "blocks.yml"));
