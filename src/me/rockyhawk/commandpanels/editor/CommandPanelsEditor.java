@@ -3,19 +3,19 @@ package me.rockyhawk.commandpanels.editor;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import net.md_5.bungee.api.chat.*;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.CompletableFuture;
 
 public class CommandPanelsEditor implements CommandExecutor {
     CommandPanels plugin;
@@ -81,14 +81,11 @@ public class CommandPanelsEditor implements CommandExecutor {
             }
             //download the requested panel using an import
             if (args.length == 3) {
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        downloadPanel(sender,args[1],args[0], args[2]);
-                        plugin.reloadPanelFiles();
-                        plugin.hotbar.reloadHotbarSlots();
-                    }
-                }.run();
+                downloadPanel(sender,args[1],args[0], args[2]).thenAccept((ignored) -> {
+                    plugin.reloadPanelFiles();
+                    plugin.hotbar.reloadHotbarSlots();
+                });
+
                 return true;
             }
         }else{
@@ -99,12 +96,17 @@ public class CommandPanelsEditor implements CommandExecutor {
         return true;
     }
 
-    private void downloadPanel(CommandSender sender, String userID, String fileName, String token) {
+    private CompletableFuture<Void> downloadPanel(CommandSender sender, String userID, String fileName, String token) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
         //get custom editor URL
         String url = "https://firebasestorage.googleapis.com/v0/b/commandpanels-website.appspot.com/o/pastes%2F" + userID + "%2F" + fileName + "?alt=media&token=" + token;
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            plugin.downloader.downloadPanel(sender, url, fileName);
+            future.complete(null);
+        });
 
-        plugin.downloader.downloadPanel(sender, url, fileName);
-
+        return future;
     }
 
     private String readFileAsString(String filePath) {
