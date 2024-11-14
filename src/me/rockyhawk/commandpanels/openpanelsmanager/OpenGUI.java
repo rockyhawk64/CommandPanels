@@ -119,19 +119,20 @@ public class OpenGUI {
                 }
             } catch (ArrayIndexOutOfBoundsException ignore) {}
         }
-        if (pconfig.contains("empty") && !Objects.equals(pconfig.getString("empty"), "AIR")) {
+        if (pconfig.contains("empty") && !plugin.tex.placeholdersNoColour(panel,position,p,pconfig.getString("empty")).equals("AIR")) {
+            String emptyValue = plugin.tex.placeholdersNoColour(panel,position,p,pconfig.getString("empty"));
             ItemStack empty;
             try {
                 //emptyID for older versions of minecraft (might be deprecated later on)
                 short id = 0;
                 if(pconfig.contains("emptyID")){
-                    id = Short.parseShort(pconfig.getString("emptyID"));
+                    id = Short.parseShort(plugin.tex.placeholdersNoColour(panel,position,p,pconfig.getString("emptyID")));
                 }
                 //either use custom item or just material type
-                if(pconfig.contains("custom-item." + pconfig.getString("empty"))){
-                    empty = plugin.itemCreate.makeItemFromConfig(panel,position,pconfig.getConfigurationSection("custom-item." + pconfig.getString("empty")),p,true,true,true);
+                if(pconfig.contains("custom-item." + emptyValue)){
+                    empty = plugin.itemCreate.makeItemFromConfig(panel,position,pconfig.getConfigurationSection("custom-item." + emptyValue),p,true,true,true);
                 }else{
-                    empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(pconfig.getString("empty").toUpperCase())), 1,id);
+                    empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(emptyValue.toUpperCase())), 1,id);
                     ItemMeta renamedMeta = empty.getItemMeta();
                     assert renamedMeta != null;
                     renamedMeta.setDisplayName(" ");
