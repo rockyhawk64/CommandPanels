@@ -3,55 +3,184 @@ package me.rockyhawk.commandpanels.openwithitem;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.UUID;
 
 public class HotbarItemLoader {
-    CommandPanels plugin;
-    public HotbarItemLoader(CommandPanels pl) {
-        this.plugin = pl;
+    private final CommandPanels plugin;
+    private final HashSet<UUID> disabledHotbars = new HashSet<>();
+    private final File configFile;
+    private final FileConfiguration config;
+
+    // Stationary slots map for managing items per player
+    private final HashMap<UUID, HotbarPlayerManager> stationaryItems = new HashMap<>();
+
+    public HotbarItemLoader(CommandPanels plugin) {
+        this.plugin = plugin;
+        this.configFile = new File(plugin.getDataFolder(), "hotbar_preferences.yml");
+        this.config = YamlConfiguration.loadConfiguration(configFile);
+        loadPreferences();
     }
 
-    //stationary slots 0-8 are the hotbar, using 9-35 for inside the inventory
-    HashMap<UUID,HotbarPlayerManager> stationaryItems = new HashMap<>();
-
-    //will compile the ArrayList {slot 0-4, index of panelNames}
-    public void reloadHotbarSlots() {
-        stationaryItems.clear();
-        //update hotbar items for all players when reloaded
-        for(Player p : Bukkit.getServer().getOnlinePlayers()){
-            plugin.hotbar.updateHotbarItems(p);
+    // Toggle hotbar items for a player
+    public boolean toggleHotbarItems(Player player) {
+        UUID playerId = player.getUniqueId();
+        if (disabledHotbars.contains(playerId)) {
+            disabledHotbars.remove(playerId);
+            savePreferences();
+            updateHotbarItems(player); // Re-enable items
+            return true;
+        } else {
+            disabledHotbars.add(playerId);
+            savePreferences();
+            removeHotbarItems(player); // Remove items
+            return false;
         }
     }
 
-    //return true if found
-    public boolean stationaryExecute(int slot, Player p, ClickType click, boolean openPanel){
-        if(stationaryItems.get(p.getUniqueId()).list.containsKey(String.valueOf(slot))){
-            if(openPanel) {
+    // Check if hotbar items are disabled for a player
+    private boolean isHotbarDisabled(Player player) {
+        return disabledHotbars.contains(player.getUniqueId());
+    }
+
+    // Remove all hotbar items for a player
+    private void removeHotbarItems(Player player) {
+        for (int i = 0; i <= 35; i++) {
+            ItemStack item = player.getInventory().getItem(i);
+            if (isValidHotbarItem(item, "CommandPanelsHotbar")) {
+                player.getInventory().setItem(i, new ItemStack(Material.AIR));
+            }
+        }
+        player.updateInventory();
+    }
+
+    // Validate if an item is a valid hotbar item
+    private boolean isValidHotbarItem(ItemStack item, String nbtKey) {
+        if (item == null || item.getType() == Material.AIR) {
+            return false;
+        }
+        try {
+            String nbtData = String.valueOf(plugin.nbt.getNBT(item, nbtKey, "string"));
+            return nbtData != null && !nbtData.isEmpty();
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    // Update hotbar items, but skip if disabled
+    public void updateHotbarItems(Player player) {
+        if (isHotbarDisabled(player)) {
+            return; // Skip updating if disabled
+        }
+
+        // Stationary Items initialisieren
+        stationaryItems.put(player.getUniqueId(), new HotbarPlayerManager());
+
+        // Alte Items entfernen
+        for (int i = 0; i <= 35; i++) {
+            ItemStack item = player.getInventory().getItem(i);
+            if (isValidHotbarItem(item, "CommandPanelsHotbar")) {
+                try {
+                    String nbtData = String.valueOf(plugin.nbt.getNBT(item, "CommandPanelsHotbar", "string"));
+                    if (!nbtData.endsWith("-1")) {
+                        player.getInventory().setItem(i, new ItemStack(Material.AIR));
+                    }
+                } catch (Exception ignore) {}
+            }
+        }
+
+        // Neue Items hinzufügen
+        for (Panel panel : plugin.panelList) {
+            if (!plugin.panelPerms.isPanelWorldEnabled(player, panel.getConfig())) {
+                continue;
+            }
+            if (player.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm")) && panel.hasHotbarItem()) {
+                ItemStack hotbarItem = panel.getHotbarItem(player);
+                if (panel.getHotbarSection(player).contains("stationary")) {
+                    int slot = Integer.parseInt(panel.getHotbarSection(player).getString("stationary"));
+                    player.getInventory().setItem(slot, hotbarItem);
+                    stationaryItems.get(player.getUniqueId()).addSlot(String.valueOf(slot), panel);
+                }
+            }
+        }
+
+        player.updateInventory();
+    }
+
+    // Reload hotbar slots for all players
+    public void reloadHotbarSlots() {
+        stationaryItems.clear();
+        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+            if (!isHotbarDisabled(p)) { // Nur Spieler mit aktiven Hotbar-Items berücksichtigen
+                updateHotbarItems(p);
+            }
+        }
+    }
+
+    // Load preferences from file
+    private void loadPreferences() {
+        if (!configFile.exists()) return;
+
+        for (String key : config.getKeys(false)) {
+            UUID playerId = UUID.fromString(key);
+            boolean disabled = config.getBoolean(key);
+            if (disabled) {
+                disabledHotbars.add(playerId);
+            }
+        }
+    }
+
+    // Save preferences to file
+    private void savePreferences() {
+        // Zunächst die Datei leeren
+        config.getKeys(false).forEach(key -> config.set(key, null));
+
+        // Neue Daten eintragen
+        for (UUID playerId : disabledHotbars) {
+            config.set(playerId.toString(), true);
+        }
+
+        // Speichern
+        try {
+            config.save(configFile);
+        } catch (IOException e) {
+            plugin.getLogger().severe("Failed to save hotbar preferences: " + e.getMessage());
+        }
+    }
+
+    // Return true if stationary slot exists and execute
+    public boolean stationaryExecute(int slot, Player p, ClickType click, boolean openPanel) {
+        if (stationaryItems.get(p.getUniqueId()).list.containsKey(String.valueOf(slot))) {
+            if (openPanel) {
                 try {
                     if (!String.valueOf(plugin.nbt.getNBT(p.getInventory().getItem(slot), "CommandPanelsHotbar", "string")).split(":")[1].equals(String.valueOf(slot))) {
                         return false;
                     }
-                }catch(Exception ex){
+                } catch (Exception ex) {
                     return false;
                 }
                 Panel panel = stationaryItems.get(p.getUniqueId()).getPanel(String.valueOf(slot));
-                //only open panel automatically if there are no commands and player world is not disabled
-                if(!p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))){
+                if (!p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))) {
                     return false;
                 }
-                if(!itemCheckExecute(p.getInventory().getItem(slot),p,false,false)){
+                if (!itemCheckExecute(p.getInventory().getItem(slot), p, false, false)) {
                     return false;
                 }
-                if(panel.getHotbarSection(p).contains("commands")){
-                    plugin.commandRunner.runCommands(panel,PanelPosition.Top,p,panel.getHotbarSection(p).getStringList("commands"),click);
+                if (panel.getHotbarSection(p).contains("commands")) {
+                    plugin.commandRunner.runCommands(panel, PanelPosition.Top, p, panel.getHotbarSection(p).getStringList("commands"), click);
                     return true;
                 }
                 panel.open(p, PanelPosition.Top);
@@ -61,87 +190,38 @@ public class HotbarItemLoader {
         return false;
     }
 
-    //return true if found
-    public boolean itemCheckExecute(ItemStack invItem, Player p, boolean openPanel, boolean stationaryOnly){
-        try {
-            if (Objects.equals(String.valueOf(plugin.nbt.getNBT(invItem, "CommandPanelsHotbar", "string")), "")) {
-                return false;
-            }
-        }catch(IllegalArgumentException | NullPointerException nu){
+    // Check and execute item
+    public boolean itemCheckExecute(ItemStack invItem, Player p, boolean openPanel, boolean stationaryOnly) {
+        if (!isValidHotbarItem(invItem, "CommandPanelsHotbar")) {
             return false;
         }
-        for(Panel panel : plugin.panelList) {
-            if(stationaryOnly){
+        for (Panel panel : plugin.panelList) {
+            if (stationaryOnly) {
                 try {
-                    if (String.valueOf(plugin.nbt.getNBT(invItem, "CommandPanelsHotbar", "string")).split(":")[1].equals("-1")) {
+                    String nbtData = String.valueOf(plugin.nbt.getNBT(invItem, "CommandPanelsHotbar", "string"));
+                    if (nbtData.split(":")[1].equals("-1")) {
                         continue;
                     }
-                }catch(NullPointerException | IllegalArgumentException ignore){}
+                } catch (Exception ignore) {}
             }
-            if(panel.hasHotbarItem()){
-                if(String.valueOf(plugin.nbt.getNBT(invItem, "CommandPanelsHotbar", "string")).split(":")[0].equals(panel.getName())){
-                    if(openPanel) {
-                        //only open panel automatically if there are no commands and if world is not disabled
-                        if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
+            if (panel.hasHotbarItem()) {
+                if (String.valueOf(plugin.nbt.getNBT(invItem, "CommandPanelsHotbar", "string")).split(":")[0].equals(panel.getName())) {
+                    if (openPanel) {
+                        if (!plugin.panelPerms.isPanelWorldEnabled(p, panel.getConfig())) {
                             return false;
                         }
-                        if(panel.getHotbarSection(p).contains("commands")){
-                            for(String command : panel.getHotbarSection(p).getStringList("commands")){
-                                plugin.commandRunner.runCommand(panel,PanelPosition.Top,p, command);
+                        if (panel.getHotbarSection(p).contains("commands")) {
+                            for (String command : panel.getHotbarSection(p).getStringList("commands")) {
+                                plugin.commandRunner.runCommand(panel, PanelPosition.Top, p, command);
                             }
                             return true;
                         }
-                        panel.open(p,PanelPosition.Top);
+                        panel.open(p, PanelPosition.Top);
                     }
                     return true;
                 }
             }
         }
         return false;
-    }
-
-    public void updateHotbarItems(Player p){
-        /*
-        If the player is using disabled-worlds/enabled-worlds
-        and they change worlds, it will check if the player can have the item
-        and if they can, it gives the item. This is because onRespawn doesn't
-        give the item to the player in all the worlds that it could automatically.
-
-        The player will of course need a plugin to split inventories between worlds
-        for this to take effect. I don't want to delete the item on the wrong world
-        because then it might overwrite one of their actual slots upon rejoining the enabled world.
-         */
-        if(!plugin.openWithItem){
-            //if none of the panels have open-with-item
-            return;
-        }
-
-        //remove any old hotbar items
-        stationaryItems.put(p.getUniqueId(),new HotbarPlayerManager());
-        for(int i = 0; i <= 35; i++){
-            try {
-                if (!Objects.equals(String.valueOf(plugin.nbt.getNBT(p.getInventory().getItem(i), "CommandPanelsHotbar", "string")), "")) {
-                    //do not remove items that are not stationary
-                    if(!String.valueOf(plugin.nbt.getNBT(p.getInventory().getItem(i), "CommandPanelsHotbar","string")).endsWith("-1")) {
-                        p.getInventory().setItem(i, new ItemStack(Material.AIR));
-                    }
-                }
-            }catch(NullPointerException | IllegalArgumentException ignore){}
-        }
-
-        //add current hotbar items
-        for(Panel panel : plugin.panelList) { //will loop through all the files in folder
-            if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
-                continue;
-            }
-            if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm")) && panel.hasHotbarItem()) {
-                ItemStack s = panel.getHotbarItem(p);
-                if(panel.getHotbarSection(p).contains("stationary")) {
-                    p.getInventory().setItem(Integer.parseInt(panel.getHotbarSection(p).getString("stationary")),s);
-                    stationaryItems.get(p.getUniqueId()).addSlot(panel.getHotbarSection(p).getString("stationary"),panel);
-                }
-            }
-        }
-        p.updateInventory();
     }
 }
