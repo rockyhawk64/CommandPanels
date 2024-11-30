@@ -130,7 +130,7 @@ public class CommandPanels extends JavaPlugin{
 
         //Initialise classes that are not used externally
         new OpenFloodgateGUI(this);
-
+    getCommand("hotbar").setExecutor(new HotbarCommandExecutor(this));
         //register config files
         this.blockConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "blocks.yml"));
         panelData.dataConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder() + File.separator + "data.yml"));
