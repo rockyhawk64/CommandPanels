@@ -1,4 +1,3 @@
-// File: HotbarCommand.java
 package me.rockyhawk.commandpanels.openwithitem;
 
 import me.rockyhawk.commandpanels.CommandPanels;
@@ -7,10 +6,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class HotbarCommand implements CommandExecutor {
+public class CommandpanelsHotbar implements CommandExecutor {
     private final HotbarItemLoader hotbarItemLoader;
 
-    public HotbarCommand(HotbarItemLoader hotbarItemLoader) {
+    // Der Konstruktorname muss dem Klassennamen entsprechen
+    public CommandpanelsHotbar(HotbarItemLoader hotbarItemLoader) {
         this.hotbarItemLoader = hotbarItemLoader;
     }
 

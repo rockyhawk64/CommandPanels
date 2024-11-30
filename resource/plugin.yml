@@ -50,7 +50,7 @@ commands:
       description: Import raw text panels from online.
       usage: /commandpanelimport
       aliases: [cpi, cpaneli]
-   CommandpanelHotbar:
+   commandpanelhotbar:
       description: Toogel static or not
       usage: /commandpanelhotbar
       description: Static Hotbar or not

@@ -81,7 +81,8 @@ public class CommandPanels extends JavaPlugin{
     public YamlConfiguration config;
     public Economy econ = null;
     public boolean openWithItem = false; //this will be true if there is a panel with open-with-item
-
+    private HotbarItemLoader hotbarItemLoader;
+    private CommandpanelsHotbar hotbarCommand;
     //initialise the tag
     public String tag = "[CommandPanels]";
 
@@ -129,6 +130,8 @@ public class CommandPanels extends JavaPlugin{
         Bukkit.getLogger().info("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loading...");
 
         //Initialise classes that are not used externally
+                hotbarItemLoader = new HotbarItemLoader(this);
+        CommandpanelsHotbar = new HotbarCommand(hotbarItemLoader);
         new OpenFloodgateGUI(this);
     getCommand("hotbar").setExecutor(new HotbarCommandExecutor(this));
         //register config files
