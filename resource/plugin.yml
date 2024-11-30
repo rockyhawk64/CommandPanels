@@ -1,7 +1,7 @@
-version: 3.21.4.3
+version: 3.22
 main: me.rockyhawk.commandpanels.CommandPanels
 name: CommandPanels
-author: RockyHawk
+author: RockyHawk and Sonnenpingu
 api-version: '1.13'
 description: Fully Custom GUIs. Make your Server Professional.
 softdepend: [Essentials, PlaceholderAPI, Vault, HeadDatabase, TokenManager, VotingPlugin, MMOItems, ChestSort, floodgate]
@@ -50,8 +50,15 @@ commands:
       description: Import raw text panels from online.
       usage: /commandpanelimport
       aliases: [cpi, cpaneli]
+   CommandpanelHotbar:
+      description: Toogel static or not
+      usage: /commandpanelhotbar
+      description: Static Hotbar or not
+      aliases: [cph, cpanelh]
 permissions:
    commandpanel.panel.default:
+      default: true
+   commandpanel.hotbar:
       default: true
    commandpanel.other:
       default: op
