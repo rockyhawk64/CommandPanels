@@ -1,16 +1,15 @@
-package me.rockyhawk.commandpanels.openwithitem;
+package me.rockyhawk.commandpanels.commands;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.openwithitem.HotbarItemLoader;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandpanelsHotbar implements CommandExecutor {
+public class Commandpanelshotbar implements CommandExecutor {
     private final HotbarItemLoader hotbarItemLoader;
 
-    // Der Konstruktorname muss dem Klassennamen entsprechen
-    public CommandpanelsHotbar(HotbarItemLoader hotbarItemLoader) {
+    public Commandpanelshotbar(HotbarItemLoader hotbarItemLoader) {
         this.hotbarItemLoader = hotbarItemLoader;
     }
 
@@ -20,16 +19,18 @@ public class CommandpanelsHotbar implements CommandExecutor {
             sender.sendMessage("Only players can use this command!");
             return true;
         }
-
+    
         Player player = (Player) sender;
-        boolean status = hotbarItemLoader.toggleHotbarItems(player);
-
-        if (status) {
-            player.sendMessage("Hotbar items enabled.");
-        } else {
+        boolean isEnabled = hotbarItemLoader.isHotbarItemsEnabled(player);
+        hotbarItemLoader.toggleHotbarItems(player);
+    
+        if (isEnabled) {
             player.sendMessage("Hotbar items disabled.");
+        } else {
+            player.sendMessage("Hotbar items enabled.");
         }
-
+    
         return true;
     }
+    
 }
