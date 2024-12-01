@@ -1,94 +1,93 @@
 version: 3.22
 main: me.rockyhawk.commandpanels.CommandPanels
 name: CommandPanels
-author: RockyHawk and Sonnenpingu
+author: RockyHawk
 api-version: '1.13'
 description: Fully Custom GUIs. Make your Server Professional.
 softdepend: [Essentials, PlaceholderAPI, Vault, HeadDatabase, TokenManager, VotingPlugin, MMOItems, ChestSort, floodgate]
 commands:
-   commandpanel:
-      description: Open a command panel.
-      usage: /commandpanel <panel> [player:item] [player]
-      aliases: [cp, cpanel]
-   commandpanelreload:
-      description: Reloads plugin config.
-      usage: /commandpanelreload
-      aliases: [cpr, cpanelr]
-   commandpaneldata:
-      description: Change data values for players
-      usage: /commandpaneldata
-      aliases: [cpdata]
-   commandpanelupdate:
-      description: Refresh/update panel/s for player
-      usage: /commandpanelupdate
-      aliases: [ cpu, cpanelu ]
-   commandpaneldebug:
-      description: Enable and Disable debug mode globally
-      usage: /commandpaneldebug
-      aliases: [cpd, cpaneld]
-   commandpanelblock:
-      description: Add or remove panels from blocks being looked at.
-      usage: /commandpanelblock
-      aliases: [cpb, cpanelb]
-   commandpanelgenerate:
-      description: Generate GUI.
-      usage: /commandpanelgenerate
-      aliases: [cpg, cpanelg]
-   commandpanelversion:
-      description: Display the current version.
-      usage: /commandpanelversion
-      aliases: [cpv, cpanelv]
-   commandpaneledit:
-      description: Edit panels ingame.
-      usage: /commandpaneledit <panel>
-      aliases: [cpe, cpanele]
-   commandpanellist:
-      description: Lists the currently loaded panels.
-      usage: /commandpanellist
-      aliases: [cpl, cpanell]
-   commandpanelimport:
-      description: Import raw text panels from online.
-      usage: /commandpanelimport
-      aliases: [cpi, cpaneli]
-   commandpanelhotbar:
-      description: Toogel static or not
-      usage: /commandpanelhotbar
-      description: Static Hotbar or not
-      aliases: [cph, cpanelh]
+  commandpanel:
+    description: Open a command panel.
+    usage: /commandpanel <panel> [player:item] [player]
+    aliases: [cp, cpanel]
+  commandpanelreload:
+    description: Reloads plugin config.
+    usage: /commandpanelreload
+    aliases: [cpr, cpanelr]
+  commandpaneldata:
+    description: Change data values for players
+    usage: /commandpaneldata
+    aliases: [cpdata]
+  commandpanelupdate:
+    description: Refresh/update panel/s for player
+    usage: /commandpanelupdate
+    aliases: [cpu, cpanelu]
+  commandpaneldebug:
+    description: Enable and Disable debug mode globally
+    usage: /commandpaneldebug
+    aliases: [cpd, cpaneld]
+  commandpanelblock:
+    description: Add or remove panels from blocks being looked at.
+    usage: /commandpanelblock
+    aliases: [cpb, cpanelb]
+  commandpanelgenerate:
+    description: Generate GUI.
+    usage: /commandpanelgenerate
+    aliases: [cpg, cpanelg]
+  commandpanelversion:
+    description: Display the current version.
+    usage: /commandpanelversion
+    aliases: [cpv, cpanelv]
+  commandpaneledit:
+    description: Edit panels ingame.
+    usage: /commandpaneledit <panel>
+    aliases: [cpe, cpanele]
+  commandpanellist:
+    description: Lists the currently loaded panels.
+    usage: /commandpanellist
+    aliases: [cpl, cpanell]
+  commandpanelimport:
+    description: Import raw text panels from online.
+    usage: /commandpanelimport
+    aliases: [cpi, cpaneli]
+  commandpanelshotbar:
+    description: Toggles hotbar items for CommandPanels.
+    usage: /commandpanelshotbar
+    aliases: [cph, cpanelh]
 permissions:
-   commandpanel.panel.default:
-      default: true
-   commandpanel.hotbar:
-      default: true
-   commandpanel.other:
-      default: op
-   commandpanel.panel.*:
-      default: op
-   commandpanel.item.*:
-      default: op
-   commandpanel.reload:
-      default: op
-   commandpanel.debug:
-      default: op
-   commandpanel.block.add:
-      default: op
-   commandpanel.block.remove:
-      default: op
-   commandpanel.block.list:
-      default: op
-   commandpanel.generate:
-      default: op
-   commandpanel.version:
-      default: true
-   commandpanel.update:
-      default: op
-   commandpanel.data:
-      default: op
-   commandpanel.refresh:
-      default: op
-   commandpanel.edit:
-      default: op
-   commandpanel.list:
-      default: op
-   commandpanel.import:
-      default: op
+  commandpanel.panel.default:
+    default: true
+  commandpanels.hotbar.toggle:
+    default: true
+  commandpanel.other:
+    default: op
+  commandpanel.panel.*:
+    default: op
+  commandpanel.item.*:
+    default: op
+  commandpanel.reload:
+    default: op
+  commandpanel.debug:
+    default: op
+  commandpanel.block.add:
+    default: op
+  commandpanel.block.remove:
+    default: op
+  commandpanel.block.list:
+    default: op
+  commandpanel.generate:
+    default: op
+  commandpanel.version:
+    default: true
+  commandpanel.update:
+    default: op
+  commandpanel.data:
+    default: op
+  commandpanel.refresh:
+    default: op
+  commandpanel.edit:
+    default: op
+  commandpanel.list:
+    default: op
+  commandpanel.import:
+    default: op
