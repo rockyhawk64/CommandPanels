@@ -118,44 +118,42 @@ public class HotbarItemLoader {
     /**
      * Updates the hotbar items for a player.
      */
-    public void updateHotbarItems(Player player) {
-        if (!plugin.openWithItem) {
-            return;
-        }
-
-        getStationaryItems().put(player.getUniqueId(), new HotbarPlayerManager());
-
-        // Remove old hotbar items
-        for (int i = 0; i <= 35; i++) {
-            try {
-                ItemStack item = player.getInventory().getItem(i);
-                String nbtData = getNBTData(item, "CommandPanelsHotbar");
-                if (nbtData != null && !nbtData.endsWith("-1")) {
-                    player.getInventory().setItem(i, new ItemStack(Material.AIR));
-                }
-            } catch (Exception ex) {
-                plugin.getLogger().log(Level.WARNING, "Error removing hotbar items: ", ex);
-            }
-        }
-
-        // Add new hotbar items
-        for (Panel panel : plugin.panelList) {
-            if (!plugin.panelPerms.isPanelWorldEnabled(player, panel.getConfig()) 
-                    || !panel.hasHotbarItem() 
-                    || !player.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))) {
-                continue;
-            }
-
-            ItemStack hotbarItem = panel.getHotbarItem(player);
-            if (panel.getHotbarSection(player).contains("stationary")) {
-                int slot = Integer.parseInt(panel.getHotbarSection(player).getString("stationary"));
-                player.getInventory().setItem(slot, hotbarItem);
-                getStationaryItems().get(player.getUniqueId()).addSlot(String.valueOf(slot), panel);
-            }
-        }
-
-        player.updateInventory();
+public void updateHotbarItems(Player player) {
+    if (!plugin.openWithItem || !isHotbarItemsEnabled(player)) {
+        return;
     }
+
+    getStationaryItems().put(player.getUniqueId(), new HotbarPlayerManager());
+
+    for (int i = 0; i <= 35; i++) {
+        try {
+            ItemStack item = player.getInventory().getItem(i);
+            String nbtData = getNBTData(item, "CommandPanelsHotbar");
+            if (nbtData != null && !nbtData.endsWith("-1")) {
+                player.getInventory().setItem(i, new ItemStack(Material.AIR));
+            }
+        } catch (Exception ex) {
+            plugin.getLogger().log(Level.WARNING, "Error removing hotbar items: ", ex);
+        }
+    }
+
+    for (Panel panel : plugin.panelList) {
+        if (!plugin.panelPerms.isPanelWorldEnabled(player, panel.getConfig()) 
+                || !panel.hasHotbarItem() 
+                || !player.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))) {
+            continue;
+        }
+
+        ItemStack hotbarItem = panel.getHotbarItem(player);
+        if (panel.getHotbarSection(player).contains("stationary")) {
+            int slot = Integer.parseInt(panel.getHotbarSection(player).getString("stationary"));
+            player.getInventory().setItem(slot, hotbarItem);
+            getStationaryItems().get(player.getUniqueId()).addSlot(String.valueOf(slot), panel);
+        }
+    }
+
+    player.updateInventory();
+}
 
     public void toggleHotbarItems(Player player) {
         if (getStationaryItems().containsKey(player.getUniqueId())) {
