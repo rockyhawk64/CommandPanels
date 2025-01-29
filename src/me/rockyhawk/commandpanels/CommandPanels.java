@@ -334,7 +334,7 @@ public class CommandPanels extends JavaPlugin{
         return new CommandPanelsAPI(JavaPlugin.getPlugin(CommandPanels.class));
     }
 
-    public ItemStack setName(Panel panel, ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours, Boolean hideAttributes) {
+    public ItemStack setName(Panel panel, ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours, Boolean hideAttributes, Boolean hideTooltip) {
         try {
             ItemMeta renamedMeta = renamed.getItemMeta();
             //set cp placeholders
@@ -371,6 +371,12 @@ public class CommandPanels extends JavaPlugin{
                 //setAttributeModifiers was added into 1.14 api
                 if(legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
                     renamedMeta.setAttributeModifiers(ImmutableMultimap.of());
+                }
+            }
+            if(hideTooltip){
+                if(legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) ||
+                        (legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && legacy.MINOR_VERSION >= 4)){
+                    renamedMeta.setHideTooltip(true);
                 }
             }
             if (customName != null) {

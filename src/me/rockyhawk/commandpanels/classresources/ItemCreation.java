@@ -52,6 +52,7 @@ public class ItemCreation {
         }
         ItemStack s = null;
         boolean hideAttributes = false;
+        boolean hideTooltip = false;
         String mat;
         String matraw;
         String skullname;
@@ -231,6 +232,9 @@ public class ItemCreation {
                 //if hidden, reverse
                 if(itemSection.getStringList("itemType").contains("noAttributes")){
                     hideAttributes = true;
+                }
+                if(itemSection.getStringList("itemType").contains("hideTooltip")){
+                    hideTooltip = true;
                 }
                 if(itemSection.getStringList("itemType").contains("placeable")){
                     addNBT = false;
@@ -431,7 +435,7 @@ public class ItemCreation {
             p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " material: " + itemSection.getString("material")));
             return null;
         }
-        s = plugin.setName(panel,s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours, hideAttributes);
+        s = plugin.setName(panel,s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours, hideAttributes, hideTooltip);
         return s;
     }
 
