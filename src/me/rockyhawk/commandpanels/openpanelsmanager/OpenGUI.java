@@ -136,6 +136,11 @@ public class OpenGUI {
                     ItemMeta renamedMeta = empty.getItemMeta();
                     assert renamedMeta != null;
                     renamedMeta.setDisplayName(" ");
+                    //If 1.21.4+ then hide box on hover of empty slot
+                    if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) ||
+                            (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && plugin.legacy.MINOR_VERSION >= 4)){
+                        renamedMeta.setHideTooltip(true);
+                    }
                     empty.setItemMeta(renamedMeta);
                 }
                 if (empty.getType() != Material.AIR) {

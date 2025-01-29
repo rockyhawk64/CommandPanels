@@ -373,6 +373,7 @@ public class CommandPanels extends JavaPlugin{
                     renamedMeta.setAttributeModifiers(ImmutableMultimap.of());
                 }
             }
+            //HIDE TOOLTIP added in 1.21.4 which hides box of item when hovering
             if(hideTooltip){
                 if(legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) ||
                         (legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && legacy.MINOR_VERSION >= 4)){
