@@ -12,6 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -137,9 +138,20 @@ public class OpenGUI {
                     assert renamedMeta != null;
                     renamedMeta.setDisplayName(" ");
                     //If 1.21.4+ then hide box on hover of empty slot
-                    if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) ||
+                    if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
                             (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && plugin.legacy.MINOR_VERSION >= 4)){
-                        renamedMeta.setHideTooltip(true);
+                        try {
+                            // Check if the setHideTooltip method exists
+                            Method setHideTooltipMethod = ItemMeta.class.getMethod("setHideTooltip", boolean.class);
+
+                            // Invoke it dynamically
+                            setHideTooltipMethod.invoke(renamedMeta, true);
+
+                        } catch (NoSuchMethodException e) {
+                            // The method does not exist in older Spigot versions
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                     empty.setItemMeta(renamedMeta);
                 }
