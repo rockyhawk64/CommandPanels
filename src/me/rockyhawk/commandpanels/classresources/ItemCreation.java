@@ -272,6 +272,25 @@ public class ItemCreation {
                     plugin.debug(ench,p);
                 }
             }
+            if (itemSection.contains("itemmodel")) {
+                //Item Model 1.21.4+
+                ItemMeta itemMeta = s.getItemMeta();
+                assert itemMeta != null;
+
+                try {
+                    // Check if the setHideTooltip method exists
+                    Method setItemModelMethod = ItemMeta.class.getMethod("setItemModel", NamespacedKey.class);
+
+                    // Invoke it dynamically
+                    setItemModelMethod.invoke(itemMeta, NamespacedKey.fromString(plugin.tex.placeholders(panel, position, p, itemSection.getString("itemmodel"))));
+
+                    s.setItemMeta(itemMeta);
+                } catch (NoSuchMethodException e) {
+                    // The method does not exist in older Spigot versions
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             if (itemSection.contains("customdata")) {
                 ItemMeta customMeta = s.getItemMeta();
                 assert customMeta != null;
