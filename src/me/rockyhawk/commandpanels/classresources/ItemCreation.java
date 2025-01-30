@@ -640,13 +640,6 @@ public class ItemCreation {
                 }
 
             }
-            if (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
-                if (one.getItemMeta().getCustomModelData() != (two.getItemMeta().getCustomModelData())) {
-                    if(one.getItemMeta().hasCustomModelData()) {
-                        return false;
-                    }
-                }
-            }
         }catch(Exception ignore){}
         //check for nbt
         if(nbtCheck) {
