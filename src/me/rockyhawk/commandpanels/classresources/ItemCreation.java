@@ -548,6 +548,22 @@ public class ItemCreation {
                 if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
                     file.set("panels." + panelName + ".item." + i + ".customdata", Objects.requireNonNull(cont.getItemMeta()).getCustomModelData());
                 }
+                if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
+                        (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && plugin.legacy.MINOR_VERSION >= 4)){
+                    try {
+                        // Check if the getItemModel method exists
+                        Method getItemModelMethod = ItemMeta.class.getMethod("getItemModel");
+
+                        // Invoke it dynamically
+                        Object itemModelData = getItemModelMethod.invoke(cont.getItemMeta());
+
+                        file.set("panels." + panelName + ".item." + i + ".itemmodel", Objects.requireNonNull(itemModelData));
+                    } catch (NoSuchMethodException e) {
+                        // The method does not exist in older Spigot versions
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }catch(Exception n){
                 //skip over an item that spits an error
             }
@@ -594,6 +610,36 @@ public class ItemCreation {
         }catch(Exception ignore){}
         //check for custom model data
         try {
+            if (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
+                if (one.getItemMeta().getCustomModelData() != (two.getItemMeta().getCustomModelData())) {
+                    if(one.getItemMeta().hasCustomModelData()) {
+                        return false;
+                    }
+                }
+            }
+        }catch(Exception ignore){}
+        //check for item model data
+        try {
+            if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
+                    (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && plugin.legacy.MINOR_VERSION >= 4)){
+                try {
+                    // Check if the getItemModel method exists
+                    Method getItemModelMethod = ItemMeta.class.getMethod("getItemModel");
+                    Method hasItemModelMethod = ItemMeta.class.getMethod("hasItemModel");
+
+                    // Invoke it dynamically
+                    if (getItemModelMethod.invoke(one.getItemMeta()) != getItemModelMethod.invoke(two.getItemMeta())) {
+                        if((Boolean) hasItemModelMethod.invoke(one.getItemMeta())) {
+                            return false;
+                        }
+                    }
+                } catch (NoSuchMethodException e) {
+                    // The method does not exist in older Spigot versions
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
             if (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
                 if (one.getItemMeta().getCustomModelData() != (two.getItemMeta().getCustomModelData())) {
                     if(one.getItemMeta().hasCustomModelData()) {
