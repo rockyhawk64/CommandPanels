@@ -78,12 +78,18 @@ public class OpenFloodgateGUI implements Listener {
 
     private List<String> processButtons(ConfigurationSection fgPanel, SimpleForm.Builder form, Panel panel, Player p) {
         return fgPanel.getKeys(false).stream()
-                .filter(key -> key.matches("\\d+"))
-                .sorted(Comparator.comparingInt(Integer::parseInt))  // Ensure numeric sorting
+                .filter(key -> key.matches("\\d+")) // Only process numeric keys
+                .sorted(Comparator.comparingInt(Integer::parseInt)) // Numeric sorting
+                .filter(key -> { // Filter out keys where "text" is missing
+                    ConfigurationSection buttonConfig = fgPanel.getConfigurationSection(key);
+                    if (buttonConfig == null) return false; // Ensure buttonConfig exists
+                    String section = plugin.has.hasSection(panel, PanelPosition.Top, buttonConfig, p);
+                    ConfigurationSection resolvedConfig = fgPanel.getConfigurationSection(key + section);
+                    return resolvedConfig != null && resolvedConfig.contains("text"); // Ensure resolvedConfig and "text" exist
+                })
                 .map(key -> {
                     String section = plugin.has.hasSection(panel, PanelPosition.Top, fgPanel.getConfigurationSection(key), p);
                     ConfigurationSection buttonConfig = fgPanel.getConfigurationSection(key + section);
-                    if (buttonConfig == null) return null;
 
                     String buttonContent = plugin.tex.placeholders(panel, null, p, buttonConfig.getString("text").replaceAll("\\\\n", "\n"));
                     if (!buttonConfig.contains("icon")) {
@@ -93,9 +99,9 @@ public class OpenFloodgateGUI implements Listener {
                         String texture = plugin.tex.placeholders(panel, null, p, buttonConfig.getString("icon.texture"));
                         form.button(buttonContent, type, texture);
                     }
-                    return key;
+
+                    return key; // Return the key for the final list
                 })
-                .filter(key -> key != null)
                 .collect(Collectors.toList());
     }
 
@@ -108,6 +114,10 @@ public class OpenFloodgateGUI implements Listener {
             if (key.matches("\\d+")) {
                 String section = plugin.has.hasSection(e.getPanel(), e.getPosition(), fgPanel.getConfigurationSection(key), e.getPlayer());
                 ConfigurationSection fieldConfig = fgPanel.getConfigurationSection(key + section);
+                if(!fieldConfig.contains("text")) {
+                    //skip do not add the element if text value is missing
+                    return;
+                }
 
                 try {
                     String type = "toggle";

@@ -4,7 +4,6 @@ import dev.lone.itemsadder.api.CustomStack;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.classresources.customheads.SavedCustomHead;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import net.Indyuce.mmoitems.MMOItems;
@@ -244,7 +243,6 @@ public class ItemCreation {
             if(itemSection.contains("nbt")){
                 //ItemStack item, ConfigurationSection section, Player player, Panel panel, PanelPosition position
                 plugin.nbt.applyNBTRecursively(s, itemSection.getConfigurationSection("nbt"), p, panel, position);
-                //plugin.nbt.applyNBTRecursively("", itemSection.getConfigurationSection("nbt"), s, p, panel, position);
             }
             if(addNBT){
                 plugin.nbt.setNBT(s, "CommandPanelsItem","boolean_" + "true");
@@ -636,7 +634,7 @@ public class ItemCreation {
                 } catch (NoSuchMethodException e) {
                     // The method does not exist in older Spigot versions
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    plugin.debug(e,null);
                 }
 
             }
