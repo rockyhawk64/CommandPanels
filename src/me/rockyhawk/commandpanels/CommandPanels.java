@@ -74,6 +74,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class CommandPanels extends JavaPlugin{
@@ -334,7 +336,7 @@ public class CommandPanels extends JavaPlugin{
         return new CommandPanelsAPI(JavaPlugin.getPlugin(CommandPanels.class));
     }
 
-    public ItemStack setName(Panel panel, ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours, Boolean hideAttributes) {
+    public ItemStack setName(Panel panel, ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours, Boolean hideAttributes, Boolean hideTooltip) {
         try {
             ItemMeta renamedMeta = renamed.getItemMeta();
             //set cp placeholders
@@ -371,6 +373,24 @@ public class CommandPanels extends JavaPlugin{
                 //setAttributeModifiers was added into 1.14 api
                 if(legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
                     renamedMeta.setAttributeModifiers(ImmutableMultimap.of());
+                }
+            }
+            //HIDE TOOLTIP added in 1.21.4 which hides box of item when hovering
+            if(hideTooltip){
+                if(legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
+                        (legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && legacy.MINOR_VERSION >= 4)){
+                    try {
+                        // Check if the setHideTooltip method exists
+                        Method setHideTooltipMethod = ItemMeta.class.getMethod("setHideTooltip", boolean.class);
+
+                        // Invoke it dynamically
+                        setHideTooltipMethod.invoke(renamedMeta, true);
+
+                    } catch (NoSuchMethodException e) {
+                        // The method does not exist in older Spigot versions
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             if (customName != null) {

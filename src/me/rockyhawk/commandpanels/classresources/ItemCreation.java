@@ -52,6 +52,7 @@ public class ItemCreation {
         }
         ItemStack s = null;
         boolean hideAttributes = false;
+        boolean hideTooltip = false;
         String mat;
         String matraw;
         String skullname;
@@ -232,6 +233,9 @@ public class ItemCreation {
                 if(itemSection.getStringList("itemType").contains("noAttributes")){
                     hideAttributes = true;
                 }
+                if(itemSection.getStringList("itemType").contains("hideTooltip")){
+                    hideTooltip = true;
+                }
                 if(itemSection.getStringList("itemType").contains("placeable")){
                     addNBT = false;
                 }
@@ -266,6 +270,25 @@ public class ItemCreation {
                 } catch (Exception ench) {
                     p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " enchanted: " + itemSection.getString("enchanted")));
                     plugin.debug(ench,p);
+                }
+            }
+            if (itemSection.contains("itemmodel")) {
+                //Item Model 1.21.4+
+                ItemMeta itemMeta = s.getItemMeta();
+                assert itemMeta != null;
+
+                try {
+                    // Check if the setHideTooltip method exists
+                    Method setItemModelMethod = ItemMeta.class.getMethod("setItemModel", NamespacedKey.class);
+
+                    // Invoke it dynamically
+                    setItemModelMethod.invoke(itemMeta, NamespacedKey.fromString(plugin.tex.placeholders(panel, position, p, itemSection.getString("itemmodel"))));
+
+                    s.setItemMeta(itemMeta);
+                } catch (NoSuchMethodException e) {
+                    // The method does not exist in older Spigot versions
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
             if (itemSection.contains("customdata")) {
@@ -431,7 +454,7 @@ public class ItemCreation {
             p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " material: " + itemSection.getString("material")));
             return null;
         }
-        s = plugin.setName(panel,s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours, hideAttributes);
+        s = plugin.setName(panel,s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours, hideAttributes, hideTooltip);
         return s;
     }
 
@@ -525,6 +548,22 @@ public class ItemCreation {
                 if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
                     file.set("panels." + panelName + ".item." + i + ".customdata", Objects.requireNonNull(cont.getItemMeta()).getCustomModelData());
                 }
+                if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
+                        (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && plugin.legacy.MINOR_VERSION >= 4)){
+                    try {
+                        // Check if the getItemModel method exists
+                        Method getItemModelMethod = ItemMeta.class.getMethod("getItemModel");
+
+                        // Invoke it dynamically
+                        Object itemModelData = getItemModelMethod.invoke(cont.getItemMeta());
+
+                        file.set("panels." + panelName + ".item." + i + ".itemmodel", Objects.requireNonNull(itemModelData));
+                    } catch (NoSuchMethodException e) {
+                        // The method does not exist in older Spigot versions
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }catch(Exception n){
                 //skip over an item that spits an error
             }
@@ -577,6 +616,29 @@ public class ItemCreation {
                         return false;
                     }
                 }
+            }
+        }catch(Exception ignore){}
+        //check for item model data
+        try {
+            if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
+                    (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && plugin.legacy.MINOR_VERSION >= 4)){
+                try {
+                    // Check if the getItemModel method exists
+                    Method getItemModelMethod = ItemMeta.class.getMethod("getItemModel");
+                    Method hasItemModelMethod = ItemMeta.class.getMethod("hasItemModel");
+
+                    // Invoke it dynamically
+                    if (getItemModelMethod.invoke(one.getItemMeta()) != getItemModelMethod.invoke(two.getItemMeta())) {
+                        if((Boolean) hasItemModelMethod.invoke(one.getItemMeta())) {
+                            return false;
+                        }
+                    }
+                } catch (NoSuchMethodException e) {
+                    // The method does not exist in older Spigot versions
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
         }catch(Exception ignore){}
         //check for nbt
