@@ -24,7 +24,19 @@ public class MiniMessageUtils {
      */
 
     public String doMiniMessageLegacy(String string) {
-        MiniMessage miniMessage = MiniMessage.miniMessage();
+        MiniMessage miniMessage;
+        try {
+            // Try the newer method first
+            miniMessage = (MiniMessage) MiniMessage.class.getMethod("miniMessage").invoke(null);
+        } catch (Exception e) {
+            try {
+                // Fallback to older method
+                miniMessage = (MiniMessage) MiniMessage.class.getMethod("get").invoke(null);
+            } catch (Exception ex) {
+                return string; // Return raw text if no method exists
+            }
+        }
+
         try {
             Component component = miniMessage.deserialize(string);
             return LegacyComponentSerializer.builder()
