@@ -261,7 +261,14 @@ public class ItemCreation {
                                 EnchantMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                                 continue;
                             }
-                            EnchantMeta.addEnchant(Objects.requireNonNull(EnchantmentWrapper.getByKey(NamespacedKey.minecraft(enchantment.split("\\s")[0].toLowerCase()))), Integer.parseInt(enchantment.split("\\s")[1]), true);
+                            String enchant = enchantment.split("\\s")[0];
+                            NamespacedKey key;
+                            if (enchant.contains(":")) {
+                                key = NamespacedKey.fromString(enchant);
+                            } else {
+                                key = NamespacedKey.minecraft(enchant);
+                            }
+                            EnchantMeta.addEnchant(Objects.requireNonNull(EnchantmentWrapper.getByKey(key)), Integer.parseInt(enchantment.split("\\s")[1]), true);
                         }
                         s.setItemMeta(EnchantMeta);
                     }
