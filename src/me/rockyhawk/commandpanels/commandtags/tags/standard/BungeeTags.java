@@ -30,7 +30,16 @@ public class  BungeeTags implements Listener {
             e.commandTagUsed();
             Player player = Bukkit.getPlayerExact(e.p.getName());
             assert player != null;
-            if (player.hasPermission("bungeecord.command.server." + e.args[0].toLowerCase())) {
+            if(e.args.length >= 2){
+                //This uses custom permission: server= servername permission
+                if(player.hasPermission(e.args[1])){
+                    //this contacts bungee and tells it to send the server change command whilst checking for CUSTOM permissions
+                    ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                    out.writeUTF("Connect");
+                    out.writeUTF(e.args[0]);
+                    player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+                }
+            }else if (player.hasPermission("bungeecord.command.server." + e.args[0].toLowerCase())) {
                 //this contacts bungee and tells it to send the server change command whilst checking for permissions
                 ByteArrayDataOutput out = ByteStreams.newDataOutput();
                 out.writeUTF("Connect");

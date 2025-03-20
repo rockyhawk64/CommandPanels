@@ -149,6 +149,33 @@ public class SpecialTags implements Listener {
                 }
             }.runTaskTimer(plugin, delayTicks, 1); //20 ticks == 1 second
         }
+        if(e.name.equalsIgnoreCase("eval-delay=")) {
+            //Eval delay is used to check if a placeholder equals the same after a delay.
+            //Format eval-delay= 20 %hello_world% console= give %cp-player-name% diamond 1
+            e.commandTagUsed();
+            //if player uses op= it will perform command as op
+            final int delayTicks = Integer.parseInt(e.args[0]);
+            final String staticValue = e.raw[1];
+            final String parsedValue = plugin.tex.placeholders(e.panel, e.pos, e.p, e.args[1].trim());
+            e.p.sendMessage(staticValue + " " + parsedValue);
+            String finalCommand = String.join(" ",e.args).replaceFirst(e.args[0],"").replaceFirst(e.args[1],"").trim();
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    try {
+                        //If old parsed value does not equal the new value after delay then stop execute.
+                        if(plugin.tex.placeholders(e.panel, e.pos, e.p, staticValue.trim()).equals(parsedValue)){
+                            plugin.commandRunner.runCommand(e.panel,e.pos, e.p, finalCommand);
+                        }
+                    } catch (Exception ex) {
+                        //if there are any errors, cancel so that it doesn't loop errors
+                        plugin.debug(ex, e.p);
+                        this.cancel();
+                    }
+                    this.cancel();
+                }
+            }.runTaskTimer(plugin, delayTicks, 1); //20 ticks == 1 second
+        }
     }
 
     private Character[] convertToCharacterArray(char[] charArray) {

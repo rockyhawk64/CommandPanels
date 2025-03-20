@@ -117,7 +117,11 @@ public class Utils implements Listener {
 
         //if an item has an area for input instead of commands
         if(panel.getConfig().contains("item." + foundSlot + section + ".player-input")) {
-            plugin.inputUtils.playerInput.put(p,new PlayerInput(panel,panel.getConfig().getStringList("item." + foundSlot + section + ".player-input"),e.getClick()));
+            List<String> cancelCommands = null;
+            if(panel.getConfig().contains("item." + foundSlot + section + ".player-canceled-input")){
+                cancelCommands = panel.getConfig().getStringList("item." + foundSlot + section + ".player-canceled-input");
+            }
+            plugin.inputUtils.playerInput.put(p,new PlayerInput(panel,panel.getConfig().getStringList("item." + foundSlot + section + ".player-input"),cancelCommands,e.getClick()));
             plugin.inputUtils.sendMessage(panel,position,p);
         }
 

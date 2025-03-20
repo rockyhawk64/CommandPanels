@@ -92,7 +92,13 @@ public class ExecuteOpenVoids {
                     //play sound when panel is opened
                     if(!Objects.requireNonNull(panel.getConfig().getString("sound-on-open")).equalsIgnoreCase("off")) {
                         try {
-                            p.playSound(p.getLocation(), Sound.valueOf(Objects.requireNonNull(panel.getConfig().getString("sound-on-open")).toUpperCase()), 1F, 1F);
+                            String[] args = Objects.requireNonNull(panel.getConfig().getString("sound-on-open")).split(" ");
+                            if(args.length >= 3){
+                                //sound on open volume and pitch: sound-on-open: minecraft:villager 1.0 0.5
+                                p.playSound(p.getLocation(), Sound.valueOf(args[0].toUpperCase()), Float.parseFloat(args[1]), Float.parseFloat(args[2]));
+                            } else {
+                                p.playSound(p.getLocation(), Sound.valueOf(Objects.requireNonNull(panel.getConfig().getString("sound-on-open")).toUpperCase()), 1F, 1F);
+                            }
                         } catch (Exception s) {
                             p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " " + "sound-on-open: " + panel.getConfig().getString("sound-on-open")));
                         }

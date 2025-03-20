@@ -28,7 +28,19 @@ public class UserInputUtils implements Listener {
             e.setCancelled(true);
             if(e.getMessage().equalsIgnoreCase(plugin.config.getString("input.input-cancel"))){
                 e.getPlayer().sendMessage(plugin.tex.colour( Objects.requireNonNull(plugin.config.getString("input.input-cancelled"))));
-                playerInput.remove(e.getPlayer());
+                if(playerInput.get(e.getPlayer()).cancelCommands != null){
+                    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                        public void run() {
+                            if(playerInput.get(e.getPlayer()).cancelCommands != null){
+                                plugin.commandRunner.runCommands(playerInput.get(e.getPlayer()).panel, PanelPosition.Top,e.getPlayer(), playerInput.get(e.getPlayer()).cancelCommands,playerInput.get(e.getPlayer()).click); //I have to do this to run regular Bukkit voids in an ASYNC Event
+                                playerInput.remove(e.getPlayer());
+                            }
+                        }
+                    });
+                } else {
+                    playerInput.remove(e.getPlayer());
+                }
+
                 return;
             }
             playerInput.get(e.getPlayer()).panel.placeholders.addPlaceholder("player-input",e.getMessage());
