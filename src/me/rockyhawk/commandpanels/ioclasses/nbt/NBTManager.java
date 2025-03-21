@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.ioclasses.nbt;
 
 import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.NBTType;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
@@ -10,170 +11,169 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class NBTManager {
     CommandPanels plugin;
+
     public NBTManager(CommandPanels pl) {
         this.plugin = pl;
     }
 
-    public boolean hasSameNBT(ItemStack one, ItemStack two){
-        NBTItem nbtitem1 = new NBTItem(one);
-        NBTItem nbtitem2 = new NBTItem(two);
-
-        return nbtitem1.equals(nbtitem2);
+    public boolean hasSameNBT(ItemStack one, ItemStack two) {
+        return new NBTItem(one).equals(new NBTItem(two));
     }
 
-    public Object getNBT(ItemStack item, String key, String type) {
-        type = type.toLowerCase();
+    public boolean hasNBT(ItemStack item, String key) {
+        return new NBTItem(item).hasTag(key);
+    }
+
+    public ItemStack setNBT(ItemStack item, String key, Object value) {
+        if (item == null || item.getType() == Material.AIR) return item;
+
         NBTItem nbtItem = new NBTItem(item);
-        switch(type.toLowerCase()) {
-            case "byte":
-                return nbtItem.getByte(key);
-            case "boolean":
-                return nbtItem.getBoolean(key);
-            case "short":
-                return nbtItem.getShort(key);
-            case "integer":
-                return nbtItem.getInteger(key);
-            case "long":
-                return nbtItem.getLong(key);
-            case "float":
-                return nbtItem.getFloat(key);
-            case "double":
-                return nbtItem.getDouble(key);
-            case "string":
-                return nbtItem.getString(key);
-            default:
-                throw new IllegalArgumentException("Unsupported NBT type: " + type);
-        }
-    }
-
-    public boolean hasNBT(ItemStack item, String key){
-        NBTItem nbti = new NBTItem(item);
-        return nbti.hasTag(key);
-    }
-
-    //nbt will be assigned with the value "string_value_1
-    //which uses the type "String" and value "value_1"
-    // Method to apply NBT recursively
-    public ItemStack setNBT(ItemStack item, String key, String value) {
-        if (item == null || item.getType() == Material.AIR) {
-            return item;
-        }
-        NBTItem nbtItem = new NBTItem(item);
-        setNBTDirectlyOnItem(nbtItem, key, value);
-
+        setNBTValue(nbtItem, key, value);
         item.setItemMeta(nbtItem.getItem().getItemMeta());
+
         return item;
     }
 
-    // Method to apply NBT recursively
     public void applyNBTRecursively(ItemStack item, ConfigurationSection section, Player player, Panel panel, PanelPosition position) {
+        if (item == null || item.getType() == Material.AIR) return;
+
         NBTItem nbtItem = new NBTItem(item);
 
-        // Iterate over each key in the root of the ConfigurationSection
         for (String key : section.getKeys(false)) {
-            // Check if the key represents a ConfigurationSection
+            Object value = section.get(key);
+
             if (section.isConfigurationSection(key)) {
-                // Create a compound for each ConfigurationSection
                 NBTCompound compound = nbtItem.addCompound(key);
                 convertSectionToNBT(compound, section.getConfigurationSection(key), player, panel, position);
             } else {
-                // Handle non-section values directly on the NBTItem if necessary
-                String value = plugin.tex.attachPlaceholders(panel, position, player, section.getString(key));
-                setNBTDirectlyOnItem(nbtItem, key, value);
+                setNBTValue(nbtItem, key, value);
             }
         }
+
         item.setItemMeta(nbtItem.getItem().getItemMeta());
     }
 
-    // Convert ConfigurationSection to NBTCompound recursively
+    public void saveMapToYAML(Map<String, Object> map, ConfigurationSection section) {
+        if (map == null || section == null) return;
+
+        map.forEach((key, value) -> {
+            if (value instanceof Map) {
+                saveMapToYAML((Map<String, Object>) value, section.createSection(key));
+            } else if (value instanceof Byte) {
+                // Convert only Byte values that are actually Boolean representations
+                byte byteValue = (Byte) value;
+                if (byteValue == 1 || byteValue == 0) {
+                    section.set(key, byteValue == 1);
+                } else {
+                    section.set(key, byteValue);
+                }
+            } else {
+                section.set(key, value);
+            }
+        });
+    }
+
     private void convertSectionToNBT(NBTCompound compound, ConfigurationSection section, Player player, Panel panel, PanelPosition position) {
         for (String key : section.getKeys(false)) {
+            Object value = section.get(key);
+
             if (section.isConfigurationSection(key)) {
-                // Recursively convert sub-sections to their own compounds
-                NBTCompound subCompound = compound.addCompound(key);
-                convertSectionToNBT(subCompound, section.getConfigurationSection(key), player, panel, position);
+                // Properly handles nested compounds instead of treating them as strings
+                convertSectionToNBT(compound.addCompound(key), section.getConfigurationSection(key), player, panel, position);
             } else {
-                // Handle scalar values within each compound
-                String value = plugin.tex.attachPlaceholders(panel, position, player, section.getString(key));
-                setNBTOnCompound(compound, key, value);
+                setNBTValue(compound, key, value);
             }
         }
     }
 
-    private void setNBTDirectlyOnItem(NBTItem nbtItem, String key, String value) {
-        int underscoreIndex = value.indexOf("_");
-        if (underscoreIndex == -1) return; // Skip if format is invalid
-
-        String type = value.substring(0, underscoreIndex);
-        String val = value.substring(underscoreIndex + 1);
-
-        switch (type.toLowerCase()) {
-            case "byte":
-                nbtItem.setByte(key, Byte.parseByte(val));
-                break;
-            case "boolean":
-                nbtItem.setBoolean(key, Boolean.parseBoolean(val));
-                break;
-            case "short":
-                nbtItem.setShort(key, Short.parseShort(val));
-                break;
-            case "integer":
-                nbtItem.setInteger(key, Integer.parseInt(val));
-                break;
-            case "long":
-                nbtItem.setLong(key, Long.parseLong(val));
-                break;
-            case "float":
-                nbtItem.setFloat(key, Float.parseFloat(val));
-                break;
-            case "double":
-                nbtItem.setDouble(key, Double.parseDouble(val));
-                break;
-            case "string":
-                nbtItem.setString(key, val);
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported NBT type: " + type);
+    private void setNBTValue(NBTCompound compound, String key, Object value) {
+        if (value instanceof Boolean) {
+            compound.setByte(key, (Boolean) value ? (byte) 1 : (byte) 0); // Store as NBT Byte since boolean is shown as 1b or 0b
+        } else if (value instanceof Integer) {
+            compound.setInteger(key, (Integer) value);
+        } else if (value instanceof Double) {
+            compound.setDouble(key, (Double) value);
+        } else if (value instanceof Long) {
+            compound.setLong(key, (Long) value);
+        } else if (value instanceof Short) {
+            compound.setShort(key, (Short) value);
+        } else if (value instanceof Float) {
+            compound.setFloat(key, (Float) value);
+        } else if (value instanceof Byte) {
+            compound.setByte(key, (Byte) value);
+        } else if (value instanceof Map) {
+            saveMapToNBTCompound((Map<String, Object>) value, compound.addCompound(key));
+        } else {
+            compound.setString(key, value.toString());
         }
     }
 
-    // Set typed value on an NBTCompound
-    private void setNBTOnCompound(NBTCompound compound, String key, String value) {
-        int underscoreIndex = value.indexOf("_");
-        if (underscoreIndex == -1) return; // Invalid format, skip
+    public Object getNBTValue(ItemStack item, String key) {
+        if (item == null || item.getType() == Material.AIR) return null;
 
-        String type = value.substring(0, underscoreIndex);
-        String val = value.substring(underscoreIndex + 1);
+        NBTItem nbtItem = new NBTItem(item);
+        if (!nbtItem.hasTag(key)) return null;
 
-        switch (type.toLowerCase()) {
-            case "byte":
-                compound.setByte(key, Byte.parseByte(val));
-                break;
-            case "boolean":
-                compound.setBoolean(key, Boolean.parseBoolean(val));
-                break;
-            case "short":
-                compound.setShort(key, Short.parseShort(val));
-                break;
-            case "integer":
-                compound.setInteger(key, Integer.parseInt(val));
-                break;
-            case "long":
-                compound.setLong(key, Long.parseLong(val));
-                break;
-            case "float":
-                compound.setFloat(key, Float.parseFloat(val));
-                break;
-            case "double":
-                compound.setDouble(key, Double.parseDouble(val));
-                break;
-            case "string":
-                compound.setString(key, val);
-                break;
+        return extractNBTValue(nbtItem, key, nbtItem.getType(key));
+    }
+
+    private Object extractNBTValue(NBTCompound compound, String key, NBTType type) {
+        switch (type) {
+            case NBTTagInt:
+                return compound.getInteger(key);
+            case NBTTagDouble:
+                return compound.getDouble(key);
+            case NBTTagByte:
+                byte byteValue = compound.getByte(key);
+                if (byteValue == 1 || byteValue == 0) {
+                    return byteValue == 1; // Convert to Boolean since its displayed as 1b and 0b
+                }
+                return byteValue;
+            case NBTTagFloat:
+                return compound.getFloat(key);
+            case NBTTagLong:
+                return compound.getLong(key);
+            case NBTTagShort:
+                return compound.getShort(key);
+            case NBTTagByteArray:
+                return compound.getByteArray(key);
+            case NBTTagIntArray:
+                return compound.getIntArray(key);
+            case NBTTagList:
+                return compound.getStringList(key); // Assuming it's a String list
+            case NBTTagCompound:
+                return convertCompoundToMap(compound.getCompound(key)); // Recursively convert sub-compounds
+            case NBTTagString:
+                String str = compound.getString(key);
+                if (str.equalsIgnoreCase("true")) return true;
+                if (str.equalsIgnoreCase("false")) return false;
+                if (str.matches("-?\\d+")) return Integer.parseInt(str);
+                if (str.matches("-?\\d+\\.\\d+")) return Double.parseDouble(str);
+                return str;
             default:
-                throw new IllegalArgumentException("Unsupported NBT type: " + type);
+                return null;
         }
+    }
+
+
+    private Map<String, Object> convertCompoundToMap(NBTCompound compound) {
+        Map<String, Object> compoundMap = new LinkedHashMap<>();
+        compound.getKeys().forEach(key -> compoundMap.put(key, extractNBTValue(compound, key, compound.getType(key))));
+        return compoundMap;
+    }
+
+    private void saveMapToNBTCompound(Map<String, Object> map, NBTCompound compound) {
+        map.forEach((key, value) -> {
+            if (value instanceof Map) {
+                saveMapToNBTCompound((Map<String, Object>) value, compound.addCompound(key));
+            } else {
+                setNBTValue(compound, key, value);
+            }
+        });
     }
 }

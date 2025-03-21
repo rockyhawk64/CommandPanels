@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.classresources;
 
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import dev.lone.itemsadder.api.CustomStack;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.CommandPanels;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 
 public class ItemCreation {
     CommandPanels plugin;
+
     public ItemCreation(CommandPanels pl) {
         plugin = pl;
     }
@@ -141,6 +143,36 @@ public class ItemCreation {
                 }
             }
 
+            //Nexo support, needs itemID (eg, nexo= rubySword)
+            if (matraw.split("\\s")[0].equalsIgnoreCase("nexo=")) {
+                String itemID = matraw.split("\\s")[1];
+                try {
+                    if (plugin.getServer().getPluginManager().isPluginEnabled("Nexo")) {
+                        // Get the NexoItems class dynamically
+                        Class<?> nexoItemsClass = Class.forName("com.nexomc.nexo.api.NexoItems");
+
+                        // Get the itemFromId method (which takes a String)
+                        Method itemFromIdMethod = nexoItemsClass.getMethod("itemFromId", String.class);
+
+                        // Invoke itemFromId with the item ID (assuming it's static)
+                        Object nexoItem = itemFromIdMethod.invoke(null, itemID);
+
+                        if (nexoItem != null) {
+                            // Get the build() method and invoke it
+                            Method buildMethod = nexoItem.getClass().getMethod("build");
+                            Object itemStack = buildMethod.invoke(nexoItem);
+
+                            if (itemStack instanceof ItemStack) {
+                                s = ((ItemStack) itemStack).clone();
+                                normalCreation = false;
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace(); // Print stack trace for debugging
+                }
+            }
+
             //creates custom MMOItems items
             if(matraw.split("\\s")[0].equalsIgnoreCase("mmo=") && plugin.getServer().getPluginManager().isPluginEnabled("MMOItems")){
                 String itemType = matraw.split("\\s")[1];
@@ -245,7 +277,7 @@ public class ItemCreation {
                 plugin.nbt.applyNBTRecursively(s, itemSection.getConfigurationSection("nbt"), p, panel, position);
             }
             if(addNBT){
-                plugin.nbt.setNBT(s, "CommandPanelsItem","boolean_" + "true");
+                plugin.nbt.setNBT(s, "CommandPanelsItem","true");
             }
 
             if (itemSection.contains("enchanted")) {
@@ -281,6 +313,25 @@ public class ItemCreation {
 
                     // Invoke it dynamically
                     setItemModelMethod.invoke(itemMeta, NamespacedKey.fromString(plugin.tex.placeholders(panel, position, p, itemSection.getString("itemmodel"))));
+
+                    s.setItemMeta(itemMeta);
+                } catch (NoSuchMethodException e) {
+                    // The method does not exist in older Spigot versions
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (itemSection.contains("tooltip-style")) {
+                //Item Model 1.21.4+
+                ItemMeta itemMeta = s.getItemMeta();
+                assert itemMeta != null;
+
+                try {
+                    // Check if the setHideTooltip method exists
+                    Method setTooltipMethod = ItemMeta.class.getMethod("setTooltipStyle", NamespacedKey.class);
+
+                    // Invoke it dynamically
+                    setTooltipMethod.invoke(itemMeta, NamespacedKey.fromString(plugin.tex.placeholders(panel, position, p, itemSection.getString("tooltip-style"))));
 
                     s.setItemMeta(itemMeta);
                 } catch (NoSuchMethodException e) {
@@ -544,7 +595,9 @@ public class ItemCreation {
                 file.set("panels." + panelName + ".item." + i + ".name", Objects.requireNonNull(cont.getItemMeta()).getDisplayName());
                 file.set("panels." + panelName + ".item." + i + ".lore", Objects.requireNonNull(cont.getItemMeta()).getLore());
                 if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
-                    file.set("panels." + panelName + ".item." + i + ".customdata", Objects.requireNonNull(cont.getItemMeta()).getCustomModelData());
+                    if(cont.getItemMeta().hasCustomModelData()){
+                        file.set("panels." + panelName + ".item." + i + ".customdata", Objects.requireNonNull(cont.getItemMeta()).getCustomModelData());
+                    }
                 }
                 if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
                         (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && plugin.legacy.MINOR_VERSION >= 4)){
@@ -562,8 +615,35 @@ public class ItemCreation {
                         e.printStackTrace();
                     }
                 }
+
+                // Try getting item NBT
+                try {
+                    NBTItem nbtItem = new NBTItem(cont); // Convert item to NBTItem
+
+                    // Base path where NBT data is stored in the YAML file
+                    String basePath = "panels." + panelName + ".item." + i + ".nbt";
+
+                    // Iterate over all NBT keys
+                    for (String key : nbtItem.getKeys()) {
+                        Object value = plugin.nbt.getNBTValue(nbtItem.getItem(), key); // Retrieve dynamically
+
+                        if (value == null) continue; // Skip null values
+
+                        if (value instanceof Map) {
+                            // Save nested NBT compounds properly
+                            ConfigurationSection subSection = file.createSection(basePath + "." + key);
+                            plugin.nbt.saveMapToYAML((Map<String, Object>) value, subSection);
+                        } else {
+                            // Directly set primitive values
+                            file.set(basePath + "." + key, value);
+                        }
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Error while saving NBT data: " + e.getMessage());
+                    e.printStackTrace();
+                }
             }catch(Exception n){
-                //skip over an item that spits an error
+                //skip over an item that spits an error - Usually air
             }
         }
         return file;
@@ -636,7 +716,6 @@ public class ItemCreation {
                 } catch (Exception e) {
                     plugin.debug(e,null);
                 }
-
             }
         }catch(Exception ignore){}
         //check for nbt
