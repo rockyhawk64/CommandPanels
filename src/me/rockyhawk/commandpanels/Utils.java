@@ -111,16 +111,8 @@ public class Utils implements Listener {
                     String duplicateValue = panel.getConfig().getString("item." + item + section + ".duplicate");
 
                     // Check if the clicked slot is in the duplicate configuration
-                    DuplicateResult result = isSlotInDuplicateConfig(clickedSlot, duplicateValue);
-                    if(result.isInDuplicate) {
+                    if(isSlotInDuplicate(clickedSlot, duplicateValue)) {
                         foundSlot = item;
-
-                        // If commands shouldn't be duplicated, return early after cancelling the event
-                        if(!result.shouldDuplicateCommands) {
-                            e.setCancelled(true);
-                            return;
-                        }
-
                         break;
                     }
                 }
@@ -207,38 +199,14 @@ public class Utils implements Listener {
         return false;
     }
 
-    // Class to hold the result of duplicate check
-    private static class DuplicateResult {
-        public boolean isInDuplicate;
-        public boolean shouldDuplicateCommands;
+    //Helper method to see if the slot is a duplicate so it can copy commands.
+    private boolean isSlotInDuplicate(int slot, String duplicateConfig) {
+        if(duplicateConfig == null) return false;
 
-        public DuplicateResult(boolean isInDuplicate, boolean shouldDuplicateCommands) {
-            this.isInDuplicate = isInDuplicate;
-            this.shouldDuplicateCommands = shouldDuplicateCommands;
-        }
-    }
-
-    // Helper method to check if a slot is included in the duplicate configuration and if commands should be duplicated
-    private DuplicateResult isSlotInDuplicateConfig(int slot, String duplicateConfig) {
-        if(duplicateConfig == null) return new DuplicateResult(false, false);
-
-        boolean shouldDuplicateCommands = false;
         String[] dupeItems = duplicateConfig.split(",");
 
-        // First check if "true" is included in the config
-        for(String item : dupeItems) {
-            if(item.trim().equalsIgnoreCase("true")) {
-                shouldDuplicateCommands = true;
-                break;
-            }
-        }
-
-        // Then check if the slot is included
         for(String dupeItem : dupeItems) {
             dupeItem = dupeItem.trim(); // Remove any whitespace
-
-            // Skip the "true" flag, it's not a slot designation
-            if(dupeItem.equalsIgnoreCase("true")) continue;
 
             if(dupeItem.contains("-")) {
                 // This is a range
@@ -247,19 +215,19 @@ public class Utils implements Listener {
                 int max = Integer.parseInt(range[1]);
 
                 if(slot >= min && slot <= max) {
-                    return new DuplicateResult(true, shouldDuplicateCommands);
+                    return true;
                 }
             } else {
                 // This is a single slot
                 try {
                     int dupeSlot = Integer.parseInt(dupeItem);
                     if(dupeSlot == slot) {
-                        return new DuplicateResult(true, shouldDuplicateCommands);
+                        return true;
                     }
                 } catch(NumberFormatException ignored) {}
             }
         }
 
-        return new DuplicateResult(false, shouldDuplicateCommands);
+        return false;
     }
 }
