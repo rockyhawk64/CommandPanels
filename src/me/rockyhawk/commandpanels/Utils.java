@@ -1,13 +1,17 @@
 package me.rockyhawk.commandpanels;
 
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.commandtags.PaywallEvent;
+import me.rockyhawk.commandpanels.commandtags.PaywallOutput;
 import me.rockyhawk.commandpanels.interactives.input.PlayerInput;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -115,16 +119,37 @@ public class Utils implements Listener {
         e.setCancelled(true);
         p.updateInventory();
 
-        //if an item has an area for input instead of commands
+        //if an item has an area for input instead of commands - Now with click type support
         if(panel.getConfig().contains("item." + foundSlot + section + ".player-input")) {
+            List<String> playerInputs = panel.getConfig().getStringList("item." + foundSlot + section + ".player-input");
+            List<String> filteredPlayerInputs = new ArrayList<>();
+
+            //Check for cancel player input events.
             List<String> cancelCommands = null;
             if(panel.getConfig().contains("item." + foundSlot + section + ".player-canceled-input")){
                 cancelCommands = panel.getConfig().getStringList("item." + foundSlot + section + ".player-canceled-input");
             }
-            plugin.inputUtils.playerInput.put(p,new PlayerInput(panel,panel.getConfig().getStringList("item." + foundSlot + section + ".player-input"),cancelCommands,e.getClick()));
-            plugin.inputUtils.sendMessage(panel,position,p);
+
+            // Check for valid click types in player inputs
+            ClickType click = e.getClick();
+            boolean validClickFound = false;
+
+            for(String playerInput : playerInputs) {
+                String validInput = plugin.commandRunner.hasCorrectClick(playerInput, click);
+                if(!validInput.isEmpty()) {
+                    filteredPlayerInputs.add(validInput);
+                    validClickFound = true;
+                }
+            }
+
+            // Only process player input if we have valid inputs for this click type
+            if(validClickFound) {
+                plugin.inputUtils.playerInput.put(p, new PlayerInput(panel, filteredPlayerInputs, cancelCommands, click));
+                plugin.inputUtils.sendMessage(panel, position, p);
+            }
         }
 
+        // Run commands section.
         if(panel.getConfig().contains("item." + foundSlot + section + ".commands")) {
             List<String> commands = panel.getConfig().getStringList("item." + foundSlot + section + ".commands");
             if (!commands.isEmpty()) {
@@ -136,9 +161,9 @@ public class Utils implements Listener {
                     }
                 }
                 if (panel.getConfig().contains("item." + foundSlot + section + ".multi-paywall")) {
-                    plugin.commandRunner.runMultiPaywall(panel,position,p,
+                    plugin.commandRunner.runMultiPaywall(panel, position, p,
                             panel.getConfig().getStringList("item." + foundSlot + section + ".multi-paywall"),
-                            commands,e.getClick());
+                            commands, e.getClick());
                 } else {
                     plugin.commandRunner.runCommands(panel, position, p, commands, e.getClick());
                 }
