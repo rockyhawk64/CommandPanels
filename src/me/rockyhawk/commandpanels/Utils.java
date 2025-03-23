@@ -99,6 +99,34 @@ public class Utils implements Listener {
                 break;
             }
         }
+
+        // If we didn't find the slot directly, check if it's a duplicate
+        if(foundSlot == null){
+            // Loop through all items to check their duplicate configurations
+            for(String item : Objects.requireNonNull(panel.getConfig().getConfigurationSection("item")).getKeys(false)){
+                String section = plugin.has.hasSection(panel, position, panel.getConfig().getConfigurationSection("item." + item), p);
+
+                // Check if this item has a duplicate configuration
+                if(panel.getConfig().contains("item." + item + section + ".duplicate")) {
+                    String duplicateValue = panel.getConfig().getString("item." + item + section + ".duplicate");
+
+                    // Check if the clicked slot is in the duplicate configuration
+                    DuplicateResult result = isSlotInDuplicateConfig(clickedSlot, duplicateValue);
+                    if(result.isInDuplicate) {
+                        foundSlot = item;
+
+                        // If commands shouldn't be duplicated, return early after cancelling the event
+                        if(!result.shouldDuplicateCommands) {
+                            e.setCancelled(true);
+                            return;
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
         if(foundSlot == null){
             e.setCancelled(true);
             return;
@@ -177,5 +205,61 @@ public class Utils implements Listener {
             return panel.getConfig().getStringList("panelType").contains("unmovable");
         }
         return false;
+    }
+
+    // Class to hold the result of duplicate check
+    private static class DuplicateResult {
+        public boolean isInDuplicate;
+        public boolean shouldDuplicateCommands;
+
+        public DuplicateResult(boolean isInDuplicate, boolean shouldDuplicateCommands) {
+            this.isInDuplicate = isInDuplicate;
+            this.shouldDuplicateCommands = shouldDuplicateCommands;
+        }
+    }
+
+    // Helper method to check if a slot is included in the duplicate configuration and if commands should be duplicated
+    private DuplicateResult isSlotInDuplicateConfig(int slot, String duplicateConfig) {
+        if(duplicateConfig == null) return new DuplicateResult(false, false);
+
+        boolean shouldDuplicateCommands = false;
+        String[] dupeItems = duplicateConfig.split(",");
+
+        // First check if "true" is included in the config
+        for(String item : dupeItems) {
+            if(item.trim().equalsIgnoreCase("true")) {
+                shouldDuplicateCommands = true;
+                break;
+            }
+        }
+
+        // Then check if the slot is included
+        for(String dupeItem : dupeItems) {
+            dupeItem = dupeItem.trim(); // Remove any whitespace
+
+            // Skip the "true" flag, it's not a slot designation
+            if(dupeItem.equalsIgnoreCase("true")) continue;
+
+            if(dupeItem.contains("-")) {
+                // This is a range
+                String[] range = dupeItem.split("-");
+                int min = Integer.parseInt(range[0]);
+                int max = Integer.parseInt(range[1]);
+
+                if(slot >= min && slot <= max) {
+                    return new DuplicateResult(true, shouldDuplicateCommands);
+                }
+            } else {
+                // This is a single slot
+                try {
+                    int dupeSlot = Integer.parseInt(dupeItem);
+                    if(dupeSlot == slot) {
+                        return new DuplicateResult(true, shouldDuplicateCommands);
+                    }
+                } catch(NumberFormatException ignored) {}
+            }
+        }
+
+        return new DuplicateResult(false, shouldDuplicateCommands);
     }
 }

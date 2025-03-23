@@ -85,6 +85,11 @@ public class OpenGUI {
                     try {
                         String[] duplicateItems = pconfig.getString("item." + item + section + ".duplicate").split(",");
                         for (String tempDupe : duplicateItems) {
+                            //Skip the "slot" if it is just the command setting
+                            if(tempDupe.equalsIgnoreCase("true")){
+                                continue;
+                            }
+
                             if (tempDupe.contains("-")) {
                                 //if there is multiple dupe items, convert numbers to ints
                                 int[] bothNumbers = new int[]{Integer.parseInt(tempDupe.split("-")[0]), Integer.parseInt(tempDupe.split("-")[1])};
