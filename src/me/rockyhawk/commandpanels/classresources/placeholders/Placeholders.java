@@ -1,12 +1,15 @@
 package me.rockyhawk.commandpanels.classresources.placeholders;
 
 import com.earth2me.essentials.Essentials;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -125,7 +128,7 @@ public class Placeholders {
             }
         }
 
-        //placeholder to check for server availability %cp-server-IP:PORT%
+        //placeholder to check for server availability %cp-server-IP:PORT% returns true, false
         if(identifier.startsWith("server-")) {
             String ip_port = identifier.replace("server-", "");
             Socket s = new Socket();
@@ -138,18 +141,30 @@ public class Placeholders {
             }
         }
 
-        //placeholder to check if an item has NBT %cp-nbt-slot:type:key%
+        //placeholder to check if the player has material and amount of in their inventory %cp-checkinv-MATERIAL:<AMOUNT>% returns true, false
+        if(identifier.startsWith("checkinv-")) {
+            String[] materialList = identifier.replace("checkinv-", "").split(":");
+            int amount = 0;
+            if(materialList[0] == null){ return "false"; }
+            if(materialList[1] == null){ amount = 1; }
+
+            String material = materialList[0];
+            amount = Integer.parseInt(materialList[1]);
+
+            Inventory inv = p.getInventory();
+            if(inv.contains(Material.valueOf(material), amount)){
+                return "true";
+            } else {
+                return "false";
+            }
+        }
+
+        //placeholder to check if an item has NBT %cp-nbt-slot:key% returns value, empty, ""
         if (identifier.startsWith("nbt-")) {
             try {
                 String slot_key = identifier.replace("nbt-", "");
                 Object value;
-                value = plugin.nbt.getNBT(
-                        p.getOpenInventory().getTopInventory().getItem(
-                                (int) Double.parseDouble(slot_key.split(":")[0])
-                        ),
-                        slot_key.split(":")[2],
-                        slot_key.split(":")[1]
-                );
+                value = plugin.nbt.getNBTValue(p.getOpenInventory().getTopInventory().getItem((int) Double.parseDouble(slot_key.split(":")[0])), slot_key.split(":")[1]);
                 // Convert any object type to a string, handle null explicitly if desired
                 return value == null ? "empty" : String.valueOf(value);
             } catch (Exception ex) {
