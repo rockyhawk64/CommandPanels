@@ -99,6 +99,35 @@ public class ItemCreation {
                 }
             }
 
+            //Nexo support, needs itemID (eg, nexo= rubySword)
+            if (matraw.split("\\s")[0].equalsIgnoreCase("nexo=")) {
+                String itemID = matraw.split("\\s")[1];
+                try {
+                    if (plugin.getServer().getPluginManager().isPluginEnabled("Nexo")) {
+                        // Get the NexoItems class dynamically
+                        Class<?> nexoItemsClass = Class.forName("com.nexomc.nexo.api.NexoItems");
+
+                        // Get the itemFromId method (which takes a String)
+                        Method itemFromIdMethod = nexoItemsClass.getMethod("itemFromId", String.class);
+
+                        // Invoke itemFromId with the item ID (assuming it's static)
+                        Object nexoItem = itemFromIdMethod.invoke(null, itemID);
+
+                        if (nexoItem != null) {
+                            // Get the build() method and invoke it
+                            Method buildMethod = nexoItem.getClass().getMethod("build");
+                            Object itemStack = buildMethod.invoke(nexoItem);
+
+                            if (itemStack instanceof ItemStack) {
+                                s = ((ItemStack) itemStack).clone();
+                                normalCreation = false;
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace(); // Print stack trace for debugging
+                }
+            }
             //Oraxen support, uses itemID (eg, oraxen= coin)
             if (matraw.split("\\s")[0].equalsIgnoreCase("oraxen=")) {
                 String itemID = matraw.split("\\s")[1];
@@ -140,36 +169,6 @@ public class ItemCreation {
                 if(stack != null) {
                     s = stack.getItemStack().clone();
                     normalCreation = false;
-                }
-            }
-
-            //Nexo support, needs itemID (eg, nexo= rubySword)
-            if (matraw.split("\\s")[0].equalsIgnoreCase("nexo=")) {
-                String itemID = matraw.split("\\s")[1];
-                try {
-                    if (plugin.getServer().getPluginManager().isPluginEnabled("Nexo")) {
-                        // Get the NexoItems class dynamically
-                        Class<?> nexoItemsClass = Class.forName("com.nexomc.nexo.api.NexoItems");
-
-                        // Get the itemFromId method (which takes a String)
-                        Method itemFromIdMethod = nexoItemsClass.getMethod("itemFromId", String.class);
-
-                        // Invoke itemFromId with the item ID (assuming it's static)
-                        Object nexoItem = itemFromIdMethod.invoke(null, itemID);
-
-                        if (nexoItem != null) {
-                            // Get the build() method and invoke it
-                            Method buildMethod = nexoItem.getClass().getMethod("build");
-                            Object itemStack = buildMethod.invoke(nexoItem);
-
-                            if (itemStack instanceof ItemStack) {
-                                s = ((ItemStack) itemStack).clone();
-                                normalCreation = false;
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace(); // Print stack trace for debugging
                 }
             }
 
