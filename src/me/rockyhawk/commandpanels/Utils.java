@@ -146,8 +146,8 @@ public class Utils implements Listener {
 
             //Check for cancel player input events.
             List<String> cancelCommands = null;
-            if(panel.getConfig().contains("item." + foundSlot + section + ".player-canceled-input")){
-                cancelCommands = panel.getConfig().getStringList("item." + foundSlot + section + ".player-canceled-input");
+            if(panel.getConfig().contains("item." + foundSlot + section + ".player-input-cancel")){
+                cancelCommands = panel.getConfig().getStringList("item." + foundSlot + section + ".player-input-cancel");
             }
 
             // Check for valid click types in player inputs
@@ -165,7 +165,7 @@ public class Utils implements Listener {
             // Only process player input if we have valid inputs for this click type
             if(validClickFound) {
                 plugin.inputUtils.playerInput.put(p, new PlayerInput(panel, filteredPlayerInputs, cancelCommands, click));
-                plugin.inputUtils.sendMessage(panel, position, p);
+                plugin.inputUtils.sendInputMessage(panel, position, p);
             }
         }
 

@@ -157,7 +157,6 @@ public class SpecialTags implements Listener {
             final int delayTicks = Integer.parseInt(e.args[0]);
             final String staticValue = e.raw[1];
             final String parsedValue = plugin.tex.placeholders(e.panel, e.pos, e.p, e.args[1].trim());
-            e.p.sendMessage(staticValue + " " + parsedValue);
             String finalCommand = String.join(" ",e.args).replaceFirst(e.args[0],"").replaceFirst(e.args[1],"").trim();
             new BukkitRunnable() {
                 @Override

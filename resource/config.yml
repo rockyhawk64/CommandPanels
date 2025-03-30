@@ -31,7 +31,6 @@ config:
     disabled: '&cThis feature is disabled in your plugin config.'
 input:
   input-cancel: cancel
-  input-cancelled: '&cCancelled!'
   max-input-length: -1
   input-message:
     - '&aEnter Input for Command'

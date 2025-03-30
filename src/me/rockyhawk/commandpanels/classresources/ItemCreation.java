@@ -290,15 +290,12 @@ public class ItemCreation {
                             if(enchantment.equalsIgnoreCase("true")) {
                                 EnchantMeta.addEnchant(Enchantment.KNOCKBACK, 1, false);
                                 EnchantMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                                continue;
+                                break;
                             }
                             String enchant = enchantment.split("\\s")[0];
-                            NamespacedKey key;
-                            if (enchant.contains(":")) {
-                                key = NamespacedKey.fromString(enchant);
-                            } else {
-                                key = NamespacedKey.minecraft(enchant);
-                            }
+                            NamespacedKey key = enchant.contains(":") ?
+                                    NamespacedKey.fromString(enchant) :
+                                    NamespacedKey.minecraft(enchant);
                             EnchantMeta.addEnchant(Objects.requireNonNull(EnchantmentWrapper.getByKey(key)), Integer.parseInt(enchantment.split("\\s")[1]), true);
                         }
                         s.setItemMeta(EnchantMeta);

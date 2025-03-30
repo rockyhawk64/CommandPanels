@@ -27,7 +27,6 @@ public class UserInputUtils implements Listener {
         if(playerInput.containsKey(e.getPlayer())){
             e.setCancelled(true);
             if(e.getMessage().equalsIgnoreCase(plugin.config.getString("input.input-cancel"))){
-                e.getPlayer().sendMessage(plugin.tex.colour( Objects.requireNonNull(plugin.config.getString("input.input-cancelled"))));
                 if(playerInput.get(e.getPlayer()).cancelCommands != null){
                     plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                         public void run() {
@@ -75,11 +74,13 @@ public class UserInputUtils implements Listener {
         playerInput.remove(e.getPlayer());
     }
 
-    public void sendMessage(Panel panel, PanelPosition pos, Player p){
+    public void sendInputMessage(Panel panel, PanelPosition pos, Player p){
         List<String> inputMessages;
         if(panel.getConfig().contains("custom-messages.input-message")){
+            //For input-message custom from in the panel
             inputMessages = new ArrayList<>(panel.getConfig().getStringList("custom-messages.input-message"));
         }else{
+            //For input-message from the config
             inputMessages = new ArrayList<>(plugin.config.getStringList("input.input-message"));
         }
         for (String temp : inputMessages) {
