@@ -141,18 +141,25 @@ public class Placeholders {
             }
         }
 
-        //placeholder to check if the player has material and amount of in their inventory %cp-checkinv-MATERIAL:<AMOUNT>% returns true, false
+        //placeholder to check if the player has material and amount of in their inventory %cp-checkinv-MATERIAL:AMOUNT% returns true, false
         if(identifier.startsWith("checkinv-")) {
             String[] materialList = identifier.replace("checkinv-", "").split(":");
-            int amount = 0;
-            if(materialList[0] == null){ return "false"; }
-            if(materialList[1] == null){ amount = 1; }
 
-            String material = materialList[0];
-            amount = Integer.parseInt(materialList[1]);
+            String material = materialList[0].toUpperCase();
+            int amount = Integer.parseInt(materialList[1]);
+            int totalAmount = 0;
 
-            Inventory inv = p.getInventory();
-            if(inv.contains(Material.valueOf(material), amount)){
+            // Loop through each item in the inventory array
+            for (ItemStack item : plugin.inventorySaver.getNormalInventory(p)) {
+                // Check if the item is not null and matches the specified material
+                if (item != null && item.getType() == Material.valueOf(material)) {
+                    // Add the amount of this item to the total
+                    totalAmount += item.getAmount();
+                }
+            }
+
+            // If the total amount of the material is greater than or equal to the required amount
+            if (totalAmount >= amount) {
                 return "true";
             } else {
                 return "false";
