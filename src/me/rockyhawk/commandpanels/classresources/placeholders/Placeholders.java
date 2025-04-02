@@ -1,7 +1,7 @@
 package me.rockyhawk.commandpanels.classresources.placeholders;
 
 import com.earth2me.essentials.Essentials;
-import de.tr7zw.changeme.nbtapi.NBTItem;
+import io.lumine.mythic.lib.api.item.NBTItem;
 import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
@@ -353,7 +353,7 @@ public class Placeholders {
                         String mmoType = customItemMaterial.split("\\s")[1];
                         String mmoID = customItemMaterial.split("\\s")[2];
 
-                        if (plugin.isMMOItem(itm,mmoType,mmoID) && itm.getAmount() <= confItm.getAmount()) {
+                        if (isMMOItem(itm,mmoType,mmoID) && itm.getAmount() <= confItm.getAmount()) {
                             isIdentical = true;
                         }
                     }
@@ -374,7 +374,7 @@ public class Placeholders {
                 String min_max = identifier.replace("random-", "");
                 int min = (int)Double.parseDouble(min_max.split(",")[0]);
                 int max = (int)Double.parseDouble(min_max.split(",")[1]);
-                return String.valueOf(plugin.getRandomNumberInRange(min, max));
+                return String.valueOf(getRandomNumberInRange(min, max));
             }catch (Exception ex){
                 plugin.debug(ex,p);
                 return "";
@@ -480,7 +480,17 @@ public class Placeholders {
         return "";
     }
 
-    public boolean isPlayerVanished(Player player) {
+    private int getRandomNumberInRange(int min, int max) {
+
+        if (min >= max) {
+            throw new IllegalArgumentException("max must be greater than min");
+        }
+
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
+    }
+
+    private boolean isPlayerVanished(Player player) {
         //check if EssentialsX exists
         if(!Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
             return false;
@@ -488,5 +498,21 @@ public class Placeholders {
         //check if player is vanished using essentials
         Essentials essentials = (Essentials)Bukkit.getPluginManager().getPlugin("Essentials");
         return essentials.getUser(player).isVanished();
+    }
+
+    //returns true if the item is the MMO Item
+    private boolean isMMOItem(ItemStack itm, String type, String id){
+        try {
+            if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems")) {
+                io.lumine.mythic.lib.api.item.NBTItem nbt = NBTItem.get(itm);
+                if (nbt.getType().equalsIgnoreCase(type) && nbt.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(id)){
+                    return true;
+                }
+                itm.getType();
+            }
+        }catch (Exception ex){
+            plugin.debug(ex,null);
+        }
+        return false;
     }
 }

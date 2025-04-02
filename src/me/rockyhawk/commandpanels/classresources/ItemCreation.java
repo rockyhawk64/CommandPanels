@@ -26,6 +26,7 @@ import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionType;
 
 import java.lang.reflect.Method;
@@ -490,7 +491,8 @@ public class ItemCreation {
             }
             if (itemSection.contains("stack")) {
                 //change the stack amount (placeholders accepted)
-                s.setAmount((int)Double.parseDouble(Objects.requireNonNull(plugin.tex.placeholders(panel,position,p,itemSection.getString("stack")))));
+                int amount = (int)Double.parseDouble(Objects.requireNonNull(plugin.tex.placeholders(panel,position,p,itemSection.getString("stack"))));
+                s.setAmount(amount);
             }
             //do the items commands throughout the refresh
             //check that the panel is already open and not running commands when opening

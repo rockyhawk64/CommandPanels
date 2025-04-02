@@ -24,6 +24,7 @@ import me.rockyhawk.commandpanels.customcommands.Commandpanelcustom;
 import me.rockyhawk.commandpanels.datamanager.DebugManager;
 import me.rockyhawk.commandpanels.datamanager.PanelDataLoader;
 import me.rockyhawk.commandpanels.datamanager.PanelDataPlayerManager;
+import me.rockyhawk.commandpanels.deluxecompatibility.CompatibilityConverter;
 import me.rockyhawk.commandpanels.editor.*;
 import me.rockyhawk.commandpanels.floodgatecp.OpenFloodgateGUI;
 import me.rockyhawk.commandpanels.generatepanels.Commandpanelsgenerate;
@@ -121,6 +122,7 @@ public class CommandPanels extends JavaPlugin{
     public InventorySaver inventorySaver = new InventorySaver(this);
     public ItemStackSerializer itemSerializer = new ItemStackSerializer(this);
     public UserInputUtils inputUtils = new UserInputUtils(this);
+    public CompatibilityConverter deluxeConverter = new CompatibilityConverter(this);
 
     public File panelsf = new File(this.getDataFolder() + File.separator + "panels");
     public YamlConfiguration blockConfig; //where panel block locations are stored
@@ -474,11 +476,25 @@ public class CommandPanels extends JavaPlugin{
                 continue;
             }
 
-            //check before adding the file to commandpanels
+            //if a yaml file is missing the 'panels' at the files root
             if(!checkPanels(YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)))){
-                this.getServer().getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error in: " + fileName);
+                //try converting the file
+                YamlConfiguration convertedYaml = deluxeConverter.tryConversion(fileName, YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)));
+                if(convertedYaml != null){
+                    //the conversion was successful
+                    for (String tempName : Objects.requireNonNull(convertedYaml.getConfigurationSection("panels")).getKeys(false)) {
+                        panelList.add(new Panel(convertedYaml,tempName));
+                        if(convertedYaml.contains("panels." + tempName + ".open-with-item")) {
+                            openWithItem = true;
+                        }
+                    }
+                }else{
+                    //error in the file, was not a valid commandpanels file and/or could not be converted
+                    this.getServer().getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error in: " + fileName);
+                }
                 continue;
             }
+            //go ahead and add the panels in the file to the plugins loaded panels
             for (String tempName : Objects.requireNonNull(YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)).getConfigurationSection("panels")).getKeys(false)) {
                 panelList.add(new Panel(new File((directory + File.separator + fileName)),tempName));
                 if(YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)).contains("panels." + tempName + ".open-with-item")) {
@@ -588,31 +604,5 @@ public class CommandPanels extends JavaPlugin{
             output.addAll(Arrays.asList(str.split("\\\\n")));
         }
         return output;
-    }
-
-    public int getRandomNumberInRange(int min, int max) {
-
-        if (min >= max) {
-            throw new IllegalArgumentException("max must be greater than min");
-        }
-
-        Random r = new Random();
-        return r.nextInt((max - min) + 1) + min;
-    }
-
-    //returns true if the item is the MMO Item
-    public boolean isMMOItem(ItemStack itm, String type, String id){
-        try {
-            if (getServer().getPluginManager().isPluginEnabled("MMOItems")) {
-                NBTItem nbt = NBTItem.get(itm);
-                if (nbt.getType().equalsIgnoreCase(type) && nbt.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(id)){
-                    return true;
-                }
-                itm.getType();
-            }
-        }catch (Exception ex){
-            debug(ex,null);
-        }
-        return false;
     }
 }
