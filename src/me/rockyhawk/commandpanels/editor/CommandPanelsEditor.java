@@ -40,6 +40,7 @@ public class CommandPanelsEditor implements CommandExecutor {
             //export the requested panel
             if (args.length == 1) {
                 for (Panel panel : plugin.panelList) {
+                    if(panel.getFile() == null){ continue; }
                     if (panel.getFile().getName().equals(args[0])) {
                         String filePath = panel.getFile().getAbsolutePath(); //remove file name extensions
                         String fileContents = readFileAsString(filePath);

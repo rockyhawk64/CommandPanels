@@ -19,6 +19,7 @@ public class ImportTabComplete implements TabCompleter {
             ArrayList<String> output = new ArrayList<>();
             if(args.length == 1){
                 for(Panel panel : plugin.panelList){
+                    if(panel.getFile() == null){ continue; }
                     output.add(panel.getFile().getName());
                 }
             }

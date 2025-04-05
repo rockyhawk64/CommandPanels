@@ -44,6 +44,8 @@ public class Commandpanelslist implements CommandExecutor {
                 }
                 sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.DARK_AQUA + "Panels: (Page " + page + ")"));
                 for (int f = skip; panels.size() > f && skip+8 > f; f++) {
+                    if(panels.get(f).getFile() == null){ continue; }
+
                     sender.sendMessage(ChatColor.DARK_GREEN + panels.get(f).getFile().getAbsolutePath().replace(plugin.panelsf.getAbsolutePath(),"") + ChatColor.GREEN + " " + panels.get(f).getName());
                     if(panels.size()-1 == f){
                         return true;
