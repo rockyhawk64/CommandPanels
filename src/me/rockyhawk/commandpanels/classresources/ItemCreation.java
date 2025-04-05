@@ -296,7 +296,7 @@ public class ItemCreation {
                             String enchant = enchantment.split("\\s")[0];
                             NamespacedKey key = enchant.contains(":") ?
                                     NamespacedKey.fromString(enchant) :
-                                    NamespacedKey.minecraft(enchant);
+                                    NamespacedKey.minecraft(enchant.toLowerCase());
                             EnchantMeta.addEnchant(Objects.requireNonNull(EnchantmentWrapper.getByKey(key)), Integer.parseInt(enchantment.split("\\s")[1]), true);
                         }
                         s.setItemMeta(EnchantMeta);
