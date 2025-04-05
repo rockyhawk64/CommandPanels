@@ -6,7 +6,7 @@
 
     <groupId>groupId</groupId>
     <artifactId>CommandPanels</artifactId>
-    <version>DEV</version>
+    <version>SNAPSHOT</version>
 
     <properties>
         <java.version>1.8</java.version>

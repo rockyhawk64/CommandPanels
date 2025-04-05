@@ -110,7 +110,8 @@ public class UtilsOpenWithItem implements Listener {
         try {
             for (ItemStack s : new ArrayList<>(e.getDrops())) {
                 try {
-                    if (!String.valueOf(plugin.nbt.getNBTValue(s, "CommandPanelsHotbar")).isEmpty()) {
+                    if (plugin.nbt.getNBTValue(s, "CommandPanelsHotbar") != null &&
+                            !String.valueOf(plugin.nbt.getNBTValue(s, "CommandPanelsHotbar")).isEmpty()) {
                         //do not remove items that are not stationary
                         if (!String.valueOf(plugin.nbt.getNBTValue(s, "CommandPanelsHotbar")).endsWith("-1")) {
                             e.getDrops().remove(s);
@@ -118,9 +119,7 @@ public class UtilsOpenWithItem implements Listener {
                     }
                 } catch (NullPointerException | IllegalArgumentException ignore) {}
             }
-        }catch (NullPointerException ignore){
-            System.out.println("crapped out");
-        }
+        }catch (NullPointerException ignore){}
     }
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e){
