@@ -293,10 +293,10 @@ public class ItemCreation {
                                 EnchantMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                                 break;
                             }
-                            String enchant = enchantment.split("\\s")[0];
+                            String enchant = enchantment.split("\\s")[0].toLowerCase();
                             NamespacedKey key = enchant.contains(":") ?
                                     NamespacedKey.fromString(enchant) :
-                                    NamespacedKey.minecraft(enchant.toLowerCase());
+                                    NamespacedKey.minecraft(enchant);
                             EnchantMeta.addEnchant(Objects.requireNonNull(EnchantmentWrapper.getByKey(key)), Integer.parseInt(enchantment.split("\\s")[1]), true);
                         }
                         s.setItemMeta(EnchantMeta);
