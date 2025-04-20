@@ -75,8 +75,7 @@ public class CreateText {
         for(String temp : setpapi){
             try {
                 setpapi.set(tempInt,
-                        plugin.hex.translateHexColorCodes(
-                        ChatColor.translateAlternateColorCodes('&', temp)));
+                        colour(temp));
             }catch(NullPointerException ignore){}
             tempInt += 1;
         }
@@ -111,11 +110,7 @@ public class CreateText {
     public String placeholders(Panel panel, PanelPosition position, Player p, String setpapi) {
         try {
             setpapi = attachPlaceholders(panel,position, p,setpapi);
-            if(plugin.miniMessage != null){
-                setpapi = plugin.miniMessage.doMiniMessageLegacy(setpapi);
-            }
-            setpapi = ChatColor.translateAlternateColorCodes('&', setpapi);
-            setpapi = plugin.hex.translateHexColorCodes(setpapi);
+            setpapi = colour(setpapi);
             return setpapi;
         }catch(NullPointerException e){
             return setpapi;
