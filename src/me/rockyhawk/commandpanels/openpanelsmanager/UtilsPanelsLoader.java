@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.openpanelsmanager;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelClosedEvent;
 import org.bukkit.Bukkit;
@@ -14,21 +14,19 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.Objects;
-
 public class UtilsPanelsLoader implements Listener {
-    CommandPanels plugin;
-    public UtilsPanelsLoader(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public UtilsPanelsLoader(Context pl) {
+        this.ctx = pl;
     }
 
     //tell panel loader that player has opened panel
     @EventHandler
     public void onPlayerClosePanel(PlayerQuitEvent e){
-        plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
+        ctx.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
         Player p = e.getPlayer();
         p.updateInventory();
-        plugin.openPanels.deleteCommandPanelsItems(p);
+        ctx.openPanels.deleteCommandPanelsItems(p);
     }
 
     //tell panel loader that player has closed the panel (there is also one of these in EditorUtils)
@@ -37,23 +35,23 @@ public class UtilsPanelsLoader implements Listener {
         String playerName = e.getPlayer().getName();
 
         //close if not panel
-        if(!plugin.openPanels.openPanels.containsKey(playerName) || plugin.openPanels.skipPanelClose.contains(playerName)){
+        if(!ctx.openPanels.openPanels.containsKey(playerName) || ctx.openPanels.skipPanelClose.contains(playerName)){
             return;
         }
 
         //check for panelType unclosable (unclosable is Top only)
-        if(plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).getConfig().contains("panelType")){
-            if(plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).getConfig().getStringList("panelType").contains("unclosable")){
-                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+        if(ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).getConfig().contains("panelType")){
+            if(ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).getConfig().getStringList("panelType").contains("unclosable")){
+                ctx.plugin.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, new Runnable() {
                     public void run() {
                         //end the old panel session and copy a new one
-                        if(plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top) == null){
+                        if(ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top) == null){
                             return;
                         }
-                        plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).isOpen = false;
-                        Panel reopenedPanel = plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).copy();
+                        ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).isOpen = false;
+                        Panel reopenedPanel = ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).copy();
                         //re-add placeholders as they are not transferred in the Panel object
-                        reopenedPanel.placeholders.keys = plugin.openPanels.getOpenPanel(playerName,PanelPosition.Top).placeholders.keys;
+                        reopenedPanel.placeholders.keys = ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).placeholders.keys;
                         reopenedPanel.open(Bukkit.getPlayer(playerName), PanelPosition.Top);
                     }
                 });
@@ -62,25 +60,25 @@ public class UtilsPanelsLoader implements Listener {
         }
 
         //run commands-on-close for panels
-        if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName(),PanelPosition.Bottom)){
-            plugin.openPanels.panelCloseCommands(playerName,PanelPosition.Bottom,plugin.openPanels.getOpenPanel(playerName,PanelPosition.Bottom));
+        if(ctx.openPanels.hasPanelOpen(e.getPlayer().getName(),PanelPosition.Bottom)){
+            ctx.openPanels.panelCloseCommands(playerName,PanelPosition.Bottom, ctx.openPanels.getOpenPanel(playerName,PanelPosition.Bottom));
         }
-        if(plugin.openPanels.hasPanelOpen(e.getPlayer().getName(),PanelPosition.Middle)){
-            plugin.openPanels.panelCloseCommands(playerName,PanelPosition.Middle,plugin.openPanels.getOpenPanel(playerName,PanelPosition.Middle));
+        if(ctx.openPanels.hasPanelOpen(e.getPlayer().getName(),PanelPosition.Middle)){
+            ctx.openPanels.panelCloseCommands(playerName,PanelPosition.Middle, ctx.openPanels.getOpenPanel(playerName,PanelPosition.Middle));
         }
 
         //close panels and run commands for Top panel
-        plugin.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
+        ctx.openPanels.closePanelForLoader(e.getPlayer().getName(),PanelPosition.Top);
     }
 
     @EventHandler
     public void onInventoryItemClick(InventoryClickEvent e){
         //this will check to ensure an item is not from CommandPanels on inventory open
         Player p = (Player)e.getWhoClicked();
-        if(!plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
+        if(!ctx.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             if(e.getCurrentItem() == null){return;}
             if(e.getCurrentItem().getType() == Material.AIR){return;}
-            if(plugin.openPanels.isCommandPanelsItem(e.getCurrentItem())){
+            if(ctx.openPanels.isCommandPanelsItem(e.getCurrentItem())){
                 p.getInventory().remove(e.getCurrentItem());
             }
         }
@@ -90,21 +88,19 @@ public class UtilsPanelsLoader implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void vanillaOpenedEvent(InventoryOpenEvent e){
         if(e.isCancelled()) {
-            if (plugin.openPanels.hasPanelOpen(e.getPlayer().getName(),PanelPosition.Top)) {
-                Panel closedPanel = plugin.openPanels.getOpenPanel(e.getPlayer().getName(),PanelPosition.Top);
+            if (ctx.openPanels.hasPanelOpen(e.getPlayer().getName(),PanelPosition.Top)) {
+                Panel closedPanel = ctx.openPanels.getOpenPanel(e.getPlayer().getName(),PanelPosition.Top);
 
                 //manually remove player with no skip checks
-                plugin.openPanels.removePlayer(e.getPlayer().getName());
+                ctx.openPanels.removePlayer(e.getPlayer().getName());
 
                 //fire PanelClosedEvent
                 PanelClosedEvent closedEvent = new PanelClosedEvent(Bukkit.getPlayer(e.getPlayer().getName()),closedPanel, PanelPosition.Top);
                 Bukkit.getPluginManager().callEvent(closedEvent);
 
                 //do message
-                if (plugin.config.contains("config.panel-snooper")) {
-                    if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).equalsIgnoreCase("true")) {
-                        Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + e.getPlayer().getName() + "'s Panel was Force Closed");
-                    }
+                if(ctx.configHandler.isTrue("config.panel-snooper")) {
+                    Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + e.getPlayer().getName() + "'s Panel was Force Closed");
                 }
             }
         }

@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.commandtags.tags.standard;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.NamespacedKey;
@@ -13,31 +13,31 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Set;
 
 public class ItemTags implements Listener {
-    CommandPanels plugin;
-    public ItemTags(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public ItemTags(Context pl) {
+        this.ctx = pl;
     }
 
     @EventHandler
     public void commandTag(CommandTagEvent e){
         if(e.name.equalsIgnoreCase("give-item=")){
             e.commandTagUsed();
-            ItemStack itm = plugin.itemCreate.makeCustomItemFromConfig(null,e.pos,e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0]), e.p, true, true, false);
+            ItemStack itm = ctx.itemCreate.makeCustomItemFromConfig(null,e.pos,e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0]), e.p, true, true, false);
             if(e.args.length == 2){
                 try{
                     itm.setAmount(Integer.parseInt(e.args[1]));
                 } catch (Exception err){
-                    plugin.debug(err,e.p);
+                    ctx.debug.send(err,e.p, ctx);
                 }
             }
-            plugin.inventorySaver.addItem(e.p,itm);
+            ctx.inventorySaver.addItem(e.p,itm);
             return;
         }
         if(e.name.equalsIgnoreCase("setitem=")){
             e.commandTagUsed();
             //if player uses setitem= [custom item] [slot] [position] it will change the item slot to something, used for placeable items
             //make a section in the panel called "custom-item" then whatever the title of the item is, put that here
-            ItemStack s = plugin.itemCreate.makeItemFromConfig(null, e.pos,e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0]), e.p, true, true, false);
+            ItemStack s = ctx.itemCreate.makeItemFromConfig(null, e.pos,e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0]), e.p, true, true, false);
             PanelPosition position = PanelPosition.valueOf(e.args[2]);
             if(position == PanelPosition.Top) {
                 e.p.getOpenInventory().getTopInventory().setItem(Integer.parseInt(e.args[1]), s);
@@ -70,7 +70,7 @@ public class ItemTags implements Listener {
                     EditItem.addEnchantment(enchant, Integer.parseInt(e.args[4]));
                     return;
                 } catch (Exception err){
-                    plugin.debug(err,e.p);
+                    ctx.debug.send(err,e.p, ctx);
                 }
             }
 
@@ -81,7 +81,7 @@ public class ItemTags implements Listener {
                     EditItem.removeEnchantment(enchant);
                     return;
                 } catch (Exception err){
-                    plugin.debug(err,e.p);
+                    ctx.debug.send(err,e.p, ctx);
                 }
             }
 
@@ -92,7 +92,7 @@ public class ItemTags implements Listener {
                         EditItem.removeEnchantment(enchant);
                     }
                 } catch (Exception err){
-                    plugin.debug(err,e.p);
+                    ctx.debug.send(err,e.p, ctx);
                 }
             }
 
@@ -116,7 +116,7 @@ public class ItemTags implements Listener {
                 itemMeta.setCustomModelData(Integer.valueOf(e.args[2]));
                 editItem.setItemMeta(itemMeta);
             } catch (Exception err){
-                plugin.debug(err,e.p);
+                ctx.debug.send(err,e.p, ctx);
             }
 
             return;

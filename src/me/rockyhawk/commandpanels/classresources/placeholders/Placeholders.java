@@ -2,14 +2,13 @@ package me.rockyhawk.commandpanels.classresources.placeholders;
 
 import com.earth2me.essentials.Essentials;
 import io.lumine.mythic.lib.api.item.NBTItem;
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -20,9 +19,9 @@ import java.net.Socket;
 import java.util.*;
 
 public class Placeholders {
-    CommandPanels plugin;
-    public Placeholders(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public Placeholders(Context pl) {
+        this.ctx = pl;
     }
 
     public String setPlaceholders(Panel panel,PanelPosition position, Player p, String str, boolean primary){
@@ -40,7 +39,7 @@ public class Placeholders {
                 }
                 str = str.replace(str.substring(start, end) + HOLDERS[1], value);
             }catch(Exception ex){
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 break;
             }
         }
@@ -50,8 +49,10 @@ public class Placeholders {
     //returns primary then secondary {[start,end],[start,end]}
     public String[] getPlaceholderEnds(Panel panel, boolean primary){
         List<String[]> values = new ArrayList<>();
-        values.add(new String[]{plugin.config.getString("placeholders.primary.start"),plugin.config.getString("placeholders.primary.end")});
-        values.add(new String[]{plugin.config.getString("placeholders.secondary.start"),plugin.config.getString("placeholders.secondary.end")});
+        values.add(new String[]{ctx.configHandler.config.getString("placeholders.primary.start"),
+                ctx.configHandler.config.getString("placeholders.primary.end")});
+        values.add(new String[]{ctx.configHandler.config.getString("placeholders.secondary.start"),
+                ctx.configHandler.config.getString("placeholders.secondary.end")});
         if(panel != null) {
             if (panel.getConfig().isSet("placeholders")) {
                 if (panel.getConfig().isSet("placeholders.primary")) {
@@ -110,7 +111,7 @@ public class Placeholders {
                 return position.toString();
             }
             case("tag"): {
-                return plugin.tex.colour(plugin.tag);
+                return ctx.tex.colour(ctx.tag);
             }
         }
 
@@ -121,7 +122,7 @@ public class Placeholders {
                     try {
                         return panel.placeholders.keys.get(placeholder);
                     } catch (Exception ex) {
-                        plugin.debug(ex, p);
+                        ctx.debug.send(ex, p, ctx);
                         break;
                     }
                 }
@@ -133,7 +134,7 @@ public class Placeholders {
             String ip_port = identifier.replace("server-", "");
             Socket s = new Socket();
             try {
-                s.connect(new InetSocketAddress(ip_port.split(":")[0], (int)Double.parseDouble(ip_port.split(":")[1])), plugin.config.getInt("config.server-ping-timeout"));
+                s.connect(new InetSocketAddress(ip_port.split(":")[0], (int)Double.parseDouble(ip_port.split(":")[1])), ctx.configHandler.config.getInt("config.server-ping-timeout"));
                 s.close();
                 return "true";
             }catch (IOException ex){
@@ -150,7 +151,7 @@ public class Placeholders {
             int totalAmount = 0;
 
             // Loop through each item in the inventory array
-            for (ItemStack item : plugin.inventorySaver.getNormalInventory(p)) {
+            for (ItemStack item : ctx.inventorySaver.getNormalInventory(p)) {
                 // Check if the item is not null and matches the specified material
                 if (item != null && item.getType() == Material.valueOf(material)) {
                     // Add the amount of this item to the total
@@ -171,11 +172,11 @@ public class Placeholders {
             try {
                 String slot_key = identifier.replace("nbt-", "");
                 Object value;
-                value = plugin.nbt.getNBTValue(p.getOpenInventory().getTopInventory().getItem((int) Double.parseDouble(slot_key.split(":")[0])), slot_key.split(":")[1]);
+                value = ctx.nbt.getNBTValue(p.getOpenInventory().getTopInventory().getItem((int) Double.parseDouble(slot_key.split(":")[0])), slot_key.split(":")[1]);
                 // Convert any object type to a string, handle null explicitly if desired
                 return value == null ? "empty" : String.valueOf(value);
             } catch (Exception ex) {
-                plugin.debug(ex, p);
+                ctx.debug.send(ex, p, ctx);
                 return ""; // Consider returning "error" or some other indicative string
             }
         }
@@ -192,10 +193,10 @@ public class Placeholders {
                 // Check if the item is not null and has potion meta
                 if (item != null && item.hasItemMeta() && item.getItemMeta() instanceof PotionMeta) {
                     //choose between legacy PotionData (pre 1.20.5) or PotionType
-                    if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
-                            (plugin.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && plugin.legacy.MINOR_VERSION <= 4)){
+                    if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
+                            (ctx.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && ctx.legacy.MINOR_VERSION <= 4)){
                         //Returns the value like this <Type>:<Extended>:<Upgraded> Example SLOWNESS:true:false
-                        return plugin.legacyPotion.retrievePotionData(item).replaceAll("\\s",":");
+                        return ctx.legacyPotion.retrievePotionData(item).replaceAll("\\s",":");
                     }else{
                         //post 1.20.5 compare just return PotionType
                         PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
@@ -205,7 +206,7 @@ public class Placeholders {
                     return "empty"; // Item is either null or doesn't have potion meta
                 }
             } catch (Exception ex) {
-                plugin.debug(ex, p);
+                ctx.debug.send(ex, p, ctx);
                 return ""; // Handle exceptions as needed
             }
         }
@@ -218,7 +219,7 @@ public class Placeholders {
                 String material;
                 try {
                     material = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getType().toString();
-                    if (plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
+                    if (ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                         //add the ID to the end if it is legacy (eg, material:id)
                         material = material + ":" + p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber)).getData().getData();
                     }
@@ -227,7 +228,7 @@ public class Placeholders {
                 }
                 return material;
             } catch (Exception ex) {
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
@@ -249,7 +250,7 @@ public class Placeholders {
                 }
                 return name;
             } catch (Exception ex) {
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
@@ -273,7 +274,7 @@ public class Placeholders {
                 }
                 return lore;
             } catch (Exception ex) {
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
@@ -289,7 +290,7 @@ public class Placeholders {
                 }
                 return String.valueOf(amount);
             }catch(Exception ex){
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
@@ -305,7 +306,7 @@ public class Placeholders {
                 }
                 return String.valueOf(modelData);
             }catch(Exception ex){
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
@@ -316,7 +317,7 @@ public class Placeholders {
                 boolean damaged = false;
                 ItemStack itm = p.getOpenInventory().getTopInventory().getItem((int)Double.parseDouble(matNumber));
                 try {
-                    if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
+                    if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
                         if(itm.getType().getMaxDurability() != 0) {
                             damaged = (itm.getType().getMaxDurability() - itm.getDurability()) < itm.getType().getMaxDurability();
                         }
@@ -329,7 +330,7 @@ public class Placeholders {
                 }
                 return String.valueOf(damaged);
             }catch(Exception ex){
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
@@ -349,14 +350,14 @@ public class Placeholders {
 
                 try {
                     //if it is a regular custom item
-                    ItemStack confItm = plugin.itemCreate.makeItemFromConfig(panel,position,panel.getConfig().getConfigurationSection("custom-item." + matLoc),p,true,true, false);
-                    if(plugin.itemCreate.isIdentical(confItm,itm, Objects.requireNonNull(panel.getConfig().getConfigurationSection("custom-item." + matLoc)).contains("nbt"))){
+                    ItemStack confItm = ctx.itemCreate.makeItemFromConfig(panel,position,panel.getConfig().getConfigurationSection("custom-item." + matLoc),p,true,true, false);
+                    if(ctx.itemCreate.isIdentical(confItm,itm, Objects.requireNonNull(panel.getConfig().getConfigurationSection("custom-item." + matLoc)).contains("nbt"))){
                         isIdentical = true;
                     }
 
                     //if custom item is an mmo item (1.14+ for the API)
                     String customItemMaterial = panel.getConfig().getString("custom-item." + matLoc + ".material");
-                    if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems") && customItemMaterial.startsWith("mmo=")) {
+                    if (Bukkit.getServer().getPluginManager().isPluginEnabled("MMOItems") && customItemMaterial.startsWith("mmo=")) {
                         String mmoType = customItemMaterial.split("\\s")[1];
                         String mmoID = customItemMaterial.split("\\s")[2];
 
@@ -370,7 +371,7 @@ public class Placeholders {
 
                 return String.valueOf(isIdentical);
             }catch(Exception ex){
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
@@ -383,7 +384,7 @@ public class Placeholders {
                 int max = (int)Double.parseDouble(min_max.split(",")[1]);
                 return String.valueOf(getRandomNumberInRange(min, max));
             }catch (Exception ex){
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
@@ -395,12 +396,12 @@ public class Placeholders {
                 if(dataPoint.contains(",")){
                     String dataName = dataPoint.split(",")[0];
                     String playerName = dataPoint.split(",")[1];
-                    return plugin.panelData.getUserData(plugin.panelDataPlayers.getOffline(playerName),dataName);
+                    return ctx.panelData.getUserData(ctx.panelDataPlayers.getOffline(playerName),dataName);
                 }else{
-                    return plugin.panelData.getUserData(p.getUniqueId(),dataPoint);
+                    return ctx.panelData.getUserData(p.getUniqueId(),dataPoint);
                 }
             }catch (Exception ex){
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
@@ -409,12 +410,12 @@ public class Placeholders {
             try {
                 String dataPoint = identifier.replace("uuid-", "");
                 //get data from other user
-                if(plugin.panelDataPlayers.getOffline(dataPoint) == null){
+                if(ctx.panelDataPlayers.getOffline(dataPoint) == null){
                     return "unknown";
                 }
-                return plugin.panelDataPlayers.getOffline(dataPoint).toString();
+                return ctx.panelDataPlayers.getOffline(dataPoint).toString();
             }catch (Exception ex){
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
@@ -423,10 +424,10 @@ public class Placeholders {
             try {
                 String point_value = identifier.replace("setdata-", "");
                 String command = "set-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
-                plugin.commandRunner.runCommand(panel,position,p, command);
+                ctx.commandRunner.runCommand(panel,position,p, command);
                 return "";
             }catch (Exception ex){
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
@@ -435,10 +436,10 @@ public class Placeholders {
             try {
                 String point_value = identifier.replace("mathdata-", "");
                 String command = "math-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
-                plugin.commandRunner.runCommand(panel,position,p,command);
+                ctx.commandRunner.runCommand(panel,position,p,command);
                 return "";
             }catch (Exception ex){
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
@@ -467,17 +468,17 @@ public class Placeholders {
                     }
                 }
                 //player is not found
-                return plugin.tex.colour(Objects.requireNonNull(plugin.config.getString("config.format.offline")));
+                return ctx.tex.colour(Objects.requireNonNull(ctx.configHandler.config.getString("config.format.offline")));
             }catch (Exception ex){
-                plugin.debug(ex,p);
+                ctx.debug.send(ex,p, ctx);
                 return "";
             }
         }
 
         try {
-            if (plugin.econ != null) {
+            if (ctx.econ != null) {
                 if(identifier.equals("player-balance")) {
-                    return String.valueOf(Math.round(plugin.econ.getBalance(p)));
+                    return String.valueOf(Math.round(ctx.econ.getBalance(p)));
                 }
             }
         } catch (Exception place) {
@@ -510,7 +511,7 @@ public class Placeholders {
     //returns true if the item is the MMO Item
     private boolean isMMOItem(ItemStack itm, String type, String id){
         try {
-            if (plugin.getServer().getPluginManager().isPluginEnabled("MMOItems")) {
+            if (Bukkit.getServer().getPluginManager().isPluginEnabled("MMOItems")) {
                 io.lumine.mythic.lib.api.item.NBTItem nbt = NBTItem.get(itm);
                 if (nbt.getType().equalsIgnoreCase(type) && nbt.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(id)){
                     return true;
@@ -518,7 +519,7 @@ public class Placeholders {
                 itm.getType();
             }
         }catch (Exception ex){
-            plugin.debug(ex,null);
+            ctx.debug.send(ex,null, ctx);
         }
         return false;
     }

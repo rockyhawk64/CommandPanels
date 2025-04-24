@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.classresources;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
@@ -12,9 +12,9 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class HasSections {
-    CommandPanels plugin;
-    public HasSections(CommandPanels pl) {
-        plugin = pl;
+    Context ctx;
+    public HasSections(Context pl) {
+        ctx = pl;
     }
 
     public String hasSection(Panel panel, PanelPosition position, ConfigurationSection cf, Player p) {
@@ -51,8 +51,8 @@ public class HasSections {
                     continue;
                 }
 
-                String value = ChatColor.stripColor(plugin.tex.placeholders(panel, position, p, currentSection.getString("value" + a)));
-                String compare = ChatColor.stripColor(plugin.tex.placeholders(panel, position, p, currentSection.getString("compare" + a)));
+                String value = ChatColor.stripColor(ctx.tex.placeholders(panel, position, p, currentSection.getString("value" + a)));
+                String compare = ChatColor.stripColor(ctx.tex.placeholders(panel, position, p, currentSection.getString("compare" + a)));
 
                 String operator = "AND"; // Default operator for the current condition.
                 if (compare.endsWith(" OR")) {

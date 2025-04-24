@@ -1,6 +1,5 @@
 package me.rockyhawk.commandpanels.generatepanels;
 
-import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -11,8 +10,6 @@ import java.util.List;
 
 
 public class TabCompleteGenerate implements TabCompleter {
-    CommandPanels plugin;
-    public TabCompleteGenerate(CommandPanels pl) { this.plugin = pl; }
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         if(sender instanceof Player && args.length == 1){

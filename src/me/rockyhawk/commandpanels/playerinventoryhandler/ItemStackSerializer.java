@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.playerinventoryhandler;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -11,9 +11,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class ItemStackSerializer {
-    CommandPanels plugin;
-    public ItemStackSerializer(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public ItemStackSerializer(Context cx) {
+        ctx = cx;
     }
 
     public String itemStackArrayToBase64(ItemStack[] items) {
@@ -33,7 +33,7 @@ public class ItemStackSerializer {
             dataOutput.close();
             return Base64Coder.encodeLines(outputStream.toByteArray());
         } catch (Exception e) {
-            plugin.debug(e,null);
+            ctx.debug.send(e,null, ctx);
         }
         return null;
     }
@@ -52,7 +52,7 @@ public class ItemStackSerializer {
             dataInput.close();
             return items;
         } catch (ClassNotFoundException | IOException e) {
-            plugin.debug(e,null);
+            ctx.debug.send(e,null, ctx);
         }
         return null;
     }

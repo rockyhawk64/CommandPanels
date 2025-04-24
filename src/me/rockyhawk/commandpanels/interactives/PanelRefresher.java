@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.interactives;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
@@ -15,10 +15,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
 
-public class Commandpanelrefresher implements Listener {
-    CommandPanels plugin;
-    public Commandpanelrefresher(CommandPanels pl) {
-        this.plugin = pl;
+public class PanelRefresher implements Listener {
+    Context ctx;
+    public PanelRefresher(Context pl) {
+        this.ctx = pl;
     }
     @EventHandler
     public void onPanelOpen(PanelOpenedEvent e){ //Handles when Players open inventory
@@ -26,10 +26,8 @@ public class Commandpanelrefresher implements Listener {
             return;
         }
 
-        if (plugin.config.contains("config.refresh-panels")) {
-            if (Objects.requireNonNull(plugin.config.getString("config.refresh-panels")).trim().equalsIgnoreCase("false")) {
-                return;
-            }
+        if(!ctx.configHandler.isTrue("config.refresh-panels")) {
+            return;
         }
 
         Player p = e.getPlayer();
@@ -43,7 +41,7 @@ public class Commandpanelrefresher implements Listener {
         }
 
         //if panel has custom refresh delay
-        int tempRefreshDelay = plugin.config.getInt("config.refresh-delay");
+        int tempRefreshDelay = ctx.configHandler.config.getInt("config.refresh-delay");
         if(pn.getConfig().contains("refresh-delay")){
             tempRefreshDelay = pn.getConfig().getInt("refresh-delay");
         }
@@ -92,20 +90,20 @@ public class Commandpanelrefresher implements Listener {
                             }
                         }
                         try {
-                            if(plugin.debug.isEnabled(p) && pn.getFile() != null){
+                            if(ctx.debug.isEnabled(p) && pn.getFile() != null){
                                 //reload the panel is debug is enabled (only personal debug)
                                 pn.setConfig(YamlConfiguration.loadConfiguration(pn.getFile()));
                             }
-                            plugin.createGUI.openGui(pn, p,e.getPosition(), PanelOpenType.Refresh,animatecount);
+                            ctx.createGUI.openGui(pn, p,e.getPosition(), PanelOpenType.Refresh,animatecount);
                         } catch (Exception ex) {
                             //error opening gui
                             p.closeInventory();
-                            plugin.openPanels.closePanelForLoader(p.getName(),e.getPosition());
+                            ctx.openPanels.closePanelForLoader(p.getName(),e.getPosition());
                             this.cancel();
                         }
                     }
                 }else{
-                    if(Objects.requireNonNull(plugin.config.getString("config.stop-sound")).trim().equalsIgnoreCase("true")){
+                    if(ctx.configHandler.isTrue("config.stop-sound")){
                         try {
                             p.stopSound(Sound.valueOf(Objects.requireNonNull(pn.getConfig().getString("sound-on-open")).toUpperCase()));
                         }catch(Exception sou){
@@ -116,10 +114,10 @@ public class Commandpanelrefresher implements Listener {
                     this.cancel();
                     //remove duplicate items here
                     p.updateInventory();
-                    if(plugin.inventorySaver.hasNormalInventory(p)) {
+                    if(ctx.inventorySaver.hasNormalInventory(p)) {
                         for (ItemStack itm : p.getInventory().getContents()) {
                             if (itm != null) {
-                                if (plugin.nbt.hasNBT(itm,"CommandPanelsItem")) {
+                                if (ctx.nbt.hasNBT(itm,"CommandPanelsItem")) {
                                     p.getInventory().remove(itm);
                                 }
                             }
@@ -127,6 +125,6 @@ public class Commandpanelrefresher implements Listener {
                     }
                 }
             }
-        }.runTaskTimer(this.plugin, 1,1); //20 ticks == 1 second (5 ticks = 0.25 of a second)
+        }.runTaskTimer(ctx.plugin, 1,1); //20 ticks == 1 second (5 ticks = 0.25 of a second)
     }
 }

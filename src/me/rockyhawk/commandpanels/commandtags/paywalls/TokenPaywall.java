@@ -1,5 +1,5 @@
 package me.rockyhawk.commandpanels.commandtags.paywalls;
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commandtags.PaywallEvent;
 import me.rockyhawk.commandpanels.commandtags.PaywallOutput;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
@@ -13,10 +13,10 @@ import java.util.Objects;
 import java.util.OptionalLong;
 
 public class TokenPaywall implements Listener {
-    private final CommandPanels plugin;
+    private final Context ctx;
 
-    public TokenPaywall(CommandPanels pl) {
-        this.plugin = pl;
+    public TokenPaywall(Context pl) {
+        this.ctx = pl;
     }
 
     @EventHandler
@@ -24,7 +24,7 @@ public class TokenPaywall implements Listener {
         if (e.name.equalsIgnoreCase("tokenpaywall=")) {
             // if player uses tokenpaywall= [price]
             try {
-                if (plugin.getServer().getPluginManager().isPluginEnabled("TokenManager")) {
+                if (Bukkit.getServer().getPluginManager().isPluginEnabled("TokenManager")) {
                     // Using reflection in this method as TokenManager has issues with Maven due to the Jitpack dependency
                     Object api = Bukkit.getPluginManager().getPlugin("TokenManager");
                     if (api != null) {
@@ -48,28 +48,28 @@ public class TokenPaywall implements Listener {
                                 removeTokensMethod.invoke(api, e.p, Long.parseLong(e.args[0]));
                             }
                             // if the message is empty don't send
-                            if (plugin.config.getBoolean("purchase.tokens.enable") && e.doDelete) {
-                                plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", e.args[0]));
+                            if (ctx.configHandler.isTrue("purchase.tokens.enable") && e.doDelete) {
+                                ctx.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(ctx.configHandler.config.getString("purchase.tokens.success")).replaceAll("%cp-args%", e.args[0]));
                             }
 
                             e.PAYWALL_OUTPUT = PaywallOutput.Passed;
                         } else {
-                            if (plugin.config.getBoolean("purchase.tokens.enable")) {
-                                plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.tokens.failure")));
+                            if (ctx.configHandler.isTrue("purchase.tokens.enable")) {
+                                ctx.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(ctx.configHandler.config.getString("purchase.tokens.failure")));
                             }
                             e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
                         }
                     } else {
-                        plugin.tex.sendString(e.p, plugin.tag + ChatColor.RED + "Needs TokenManager to work!");
+                        ctx.tex.sendString(e.p, ctx.tag + ChatColor.RED + "Needs TokenManager to work!");
                         e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
                     }
                 } else {
-                    plugin.tex.sendString(e.p, plugin.tag + ChatColor.RED + "Needs TokenManager to work!");
+                    ctx.tex.sendString(e.p, ctx.tag + ChatColor.RED + "Needs TokenManager to work!");
                     e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
                 }
             } catch (Exception ex) {
-                plugin.debug(ex, e.p);
-                plugin.tex.sendString(e.p, plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + e.name);
+                ctx.debug.send(ex, e.p, ctx);
+                ctx.tex.sendString(e.p, ctx.tag + ctx.configHandler.config.getString("config.format.error") + " " + "commands: " + e.name);
                 e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
             }
         }

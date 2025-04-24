@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.commands;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -10,11 +10,11 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
 
-public class Commandpanelsdata implements CommandExecutor {
-    CommandPanels plugin;
+public class DataCommand implements CommandExecutor {
+    Context ctx;
 
-    public Commandpanelsdata(CommandPanels pl) {
-        this.plugin = pl;
+    public DataCommand(Context pl) {
+        this.ctx = pl;
     }
 
     @Override
@@ -36,13 +36,13 @@ public class Commandpanelsdata implements CommandExecutor {
                     if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("online")) {
                         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                             if (args[1].equalsIgnoreCase("online") && !player.isOnline()) continue;
-                            plugin.panelData.clearData(plugin.panelDataPlayers.getOffline(player.getName()));
+                            ctx.panelData.clearData(ctx.panelDataPlayers.getOffline(player.getName()));
                             count++;
                         }
                     } else
-                        plugin.panelData.clearData(plugin.panelDataPlayers.getOffline(args[1]));
+                        ctx.panelData.clearData(ctx.panelDataPlayers.getOffline(args[1]));
                     if (sendPlayerMessage) {
-                        sender.sendMessage(plugin.tex.colour(plugin.tag
+                        sender.sendMessage(ctx.tex.colour(ctx.tag
                                 + ChatColor.GREEN + "Cleared all data for "
                                 + ChatColor.WHITE + (count == 0 ? args[1] : count + "" + ChatColor.GREEN + " players")));
                     }
@@ -54,13 +54,13 @@ public class Commandpanelsdata implements CommandExecutor {
                     if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("online")) {
                         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                             if (args[1].equalsIgnoreCase("online") && !player.isOnline()) continue;
-                            plugin.panelData.delUserData(plugin.panelDataPlayers.getOffline(player.getName()), args[2]);
+                            ctx.panelData.delUserData(ctx.panelDataPlayers.getOffline(player.getName()), args[2]);
                             count++;
                         }
                     } else
-                        plugin.panelData.delUserData(plugin.panelDataPlayers.getOffline(args[1]), args[2]);
+                        ctx.panelData.delUserData(ctx.panelDataPlayers.getOffline(args[1]), args[2]);
                     if (sendPlayerMessage) {
-                        sender.sendMessage(plugin.tex.colour(plugin.tag
+                        sender.sendMessage(ctx.tex.colour(ctx.tag
                                 + ChatColor.GREEN + "Removed "
                                 + ChatColor.WHITE + args[2]
                                 + ChatColor.GREEN + " from "
@@ -69,9 +69,9 @@ public class Commandpanelsdata implements CommandExecutor {
                     return true;
                 } else if (args[0].equals("get")) {
                     //for the get command
-                    sender.sendMessage(plugin.tex.colour(plugin.tag
+                    sender.sendMessage(ctx.tex.colour(ctx.tag
                             + ChatColor.GREEN + "Value of data is "
-                            + ChatColor.WHITE + plugin.panelData.getUserData(plugin.panelDataPlayers.getOffline(args[1]), args[2])));
+                            + ChatColor.WHITE + ctx.panelData.getUserData(ctx.panelDataPlayers.getOffline(args[1]), args[2])));
                     return true;
                 }
             } else if (args.length == 4) {
@@ -80,14 +80,14 @@ public class Commandpanelsdata implements CommandExecutor {
                     if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("online")) {
                         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                             if (args[1].equalsIgnoreCase("online") && !player.isOnline()) continue;
-                            plugin.panelData.setUserData(plugin.panelDataPlayers.getOffline(player.getName()), args[2], args[3], true);
+                            ctx.panelData.setUserData(ctx.panelDataPlayers.getOffline(player.getName()), args[2], args[3], true);
                             count++;
                         }
                     } else {
-                        plugin.panelData.setUserData(plugin.panelDataPlayers.getOffline(args[1]), args[2], args[3], true);
+                        ctx.panelData.setUserData(ctx.panelDataPlayers.getOffline(args[1]), args[2], args[3], true);
                     }
                     if (sendPlayerMessage) {
-                        sender.sendMessage(plugin.tex.colour(plugin.tag
+                        sender.sendMessage(ctx.tex.colour(ctx.tag
                                 + ChatColor.GREEN + "Set "
                                 + ChatColor.WHITE + args[2]
                                 + ChatColor.GREEN + " to "
@@ -101,13 +101,13 @@ public class Commandpanelsdata implements CommandExecutor {
 
                         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                             if (args[1].equalsIgnoreCase("online") && !player.isOnline()) continue;
-                            plugin.panelData.setUserData(plugin.panelDataPlayers.getOffline(player.getName()), args[2], args[3], false);
+                            ctx.panelData.setUserData(ctx.panelDataPlayers.getOffline(player.getName()), args[2], args[3], false);
                             count++;
                         }
                     } else
-                        plugin.panelData.setUserData(plugin.panelDataPlayers.getOffline(args[1]), args[2], args[3], false);
+                        ctx.panelData.setUserData(ctx.panelDataPlayers.getOffline(args[1]), args[2], args[3], false);
                     if (sendPlayerMessage) {
-                        sender.sendMessage(plugin.tex.colour(plugin.tag
+                        sender.sendMessage(ctx.tex.colour(ctx.tag
                                 + ChatColor.GREEN + "Set "
                                 + ChatColor.WHITE + args[2]
                                 + ChatColor.GREEN + " to "
@@ -119,9 +119,9 @@ public class Commandpanelsdata implements CommandExecutor {
                 }
                 return true;
             }
-            sender.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Usage: /cpdata <set:add:get:remove:clear> <player|all|online> <data> [value]"));
+            sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "Usage: /cpdata <set:add:get:remove:clear> <player|all|online> <data> [value]"));
         } else {
-            sender.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.perms")));
+            sender.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
         }
         return true;
     }

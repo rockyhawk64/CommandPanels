@@ -1,5 +1,5 @@
 package me.rockyhawk.commandpanels.classresources.item_fall;
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.PanelClosedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -9,9 +9,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class ItemFallManager implements Listener {
-    CommandPanels plugin;
-    public ItemFallManager(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public ItemFallManager(Context pl) {
+        this.ctx = pl;
     }
 
     @EventHandler
@@ -42,7 +42,7 @@ public class ItemFallManager implements Listener {
                             if(stack == null || stack.getType() == Material.AIR){
                                 continue;
                             }
-                            plugin.inventorySaver.addItem(e.getPlayer(),stack);
+                            ctx.inventorySaver.addItem(e.getPlayer(),stack);
                         }
                     }
                 }

@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.completetabs;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CpTabComplete implements TabCompleter {
-    CommandPanels plugin;
+public class PanelTabComplete implements TabCompleter {
+    Context ctx;
 
-    public CpTabComplete(CommandPanels pl) {
-        this.plugin = pl;
+    public PanelTabComplete(Context pl) {
+        this.ctx = pl;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class CpTabComplete implements TabCompleter {
                 Player p = ((Player) sender).getPlayer();
                 if (args.length == 1) {
                     ArrayList<String> apanels = new ArrayList<String>(); //all panels
-                    for (Panel panel : plugin.panelList) { //will loop through all the files in folder
+                    for (Panel panel : ctx.plugin.panelList) { //will loop through all the files in folder
                         try {
                             if (!panel.getName().startsWith(args[0])) {
                                 //this will narrow down the panels to what the user types
@@ -39,7 +39,7 @@ public class CpTabComplete implements TabCompleter {
                                         continue;
                                     }
                                 }
-                                if (plugin.panelPerms.isPanelWorldEnabled(p, panel.getConfig())) {
+                                if (ctx.worldPerms.isPanelWorldEnabled(p, panel.getConfig())) {
                                     apanels.add(panel.getName());
                                 }
                             }
@@ -51,26 +51,28 @@ public class CpTabComplete implements TabCompleter {
                 }
 
                 if (args.length == 2 || args.length == 3) {
-
-                    List<String> aplayers = new ArrayList<>();
-
-                    if ("all".startsWith(args[(args.length == 2 ? 1 : 2)].toLowerCase())) aplayers.add("all");
-
-                    if (args.length == 2 && "item".startsWith(args[1].toLowerCase())) aplayers.add("item");
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        String name = player.getName();
-                        if (name.toLowerCase().startsWith(args[(args.length == 2 ? 1 : 2)])) {
-                            //this will narrow down the panels to what the user types
-                            aplayers.add(name);
-                        }
-
-                    }
-
-                    return aplayers;
+                    return getPlayers(args);
                 }
 
 
             }
         return null;
+    }
+
+    private List<String> getPlayers(String[] args) {
+        List<String> aplayers = new ArrayList<>();
+
+        if ("all".startsWith(args[(args.length == 2 ? 1 : 2)].toLowerCase())) aplayers.add("all");
+
+        if (args.length == 2 && "item".startsWith(args[1].toLowerCase())) aplayers.add("item");
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            String name = player.getName();
+            if (name.toLowerCase().startsWith(args[(args.length == 2 ? 1 : 2)])) {
+                //this will narrow down the panels to what the user types
+                aplayers.add(name);
+            }
+
+        }
+        return aplayers;
     }
 }

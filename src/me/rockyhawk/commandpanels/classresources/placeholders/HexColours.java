@@ -1,15 +1,15 @@
 package me.rockyhawk.commandpanels.classresources.placeholders;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import org.bukkit.ChatColor;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HexColours {
-    CommandPanels plugin;
-    public HexColours(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public HexColours(Context pl) {
+        this.ctx = pl;
     }
 
     public String translateHexColorCodes(String message) {
@@ -36,7 +36,7 @@ public class HexColours {
 
     //automatically format regex to escape special characters
     private String formatRegex(String path){
-        String inputString = plugin.config.getString(path);
+        String inputString = ctx.configHandler.config.getString(path);
         final String[] metaCharacters = {"\\","^","$","{","}","[","]","(",")",".","*","+","?","|","<",">","-","&","%"};
 
         for (String metaCharacter : metaCharacters) {

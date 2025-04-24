@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.openwithitem;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
@@ -14,9 +14,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class HotbarItemLoader {
-    CommandPanels plugin;
-    public HotbarItemLoader(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public HotbarItemLoader(Context pl) {
+        this.ctx = pl;
+        reloadHotbarSlots(); //Run on initialisation
     }
 
     //stationary slots 0-8 are the hotbar, using 9-35 for inside the inventory
@@ -25,9 +26,9 @@ public class HotbarItemLoader {
     //will compile the ArrayList {slot 0-4, index of panelNames}
     public void reloadHotbarSlots() {
         stationaryItems.clear();
-        //update hotbar items for all players when reloaded
+        //Update hotbar items for all players when reloaded
         for(Player p : Bukkit.getServer().getOnlinePlayers()){
-            plugin.hotbar.updateHotbarItems(p);
+            ctx.hotbar.updateHotbarItems(p);
         }
     }
 
@@ -36,8 +37,8 @@ public class HotbarItemLoader {
         if(stationaryItems.get(p.getUniqueId()).list.containsKey(String.valueOf(slot))){
             if(openPanel) {
                 try {
-                    if (plugin.nbt.getNBTValue(p.getInventory().getItem(slot), "CommandPanelsHotbar") != null &&
-                            !String.valueOf(plugin.nbt.getNBTValue(p.getInventory().getItem(slot), "CommandPanelsHotbar")).split(":")[1].equals(String.valueOf(slot))) {
+                    if (ctx.nbt.getNBTValue(p.getInventory().getItem(slot), "CommandPanelsHotbar") != null &&
+                            !String.valueOf(ctx.nbt.getNBTValue(p.getInventory().getItem(slot), "CommandPanelsHotbar")).split(":")[1].equals(String.valueOf(slot))) {
                         return false;
                     }
                 }catch(Exception ex){
@@ -52,7 +53,7 @@ public class HotbarItemLoader {
                     return false;
                 }
                 if(panel.getHotbarSection(p).contains("commands")){
-                    plugin.commandRunner.runCommands(panel,PanelPosition.Top,p,panel.getHotbarSection(p).getStringList("commands"),click);
+                    ctx.commandRunner.runCommands(panel,PanelPosition.Top,p,panel.getHotbarSection(p).getStringList("commands"),click);
                     return true;
                 }
                 panel.open(p, PanelPosition.Top);
@@ -65,34 +66,34 @@ public class HotbarItemLoader {
     //return true if found
     public boolean itemCheckExecute(ItemStack invItem, Player p, boolean openPanel, boolean stationaryOnly){
         try {
-            if (Objects.equals(String.valueOf(plugin.nbt.getNBTValue(invItem, "CommandPanelsHotbar")), "")) {
+            if (Objects.equals(String.valueOf(ctx.nbt.getNBTValue(invItem, "CommandPanelsHotbar")), "")) {
                 return false;
             }
         }catch(IllegalArgumentException | NullPointerException nu){
             return false;
         }
-        for(Panel panel : plugin.panelList) {
+        for(Panel panel : ctx.plugin.panelList) {
             if(stationaryOnly){
                 try {
-                    if (plugin.nbt.getNBTValue(invItem, "CommandPanelsHotbar") != null &&
-                            String.valueOf(plugin.nbt.getNBTValue(invItem, "CommandPanelsHotbar"))
+                    if (ctx.nbt.getNBTValue(invItem, "CommandPanelsHotbar") != null &&
+                            String.valueOf(ctx.nbt.getNBTValue(invItem, "CommandPanelsHotbar"))
                                     .split(":")[1].equals("-1")) {
                         continue;
                     }
                 }catch(NullPointerException | IllegalArgumentException ignore){}
             }
             if(panel.hasHotbarItem()){
-                if(plugin.nbt.getNBTValue(invItem, "CommandPanelsHotbar") != null &&
-                        String.valueOf(plugin.nbt.getNBTValue(invItem, "CommandPanelsHotbar"))
+                if(ctx.nbt.getNBTValue(invItem, "CommandPanelsHotbar") != null &&
+                        String.valueOf(ctx.nbt.getNBTValue(invItem, "CommandPanelsHotbar"))
                                 .split(":")[0].equals(panel.getName())){
                     if(openPanel) {
                         //only open panel automatically if there are no commands and if world is not disabled
-                        if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
+                        if(!ctx.worldPerms.isPanelWorldEnabled(p,panel.getConfig())){
                             return false;
                         }
                         if(panel.getHotbarSection(p).contains("commands")){
                             for(String command : panel.getHotbarSection(p).getStringList("commands")){
-                                plugin.commandRunner.runCommand(panel,PanelPosition.Top,p, command);
+                                ctx.commandRunner.runCommand(panel,PanelPosition.Top,p, command);
                             }
                             return true;
                         }
@@ -116,7 +117,7 @@ public class HotbarItemLoader {
         for this to take effect. I don't want to delete the item on the wrong world
         because then it might overwrite one of their actual slots upon rejoining the enabled world.
          */
-        if(!plugin.openWithItem){
+        if(!ctx.plugin.openWithItem){
             //if none of the panels have open-with-item
             return;
         }
@@ -125,10 +126,10 @@ public class HotbarItemLoader {
         stationaryItems.put(p.getUniqueId(),new HotbarPlayerManager());
         for(int i = 0; i <= 35; i++){
             try {
-                if (plugin.nbt.getNBTValue(p.getInventory().getItem(i), "CommandPanelsHotbar") != null &&
-                        !Objects.equals(String.valueOf(plugin.nbt.getNBTValue(p.getInventory().getItem(i), "CommandPanelsHotbar")), "")) {
+                if (ctx.nbt.getNBTValue(p.getInventory().getItem(i), "CommandPanelsHotbar") != null &&
+                        !Objects.equals(String.valueOf(ctx.nbt.getNBTValue(p.getInventory().getItem(i), "CommandPanelsHotbar")), "")) {
                     //do not remove items that are not stationary
-                    if(!String.valueOf(plugin.nbt.getNBTValue(p.getInventory().getItem(i), "CommandPanelsHotbar")).endsWith("-1")) {
+                    if(!String.valueOf(ctx.nbt.getNBTValue(p.getInventory().getItem(i), "CommandPanelsHotbar")).endsWith("-1")) {
                         p.getInventory().setItem(i, new ItemStack(Material.AIR));
                     }
                 }
@@ -136,8 +137,8 @@ public class HotbarItemLoader {
         }
 
         //add current hotbar items
-        for(Panel panel : plugin.panelList) { //will loop through all the files in folder
-            if(!plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
+        for(Panel panel : ctx.plugin.panelList) { //will loop through all the files in folder
+            if(!ctx.worldPerms.isPanelWorldEnabled(p,panel.getConfig())){
                 continue;
             }
             if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm")) && panel.hasHotbarItem()) {

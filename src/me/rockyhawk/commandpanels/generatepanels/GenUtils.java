@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.generatepanels;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import org.bukkit.Bukkit;
@@ -20,15 +20,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class GenUtils implements Listener {
     public YamlConfiguration tempEdit;
-    CommandPanels plugin;
-    public GenUtils(CommandPanels pl) {
-        this.plugin = pl;
-        this.tempEdit = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder() + File.separator + "temp.yml"));
+    public List<Player> generateMode = new ArrayList<>(); //players that are currently in generate mode
+
+    Context ctx;
+    public GenUtils(Context pl) {
+        this.ctx = pl;
+        this.tempEdit = YamlConfiguration.loadConfiguration(new File(ctx.plugin.getDataFolder() + File.separator + "temp.yml"));
     }
+
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
         Player p = (Player)e.getPlayer();
@@ -39,29 +43,29 @@ public class GenUtils implements Listener {
             return;
         }
         //reload panel files to avoid conflicts
-        plugin.reloadPanelFiles();
+        ctx.reloader.reloadPanelFiles();
         generatePanel(p,e.getInventory());
     }
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player p = e.getPlayer();
         //if the player is in generate mode, remove generate mode
-        this.plugin.generateMode.remove(p);
+        generateMode.remove(p);
     }
 
     @EventHandler
     public void onInventoryOpenEvent(InventoryOpenEvent e) {
         HumanEntity h = e.getPlayer();
         Player p = Bukkit.getPlayer(h.getName());
-        if (this.plugin.generateMode.contains(p)) {
-            this.plugin.generateMode.remove(p);
+        if (generateMode.contains(p)) {
+            generateMode.remove(p);
             generatePanel(p,e.getInventory());
         }
     }
 
-    void generatePanel(Player p, Inventory inv){
+    private void generatePanel(Player p, Inventory inv){
         ArrayList<String> apanels = new ArrayList();
-        for(Panel panel : plugin.panelList){
+        for(Panel panel : ctx.plugin.panelList){
             //create list of names that aren't a String list
             apanels.add(panel.getName());
         }
@@ -75,16 +79,16 @@ public class GenUtils implements Listener {
         }
         if(!foundItem){
             //panels don't need items but I cancel on generate with no items because then players have the option to cancel if they need to
-            p.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Cancelled Panel!"));
+            p.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "Cancelled Panel!"));
             return;
         }
         YamlConfiguration file;
         //String date: is what the panel and file name will be called
         String date = "panel-1";
-        for(int count = 1; (Arrays.asList(Objects.requireNonNull(plugin.panelsf.list())).contains("panel-" + count + ".yml")) || (apanels.contains("panel-" + count)); count++){
+        for(int count = 1; (Arrays.asList(Objects.requireNonNull(ctx.configHandler.panelsFolder.list())).contains("panel-" + count + ".yml")) || (apanels.contains("panel-" + count)); count++){
             date = "panel-" + (count+1);
         }
-        File folder = new File(plugin.getDataFolder() + File.separator + "panels");
+        File folder = new File(ctx.plugin.getDataFolder() + File.separator + "panels");
         file = YamlConfiguration.loadConfiguration(new File(folder + File.separator + date + ".yml"));
         file.set("panels." + date + ".perm", "default");
 
@@ -96,21 +100,21 @@ public class GenUtils implements Listener {
 
         file.set("panels." + date + ".title", "&8Generated " + date);
         file.addDefault("panels." + date + ".command", date);
-        if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
+        if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
             file.set("panels." + date + ".empty", "STAINED_GLASS_PANE");
             file.set("panels." + date + ".emptyID", "15");
         }else{
             file.set("panels." + date + ".empty", "BLACK_STAINED_GLASS_PANE");
         }
         //add items
-        file = plugin.itemCreate.generatePanelFile(date,inv,file);
+        file = ctx.itemCreate.generatePanelFile(date,inv,file);
 
         try {
-            file.save(new File(plugin.panelsf + File.separator + date + ".yml"));
-            p.sendMessage(plugin.tex.colour( plugin.tag + ChatColor.GREEN + "Saved Generated File To: " + date + ".yml"));
+            file.save(new File(ctx.configHandler.panelsFolder + File.separator + date + ".yml"));
+            p.sendMessage(ctx.tex.colour( ctx.tag + ChatColor.GREEN + "Saved Generated File To: " + date + ".yml"));
         } catch (IOException var16) {
-            p.sendMessage(plugin.tex.colour( plugin.tag + ChatColor.RED + "Could Not Save Generated Panel!"));
+            p.sendMessage(ctx.tex.colour( ctx.tag + ChatColor.RED + "Could Not Save Generated Panel!"));
         }
-        plugin.reloadPanelFiles();
+        ctx.reloader.reloadPanelFiles();
     }
 }

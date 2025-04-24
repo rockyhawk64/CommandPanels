@@ -1,6 +1,5 @@
 package me.rockyhawk.commandpanels.ioclasses.potions;
 
-import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,11 +12,6 @@ public class LegacyPotionData {
     /*
      * To be used in Minecraft 1.9 to 1.20.4
      * */
-    private CommandPanels plugin;
-
-    public LegacyPotionData(CommandPanels plugin) {
-        this.plugin = plugin;
-    }
 
     //effect type should be PotionType Extended? Upgraded?
     public void applyPotionEffect(Player p, ItemStack item, String[] effectType) {
@@ -44,8 +38,7 @@ public class LegacyPotionData {
 
             item.setItemMeta(potionMeta);
         } catch (Exception er) {
-            plugin.debug(er, p);
-            p.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + plugin.config.getString("config.format.error") + " incorrect potion"));
+            p.sendMessage(ChatColor.RED + "Incorrect potion usage.");
         }
     }
 
@@ -74,7 +67,6 @@ public class LegacyPotionData {
 
             return potionType.name() + " " + extended + " " + level;
         } catch (Exception e) {
-            plugin.debug(e, null);
             return null;
         }
     }

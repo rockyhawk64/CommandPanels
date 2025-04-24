@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.completetabs;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -11,14 +11,14 @@ import java.util.List;
 
 
 public class ImportTabComplete implements TabCompleter {
-    CommandPanels plugin;
-    public ImportTabComplete(CommandPanels pl) { this.plugin = pl; }
+    Context ctx;
+    public ImportTabComplete(Context pl) { this.ctx = pl; }
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         if(sender.hasPermission("commandpanel.import")) {
             ArrayList<String> output = new ArrayList<>();
             if(args.length == 1){
-                for(Panel panel : plugin.panelList){
+                for(Panel panel : ctx.plugin.panelList){
                     if(panel.getFile() == null){ continue; }
                     output.add(panel.getFile().getName());
                 }

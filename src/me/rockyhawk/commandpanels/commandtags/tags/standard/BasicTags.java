@@ -1,8 +1,7 @@
 package me.rockyhawk.commandpanels.commandtags.tags.standard;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.PanelCommandEvent;
-import me.rockyhawk.commandpanels.classresources.MiniMessageUtils;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
@@ -16,9 +15,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class BasicTags implements Listener {
-    CommandPanels plugin;
-    public BasicTags(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public BasicTags(Context pl) {
+        this.ctx = pl;
     }
 
     @EventHandler
@@ -27,30 +26,30 @@ public class BasicTags implements Listener {
             e.commandTagUsed();
 
             //return if no panel open
-            if(!plugin.openPanels.hasPanelOpen(e.p.getName(),PanelPosition.Top)){
+            if(!ctx.openPanels.hasPanelOpen(e.p.getName(),PanelPosition.Top)){
                 return;
             }
 
             //unclosable panels are at the Top only
-            if(plugin.openPanels.getOpenPanel(e.p.getName(),PanelPosition.Top).getConfig().contains("panelType")){
-                if(plugin.openPanels.getOpenPanel(e.p.getName(),PanelPosition.Top).getConfig().getStringList("panelType").contains("unclosable")){
-                    plugin.openPanels.closePanelForLoader(e.p.getName(),PanelPosition.Top);
-                    plugin.openPanels.skipPanelClose.add(e.p.getName());
+            if(ctx.openPanels.getOpenPanel(e.p.getName(),PanelPosition.Top).getConfig().contains("panelType")){
+                if(ctx.openPanels.getOpenPanel(e.p.getName(),PanelPosition.Top).getConfig().getStringList("panelType").contains("unclosable")){
+                    ctx.openPanels.closePanelForLoader(e.p.getName(),PanelPosition.Top);
+                    ctx.openPanels.skipPanelClose.add(e.p.getName());
                 }
             }
 
             //this will close the current inventory
             e.p.closeInventory();
-            plugin.openPanels.skipPanelClose.remove(e.p.getName());
+            ctx.openPanels.skipPanelClose.remove(e.p.getName());
             return;
         }
         if(e.name.equalsIgnoreCase("refresh")) {
             e.commandTagUsed();
-            if(plugin.openPanels.hasPanelOpen(e.p.getName(),e.pos)) {
-                plugin.createGUI.openGui(e.panel, e.p, e.pos, PanelOpenType.Refresh, 0);
+            if(ctx.openPanels.hasPanelOpen(e.p.getName(),e.pos)) {
+                ctx.createGUI.openGui(e.panel, e.p, e.pos, PanelOpenType.Refresh, 0);
             }
-            if(plugin.inventorySaver.hasNormalInventory(e.p)){
-                plugin.hotbar.updateHotbarItems(e.p);
+            if(ctx.inventorySaver.hasNormalInventory(e.p)){
+                ctx.hotbar.updateHotbarItems(e.p);
             }
             return;
         }
@@ -71,12 +70,12 @@ public class BasicTags implements Listener {
         }
         if(e.name.equalsIgnoreCase("msg=")) {
             e.commandTagUsed();
-            plugin.tex.sendString(e.panel,e.pos,e.p,String.join(" ",e.args));
+            ctx.tex.sendString(e.panel,e.pos,e.p,String.join(" ",e.args));
             return;
         }
         if(e.name.equalsIgnoreCase("broadcast=")) {
             e.commandTagUsed();
-            Bukkit.broadcastMessage(plugin.tex.placeholders(e.panel, e.pos, e.p,String.join(" ",e.args).trim()));
+            Bukkit.broadcastMessage(ctx.tex.placeholders(e.panel, e.pos, e.p,String.join(" ",e.args).trim()));
             return;
         }
         if(e.name.equalsIgnoreCase("broadcast-perm=")) {
@@ -86,7 +85,7 @@ public class BasicTags implements Listener {
                 message.append(e.args[i]).append(" ");
             }
             // <perm> <message>
-            Bukkit.broadcast(plugin.tex.placeholders(e.panel, e.pos, e.p,String.join(" ",message).trim()),String.valueOf(e.args[0]));
+            Bukkit.broadcast(ctx.tex.placeholders(e.panel, e.pos, e.p,String.join(" ",message).trim()),String.valueOf(e.args[0]));
             return;
         }
         if(e.name.equalsIgnoreCase("op=")) {
@@ -99,8 +98,8 @@ public class BasicTags implements Listener {
                 e.p.setOp(isop);
             } catch (Exception exc) {
                 e.p.setOp(isop);
-                plugin.debug(exc,e.p);
-                e.p.sendMessage(plugin.tag + plugin.tex.colour( plugin.config.getString("config.format.error") + " op=: Error in op command!"));
+                ctx.debug.send(exc,e.p, ctx);
+                e.p.sendMessage(ctx.tag + ctx.tex.colour( ctx.configHandler.config.getString("config.format.error") + " op=: Error in op command!"));
             }
             return;
         }
@@ -114,8 +113,8 @@ public class BasicTags implements Listener {
                     e.p.playSound(e.p.getLocation(), Sound.valueOf(e.args[0]), 1F, 1F);
                 }
             } catch (Exception s) {
-                plugin.debug(s, e.p);
-                plugin.tex.sendMessage(e.p, plugin.config.getString("config.format.error") + " " + "commands: " + e.args[0]);
+                ctx.debug.send(s, e.p, ctx);
+                ctx.tex.sendMessage(e.p, ctx.configHandler.config.getString("config.format.error") + " " + "commands: " + e.args[0]);
             }
             return;
         }
@@ -124,8 +123,8 @@ public class BasicTags implements Listener {
             try {
                 e.p.stopSound(Sound.valueOf(e.args[0]));
             } catch (Exception ss) {
-                plugin.debug(ss, e.p);
-                plugin.tex.sendMessage(e.p, plugin.config.getString("config.format.error") + " " + "commands: " + e.args[0]);
+                ctx.debug.send(ss, e.p, ctx);
+                ctx.tex.sendMessage(e.p, ctx.configHandler.config.getString("config.format.error") + " " + "commands: " + e.args[0]);
             }
             return;
         }
@@ -138,12 +137,12 @@ public class BasicTags implements Listener {
         if(e.name.equalsIgnoreCase("minimessage=")){
             e.commandTagUsed();
             //do mini message if conditions are met
-            if (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_18)) {
+            if (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_18)) {
                 Audience player = (Audience) e.p; // Needed because the basic Player from the Event can't send Paper's Components
-                Component parsedText = plugin.miniMessage.doMiniMessage(String.join(" ", e.args));
+                Component parsedText = ctx.miniMessage.doMiniMessage(String.join(" ", e.args));
                 player.sendMessage(parsedText);
             } else {
-                plugin.tex.sendString(e.p, plugin.tag + ChatColor.RED + "MiniMessage-Feature needs Paper 1.18 or newer to work!");
+                ctx.tex.sendString(e.p, ctx.tag + ChatColor.RED + "MiniMessage-Feature needs Paper 1.18 or newer to work!");
             }
         }
     }

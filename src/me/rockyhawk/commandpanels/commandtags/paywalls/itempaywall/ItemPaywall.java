@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.commandtags.paywalls.itempaywall;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commandtags.PaywallEvent;
 import me.rockyhawk.commandpanels.commandtags.PaywallOutput;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
@@ -13,9 +13,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class ItemPaywall implements Listener {
-    CommandPanels plugin;
-    public ItemPaywall(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public ItemPaywall(Context pl) {
+        this.ctx = pl;
     }
 
     @EventHandler
@@ -37,7 +37,7 @@ public class ItemPaywall implements Listener {
                 ItemStack sellItem;
                 if (Material.matchMaterial(e.args[0]) == null) {
                     //If custom item set to custom item data.
-                    sellItem = plugin.itemCreate.makeCustomItemFromConfig(e.panel, PanelPosition.Top, e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0]), e.p, true, true, false);
+                    sellItem = ctx.itemCreate.makeCustomItemFromConfig(e.panel, PanelPosition.Top, e.panel.getConfig().getConfigurationSection("custom-item." + e.args[0]), e.p, true, true, false);
                     sellItem.setAmount(Integer.parseInt(e.args[1]));
                 } else {
                     //If normal just set material.
@@ -52,20 +52,20 @@ public class ItemPaywall implements Listener {
 
                 //send message and return
                 if (removedItem == PaywallOutput.Blocked) {
-                    if (plugin.config.getBoolean("purchase.item.enable")) {
+                    if (ctx.configHandler.isTrue("purchase.item.enable")) {
                         //no item found to remove
-                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.item.failure")));
+                        ctx.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(ctx.configHandler.config.getString("purchase.item.failure")));
                     }
                 } else {
-                    if (plugin.config.getBoolean("purchase.item.enable") && e.doDelete) {
+                    if (ctx.configHandler.isTrue("purchase.item.enable") && e.doDelete) {
                         //item was removed
-                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.item.success")).replaceAll("%cp-args%", e.args[0]));
+                        ctx.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(ctx.configHandler.config.getString("purchase.item.success")).replaceAll("%cp-args%", e.args[0]));
                     }
                 }
                 e.PAYWALL_OUTPUT = removedItem;
             } catch (Exception buyc) {
-                plugin.debug(buyc, e.p);
-                plugin.tex.sendString(e.p, plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + e.name);
+                ctx.debug.send(buyc, e.p, ctx);
+                ctx.tex.sendString(e.p, ctx.tag + ctx.configHandler.config.getString("config.format.error") + " " + "commands: " + e.name);
                 e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
             }
         }
@@ -74,13 +74,13 @@ public class ItemPaywall implements Listener {
     public boolean removeItem(Player p, ItemStack itemToRemove, boolean ignoreNBT, boolean doDelete) {
         InventoryOperationResult result;
 
-        if (plugin.inventorySaver.hasNormalInventory(p)) {
+        if (ctx.inventorySaver.hasNormalInventory(p)) {
             result = removeItemFromInventory(p.getInventory().getContents(), itemToRemove, ignoreNBT, doDelete);
             p.getInventory().setContents(result.getInventory());
         } else {
-            ItemStack[] savedInventory = plugin.inventorySaver.getNormalInventory(p);
+            ItemStack[] savedInventory = ctx.inventorySaver.getNormalInventory(p);
             result = removeItemFromInventory(savedInventory, itemToRemove, ignoreNBT, doDelete);
-            plugin.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(result.getInventory()));
+            ctx.inventorySaver.inventoryConfig.set(p.getUniqueId().toString(), ctx.itemSerializer.itemStackArrayToBase64(result.getInventory()));
         }
 
         return result.isSuccess();  // Return the success status of the inventory operation
@@ -91,7 +91,7 @@ public class ItemPaywall implements Listener {
         int count = 0;
 
         for (ItemStack item : inventory) {
-            if (item != null && plugin.itemCreate.isIdentical(item, itemToRemove, !ignoreNBT)) {
+            if (item != null && ctx.itemCreate.isIdentical(item, itemToRemove, !ignoreNBT)) {
                 count += item.getAmount();
             }
         }
@@ -108,7 +108,7 @@ public class ItemPaywall implements Listener {
 
         for (int i = 0; i < inventory.length; i++) {
             ItemStack currentItem = inventory[i];
-            if (currentItem != null && plugin.itemCreate.isIdentical(currentItem, itemToRemove, !ignoreNBT)) {
+            if (currentItem != null && ctx.itemCreate.isIdentical(currentItem, itemToRemove, !ignoreNBT)) {
                 int removeAmount = Math.min(currentItem.getAmount(), amountToRemove);
                 currentItem.setAmount(currentItem.getAmount() - removeAmount);
                 amountToRemove -= removeAmount;

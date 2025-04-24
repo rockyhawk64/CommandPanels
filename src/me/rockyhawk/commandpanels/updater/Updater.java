@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.updater;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -11,7 +11,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Objects;
 import java.util.logging.Level;
 
 public class Updater implements Listener {
@@ -20,27 +19,30 @@ public class Updater implements Listener {
     public String downloadVersionManually = null;
     public String cachedLatestVersion = "null";
 
-    CommandPanels plugin;
-    public Updater(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public Updater(Context pl) {
+        this.ctx = pl;
+        if (ctx.configHandler.isTrue("updater.update-checks")) {
+            githubNewUpdate(true); // Get latest update on initialisation
+        }
     }
 
     //send update message when the player joins the game with the permission
     @EventHandler
     public void joinGame(PlayerJoinEvent e){
-        if(e.getPlayer().hasPermission("commandpanel.update") && plugin.config.getBoolean("updater.update-checks")){
+        if(e.getPlayer().hasPermission("commandpanel.update") && ctx.configHandler.isTrue("updater.update-checks")){
             if(githubNewUpdate(false)){
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        plugin.tex.sendMessage(e.getPlayer(),ChatColor.YELLOW + "A new update is available for download!");
-                        plugin.tex.sendString(e.getPlayer(),ChatColor.YELLOW
+                        ctx.tex.sendMessage(e.getPlayer(),ChatColor.YELLOW + "A new update is available for download!");
+                        ctx.tex.sendString(e.getPlayer(),ChatColor.YELLOW
                                 + "Current version "
-                                + ChatColor.RED + plugin.getDescription().getVersion() + ChatColor.YELLOW
+                                + ChatColor.RED + ctx.plugin.getDescription().getVersion() + ChatColor.YELLOW
                                 + " Latest version " + ChatColor.GREEN + cachedLatestVersion);
                         this.cancel();
                     }
-                }.runTaskTimer(plugin, 30, 1); //20 ticks == 1 second
+                }.runTaskTimer(ctx.plugin, 30, 1); //20 ticks == 1 second
             }
         }
     }
@@ -49,7 +51,7 @@ public class Updater implements Listener {
         //refresh latest version
         getLatestVersion(sendMessages);
 
-        if(plugin.getDescription().getVersion().contains("SNAPSHOT")){
+        if(ctx.plugin.getDescription().getVersion().contains("SNAPSHOT")){
             if(sendMessages) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Running a custom version.");
             }
@@ -57,7 +59,7 @@ public class Updater implements Listener {
         }
 
         //if update is true there is a new update
-        boolean update = !cachedLatestVersion.equals(plugin.getDescription().getVersion());
+        boolean update = !cachedLatestVersion.equals(ctx.plugin.getDescription().getVersion());
 
         if(update){
             if(sendMessages) {
@@ -75,7 +77,7 @@ public class Updater implements Listener {
     public String getLatestVersion(boolean sendMessages){
         //check for null
         if(cachedLatestVersion.equals("null")){
-            cachedLatestVersion = plugin.getDescription().getVersion();
+            cachedLatestVersion = ctx.plugin.getDescription().getVersion();
         }
 
         //using an array allows editing while still being final
@@ -93,7 +95,7 @@ public class Updater implements Listener {
                     Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Could not access github.");
                 }
             }
-        }.runTaskAsynchronously(plugin);
+        }.runTaskAsynchronously(ctx.plugin);
 
         if(cachedLatestVersion.contains("-")){
             if(sendMessages) {
@@ -105,12 +107,12 @@ public class Updater implements Listener {
 
     //the pluginFileName can only be obtained from the main class
     public void autoUpdatePlugin(String pluginFileName){
-        if (Objects.requireNonNull(plugin.config.getString("updater.update-checks")).equalsIgnoreCase("false")) {
+        if(!ctx.configHandler.isTrue("updater.update-checks")) {
             return;
         }
 
         String latestVersion = cachedLatestVersion;
-        String thisVersion = plugin.getDescription().getVersion();
+        String thisVersion = ctx.plugin.getDescription().getVersion();
 
         //manual download, only if it was requested
         if(downloadVersionManually != null) {
@@ -126,13 +128,13 @@ public class Updater implements Listener {
             //no need to update or running custom version
             return;
         }
-        if (Objects.requireNonNull(plugin.config.getString("updater.auto-update")).equalsIgnoreCase("false")) {
+        if(!ctx.configHandler.isTrue("updater.auto-update")) {
             //return if auto-update is false
             return;
         }
         if(thisVersion.split("\\.")[1].equals(latestVersion.split("\\.")[1]) && thisVersion.split("\\.")[0].equals(latestVersion.split("\\.")[0])){
             //only update if the latest version is a minor update
-            //the first and second number of the version is the same, updates: [major.major.minor.minor]
+            //the first and second number of the version is the same, updates: [major.major.minor]
             downloadFile(latestVersion,pluginFileName);
         }
     }
@@ -142,7 +144,7 @@ public class Updater implements Listener {
         FileOutputStream fout = null;
 
         try {
-            this.plugin.getLogger().info("Downloading new update: " + "v" + latestVersion);
+            ctx.plugin.getLogger().info("Downloading new update: " + "v" + latestVersion);
             URL fileUrl = new URL("https://github.com/rockyhawk64/CommandPanels/releases/download/" + latestVersion + "/CommandPanels.jar");
             int fileLength = fileUrl.openConnection().getContentLength();
             in = new BufferedInputStream(fileUrl.openStream());
@@ -159,20 +161,20 @@ public class Updater implements Listener {
                 int percent = (int)(downloaded * 100L / (long)fileLength);
                 if (percent != lastpercent && percent % 10 == 0) {
                     //show if the percentage is different from the last percentage and then show the bytes downloaded so far
-                    this.plugin.getLogger().info("Downloading update: " + percent + "% " + downloaded + " of " + fileLength + " bytes.");
+                    ctx.plugin.getLogger().info("Downloading update: " + percent + "% " + downloaded + " of " + fileLength + " bytes.");
                     lastpercent = percent;
                 }
             }
-            this.plugin.getLogger().info("Finished updating.");
+            ctx.plugin.getLogger().info("Finished updating.");
         } catch (Exception var22) {
-            this.plugin.getLogger().log(Level.WARNING, "Could not download update.", var22);
+            ctx.plugin.getLogger().log(Level.WARNING, "Could not download update.", var22);
         } finally {
             try {
                 if (in != null) {
                     in.close();
                 }
             } catch (IOException var21) {
-                this.plugin.getLogger().log(Level.SEVERE, null, var21);
+                ctx.plugin.getLogger().log(Level.SEVERE, null, var21);
             }
 
             try {
@@ -180,7 +182,7 @@ public class Updater implements Listener {
                     fout.close();
                 }
             } catch (IOException var20) {
-                this.plugin.getLogger().log(Level.SEVERE, null, var20);
+                ctx.plugin.getLogger().log(Level.SEVERE, null, var20);
             }
 
         }

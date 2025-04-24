@@ -1,6 +1,5 @@
 package me.rockyhawk.commandpanels.ioclasses.potions;
 
-import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -9,16 +8,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 public class ClassicPotionData {
-    private CommandPanels plugin;
-
-    public ClassicPotionData(CommandPanels plugin) {
-        this.plugin = plugin;
-    }
 
     public void applyPotionEffect(Player p, ItemStack item, String[] effectType) {
         try {
             if (item == null || item.getType() != org.bukkit.Material.POTION) {
-                p.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Item is not a potion."));
                 return;
             }
 
@@ -43,8 +36,7 @@ public class ClassicPotionData {
             Method applyMethod = potionClass.getMethod("apply", ItemStack.class);
             applyMethod.invoke(potion, item);
         } catch (Exception er) {
-            plugin.debug(er, p);
-            p.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + "Incorrect potion type or format."));
+            p.sendMessage(ChatColor.RED + "Incorrect potion type or format.");
         }
     }
 
@@ -70,7 +62,6 @@ public class ClassicPotionData {
 
             return potionType.toString() + " " + extended + " " + upgraded + " Splash:" + isSplash;
         } catch (Exception e) {
-            plugin.debug(e, null);
             return "Failed to retrieve potion data";
         }
     }

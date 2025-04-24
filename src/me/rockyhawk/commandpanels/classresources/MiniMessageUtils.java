@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.classresources;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 
 public class MiniMessageUtils {
 
-    CommandPanels plugin;
-    public MiniMessageUtils(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public MiniMessageUtils(Context pl) {
+        this.ctx = pl;
     }
 
     /*
@@ -49,12 +49,6 @@ public class MiniMessageUtils {
         }
     }
 
-    public List<String> doMiniMessageLegacy(List<String> strings) {
-        return strings.stream()
-                .map(this::doMiniMessageLegacy)
-                .collect(Collectors.toList());
-    }
-
     public Component doMiniMessage(String string) {
         LegacyComponentSerializer legacyComponentSerializer = LegacyComponentSerializer.builder().hexColors().character('&').build();
         Component component = legacyComponentSerializer.deserialize(string.replace('§', '&'));
@@ -62,11 +56,5 @@ public class MiniMessageUtils {
         return MiniMessage.miniMessage().deserialize(MiniMessage.miniMessage().serialize(component.decoration(TextDecoration.ITALIC, false))
                 .replace("\\<", "<").replace("\\", "").replace("\n", "<br>")).decoration(TextDecoration.ITALIC, false);
 
-    }
-
-    public List<Component> doMiniMessage(List<String> strings) {
-        return strings.stream()
-                .map(this::doMiniMessage)
-                .collect(Collectors.toList());
     }
 }

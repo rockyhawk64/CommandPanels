@@ -3,7 +3,7 @@ package me.rockyhawk.commandpanels.classresources.customheads.methods;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.classresources.customheads.SavedCustomHead;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import org.bukkit.Bukkit;
@@ -21,9 +21,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class CustomHeadGameProfile {
-    CommandPanels plugin;
-    public CustomHeadGameProfile(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public CustomHeadGameProfile(Context pl) {
+        this.ctx = pl;
     }
 
     public HashMap<String, SavedCustomHead> savedCustomHeads = new HashMap<>();
@@ -31,7 +31,7 @@ public class CustomHeadGameProfile {
     //getting the head from a Player Name
     public ItemStack getPlayerHead(String name) {
         byte id = 0;
-        if (plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
+        if (ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)) {
             id = 3;
         }
 
@@ -39,7 +39,7 @@ public class CustomHeadGameProfile {
         if (savedCustomHeads.containsKey(name)) {
             if (!savedCustomHeads.get(name).isValid && (System.currentTimeMillis() - savedCustomHeads.get(name).lastAttempt) < 60000) {
                 // If the last attempt was less than 60 seconds ago and was invalid, return null or a default item
-                return new ItemStack(Material.valueOf(plugin.getHeads.playerHeadString()));
+                return new ItemStack(Material.valueOf(ctx.getHeads.playerHeadString()));
             }
             if(savedCustomHeads.get(name).isValid) {
                 return savedCustomHeads.get(name).headItem; // Return cached item if valid
@@ -47,7 +47,7 @@ public class CustomHeadGameProfile {
         }
 
         //create ItemStack
-        ItemStack itemStack = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1, id);
+        ItemStack itemStack = new ItemStack(Material.matchMaterial(ctx.getHeads.playerHeadString()), 1, id);
 
         //Run fallback code, if API call fails, use legacy setOwner
         SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
@@ -55,10 +55,10 @@ public class CustomHeadGameProfile {
         itemStack.setItemMeta(meta);
 
         // Fetch and cache the texture asynchronously
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, () -> {
             try {
-                if(plugin.debug.consoleDebug){
-                    plugin.getServer().getConsoleSender().sendMessage(plugin.tex.colour(plugin.tag +
+                if(ctx.debug.consoleDebug){
+                    Bukkit.getServer().getConsoleSender().sendMessage(ctx.tex.colour(ctx.tag +
                             ChatColor.WHITE +
                             "Download & Cache Head Texture for " + name));
                 }
@@ -84,12 +84,12 @@ public class CustomHeadGameProfile {
                 String value = valueReader.split("\"value\" : \"")[1].split("\"")[0];
 
                 // Once the API call is finished, update the ItemStack on the main thread
-                Bukkit.getScheduler().runTask(plugin, () -> {
+                Bukkit.getScheduler().runTask(ctx.plugin, () -> {
                     itemStack.setItemMeta(getCustomHead(name, value).getItemMeta());
                     savedCustomHeads.put(name, new SavedCustomHead(itemStack, value, true));
                 });
             } catch (Exception ignore) {
-                Bukkit.getScheduler().runTask(plugin, () -> {
+                Bukkit.getScheduler().runTask(ctx.plugin, () -> {
                     //do not overwrite a valid cached head
                     if(savedCustomHeads.containsKey(name) && savedCustomHeads.get(name).isValid){
                         return;
@@ -134,10 +134,10 @@ public class CustomHeadGameProfile {
         } else {
             propertyMap.put("textures", new Property("textures", b64stringtexture));
             byte id = 0;
-            if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
+            if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_15)){
                 id = 3;
             }
-            ItemStack head = new ItemStack(Material.matchMaterial(plugin.getHeads.playerHeadString()), 1,id);
+            ItemStack head = new ItemStack(Material.matchMaterial(ctx.getHeads.playerHeadString()), 1,id);
             ItemMeta headMeta = head.getItemMeta();
             assert headMeta != null;
 
@@ -175,7 +175,7 @@ public class CustomHeadGameProfile {
                     setProfileMethod.invoke(headMeta, profile);
                 }
             } catch (Exception e1) {
-                plugin.debug(e1,null);
+                ctx.debug.send(e1,null, ctx);
             }
 
             head.setItemMeta(headMeta);

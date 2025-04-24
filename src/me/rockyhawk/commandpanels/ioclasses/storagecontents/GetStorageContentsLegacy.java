@@ -1,17 +1,11 @@
 package me.rockyhawk.commandpanels.ioclasses.storagecontents;
 
-import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 //get contents legacy
-public class GetStorageContents_Legacy {
-    CommandPanels plugin;
-    public GetStorageContents_Legacy(CommandPanels pl) {
-        this.plugin = pl;
-    }
-
+public class GetStorageContentsLegacy {
     public ItemStack[] getStorageContents(Inventory i){
         return i.getContents();
     }

@@ -1,6 +1,5 @@
 package me.rockyhawk.commandpanels.completetabs;
 
-import me.rockyhawk.commandpanels.CommandPanels;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -12,8 +11,6 @@ import java.util.*;
 
 
 public class UpdateTabComplete implements TabCompleter {
-    CommandPanels plugin;
-    public UpdateTabComplete(CommandPanels pl) { this.plugin = pl; }
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         if(sender.hasPermission("commandpanel.refresh")) {

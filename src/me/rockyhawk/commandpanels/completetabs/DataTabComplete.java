@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.completetabs;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -11,8 +11,9 @@ import java.util.*;
 
 
 public class DataTabComplete implements TabCompleter {
-    CommandPanels plugin;
-    public DataTabComplete(CommandPanels pl) { this.plugin = pl; }
+    Context ctx;
+    public DataTabComplete(Context pl) { this.ctx = pl; }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         if(sender.hasPermission("commandpanel.data")) {
@@ -46,13 +47,13 @@ public class DataTabComplete implements TabCompleter {
                 try {
 
                     if (!args[1].equalsIgnoreCase("all") && !args[1].equalsIgnoreCase("online"))
-                        return new ArrayList<>(plugin.panelData.dataConfig.getConfigurationSection("playerData." + plugin.panelDataPlayers.getOffline(args[1])).getKeys(false));
+                        return new ArrayList<>(ctx.panelData.dataConfig.getConfigurationSection("playerData." + ctx.panelDataPlayers.getOffline(args[1])).getKeys(false));
 
                     else {
                         Set<String> set = new HashSet<>();
                         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                             if (!player.isOnline()&&args[1].equalsIgnoreCase("online")) continue;
-                            set.addAll(plugin.panelData.dataConfig.getConfigurationSection("playerData." + plugin.panelDataPlayers.getOffline(player.getName())).getKeys(false));
+                            set.addAll(ctx.panelData.dataConfig.getConfigurationSection("playerData." + ctx.panelDataPlayers.getOffline(player.getName())).getKeys(false));
 
                         }
                         String[] finalArgs = args;

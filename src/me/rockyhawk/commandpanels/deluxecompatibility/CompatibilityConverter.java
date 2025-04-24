@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.deluxecompatibility;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 public class CompatibilityConverter {
-    CommandPanels plugin;
+    Context ctx;
 
-    public CompatibilityConverter(CommandPanels pl) {
-        this.plugin = pl;
+    public CompatibilityConverter(Context pl) {
+        this.ctx = pl;
     }
 
     public YamlConfiguration tryConversion(String fileName, YamlConfiguration inputYaml){
@@ -36,14 +37,14 @@ public class CompatibilityConverter {
                 }
             } else {
                 // Single menu format
-                List<String> requirements = convertMenu(inputYaml, ChatColor.stripColor(plugin.tex.colour(inputYaml.getString("menu_title"))), panelsSection);
+                List<String> requirements = convertMenu(inputYaml, ChatColor.stripColor(ctx.tex.colour(inputYaml.getString("menu_title"))), panelsSection);
                 allRequirementDetails.addAll(requirements);
             }
 
             // Save the converted YAML to a new file
             return convertedYaml;
         } catch (Exception e) {
-            plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Error in file: " + fileName);
+            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Error in file: " + fileName);
             return null;
         }
     }

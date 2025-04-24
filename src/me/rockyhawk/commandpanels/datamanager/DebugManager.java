@@ -1,15 +1,14 @@
 package me.rockyhawk.commandpanels.datamanager;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
 
 public class DebugManager {
-    CommandPanels plugin;
-    public DebugManager(CommandPanels pl) { this.plugin = pl; }
-
     public HashSet<Player> debugSet = new HashSet<>();
     public boolean consoleDebug = false;
 
@@ -23,5 +22,20 @@ public class DebugManager {
             return isEnabled(p);
         }
         return consoleDebug;
+    }
+
+    public void send(Exception e, Player p, Context context) {
+        if (p == null) {
+            if(consoleDebug){
+                Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.DARK_RED + "[CommandPanels] The plugin has generated a debug error, find the error below");
+                e.printStackTrace();
+            }
+        }else{
+            if(isEnabled(p)){
+                p.sendMessage(context.tag + ChatColor.DARK_RED + "Check the console for a detailed error.");
+                Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.DARK_RED + "[CommandPanels] The plugin has generated a debug error, find the error below");
+                e.printStackTrace();
+            }
+        }
     }
 }

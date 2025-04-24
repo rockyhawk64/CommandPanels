@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.commandtags.tags.other;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.commandtags.CommandTagEvent;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
@@ -13,9 +13,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class SpecialTags implements Listener {
-    CommandPanels plugin;
-    public SpecialTags(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public SpecialTags(Context pl) {
+        this.ctx = pl;
     }
 
     @EventHandler
@@ -28,7 +28,7 @@ public class SpecialTags implements Listener {
 
             Panel openPanel = null;
             PanelPosition openPosition = e.pos;
-            for(Panel pane : plugin.panelList){
+            for(Panel pane : ctx.plugin.panelList){
                 if(pane.getName().equals(panelName)){
                     openPanel = pane.copy();
                 }
@@ -44,7 +44,7 @@ public class SpecialTags implements Listener {
                     //do not change the placeholder
                     String placeholder = contents.substring(0,contents.indexOf(':'));
                     //only convert placeholders for the value
-                    String value = plugin.tex.placeholders(e.panel,e.pos,e.p,contents.substring(contents.indexOf(':')+1));
+                    String value = ctx.tex.placeholders(e.panel,e.pos,e.p,contents.substring(contents.indexOf(':')+1));
                     openPanel.placeholders.addPlaceholder(placeholder,value);
                     i = i+contents.length()-1;
                 }else if(cm[i].equals('{')){
@@ -60,13 +60,13 @@ public class SpecialTags implements Listener {
             e.commandTagUsed();
             //closes specific panel positions
             PanelPosition position = PanelPosition.valueOf(e.args[0]);
-            if(position == PanelPosition.Middle && plugin.openPanels.hasPanelOpen(e.p.getName(),position)){
-                plugin.openPanels.closePanelForLoader(e.p.getName(),PanelPosition.Middle);
-            }else if(position == PanelPosition.Bottom && plugin.openPanels.hasPanelOpen(e.p.getName(),position)){
-                plugin.openPanels.closePanelForLoader(e.p.getName(),PanelPosition.Bottom);
-            }else if(position == PanelPosition.Top && plugin.openPanels.hasPanelOpen(e.p.getName(),position)){
+            if(position == PanelPosition.Middle && ctx.openPanels.hasPanelOpen(e.p.getName(),position)){
+                ctx.openPanels.closePanelForLoader(e.p.getName(),PanelPosition.Middle);
+            }else if(position == PanelPosition.Bottom && ctx.openPanels.hasPanelOpen(e.p.getName(),position)){
+                ctx.openPanels.closePanelForLoader(e.p.getName(),PanelPosition.Bottom);
+            }else if(position == PanelPosition.Top && ctx.openPanels.hasPanelOpen(e.p.getName(),position)){
                 //closing top closes all
-                plugin.commandRunner.runCommand(e.panel,e.pos,e.p,"cpc");
+                ctx.commandRunner.runCommand(e.panel,e.pos,e.p,"cpc");
             }
             return;
         }
@@ -84,15 +84,15 @@ public class SpecialTags implements Listener {
                 String title;
                 String subtitle = "";
                 if(message.toString().contains("/n/")) {
-                    title = plugin.tex.placeholders(e.panel, e.pos, e.p, message.toString().split("/n/")[0]);
-                    subtitle = plugin.tex.placeholders(e.panel, e.pos, e.p, message.toString().split("/n/")[1]);
+                    title = ctx.tex.placeholders(e.panel, e.pos, e.p, message.toString().split("/n/")[0]);
+                    subtitle = ctx.tex.placeholders(e.panel, e.pos, e.p, message.toString().split("/n/")[1]);
                 }else{
-                    title = plugin.tex.placeholders(e.panel, e.pos, e.p, message.toString().trim());
+                    title = ctx.tex.placeholders(e.panel, e.pos, e.p, message.toString().trim());
                 }
                 try{
                     p.sendTitle(title, subtitle, Integer.parseInt(e.args[1]), Integer.parseInt(e.args[2]), Integer.parseInt(e.args[3]));
                 }catch(Exception ex) {
-                    plugin.debug(ex, e.p);
+                    ctx.debug.send(ex, e.p, ctx);
                 }
             }
             return;
@@ -126,7 +126,7 @@ public class SpecialTags implements Listener {
                 }
                 teleportedPlayer.teleport(new Location(teleportedWorld, x, y, z, yaw, pitch));
             } catch (Exception tpe) {
-                plugin.debug(tpe,e.p);
+                ctx.debug.send(tpe,e.p, ctx);
             }
             return;
         }
@@ -139,15 +139,15 @@ public class SpecialTags implements Listener {
                 @Override
                 public void run() {
                     try {
-                        plugin.commandRunner.runCommand(e.panel,e.pos, e.p, finalCommand);
+                        ctx.commandRunner.runCommand(e.panel,e.pos, e.p, finalCommand);
                     } catch (Exception ex) {
                         //if there are any errors, cancel so that it doesn't loop errors
-                        plugin.debug(ex, e.p);
+                        ctx.debug.send(ex, e.p, ctx);
                         this.cancel();
                     }
                     this.cancel();
                 }
-            }.runTaskTimer(plugin, delayTicks, 1); //20 ticks == 1 second
+            }.runTaskTimer(ctx.plugin, delayTicks, 1); //20 ticks == 1 second
         }
         if(e.name.equalsIgnoreCase("eval-delay=")) {
             //Eval delay is used to check if a placeholder equals the same after a delay.
@@ -156,24 +156,24 @@ public class SpecialTags implements Listener {
             //if player uses op= it will perform command as op
             final int delayTicks = Integer.parseInt(e.args[0]);
             final String staticValue = e.raw[1];
-            final String parsedValue = plugin.tex.placeholders(e.panel, e.pos, e.p, e.args[1].trim());
+            final String parsedValue = ctx.tex.placeholders(e.panel, e.pos, e.p, e.args[1].trim());
             String finalCommand = String.join(" ",e.args).replaceFirst(e.args[0],"").replaceFirst(e.args[1],"").trim();
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     try {
                         //If old parsed value does not equal the new value after delay then stop execute.
-                        if(plugin.tex.placeholders(e.panel, e.pos, e.p, staticValue.trim()).equals(parsedValue)){
-                            plugin.commandRunner.runCommand(e.panel,e.pos, e.p, finalCommand);
+                        if(ctx.tex.placeholders(e.panel, e.pos, e.p, staticValue.trim()).equals(parsedValue)){
+                            ctx.commandRunner.runCommand(e.panel,e.pos, e.p, finalCommand);
                         }
                     } catch (Exception ex) {
                         //if there are any errors, cancel so that it doesn't loop errors
-                        plugin.debug(ex, e.p);
+                        ctx.debug.send(ex, e.p, ctx);
                         this.cancel();
                     }
                     this.cancel();
                 }
-            }.runTaskTimer(plugin, delayTicks, 1); //20 ticks == 1 second
+            }.runTaskTimer(ctx.plugin, delayTicks, 1); //20 ticks == 1 second
         }
     }
 

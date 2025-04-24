@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.datamanager;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -9,9 +9,9 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public class PanelDataLoader {
-    CommandPanels plugin;
-    public PanelDataLoader(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public PanelDataLoader(Context pl) {
+        this.ctx = pl;
     }
     public YamlConfiguration dataConfig;
 
@@ -37,10 +37,10 @@ public class PanelDataLoader {
 
     public void saveDataFile(){
         try {
-            dataConfig.save(plugin.getDataFolder() + File.separator + "data.yml");
+            dataConfig.save(ctx.plugin.getDataFolder() + File.separator + "data.yml");
         } catch (IOException s) {
             s.printStackTrace();
-            plugin.debug(s,null);
+            ctx.debug.send(s,null, ctx);
         }
     }
 
@@ -50,7 +50,7 @@ public class PanelDataLoader {
         try {
             originalValue = new BigDecimal(dataConfig.getString("playerData." + playerUUID + "." + dataPoint));
         }catch(Exception ex){
-            plugin.debug(ex,null);
+            ctx.debug.send(ex,null, ctx);
             originalValue = new BigDecimal("1");
         }
 
@@ -76,7 +76,7 @@ public class PanelDataLoader {
                 try {
                     output = originalValue.divide(newValue);
                 }catch (ArithmeticException ex){
-                    plugin.debug(ex,null);
+                    ctx.debug.send(ex,null, ctx);
                     output = originalValue;
                 }
                 break;

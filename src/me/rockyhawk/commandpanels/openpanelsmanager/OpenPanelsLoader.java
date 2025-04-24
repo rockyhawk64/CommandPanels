@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.openpanelsmanager;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelClosedEvent;
 import me.rockyhawk.commandpanels.api.PanelsInterface;
@@ -11,13 +11,13 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class OpenPanelsLoader {
-    CommandPanels plugin;
-    public OpenPanelsLoader(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public OpenPanelsLoader(Context pl) {
+        this.ctx = pl;
     }
 
     /*
-    This is used as a less laggy and non title reliant way to determine which panels are open for specific players
+    This is used as A non-title reliant way to determine which panels are open for specific players
     The configuration section is opened directly
     into the correct panel, so there is no need for the panel name
     */
@@ -69,25 +69,21 @@ public class OpenPanelsLoader {
         }
         openPanels.get(playerName).setPanel(panel,position);
         openPanels.get(playerName).getPanel(position).isOpen = true;
-        if (plugin.config.contains("config.panel-snooper")) {
-            if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).trim().equalsIgnoreCase("true")) {
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + playerName + " Opened " + panel.getName() + " at " + position);
-            }
+        if(ctx.configHandler.isTrue("config.panel-snooper")) {
+            Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + playerName + " Opened " + panel.getName() + " at " + position);
         }
     }
 
-    //close all of the panels for a player currently open
+    //close all the panels for a player currently open
     public void closePanelForLoader(String playerName, PanelPosition position){
         //close if not panel
-        if(!plugin.openPanels.openPanels.containsKey(playerName) || plugin.openPanels.skipPanelClose.contains(playerName)){
+        if(!ctx.openPanels.openPanels.containsKey(playerName) || ctx.openPanels.skipPanelClose.contains(playerName)){
             return;
         }
 
         //snooper
-        if (plugin.config.contains("config.panel-snooper")) {
-            if (Objects.requireNonNull(plugin.config.getString("config.panel-snooper")).equalsIgnoreCase("true")) {
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + playerName + " Closed " + openPanels.get(playerName).getPanel(position).getName() + " at " + position);
-            }
+        if(ctx.configHandler.isTrue("config.panel-snooper")) {
+            Bukkit.getConsoleSender().sendMessage("[CommandPanels] " + playerName + " Closed " + openPanels.get(playerName).getPanel(position).getName() + " at " + position);
         }
 
         //panel instance
@@ -109,7 +105,7 @@ public class OpenPanelsLoader {
         }
 
         //fix up the inventory
-        plugin.inventorySaver.restoreInventory(Bukkit.getPlayer(playerName),position);
+        ctx.inventorySaver.restoreInventory(Bukkit.getPlayer(playerName),position);
     }
 
     //removes player from openPanels map
@@ -124,9 +120,9 @@ public class OpenPanelsLoader {
         if (panel.getConfig().contains("commands-on-close")) {
             //execute commands on panel close
             try {
-                plugin.commandRunner.runCommands(panel,position,Bukkit.getPlayer(playerName),panel.getConfig().getStringList("commands-on-close"), null);
+                ctx.commandRunner.runCommands(panel,position,Bukkit.getPlayer(playerName),panel.getConfig().getStringList("commands-on-close"), null);
             }catch(Exception s){
-                plugin.debug(s,null);
+                ctx.debug.send(s,null, ctx);
             }
         }
     }
@@ -135,7 +131,7 @@ public class OpenPanelsLoader {
     public void deleteCommandPanelsItems(Player p){
         for(ItemStack itm : p.getInventory().getContents()){
             if(itm != null){
-                if (plugin.nbt.hasNBT(itm, "CommandPanelsItem")) {
+                if (ctx.nbt.hasNBT(itm, "CommandPanelsItem")) {
                     p.getInventory().remove(itm);
                 }
             }
@@ -144,7 +140,7 @@ public class OpenPanelsLoader {
     //checks if an item is from cpanel or not
     public boolean isCommandPanelsItem(ItemStack itm){
         if(itm != null){
-            return plugin.nbt.hasNBT(itm,"CommandPanelsItem");
+            return ctx.nbt.hasNBT(itm,"CommandPanelsItem");
         }
         return false;
     }

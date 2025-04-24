@@ -1,8 +1,9 @@
 package me.rockyhawk.commandpanels.interactives.input;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,10 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-public class UserInputUtils implements Listener {
-    CommandPanels plugin;
-    public UserInputUtils(CommandPanels pl) {
-        this.plugin = pl;
+public class PlayerInputUtils implements Listener {
+    Context ctx;
+    public PlayerInputUtils(Context pl) {
+        this.ctx = pl;
     }
 
     public HashMap<Player, PlayerInput> playerInput = new HashMap<>();
@@ -26,12 +27,12 @@ public class UserInputUtils implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent e) {
         if(playerInput.containsKey(e.getPlayer())){
             e.setCancelled(true);
-            if(e.getMessage().equalsIgnoreCase(plugin.config.getString("input.input-cancel"))){
+            if(e.getMessage().equalsIgnoreCase(ctx.configHandler.config.getString("input.input-cancel"))){
                 if(playerInput.get(e.getPlayer()).cancelCommands != null){
-                    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, new Runnable() {
                         public void run() {
                             if(playerInput.get(e.getPlayer()).cancelCommands != null){
-                                plugin.commandRunner.runCommands(playerInput.get(e.getPlayer()).panel, PanelPosition.Top,e.getPlayer(), playerInput.get(e.getPlayer()).cancelCommands,playerInput.get(e.getPlayer()).click); //I have to do this to run regular Bukkit voids in an ASYNC Event
+                                ctx.commandRunner.runCommands(playerInput.get(e.getPlayer()).panel, PanelPosition.Top,e.getPlayer(), playerInput.get(e.getPlayer()).cancelCommands,playerInput.get(e.getPlayer()).click); //I have to do this to run regular Bukkit voids in an ASYNC Event
                                 playerInput.remove(e.getPlayer());
                             }
                         }
@@ -46,10 +47,10 @@ public class UserInputUtils implements Listener {
 
             
             if((playerInput.get(e.getPlayer()).panel.getConfig().getString("max-input-length") != null) && (Integer.parseInt(playerInput.get(e.getPlayer()).panel.getConfig().getString("max-input-length")) != -1) && (e.getMessage().length() > Integer.parseInt(playerInput.get(e.getPlayer()).panel.getConfig().getString("max-input-length")))) {
-                e.getPlayer().sendMessage(plugin.tex.colour(plugin.tag + playerInput.get(e.getPlayer()).panel.getConfig().getString("custom-messages.input")));
+                e.getPlayer().sendMessage(ctx.tex.colour(ctx.tag + playerInput.get(e.getPlayer()).panel.getConfig().getString("custom-messages.input")));
                 return;
-            }else if(e.getMessage().length() > Integer.parseInt(plugin.config.getString("input.max-input-length")) && (Integer.parseInt(plugin.config.getString("input.max-input-length")) != -1)) {
-                e.getPlayer().sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.input")));
+            }else if(e.getMessage().length() > Integer.parseInt(ctx.configHandler.config.getString("input.max-input-length")) && (Integer.parseInt(ctx.configHandler.config.getString("input.max-input-length")) != -1)) {
+                e.getPlayer().sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.input")));
                 return;
             }
             //get certain words from the input
@@ -59,9 +60,9 @@ public class UserInputUtils implements Listener {
                 c++;
             }
 
-            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, new Runnable() {
                 public void run() {
-                    plugin.commandRunner.runCommands(playerInput.get(e.getPlayer()).panel, PanelPosition.Top,e.getPlayer(), playerInput.get(e.getPlayer()).commands,playerInput.get(e.getPlayer()).click); //I have to do this to run regular Bukkit voids in an ASYNC Event
+                    ctx.commandRunner.runCommands(playerInput.get(e.getPlayer()).panel, PanelPosition.Top,e.getPlayer(), playerInput.get(e.getPlayer()).commands,playerInput.get(e.getPlayer()).click); //I have to do this to run regular Bukkit voids in an ASYNC Event
                     playerInput.remove(e.getPlayer());
                 }
             });
@@ -81,11 +82,11 @@ public class UserInputUtils implements Listener {
             inputMessages = new ArrayList<>(panel.getConfig().getStringList("custom-messages.input-message"));
         }else{
             //For input-message from the config
-            inputMessages = new ArrayList<>(plugin.config.getStringList("input.input-message"));
+            inputMessages = new ArrayList<>(ctx.configHandler.config.getStringList("input.input-message"));
         }
         for (String temp : inputMessages) {
-            temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(plugin.config.getString("input.input-cancel")));
-            p.sendMessage(plugin.tex.placeholders(panel,pos,p, temp));
+            temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(ctx.configHandler.config.getString("input.input-cancel")));
+            p.sendMessage(ctx.tex.placeholders(panel,pos,p, temp));
         }
     }
 }

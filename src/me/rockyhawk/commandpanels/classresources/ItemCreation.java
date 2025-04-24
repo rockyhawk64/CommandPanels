@@ -1,9 +1,10 @@
 package me.rockyhawk.commandpanels.classresources;
 
+import com.google.common.collect.ImmutableMultimap;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import dev.lone.itemsadder.api.CustomStack;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
@@ -33,22 +34,22 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ItemCreation {
-    CommandPanels plugin;
+    Context ctx;
 
-    public ItemCreation(CommandPanels pl) {
-        plugin = pl;
+    public ItemCreation(Context pl) {
+        ctx = pl;
     }
 
     @SuppressWarnings("deprecation")
     public ItemStack makeItemFromConfig(Panel panel, PanelPosition position, ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours, boolean addNBT){
-        String material = plugin.tex.placeholdersNoColour(panel,position,p,itemSection.getString("material"));
+        String material = ctx.tex.placeholdersNoColour(panel,position,p,itemSection.getString("material"));
         try {
             if (Objects.requireNonNull(material).equalsIgnoreCase("AIR")) {
                 return null;
             }
         }catch(NullPointerException e){
-            plugin.debug(e,p);
-            p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " material: could not load material!"));
+            ctx.debug.send(e,p, ctx);
+            p.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.error") + " material: could not load material!"));
             return null;
         }
         ItemStack s = null;
@@ -64,7 +65,7 @@ public class ItemCreation {
             String playerLocation = material.substring(start, end).replace("%cp-player-online-", "");
             Player[] playerFind = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
             if (Integer.parseInt(playerLocation) > playerFind.length) {
-                material = material.replace(material.substring(start, end) + "-find%", "cps= " + plugin.config.getString("config.format.offlineHeadValue"));
+                material = material.replace(material.substring(start, end) + "-find%", "cps= " + ctx.configHandler.config.getString("config.format.offlineHeadValue"));
             } else {
                 material = material.replace(material.substring(start, end) + "-find%", "cpo= " + playerFind[Integer.parseInt(playerLocation) - 1].getName());
                 //cpo is to get the skull of the player online. It is fine since the plugin knows the player is online
@@ -85,16 +86,16 @@ public class ItemCreation {
             }
             if (matraw.split("\\s")[0].equalsIgnoreCase("cps=") || matraw.split("\\s")[0].toLowerCase().equals("cpo=")) {
                 skullname = p.getUniqueId().toString();
-                mat = plugin.getHeads.playerHeadString();
-                if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+                mat = ctx.getHeads.playerHeadString();
+                if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                     id = 3;
                 }
             }
 
             if (matraw.split("\\s")[0].equalsIgnoreCase("hdb=")) {
                 skullname = "hdb";
-                mat = plugin.getHeads.playerHeadString();
-                if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+                mat = ctx.getHeads.playerHeadString();
+                if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                     id = 3;
                 }
             }
@@ -103,7 +104,7 @@ public class ItemCreation {
             if (matraw.split("\\s")[0].equalsIgnoreCase("nexo=")) {
                 String itemID = matraw.split("\\s")[1];
                 try {
-                    if (plugin.getServer().getPluginManager().isPluginEnabled("Nexo")) {
+                    if (Bukkit.getServer().getPluginManager().isPluginEnabled("Nexo")) {
                         // Get the NexoItems class dynamically
                         Class<?> nexoItemsClass = Class.forName("com.nexomc.nexo.api.NexoItems");
 
@@ -156,7 +157,7 @@ public class ItemCreation {
                         }
                     }
                 } catch (Exception e) {
-                    plugin.debug(e, null);
+                    ctx.debug.send(e, null, ctx);
                     // Handle the error or inform the player
                 }
 
@@ -173,7 +174,7 @@ public class ItemCreation {
             }
 
             //creates custom MMOItems items
-            if(matraw.split("\\s")[0].equalsIgnoreCase("mmo=") && plugin.getServer().getPluginManager().isPluginEnabled("MMOItems")){
+            if(matraw.split("\\s")[0].equalsIgnoreCase("mmo=") && Bukkit.getServer().getPluginManager().isPluginEnabled("MMOItems")){
                 String itemType = matraw.split("\\s")[1];
                 String itemID = matraw.split("\\s")[2];
                 ItemManager itemManager = MMOItems.plugin.getItems();
@@ -188,7 +189,7 @@ public class ItemCreation {
                 BookMeta bookMeta = (BookMeta) s.getItemMeta();
                 bookMeta.setTitle(matraw.split("\\s")[1]);
                 bookMeta.setAuthor(matraw.split("\\s")[1]);
-                List<String> bookLines = plugin.tex.placeholdersList(panel,position,p,itemSection.getStringList("write"),true);
+                List<String> bookLines = ctx.tex.placeholdersList(panel,position,p,itemSection.getStringList("write"),true);
                 String result = bookLines.stream().map(String::valueOf).collect(Collectors.joining("\n" + ChatColor.RESET, "", ""));
                 bookMeta.setPages(result);
                 s.setItemMeta(bookMeta);
@@ -211,28 +212,28 @@ public class ItemCreation {
                     if (matraw.split("\\s")[1].equalsIgnoreCase("self")) {
                         //if cps= self
                         meta = (SkullMeta) s.getItemMeta();
-                        if(!plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
+                        if(!ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                             try {
                                 assert meta != null;
                                 meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(skullname)));
                             } catch (Exception var23) {
-                                p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " material: cps= self"));
-                                plugin.debug(var23,p);
+                                p.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.error") + " material: cps= self"));
+                                ctx.debug.send(var23,p, ctx);
                             }
                         }else{
                             meta.setOwner(p.getName());
                         }
                         s.setItemMeta(meta);
-                    }else if (plugin.tex.placeholdersNoColour(panel,position,p,matraw.split("\\s")[1]).length() <= 16) {
+                    }else if (ctx.tex.placeholdersNoColour(panel,position,p,matraw.split("\\s")[1]).length() <= 16) {
                         //if cps= username
-                        s = plugin.customHeads.getPlayerHead(plugin.tex.placeholdersNoColour(panel,position,p,matraw.split("\\s")[1]));
+                        s = ctx.customHeads.getPlayerHead(ctx.tex.placeholdersNoColour(panel,position,p,matraw.split("\\s")[1]));
                     } else {
                         //custom data cps= base64
-                        s = plugin.customHeads.getCustomHead(plugin.tex.placeholdersNoColour(panel,position,p,matraw.split("\\s")[1]));
+                        s = ctx.customHeads.getCustomHead(ctx.tex.placeholdersNoColour(panel,position,p,matraw.split("\\s")[1]));
                     }
                 } catch (Exception var32) {
-                    p.sendMessage(plugin.tex.colour( plugin.tag + plugin.config.getString("config.format.error") + " head material: Could not load skull"));
-                    plugin.debug(var32,p);
+                    p.sendMessage(ctx.tex.colour( ctx.tag + ctx.configHandler.config.getString("config.format.error") + " head material: Could not load skull"));
+                    ctx.debug.send(var32,p, ctx);
                 }
             }
             if (!skullname.equals("no skull") && matraw.split("\\s")[0].equalsIgnoreCase("cpo=")) {
@@ -242,18 +243,18 @@ public class ItemCreation {
                 s.setItemMeta(cpoMeta);
             }
             if (skullname.equals("hdb")) {
-                if (plugin.getServer().getPluginManager().isPluginEnabled("HeadDatabase")) {
+                if (Bukkit.getServer().getPluginManager().isPluginEnabled("HeadDatabase")) {
                     HeadDatabaseAPI api;
                     api = new HeadDatabaseAPI();
 
                     try {
                         s = api.getItemHead(matraw.split("\\s")[1].trim());
                     } catch (Exception var22) {
-                        p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " hdb: could not load skull!"));
-                        plugin.debug(var22,p);
+                        p.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.error") + " hdb: could not load skull!"));
+                        ctx.debug.send(var22,p, ctx);
                     }
                 } else {
-                    p.sendMessage(plugin.tex.colour(plugin.tag + "Download HeadDatabaseHook from Spigot to use this feature!"));
+                    p.sendMessage(ctx.tex.colour(ctx.tag + "Download HeadDatabaseHook from Spigot to use this feature!"));
                 }
             }
 
@@ -273,10 +274,10 @@ public class ItemCreation {
 
             if(itemSection.contains("nbt")){
                 //ItemStack item, ConfigurationSection section, Player player, Panel panel, PanelPosition position
-                plugin.nbt.applyNBTRecursively(s, itemSection.getConfigurationSection("nbt"), p, panel, position);
+                ctx.nbt.applyNBTRecursively(s, itemSection.getConfigurationSection("nbt"), p, panel, position);
             }
             if(addNBT){
-                plugin.nbt.setNBT(s, "CommandPanelsItem","true");
+                ctx.nbt.setNBT(s, "CommandPanelsItem","true");
             }
 
             if (itemSection.contains("enchanted")) {
@@ -301,8 +302,8 @@ public class ItemCreation {
                         s.setItemMeta(EnchantMeta);
                     }
                 } catch (Exception ench) {
-                    p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " enchanted: " + itemSection.getString("enchanted")));
-                    plugin.debug(ench,p);
+                    p.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.error") + " enchanted: " + itemSection.getString("enchanted")));
+                    ctx.debug.send(ench,p, ctx);
                 }
             }
             if (itemSection.contains("itemmodel")) {
@@ -315,7 +316,7 @@ public class ItemCreation {
                     Method setItemModelMethod = ItemMeta.class.getMethod("setItemModel", NamespacedKey.class);
 
                     // Invoke it dynamically
-                    setItemModelMethod.invoke(itemMeta, NamespacedKey.fromString(plugin.tex.placeholders(panel, position, p, itemSection.getString("itemmodel"))));
+                    setItemModelMethod.invoke(itemMeta, NamespacedKey.fromString(ctx.tex.placeholders(panel, position, p, itemSection.getString("itemmodel"))));
 
                     s.setItemMeta(itemMeta);
                 } catch (NoSuchMethodException e) {
@@ -334,7 +335,7 @@ public class ItemCreation {
                     Method setTooltipMethod = ItemMeta.class.getMethod("setTooltipStyle", NamespacedKey.class);
 
                     // Invoke it dynamically
-                    setTooltipMethod.invoke(itemMeta, NamespacedKey.fromString(plugin.tex.placeholders(panel, position, p, itemSection.getString("tooltip-style"))));
+                    setTooltipMethod.invoke(itemMeta, NamespacedKey.fromString(ctx.tex.placeholders(panel, position, p, itemSection.getString("tooltip-style"))));
 
                     s.setItemMeta(itemMeta);
                 } catch (NoSuchMethodException e) {
@@ -346,7 +347,7 @@ public class ItemCreation {
             if (itemSection.contains("customdata")) {
                 ItemMeta customMeta = s.getItemMeta();
                 assert customMeta != null;
-                customMeta.setCustomModelData(Integer.parseInt(plugin.tex.placeholders(panel,position,p,itemSection.getString("customdata"))));
+                customMeta.setCustomModelData(Integer.parseInt(ctx.tex.placeholders(panel,position,p,itemSection.getString("customdata"))));
                 s.setItemMeta(customMeta);
             }
             try {
@@ -354,7 +355,7 @@ public class ItemCreation {
                     BannerMeta bannerMeta = (BannerMeta) s.getItemMeta();
                     List<Pattern> patterns = new ArrayList<>(); //Load patterns in order top to bottom
                     for (String temp : itemSection.getStringList("banner")) {
-                        temp = plugin.tex.placeholdersNoColour(panel,position,p,temp);
+                        temp = ctx.tex.placeholdersNoColour(panel,position,p,temp);
                         String[] dyePattern = temp.split(",");
                         patterns.add(new Pattern(DyeColor.valueOf(dyePattern[0]), PatternType.valueOf(dyePattern[1]))); //load patterns in config: RED,STRIPE_TOP
                     }
@@ -373,12 +374,12 @@ public class ItemCreation {
                             s.getType() == Material.LEATHER_HELMET ||
                             s.getType() == Material.matchMaterial("LEATHER_HORSE_ARMOR")) { //avoid exceptions on older versions which don't have leather armour
                         LeatherArmorMeta leatherMeta = (LeatherArmorMeta) s.getItemMeta();
-                        String colourCode = plugin.tex.placeholdersNoColour(panel,position,p,itemSection.getString("leatherarmor"));
+                        String colourCode = ctx.tex.placeholdersNoColour(panel,position,p,itemSection.getString("leatherarmor"));
                         assert colourCode != null;
                         if (!colourCode.contains(",")) {
                             //use a color name
                             assert leatherMeta != null;
-                            leatherMeta.setColor(plugin.colourCodes.get(colourCode.toUpperCase()));
+                            leatherMeta.setColor(colourCodes.get(colourCode.toUpperCase()));
                         } else {
                             //use RGB sequence
                             int[] colorRGB = {255, 255, 255};
@@ -394,21 +395,21 @@ public class ItemCreation {
                     }
                 } catch (Exception er) {
                     //don't colour the armor
-                    plugin.debug(er,p);
-                    p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " leatherarmor: " + itemSection.getString("leatherarmor")));
+                    ctx.debug.send(er,p, ctx);
+                    p.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.error") + " leatherarmor: " + itemSection.getString("leatherarmor")));
                 }
             }
 
             if (itemSection.contains("potion")) {
                 //if the item is a potion, give it an effect
-                String[] effectType = plugin.tex.placeholdersNoColour(panel,position,p,itemSection.getString("potion")).split("\\s");
+                String[] effectType = ctx.tex.placeholdersNoColour(panel,position,p,itemSection.getString("potion")).split("\\s");
                 //potion legacy or current
-                if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
-                        (plugin.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && plugin.legacy.MINOR_VERSION <= 4)){
-                    if(plugin.legacy.MAJOR_VERSION.equals(MinecraftVersions.v1_8)){
-                        plugin.classicPotion.applyPotionEffect(p, s, effectType);
+                if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
+                        (ctx.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && ctx.legacy.MINOR_VERSION <= 4)){
+                    if(ctx.legacy.MAJOR_VERSION.equals(MinecraftVersions.v1_8)){
+                        ctx.classicPotion.applyPotionEffect(p, s, effectType);
                     }else {
-                        plugin.legacyPotion.applyPotionEffect(p, s, effectType);
+                        ctx.legacyPotion.applyPotionEffect(p, s, effectType);
                     }
                 }else{
                     try {
@@ -420,14 +421,14 @@ public class ItemCreation {
                         s.setItemMeta(potionMeta);
                     } catch (Exception er) {
                         //don't add the effect
-                        plugin.debug(er,p);
-                        p.sendMessage(plugin.tex.colour(plugin.tag + ChatColor.RED + plugin.config.getString("config.format.error") + " potion: " + itemSection.getString("potion")));
+                        ctx.debug.send(er,p, ctx);
+                        p.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + ctx.configHandler.config.getString("config.format.error") + " potion: " + itemSection.getString("potion")));
                     }
                 }
             }
 
             if(itemSection.contains("potion-color")){
-                if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_11)){
+                if(ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_11)){
                     String[] rgb = Objects.requireNonNull(itemSection.getString("potion-color")).split(",");
                     Color color = Color.fromRGB(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
                     PotionMeta potionMeta = (PotionMeta)s.getItemMeta();
@@ -440,12 +441,12 @@ public class ItemCreation {
             if (itemSection.contains("damage")) {
                 //change the damage amount (placeholders accepted)
                 //if the damage is not unbreakable and should be a value
-                if (plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
+                if (ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)) {
                     try {
-                        s.setDurability(Short.parseShort(Objects.requireNonNull(plugin.tex.placeholders(panel,position,p, itemSection.getString("damage")))));
+                        s.setDurability(Short.parseShort(Objects.requireNonNull(ctx.tex.placeholders(panel,position,p, itemSection.getString("damage")))));
                     } catch (Exception e) {
-                        plugin.debug(e, p);
-                        p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
+                        ctx.debug.send(e, p, ctx);
+                        p.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
                     }
                 } else {
                     if(itemSection.getString("damage").equalsIgnoreCase("-1")){
@@ -456,17 +457,17 @@ public class ItemCreation {
                     }else {
                         try {
                             Damageable itemDamage = (Damageable) s.getItemMeta();
-                            itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(plugin.tex.placeholders(panel, position, p, itemSection.getString("damage")))));
+                            itemDamage.setDamage(Integer.parseInt(Objects.requireNonNull(ctx.tex.placeholders(panel, position, p, itemSection.getString("damage")))));
                             s.setItemMeta((ItemMeta) itemDamage);
                         } catch (Exception e) {
-                            plugin.debug(e, p);
-                            p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
+                            ctx.debug.send(e, p, ctx);
+                            p.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.error") + " damage: " + itemSection.getString("damage")));
                         }
                     }
                 }
             }
             // 1.20 Trim Feature for Player Armor
-            if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && itemSection.contains("trim")){
+            if(ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && itemSection.contains("trim")){
                 // trim: <Material> <Pattern>
                 String trim = itemSection.getString("trim");
                 String[] trimList = trim.split("\\s");
@@ -490,35 +491,143 @@ public class ItemCreation {
             }
             if (itemSection.contains("stack")) {
                 //change the stack amount (placeholders accepted)
-                int amount = (int)Double.parseDouble(Objects.requireNonNull(plugin.tex.placeholders(panel,position,p,itemSection.getString("stack"))));
+                int amount = (int)Double.parseDouble(Objects.requireNonNull(ctx.tex.placeholders(panel,position,p,itemSection.getString("stack"))));
                 s.setAmount(amount);
             }
             //do the items commands throughout the refresh
             //check that the panel is already open and not running commands when opening
-            if (itemSection.contains("refresh-commands") && plugin.openPanels.hasPanelOpen(p.getName(), panel.getName(), position)) {
+            if (itemSection.contains("refresh-commands") && ctx.openPanels.hasPanelOpen(p.getName(), panel.getName(), position)) {
                 try {
-                    plugin.commandRunner.runCommands(panel,position,p,itemSection.getStringList("refresh-commands"), null);
+                    ctx.commandRunner.runCommands(panel,position,p,itemSection.getStringList("refresh-commands"), null);
                 }catch(Exception ex){
-                    plugin.debug(ex,p);
+                    ctx.debug.send(ex,p, ctx);
                 }
             }
         } catch (IllegalArgumentException | NullPointerException var33) {
-            plugin.debug(var33,p);
-            p.sendMessage(plugin.tex.colour(plugin.tag + plugin.config.getString("config.format.error") + " material: " + itemSection.getString("material")));
+            ctx.debug.send(var33,p, ctx);
+            p.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.error") + " material: " + itemSection.getString("material")));
             return null;
         }
-        s = plugin.setName(panel,s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours, hideAttributes, hideTooltip);
+        s = setName(panel,s, itemSection.getString("name"), itemSection.getStringList("lore"), p, placeholders, colours, hideAttributes, hideTooltip);
         return s;
     }
 
     //do custom-item items, they have an additional hasSection requirement
     public ItemStack makeCustomItemFromConfig(Panel panel,PanelPosition position, ConfigurationSection itemSection, Player p, boolean placeholders, boolean colours, boolean addNBT){
-        String section = plugin.has.hasSection(panel,position,itemSection,p);
+        String section = ctx.has.hasSection(panel,position,itemSection,p);
         if(!section.equals("")){
             itemSection = itemSection.getConfigurationSection(section.substring(1));
         }
-        return plugin.itemCreate.makeItemFromConfig(panel,position,itemSection, p, placeholders, colours, addNBT);
+        return ctx.itemCreate.makeItemFromConfig(panel,position,itemSection, p, placeholders, colours, addNBT);
     }
+
+    public ItemStack setName(Panel panel, ItemStack renamed, String customName, List<String> lore, Player p, Boolean usePlaceholders, Boolean useColours, Boolean hideAttributes, Boolean hideTooltip) {
+        try {
+            ItemMeta renamedMeta = renamed.getItemMeta();
+            //set cp placeholders
+            if (usePlaceholders) {
+                customName = ctx.tex.placeholdersNoColour(panel, PanelPosition.Top, p, customName);
+            }
+            if (useColours) {
+                customName = ctx.tex.colour(customName);
+            }
+
+            assert renamedMeta != null;
+            //hiding attributes will add an NBT tag
+            if (hideAttributes) {
+                renamedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                renamedMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                //HIDE_ADDITIONAL_TOOLTIP was added into 1.20.5 api
+                if (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) ||
+                        (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && ctx.legacy.MINOR_VERSION >= 5)) {
+                    renamedMeta.addItemFlags(ItemFlag.valueOf("HIDE_ADDITIONAL_TOOLTIP"));
+                }
+                //HIDE_POTION_EFFECTS was removed in the 1.20.5 api
+                if (ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
+                        (ctx.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && ctx.legacy.MINOR_VERSION <= 4)) {
+                    renamedMeta.addItemFlags(ItemFlag.valueOf("HIDE_POTION_EFFECTS"));
+                }
+                //HIDE_ARMOR_TRIM was added into 1.20 api
+                if (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20)) {
+                    renamedMeta.addItemFlags(ItemFlag.HIDE_ARMOR_TRIM);
+                }
+                //HIDE_DYE was added into 1.17 api
+                if (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_17)) {
+                    renamedMeta.addItemFlags(ItemFlag.HIDE_DYE);
+                }
+                //setAttributeModifiers was added into 1.14 api
+                if (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)) {
+                    renamedMeta.setAttributeModifiers(ImmutableMultimap.of());
+                }
+            }
+            //HIDE TOOLTIP added in 1.21.4 which hides box of item when hovering
+            if (hideTooltip) {
+                if (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
+                        (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && ctx.legacy.MINOR_VERSION >= 4)) {
+                    try {
+                        // Check if the setHideTooltip method exists
+                        Method setHideTooltipMethod = ItemMeta.class.getMethod("setHideTooltip", boolean.class);
+
+                        // Invoke it dynamically
+                        setHideTooltipMethod.invoke(renamedMeta, true);
+
+                    } catch (NoSuchMethodException e) {
+                        // The method does not exist in older Spigot versions
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (customName != null) {
+                renamedMeta.setDisplayName(customName);
+            }
+
+            List<String> re_lore;
+            if (lore != null) {
+                if (usePlaceholders && useColours) {
+                    re_lore = ctx.tex.placeholdersList(panel, PanelPosition.Top, p, lore, true);
+                } else if (usePlaceholders) {
+                    re_lore = ctx.tex.placeholdersNoColour(panel, PanelPosition.Top, p, lore);
+                } else if (useColours) {
+                    re_lore = ctx.tex.placeholdersList(panel, PanelPosition.Top, p, lore, false);
+                } else {
+                    re_lore = lore;
+                }
+                renamedMeta.setLore(splitListWithEscape(re_lore));
+            }
+            renamed.setItemMeta(renamedMeta);
+        } catch (Exception ignored) {
+        }
+        return renamed;
+    }
+    //split lists using \n escape character
+    private List<String> splitListWithEscape(List<String> list){
+        List<String> output = new ArrayList<>();
+        for(String str : list){
+            output.addAll(Arrays.asList(str.split("\\\\n")));
+        }
+        return output;
+    }
+
+    private final Map<String, Color> colourCodes = new HashMap<String, Color>() {{
+        put("AQUA", Color.AQUA);
+        put("BLUE", Color.BLUE);
+        put("GRAY", Color.GRAY);
+        put("GREEN", Color.GREEN);
+        put("RED", Color.RED);
+        put("WHITE", Color.WHITE);
+        put("BLACK", Color.BLACK);
+        put("FUCHSIA", Color.FUCHSIA);
+        put("LIME", Color.LIME);
+        put("MAROON", Color.MAROON);
+        put("NAVY", Color.NAVY);
+        put("OLIVE", Color.OLIVE);
+        put("ORANGE", Color.ORANGE);
+        put("PURPLE", Color.PURPLE);
+        put("SILVER", Color.SILVER);
+        put("TEAL", Color.TEAL);
+        put("YELLOW", Color.YELLOW);
+    }};
 
     @SuppressWarnings("deprecation")
     public YamlConfiguration generatePanelFile(String panelName, Inventory inv, YamlConfiguration file){
@@ -538,14 +647,14 @@ public class ItemCreation {
                         }
                     }
                 }
-                if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+                if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                     if (cont.getDurability() != 0 && !cont.getType().toString().equals("SKULL_ITEM")) {
                         file.set("panels." + panelName + ".item." + i + ".ID", cont.getDurability());
                     }
                 }
                 if(file.contains("panels." + panelName + ".item." + i + ".material")){
                     if(Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("%") || Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("=")){
-                        if(!plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
+                        if(!ctx.getHeads.ifSkullOrHead(cont.getType().toString())){
                             file.set("panels." + panelName + ".item." + i + ".material", cont.getType().toString());
                         }
                     }else{
@@ -554,9 +663,9 @@ public class ItemCreation {
                 }else{
                     file.set("panels." + panelName + ".item." + i + ".material", cont.getType().toString());
                 }
-                if(plugin.getHeads.ifSkullOrHead(cont.getType().toString())){
+                if(ctx.getHeads.ifSkullOrHead(cont.getType().toString())){
                     if(!Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("%") && !Objects.requireNonNull(file.getString("panels." + panelName + ".item." + i + ".material")).contains("=")) {
-                        file.set("panels." + panelName + ".item." + i + ".material", plugin.getHeads.playerHeadString());
+                        file.set("panels." + panelName + ".item." + i + ".material", ctx.getHeads.playerHeadString());
                     }
                 }
                 try {
@@ -572,10 +681,10 @@ public class ItemCreation {
                 }
                 try {
                     //potion legacy PotionData or current PotionType
-                    if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
-                            (plugin.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && plugin.legacy.MINOR_VERSION <= 4)){
-                        if(plugin.legacyPotion.retrievePotionData(cont) != null) {
-                            file.set("panels." + panelName + ".item." + i + ".potion", plugin.legacyPotion.retrievePotionData(cont));
+                    if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
+                            (ctx.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && ctx.legacy.MINOR_VERSION <= 4)){
+                        if(ctx.legacyPotion.retrievePotionData(cont) != null) {
+                            file.set("panels." + panelName + ".item." + i + ".potion", ctx.legacyPotion.retrievePotionData(cont));
                         }
                     }else{
                         PotionMeta potionMeta = (PotionMeta) cont.getItemMeta();
@@ -598,13 +707,13 @@ public class ItemCreation {
                 }
                 file.set("panels." + panelName + ".item." + i + ".name", Objects.requireNonNull(cont.getItemMeta()).getDisplayName());
                 file.set("panels." + panelName + ".item." + i + ".lore", Objects.requireNonNull(cont.getItemMeta()).getLore());
-                if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
+                if(ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
                     if(cont.getItemMeta().hasCustomModelData()){
                         file.set("panels." + panelName + ".item." + i + ".customdata", Objects.requireNonNull(cont.getItemMeta()).getCustomModelData());
                     }
                 }
-                if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
-                        (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && plugin.legacy.MINOR_VERSION >= 4)){
+                if(ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
+                        (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && ctx.legacy.MINOR_VERSION >= 4)){
                     try {
                         // Check if the getItemModel method exists
                         Method getItemModelMethod = ItemMeta.class.getMethod("getItemModel");
@@ -629,21 +738,21 @@ public class ItemCreation {
 
                     // Iterate over all NBT keys
                     for (String key : nbtItem.getKeys()) {
-                        Object value = plugin.nbt.getNBTValue(nbtItem.getItem(), key); // Retrieve dynamically
+                        Object value = ctx.nbt.getNBTValue(nbtItem.getItem(), key); // Retrieve dynamically
 
                         if (value == null) continue; // Skip null values
 
                         if (value instanceof Map) {
                             // Save nested NBT compounds properly
                             ConfigurationSection subSection = file.createSection(basePath + "." + key);
-                            plugin.nbt.saveMapToYAML((Map<String, Object>) value, subSection);
+                            ctx.nbt.saveMapToYAML((Map<String, Object>) value, subSection);
                         } else {
                             // Directly set primitive values
                             file.set(basePath + "." + key, value);
                         }
                     }
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Error while saving NBT data: " + e.getMessage());
+                    Bukkit.getLogger().warning("Error while saving NBT data: " + e.getMessage());
                     e.printStackTrace();
                 }
             }catch(Exception n){
@@ -677,7 +786,7 @@ public class ItemCreation {
         }catch(Exception ignore){}
         //check for ID 1.12.2 and below
         try {
-            if (plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12) &&
+            if (ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12) &&
                     (one.getDurability() != two.getDurability())) {
                 return false;
             }
@@ -692,7 +801,7 @@ public class ItemCreation {
         }catch(Exception ignore){}
         //check for custom model data
         try {
-            if (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
+            if (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_14)){
                 if (one.getItemMeta().getCustomModelData() != (two.getItemMeta().getCustomModelData())) {
                     if(one.getItemMeta().hasCustomModelData()) {
                         return false;
@@ -702,8 +811,8 @@ public class ItemCreation {
         }catch(Exception ignore){}
         //check for item model data
         try {
-            if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
-                    (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && plugin.legacy.MINOR_VERSION >= 4)){
+            if(ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
+                    (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && ctx.legacy.MINOR_VERSION >= 4)){
                 try {
                     // Check if the getItemModel method exists
                     Method getItemModelMethod = ItemMeta.class.getMethod("getItemModel");
@@ -718,21 +827,21 @@ public class ItemCreation {
                 } catch (NoSuchMethodException e) {
                     // The method does not exist in older Spigot versions
                 } catch (Exception e) {
-                    plugin.debug(e,null);
+                    ctx.debug.send(e,null, ctx);
                 }
             }
         }catch(Exception ignore){}
         //check for nbt
         if(nbtCheck) {
             try {
-                if (!plugin.nbt.hasSameNBT(one, two)) {
+                if (!ctx.nbt.hasSameNBT(one, two)) {
                     return false;
                 }
             } catch (Exception ignore) {}
         }
         //check for damage
         try {
-            if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+            if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
                 if(one.getDurability() != two.getDurability()) {
                     return false;
                 }
@@ -747,10 +856,10 @@ public class ItemCreation {
         //check for potions
         try {
             //choose between legacy PotionData (pre 1.20.5) or PotionType
-            if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
-                    (plugin.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && plugin.legacy.MINOR_VERSION <= 4)){
-                String potionOne = plugin.legacyPotion.retrievePotionData(one);
-                String potionTwo = plugin.legacyPotion.retrievePotionData(two);
+            if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_19) ||
+                    (ctx.legacy.MAJOR_VERSION == MinecraftVersions.v1_20 && ctx.legacy.MINOR_VERSION <= 4)){
+                String potionOne = ctx.legacyPotion.retrievePotionData(one);
+                String potionTwo = ctx.legacyPotion.retrievePotionData(two);
                 if(!potionOne.equals(potionTwo)){
                     return false;
                 }

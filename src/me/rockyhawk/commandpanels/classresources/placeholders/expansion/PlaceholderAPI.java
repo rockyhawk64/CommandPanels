@@ -1,18 +1,18 @@
 package me.rockyhawk.commandpanels.classresources.placeholders.expansion;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class CpPlaceholderExpansion extends PlaceholderExpansion {
+public class PlaceholderAPI extends PlaceholderExpansion {
 
-    private final CommandPanels plugin;
+    private final Context ctx;
 
-    public CpPlaceholderExpansion(CommandPanels plugin) {
-        this.plugin = plugin;
+    public PlaceholderAPI(Context pl) {
+        this.ctx = pl;
     }
 
     @Override
@@ -42,6 +42,6 @@ public class CpPlaceholderExpansion extends PlaceholderExpansion {
     */
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String identifier) {
-        return plugin.placeholders.cpPlaceholders(null, PanelPosition.Top, (Player)player, identifier);
+        return ctx.placeholders.cpPlaceholders(null, PanelPosition.Top, (Player)player, identifier);
     }
 }

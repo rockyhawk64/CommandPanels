@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.panelblocks;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,8 +12,8 @@ import java.util.List;
 
 
 public class BlocksTabComplete implements TabCompleter {
-    CommandPanels plugin;
-    public BlocksTabComplete(CommandPanels pl) { this.plugin = pl; }
+    Context ctx;
+    public BlocksTabComplete(Context pl) { this.ctx = pl; }
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         if(sender instanceof Player){
@@ -22,13 +22,13 @@ public class BlocksTabComplete implements TabCompleter {
                     if(args[0].equals("add") && p.hasPermission("commandpanel.block.add")) {
                         ArrayList<String> apanels = new ArrayList<String>(); //all panels
                         try {
-                            for (Panel panel : plugin.panelList) { //will loop through all the files in folder
+                            for (Panel panel : ctx.plugin.panelList) { //will loop through all the files in folder
                                 if (!panel.getName().startsWith(args[1])) {
                                     //this will narrow down the panels to what the user types
                                     continue;
                                 }
                                 if (sender.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm"))) {
-                                    if(plugin.panelPerms.isPanelWorldEnabled(p,panel.getConfig())){
+                                    if(ctx.worldPerms.isPanelWorldEnabled(p,panel.getConfig())){
                                         apanels.add(panel.getName());
                                     }
                                 }

@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.openpanelsmanager;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import org.bukkit.Bukkit;
@@ -18,9 +18,9 @@ import java.util.Objects;
 import java.util.Set;
 
 public class OpenGUI {
-    CommandPanels plugin;
-    public OpenGUI(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public OpenGUI(Context pl) {
+        this.ctx = pl;
     }
 
     @SuppressWarnings("deprecation")
@@ -52,7 +52,7 @@ public class OpenGUI {
         for (String item : itemList) {
             String section;
             //openType needs to not be 3 so the editor won't include hasperm and hasvalue, etc items
-            section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("item." + item), p);
+            section = ctx.has.hasSection(panel,position,pconfig.getConfigurationSection("item." + item), p);
             //This section is for animations below here: VISUAL ONLY
 
             //check for if there is animations inside the items section
@@ -63,15 +63,15 @@ public class OpenGUI {
                 }
             }
 
-            ItemStack s = plugin.itemCreate.makeItemFromConfig(panel,position,Objects.requireNonNull(pconfig.getConfigurationSection("item." + item + section)), p, true, true, true);
+            ItemStack s = ctx.itemCreate.makeItemFromConfig(panel,position,Objects.requireNonNull(pconfig.getConfigurationSection("item." + item + section)), p, true, true, true);
 
             //This is for CUSTOM ITEMS
             if(pconfig.contains("item." + item + section + ".itemType")) {
                 //this is for contents in the itemType section
                 if (pconfig.getStringList("item." + item + section + ".itemType").contains("placeable") && openType == PanelOpenType.Refresh) {
                     //keep item the same, openType == 0 meaning panel is refreshing
-                    setItem(p.getOpenInventory().getItem(Integer.parseInt(plugin.tex.placeholdersNoColour(panel,position,p,item))), item, i, p, position);
-                    takenSlots.add(Integer.parseInt(plugin.tex.placeholdersNoColour(panel,position,p,item)));
+                    setItem(p.getOpenInventory().getItem(Integer.parseInt(ctx.tex.placeholdersNoColour(panel,position,p,item))), item, i, p, position);
+                    takenSlots.add(Integer.parseInt(ctx.tex.placeholdersNoColour(panel,position,p,item)));
                     continue;
                 }
             }
@@ -79,7 +79,7 @@ public class OpenGUI {
             try {
                 //place item into the GUI
                 setItem(s,item,i,p,position);
-                takenSlots.add(Integer.parseInt(plugin.tex.placeholdersNoColour(panel,position,p,item)));
+                takenSlots.add(Integer.parseInt(ctx.tex.placeholdersNoColour(panel,position,p,item)));
                 //only place duplicate items in without the editor mode. These are merely visual and will not carry over commands
                 if(pconfig.contains("item." + item + section + ".duplicate")) {
                     try {
@@ -113,33 +113,33 @@ public class OpenGUI {
                             }
                         }
                     }catch(NullPointerException nullp){
-                        plugin.debug(nullp,p);
+                        ctx.debug.send(nullp,p, ctx);
                         p.closeInventory();
-                        plugin.openPanels.closePanelForLoader(p.getName(),position);
+                        ctx.openPanels.closePanelForLoader(p.getName(),position);
                     }
                 }
             } catch (ArrayIndexOutOfBoundsException ignore) {}
         }
-        if (pconfig.contains("empty") && !plugin.tex.placeholdersNoColour(panel,position,p,pconfig.getString("empty")).equals("AIR")) {
-            String emptyValue = plugin.tex.placeholdersNoColour(panel,position,p,pconfig.getString("empty"));
+        if (pconfig.contains("empty") && !ctx.tex.placeholdersNoColour(panel,position,p,pconfig.getString("empty")).equals("AIR")) {
+            String emptyValue = ctx.tex.placeholdersNoColour(panel,position,p,pconfig.getString("empty"));
             ItemStack empty;
             try {
                 //emptyID for older versions of minecraft (might be deprecated later on)
                 short id = 0;
                 if(pconfig.contains("emptyID")){
-                    id = Short.parseShort(plugin.tex.placeholdersNoColour(panel,position,p,pconfig.getString("emptyID")));
+                    id = Short.parseShort(ctx.tex.placeholdersNoColour(panel,position,p,pconfig.getString("emptyID")));
                 }
                 //either use custom item or just material type
                 if(pconfig.contains("custom-item." + emptyValue)){
-                    empty = plugin.itemCreate.makeItemFromConfig(panel,position,pconfig.getConfigurationSection("custom-item." + emptyValue),p,true,true,true);
+                    empty = ctx.itemCreate.makeItemFromConfig(panel,position,pconfig.getConfigurationSection("custom-item." + emptyValue),p,true,true,true);
                 }else{
                     empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(emptyValue.toUpperCase())), 1,id);
                     ItemMeta renamedMeta = empty.getItemMeta();
                     assert renamedMeta != null;
                     renamedMeta.setDisplayName(" ");
                     //If 1.21.4+ then hide box on hover of empty slot
-                    if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
-                            (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && plugin.legacy.MINOR_VERSION >= 4)){
+                    if(ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_22) ||
+                            (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) && ctx.legacy.MINOR_VERSION >= 4)){
                         try {
                             // Check if the setHideTooltip method exists
                             Method setHideTooltipMethod = ItemMeta.class.getMethod("setHideTooltip", boolean.class);
@@ -164,33 +164,33 @@ public class OpenGUI {
                     }
                 }
             } catch (IllegalArgumentException | NullPointerException var26) {
-                plugin.debug(var26,p);
+                ctx.debug.send(var26,p, ctx);
             }
         }
         if (openType == PanelOpenType.Normal) {
             //declare old panel closed
-            if(plugin.openPanels.hasPanelOpen(p.getName(),position)){
-                plugin.openPanels.getOpenPanel(p.getName(),position).isOpen = false;
+            if(ctx.openPanels.hasPanelOpen(p.getName(),position)){
+                ctx.openPanels.getOpenPanel(p.getName(),position).isOpen = false;
             }
             //open new panel
-            plugin.openPanels.skipPanelClose.add(p.getName());
-            plugin.openPanels.openPanelForLoader(p.getName(),panel,position);
+            ctx.openPanels.skipPanelClose.add(p.getName());
+            ctx.openPanels.openPanelForLoader(p.getName(),panel,position);
             //only if it needs to open the top inventory
             if(position == PanelPosition.Top) {
                 p.openInventory(i);
             }
-            plugin.openPanels.skipPanelClose.remove(p.getName());
+            ctx.openPanels.skipPanelClose.remove(p.getName());
         } else if (openType == PanelOpenType.Refresh) {
             //openType Refresh will just refresh the panel
-            if(plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) ||
-                    (plugin.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && plugin.legacy.MINOR_VERSION >= 5)){
+            if(ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_21) ||
+                    (ctx.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_20) && ctx.legacy.MINOR_VERSION >= 5)){
                 //Title refresh ability added in 1.20.5 api
                 if(position == PanelPosition.Top) {
                     p.getOpenInventory().setTitle(getTitle(p, pconfig, panel, position, animateValue));
                 }
             }
             if(position == PanelPosition.Top) {
-                plugin.legacy.setStorageContents(p, plugin.legacy.getStorageContents(i));
+                ctx.legacy.setStorageContents(p, ctx.legacy.getStorageContents(i));
             }
         } else if (openType == PanelOpenType.Return) {
             //will return the inventory, not opening it at all
@@ -211,7 +211,7 @@ public class OpenGUI {
 
     //allows for a string to be used instead of integer, for placeholders
     private void setItem(ItemStack item, String slotName, Inventory inv, Player p, PanelPosition position) throws ArrayIndexOutOfBoundsException{
-        int slot = Integer.parseInt(plugin.tex.placeholdersNoColour(null, position, p, slotName));
+        int slot = Integer.parseInt(ctx.tex.placeholdersNoColour(null, position, p, slotName));
         setItem(item, slot, inv, p, position);
     }
     private void setItem(ItemStack item, int slot, Inventory inv, Player p, PanelPosition position) throws ArrayIndexOutOfBoundsException{
@@ -244,17 +244,17 @@ public class OpenGUI {
         String title;
         if(pconfig.contains("custom-title")) {
             //used for titles in the custom-title section, for has sections
-            String section = plugin.has.hasSection(panel,position,pconfig.getConfigurationSection("custom-title"), p);
+            String section = ctx.has.hasSection(panel,position,pconfig.getConfigurationSection("custom-title"), p);
 
             //check for if there is animations inside the custom-title section
             if (pconfig.contains("custom-title" + section + ".animate" + animateValue)) {
                 section = section + ".animate" + animateValue;
             }
 
-            title = plugin.tex.placeholders(panel, position, p, pconfig.getString("custom-title" + section + ".title"));
+            title = ctx.tex.placeholders(panel, position, p, pconfig.getString("custom-title" + section + ".title"));
         }else {
             //regular inventory title
-            title = plugin.tex.placeholders(panel, position, p, pconfig.getString("title"));
+            title = ctx.tex.placeholders(panel, position, p, pconfig.getString("title"));
         }
         return title;
     }

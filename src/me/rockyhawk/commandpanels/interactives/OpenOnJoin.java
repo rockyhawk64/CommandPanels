@@ -1,7 +1,8 @@
 package me.rockyhawk.commandpanels.interactives;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,19 +10,19 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class OpenOnJoin implements Listener {
-    CommandPanels plugin;
-    public OpenOnJoin(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public OpenOnJoin(Context pl) {
+        this.ctx = pl;
     }
     @EventHandler
     public void onWorldLogin(PlayerJoinEvent e){
-        if (!e.getPlayer().hasPlayedBefore() && plugin.config.contains("open-on-first-login")) {
-            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () ->
+        if (!e.getPlayer().hasPlayedBefore() && ctx.configHandler.config.contains("open-on-first-login")) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, () ->
                     openOnJoin(e.getPlayer(), "open-on-first-login"), 40L);  // 2 seconds delay
             return;
         }
         //only opens when the player logs into the server
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () ->
+        Bukkit.getScheduler().scheduleSyncDelayedTask(ctx.plugin, () ->
                 openOnJoin(e.getPlayer(),"open-on-login"), 20L);  // 1 seconds delay
     }
 
@@ -38,9 +39,9 @@ public class OpenOnJoin implements Listener {
         if (joinType.equalsIgnoreCase("open-on-first-login")) world="";
 
         String joinString = joinType + (world.isEmpty() ? "" : "."+ world);
-        if(plugin.config.contains(joinString)){
-            String command = "open= " + plugin.config.getString(joinString);
-            plugin.commandRunner.runCommand(null, PanelPosition.Top,p, command);
+        if(ctx.configHandler.config.contains(joinString)){
+            String command = "open= " + ctx.configHandler.config.getString(joinString);
+            ctx.commandRunner.runCommand(null, PanelPosition.Top,p, command);
         }
     }
 }

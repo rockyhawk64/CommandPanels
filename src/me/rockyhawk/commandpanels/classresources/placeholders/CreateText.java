@@ -1,9 +1,10 @@
 package me.rockyhawk.commandpanels.classresources.placeholders;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -11,22 +12,22 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 public class CreateText {
-    CommandPanels plugin;
-    public CreateText(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public CreateText(Context pl) {
+        this.ctx = pl;
     }
 
     //CommandPanels send message function with all placeholders
     public void sendMessage(Panel panel,PanelPosition position, Player p, String message){
         if(!message.equals("")) {
-            p.sendMessage(placeholders(panel,position, p,plugin.tag + message));
+            p.sendMessage(placeholders(panel,position, p, ctx.tag + message));
         }
     }
 
     //CommandPanels send message function
     public void sendMessage(Player p, String message){
         if(!message.equals("")) {
-            p.sendMessage(colour(plugin.tag + message));
+            p.sendMessage(colour(ctx.tag + message));
         }
     }
 
@@ -85,11 +86,11 @@ public class CreateText {
     //regular string papi, but only colours so Player doesn't need to be there
     public String colour(String setpapi) {
         try {
-            if(plugin.miniMessage != null){
-                setpapi = plugin.miniMessage.doMiniMessageLegacy(setpapi);
+            if(ctx.miniMessage != null){
+                setpapi = ctx.miniMessage.doMiniMessageLegacy(setpapi);
             }
             setpapi = ChatColor.translateAlternateColorCodes('&', setpapi);
-            setpapi = plugin.hex.translateHexColorCodes(setpapi);
+            setpapi = ctx.hex.translateHexColorCodes(setpapi);
             return setpapi;
         }catch(NullPointerException e){
             return setpapi;
@@ -119,12 +120,12 @@ public class CreateText {
 
     public String attachPlaceholders(Panel panel, PanelPosition position, Player p, String input){
         //do all the placeholders in order to fill into text
-        input = plugin.placeholders.setPlaceholders(panel,position, p, input, false);
-        if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            OfflinePlayer offp = plugin.getServer().getOfflinePlayer(p.getUniqueId());
+        input = ctx.placeholders.setPlaceholders(panel,position, p, input, false);
+        if (Bukkit.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            OfflinePlayer offp = Bukkit.getServer().getOfflinePlayer(p.getUniqueId());
             input = PlaceholderAPI.setPlaceholders(offp, input);
         }
-        input = plugin.placeholders.setPlaceholders(panel,position, p, input, true);
+        input = ctx.placeholders.setPlaceholders(panel,position, p, input, true);
         return input;
     }
 }

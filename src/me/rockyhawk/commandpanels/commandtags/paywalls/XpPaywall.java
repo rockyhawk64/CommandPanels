@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.commandtags.paywalls;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commandtags.PaywallEvent;
 import me.rockyhawk.commandpanels.commandtags.PaywallOutput;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
@@ -11,9 +11,9 @@ import org.bukkit.event.Listener;
 import java.util.Objects;
 
 public class XpPaywall implements Listener {
-    CommandPanels plugin;
-    public XpPaywall(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public XpPaywall(Context pl) {
+        this.ctx = pl;
     }
 
     @EventHandler
@@ -34,19 +34,19 @@ public class XpPaywall implements Listener {
                         if (e.doDelete) removePlayerExp(e.p, Integer.parseInt(e.args[0]));
                     }
                     //if the message is empty don't send
-                    if (plugin.config.getBoolean("purchase.xp.enable") && e.doDelete) {
-                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.xp.success")).replaceAll("%cp-args%", e.args[0]));
+                    if (ctx.configHandler.isTrue("purchase.xp.enable") && e.doDelete) {
+                        ctx.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(ctx.configHandler.config.getString("purchase.xp.success")).replaceAll("%cp-args%", e.args[0]));
                     }
                     e.PAYWALL_OUTPUT = PaywallOutput.Passed;
                 } else {
-                    if (plugin.config.getBoolean("purchase.xp.enable")) {
-                        plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.xp.failure")));
+                    if (ctx.configHandler.isTrue("purchase.xp.enable")) {
+                        ctx.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(ctx.configHandler.config.getString("purchase.xp.failure")));
                     }
                     e.PAYWALL_OUTPUT =  PaywallOutput.Blocked;
                 }
             } catch (Exception buyc) {
-                plugin.debug(buyc, e.p);
-                plugin.tex.sendString(e.p, plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + e.name);
+                ctx.debug.send(buyc, e.p, ctx);
+                ctx.tex.sendString(e.p, ctx.tag + ctx.configHandler.config.getString("config.format.error") + " " + "commands: " + e.name);
                 e.PAYWALL_OUTPUT =  PaywallOutput.Blocked;
             }
         }

@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.commandtags.paywalls;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commandtags.PaywallEvent;
 import me.rockyhawk.commandpanels.commandtags.PaywallOutput;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
@@ -11,8 +11,8 @@ import org.bukkit.event.Listener;
 import java.util.Objects;
 
 public class Paywall implements Listener {
-    CommandPanels plugin;
-    public Paywall(CommandPanels pl) {
+    Context plugin;
+    public Paywall(Context pl) {
         this.plugin = pl;
     }
 
@@ -25,13 +25,13 @@ public class Paywall implements Listener {
                     double paywallAmount = Double.parseDouble(e.args[0]);
                     if (plugin.econ.getBalance(e.p) >= paywallAmount) {
                         if (e.doDelete) plugin.econ.withdrawPlayer(e.p, paywallAmount);
-                        if (plugin.config.getBoolean("purchase.currency.enable") && e.doDelete) {
-                            plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.currency.success")).replaceAll("%cp-args%", e.args[0]));
+                        if (plugin.configHandler.isTrue("purchase.currency.enable") && e.doDelete) {
+                            plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.configHandler.config.getString("purchase.currency.success")).replaceAll("%cp-args%", e.args[0]));
                         }
                         e.PAYWALL_OUTPUT = PaywallOutput.Passed;
                     } else {
-                        if (plugin.config.getBoolean("purchase.currency.enable")) {
-                            plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.config.getString("purchase.currency.failure")));
+                        if (plugin.configHandler.isTrue("purchase.currency.enable")) {
+                            plugin.tex.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.configHandler.config.getString("purchase.currency.failure")));
                         }
                         e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
                     }
@@ -40,8 +40,8 @@ public class Paywall implements Listener {
                     e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
                 }
             } catch (Exception buyc) {
-                plugin.debug(buyc, e.p);
-                plugin.tex.sendString(e.p, plugin.tag + plugin.config.getString("config.format.error") + " " + "commands: " + e.name);
+                plugin.debug.send(buyc, e.p, plugin);
+                plugin.tex.sendString(e.p, plugin.tag + plugin.configHandler.config.getString("config.format.error") + " " + "commands: " + e.name);
                 e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
             }
         }

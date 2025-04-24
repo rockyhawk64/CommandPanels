@@ -16,7 +16,7 @@ import java.io.File;
 
 public class Panel{
     CommandPanels plugin = JavaPlugin.getPlugin(CommandPanels.class);
-    /*This is the PanelConfig object*/
+    /*This is the Panel object*/
 
     private ConfigurationSection panelConfig;
     private String panelName;
@@ -72,41 +72,41 @@ public class Panel{
     }
 
     public ItemStack getItem(Player p, int slot){
-        String section = plugin.has.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("item." + slot), p);
+        String section = plugin.ctx.has.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("item." + slot), p);
         ConfigurationSection itemSection = panelConfig.getConfigurationSection("item." + slot + section);
-        return plugin.itemCreate.makeItemFromConfig(this,PanelPosition.Top,itemSection, p, true, true, false);
+        return plugin.ctx.itemCreate.makeItemFromConfig(this,PanelPosition.Top,itemSection, p, true, true, false);
     }
 
     public ItemStack getCustomItem(Player p, String itemName){
-        String section = plugin.has.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("custom-item." + itemName), p);
+        String section = plugin.ctx.has.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("custom-item." + itemName), p);
         ConfigurationSection itemSection = panelConfig.getConfigurationSection("custom-item." + itemName + section);
-        return plugin.itemCreate.makeCustomItemFromConfig(this,PanelPosition.Top,itemSection, p, true, true, false);
+        return plugin.ctx.itemCreate.makeCustomItemFromConfig(this,PanelPosition.Top,itemSection, p, true, true, false);
     }
 
     //NBT will equal to panelName:slot and the slot will be -1 if item is not stationery
     public ItemStack getHotbarItem(Player p){
         if (this.getConfig().contains("open-with-item.pre-load-commands")) {
             try {
-                plugin.commandRunner.runCommands(this,PanelPosition.Top,p, this.getConfig().getStringList("open-with-item.pre-load-commands"), null);
+                plugin.ctx.commandRunner.runCommands(this,PanelPosition.Top,p, this.getConfig().getStringList("open-with-item.pre-load-commands"), null);
             }catch(Exception s){
-                plugin.debug(s,p);
+                plugin.ctx.debug.send(s,p, plugin.ctx);
             }
         }
-        ItemStack s = plugin.itemCreate.makeItemFromConfig(this,PanelPosition.Top,getHotbarSection(p), p, true, true, false);
+        ItemStack s = plugin.ctx.itemCreate.makeItemFromConfig(this,PanelPosition.Top,getHotbarSection(p), p, true, true, false);
         String slot = "-1";
         if(getHotbarSection(p).isSet("stationary")){
             slot = getHotbarSection(p).getString("stationary");
         }
         try {
             //add NBT to item and return the ItemStack
-            return plugin.nbt.setNBT(s, "CommandPanelsHotbar", panelName + ":" + slot);
+            return plugin.ctx.nbt.setNBT(s, "CommandPanelsHotbar", panelName + ":" + slot);
         }catch(Exception e) {
             //return air if null
             return new ItemStack(Material.AIR);
         }
     }
     public ConfigurationSection getHotbarSection(Player p){
-        String section = plugin.has.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("open-with-item"), p);
+        String section = plugin.ctx.has.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("open-with-item"), p);
         return panelConfig.getConfigurationSection("open-with-item" + section);
     }
 
@@ -116,13 +116,13 @@ public class Panel{
 
     //this will make a preview of the inventory using a certain player on the top
     public Inventory getInventory(Player p){
-        return plugin.createGUI.openGui(this,p,PanelPosition.Top, PanelOpenType.Return,0);
+        return plugin.ctx.createGUI.openGui(this,p,PanelPosition.Top, PanelOpenType.Return,0);
     }
 
     //open the panel for the player
     public void open(Player p, PanelPosition position){
         isOpen = true;
-        plugin.openVoids.openCommandPanel(p, p, this, position, false);
+        plugin.ctx.openVoids.openCommandPanel(p, p, this, position, false);
     }
 
     //create blank clone

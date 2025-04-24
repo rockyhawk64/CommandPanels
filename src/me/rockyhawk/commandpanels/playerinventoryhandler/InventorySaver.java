@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.playerinventoryhandler;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -21,17 +21,16 @@ import java.util.stream.Collectors;
 public class InventorySaver implements Listener {
     public YamlConfiguration inventoryConfig;
 
-    CommandPanels plugin;
-    public InventorySaver(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public InventorySaver(Context pl) {
+        this.ctx = pl;
     }
 
     public void saveInventoryFile(){
         try {
-            inventoryConfig.save(plugin.getDataFolder() + File.separator + "inventories.yml");
+            inventoryConfig.save(ctx.plugin.getDataFolder() + File.separator + "inventories.yml");
         } catch (IOException s) {
-            s.printStackTrace();
-            plugin.debug(s,null);
+            ctx.debug.send(s,null, ctx);
         }
     }
 
@@ -57,14 +56,14 @@ public class InventorySaver implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onDeath(PlayerDeathEvent e){
         //drop the players inventory if a mutli panel is open in the inventory
-        if (plugin.openPanels.hasPanelOpen(e.getEntity().getName(), PanelPosition.Middle) || plugin.openPanels.hasPanelOpen(e.getEntity().getName(), PanelPosition.Bottom)) {
+        if (ctx.openPanels.hasPanelOpen(e.getEntity().getName(), PanelPosition.Middle) || ctx.openPanels.hasPanelOpen(e.getEntity().getName(), PanelPosition.Bottom)) {
             if(e.getKeepInventory()) return;
 
             e.getDrops().clear();
 
             // Retrieve the inventory, filter out null items, and then add them to e.getDrops()
             // e.getDrops() will just return Null in general, just by containing null items in it
-            ItemStack[] inventoryItems = plugin.inventorySaver.getNormalInventory(e.getEntity());
+            ItemStack[] inventoryItems = ctx.inventorySaver.getNormalInventory(e.getEntity());
             List<ItemStack> nonNullItems = Arrays.stream(inventoryItems)
                     .filter(Objects::nonNull) // Filter out null items
                     .collect(Collectors.toList()); // Collect the remaining items into a list
@@ -82,7 +81,7 @@ public class InventorySaver implements Listener {
         if(p == null){
             return;
         }
-        if(plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Middle) || plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Bottom)){
+        if(ctx.openPanels.hasPanelOpen(p.getName(),PanelPosition.Middle) || ctx.openPanels.hasPanelOpen(p.getName(),PanelPosition.Bottom)){
             if(position == PanelPosition.Bottom){
                 for(int s = 0; s < 9; s++){
                     p.getInventory().setItem(s,null);
@@ -95,14 +94,14 @@ public class InventorySaver implements Listener {
             return;
         }
         if(inventoryConfig.isSet(p.getUniqueId().toString())){
-            p.getInventory().setContents(plugin.itemSerializer.itemStackArrayFromBase64(inventoryConfig.getString(p.getUniqueId().toString())));
+            p.getInventory().setContents(ctx.itemSerializer.itemStackArrayFromBase64(inventoryConfig.getString(p.getUniqueId().toString())));
             inventoryConfig.set(p.getUniqueId().toString(),null);
         }
     }
 
     public void addInventory(Player p){
         if(!inventoryConfig.contains(p.getUniqueId().toString())){
-            inventoryConfig.set(p.getUniqueId().toString(),plugin.itemSerializer.itemStackArrayToBase64(p.getInventory().getContents()));
+            inventoryConfig.set(p.getUniqueId().toString(), ctx.itemSerializer.itemStackArrayToBase64(p.getInventory().getContents()));
             //will clear items except leave armour on the player while panels are open
             ItemStack[] armorContents = p.getInventory().getArmorContents().clone(); //Clone armour slots
             p.getInventory().clear(); //Clear inventory
@@ -114,7 +113,7 @@ public class InventorySaver implements Listener {
         if(hasNormalInventory(p)){
             return p.getInventory().getContents();
         }else{
-            return plugin.itemSerializer.itemStackArrayFromBase64(inventoryConfig.getString(p.getUniqueId().toString()));
+            return ctx.itemSerializer.itemStackArrayFromBase64(inventoryConfig.getString(p.getUniqueId().toString()));
         }
     }
 
@@ -144,7 +143,7 @@ public class InventorySaver implements Listener {
                 }
             }
             if(found){
-                inventoryConfig.set(p.getUniqueId().toString(), plugin.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
+                inventoryConfig.set(p.getUniqueId().toString(), ctx.itemSerializer.itemStackArrayToBase64(cont.toArray(new ItemStack[0])));
                 return;
             }
         }

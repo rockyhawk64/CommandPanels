@@ -1,6 +1,6 @@
-package me.rockyhawk.commandpanels.floodgatecp;
+package me.rockyhawk.commandpanels.floodgate;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.PanelOpenedEvent;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class OpenFloodgateGUI implements Listener {
-    private CommandPanels plugin;
+    private Context ctx;
 
-    public OpenFloodgateGUI(CommandPanels pl) {
-        this.plugin = pl;
+    public OpenFloodgateGUI(Context pl) {
+        this.ctx = pl;
     }
 
     @EventHandler
@@ -49,15 +49,15 @@ public class OpenFloodgateGUI implements Listener {
     private void createAndSendSimpleForm(PanelOpenedEvent e, FloodgatePlayer fgPlayer, ConfigurationSection fgPanel) {
         //replace for multi-line support in simpleform content title
         SimpleForm.Builder form = SimpleForm.builder()
-                .title(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), e.getPanel().getConfig().getString("title"))))
-                .content(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fgPanel.getString("simple")).replaceAll("\\\\n", "\n")));
+                .title(ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), e.getPanel().getConfig().getString("title"))))
+                .content(ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), fgPanel.getString("simple")).replaceAll("\\\\n", "\n")));
 
         List<String> buttonCommands;
         try {
             buttonCommands = processButtons(fgPanel, form, e.getPanel(), e.getPlayer());
         }catch (Exception err){
-            e.getPlayer().sendMessage(plugin.tag + ChatColor.RED + "FloodGate panel button config error");
-            plugin.debug(err, e.getPlayer());
+            e.getPlayer().sendMessage(ctx.tag + ChatColor.RED + "FloodGate panel button config error");
+            ctx.debug.send(err, e.getPlayer(), ctx);
             return;
         }
 
@@ -65,11 +65,11 @@ public class OpenFloodgateGUI implements Listener {
             int clickedButtonId = response.clickedButtonId();
             String configKey = buttonCommands.get(clickedButtonId);
 
-            String section = plugin.has.hasSection(e.getPanel(), PanelPosition.Top, fgPanel.getConfigurationSection(configKey), e.getPlayer());
+            String section = ctx.has.hasSection(e.getPanel(), PanelPosition.Top, fgPanel.getConfigurationSection(configKey), e.getPlayer());
             ConfigurationSection buttonConfig = fgPanel.getConfigurationSection(configKey + section);
 
             if(buttonConfig.contains("commands")) {
-                plugin.commandRunner.runCommands(e.getPanel(), PanelPosition.Top, e.getPlayer(), buttonConfig.getStringList("commands"), null);
+                ctx.commandRunner.runCommands(e.getPanel(), PanelPosition.Top, e.getPlayer(), buttonConfig.getStringList("commands"), null);
             }
         });
 
@@ -83,20 +83,20 @@ public class OpenFloodgateGUI implements Listener {
                 .filter(key -> { // Filter out keys where "text" is missing
                     ConfigurationSection buttonConfig = fgPanel.getConfigurationSection(key);
                     if (buttonConfig == null) return false; // Ensure buttonConfig exists
-                    String section = plugin.has.hasSection(panel, PanelPosition.Top, buttonConfig, p);
+                    String section = ctx.has.hasSection(panel, PanelPosition.Top, buttonConfig, p);
                     ConfigurationSection resolvedConfig = fgPanel.getConfigurationSection(key + section);
                     return resolvedConfig != null && resolvedConfig.contains("text"); // Ensure resolvedConfig and "text" exist
                 })
                 .map(key -> {
-                    String section = plugin.has.hasSection(panel, PanelPosition.Top, fgPanel.getConfigurationSection(key), p);
+                    String section = ctx.has.hasSection(panel, PanelPosition.Top, fgPanel.getConfigurationSection(key), p);
                     ConfigurationSection buttonConfig = fgPanel.getConfigurationSection(key + section);
 
-                    String buttonContent = plugin.tex.placeholders(panel, null, p, buttonConfig.getString("text").replaceAll("\\\\n", "\n"));
+                    String buttonContent = ctx.tex.placeholders(panel, null, p, buttonConfig.getString("text").replaceAll("\\\\n", "\n"));
                     if (!buttonConfig.contains("icon")) {
                         form.button(buttonContent);
                     } else {
-                        FormImage.Type type = FormImage.Type.valueOf(plugin.tex.placeholders(panel, null, p, buttonConfig.getString("icon.type")).toUpperCase());
-                        String texture = plugin.tex.placeholders(panel, null, p, buttonConfig.getString("icon.texture"));
+                        FormImage.Type type = FormImage.Type.valueOf(ctx.tex.placeholders(panel, null, p, buttonConfig.getString("icon.type")).toUpperCase());
+                        String texture = ctx.tex.placeholders(panel, null, p, buttonConfig.getString("icon.texture"));
                         form.button(buttonContent, type, texture);
                     }
 
@@ -107,12 +107,12 @@ public class OpenFloodgateGUI implements Listener {
 
     private void createAndSendCustomForm(PanelOpenedEvent e, FloodgatePlayer fgPlayer, ConfigurationSection fgPanel) {
         CustomForm.Builder form = CustomForm.builder()
-                .title(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), e.getPanel().getConfig().getString("title")));
+                .title(ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), e.getPanel().getConfig().getString("title")));
 
         List<String> commandsOrder = new ArrayList<>();
         fgPanel.getKeys(false).forEach(key -> {
             if (key.matches("\\d+")) {
-                String section = plugin.has.hasSection(e.getPanel(), e.getPosition(), fgPanel.getConfigurationSection(key), e.getPlayer());
+                String section = ctx.has.hasSection(e.getPanel(), e.getPosition(), fgPanel.getConfigurationSection(key), e.getPlayer());
                 ConfigurationSection fieldConfig = fgPanel.getConfigurationSection(key + section);
                 if(!fieldConfig.contains("text")) {
                     //skip do not add the element if text value is missing
@@ -126,33 +126,33 @@ public class OpenFloodgateGUI implements Listener {
                     }
                     switch (type) {
                         case "toggle":
-                            form.toggle(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
-                                    Boolean.parseBoolean(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("default"))));
+                            form.toggle(ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
+                                    Boolean.parseBoolean(ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("default"))));
                             commandsOrder.add(key);
                             break;
                         case "slider":
-                            form.slider(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
-                                    Long.parseLong(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("min"))),
-                                    Long.parseLong(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("max"))),
-                                    Long.parseLong(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("step"))),
-                                    Long.parseLong(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("default"))));
+                            form.slider(ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
+                                    Long.parseLong(ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("min"))),
+                                    Long.parseLong(ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("max"))),
+                                    Long.parseLong(ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("step"))),
+                                    Long.parseLong(ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("default"))));
                             commandsOrder.add(key);
                             break;
                         case "input":
-                            form.input(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
-                                    plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("placeholder")),
-                                    plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("default")));
+                            form.input(ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
+                                    ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("placeholder")),
+                                    ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("default")));
                             commandsOrder.add(key);
                             break;
                         case "dropdown":
-                            form.dropdown(plugin.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
-                                    plugin.tex.placeholdersList(e.getPanel(), null, e.getPlayer(), fieldConfig.getStringList("options"), true));
+                            form.dropdown(ctx.tex.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
+                                    ctx.tex.placeholdersList(e.getPanel(), null, e.getPlayer(), fieldConfig.getStringList("options"), true));
                             commandsOrder.add(key);
                             break;
                     }
                 }catch (Exception err){
-                    e.getPlayer().sendMessage(plugin.tag + ChatColor.RED + "FloodGate panel button config error");
-                    plugin.debug(err, e.getPlayer());
+                    e.getPlayer().sendMessage(ctx.tag + ChatColor.RED + "FloodGate panel button config error");
+                    ctx.debug.send(err, e.getPlayer(), ctx);
                 }
             }
         });
@@ -162,7 +162,7 @@ public class OpenFloodgateGUI implements Listener {
                 if (!response.hasNext()) {
                     break;  // Safety check to prevent NoSuchElementException
                 }
-                String section = plugin.has.hasSection(e.getPanel(), e.getPosition(), fgPanel.getConfigurationSection(configKey), e.getPlayer());
+                String section = ctx.has.hasSection(e.getPanel(), e.getPosition(), fgPanel.getConfigurationSection(configKey), e.getPlayer());
                 ConfigurationSection fieldConfig = fgPanel.getConfigurationSection(configKey + section);
 
                 if(fieldConfig.contains("commands")) {
@@ -173,7 +173,7 @@ public class OpenFloodgateGUI implements Listener {
                     for (String command : commands) {
                         processedCommands.add(command.replaceAll("%cp-input%", value));  // Replace the placeholder in each command
                     }
-                    plugin.commandRunner.runCommands(e.getPanel(), PanelPosition.Top, e.getPlayer(), processedCommands, null);  // Execute the processed commands
+                    ctx.commandRunner.runCommands(e.getPanel(), PanelPosition.Top, e.getPlayer(), processedCommands, null);  // Execute the processed commands
                 }
             }
         });

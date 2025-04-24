@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.commandtags;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.entity.Player;
@@ -17,7 +17,7 @@ public class CommandTagEvent extends Event {
     public PanelPosition pos;
     public boolean commandTagUsed = false;
 
-    public CommandTagEvent(CommandPanels plugin, Panel panel1, PanelPosition position, Player player, String rawCommand1) {
+    public CommandTagEvent(Context ctx, Panel panel1, PanelPosition position, Player player, String rawCommand1) {
         this.p = player;
         this.panel = panel1;
         this.pos = position;
@@ -37,10 +37,10 @@ public class CommandTagEvent extends Event {
         this.name = split[0].trim();
         this.raw = split[1].trim().split("\\s");
         if(doApiPlaceholders) {
-            this.args = plugin.tex.attachPlaceholders(panel1,pos, player, split[1].trim()).split("\\s");
+            this.args = ctx.tex.attachPlaceholders(panel1,pos, player, split[1].trim()).split("\\s");
         }else{
-            this.args = plugin.placeholders.setPlaceholders(panel, pos, p,split[1].trim(),false).split("\\s");
-            this.args = plugin.placeholders.setPlaceholders(panel, pos, p,split[1].trim(),true).split("\\s");
+            this.args = ctx.placeholders.setPlaceholders(panel, pos, p,split[1].trim(),false).split("\\s");
+            this.args = ctx.placeholders.setPlaceholders(panel, pos, p,split[1].trim(),true).split("\\s");
         }
     }
 

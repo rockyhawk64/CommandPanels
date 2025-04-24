@@ -13,15 +13,15 @@ import java.util.List;
 import java.util.Objects;
 
 public class Utils implements Listener {
-    CommandPanels plugin;
-    public Utils(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public Utils(Context pl) {
+        ctx = pl;
     }
 
     @EventHandler
     public void onItemDrag(InventoryDragEvent e) {
         Player p = (Player)e.getWhoClicked();
-        if(!plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
+        if(!ctx.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top)){
             return;
         }
         if(e.getInventory().getType() != InventoryType.PLAYER){
@@ -35,20 +35,20 @@ public class Utils implements Listener {
         Player p = (Player)e.getWhoClicked();
         int clickedSlot = e.getSlot();
 
-        if(!plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top) || e.getClick() == ClickType.DOUBLE_CLICK){
+        if(!ctx.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top) || e.getClick() == ClickType.DOUBLE_CLICK){
             return;
         }
 
         //set the panel to the top panel
-        Panel panel = plugin.openPanels.getOpenPanel(p.getName(),PanelPosition.Top);
+        Panel panel = ctx.openPanels.getOpenPanel(p.getName(),PanelPosition.Top);
 
         if(e.getSlotType() == InventoryType.SlotType.OUTSIDE){
             //if the panel is clicked on the outside area of the GUI
             if (panel.getConfig().contains("outside-commands")) {
                 try {
-                    plugin.commandRunner.runCommands(panel,PanelPosition.Top,p, panel.getConfig().getStringList("outside-commands"),e.getClick());
+                    ctx.commandRunner.runCommands(panel,PanelPosition.Top,p, panel.getConfig().getStringList("outside-commands"),e.getClick());
                 }catch(Exception s){
-                    plugin.debug(s,p);
+                    ctx.debug.send(s,p, ctx);
                 }
             }
             return;
@@ -64,7 +64,7 @@ public class Utils implements Listener {
 
             //do player or panel inventory checks
             if (e.getSlotType() == InventoryType.SlotType.CONTAINER) {
-                if(plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Middle)) {
+                if(ctx.openPanels.hasPanelOpen(p.getName(),PanelPosition.Middle)) {
                     position = PanelPosition.Middle;
                     clickedSlot -= 9;
                 }else{
@@ -72,7 +72,7 @@ public class Utils implements Listener {
                     return;
                 }
             } else{
-                if(plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Bottom)) {
+                if(ctx.openPanels.hasPanelOpen(p.getName(),PanelPosition.Bottom)) {
                     position = PanelPosition.Bottom;
                     //this is set to cancelled as if the command is to close the panel and there is a hotbar item in the same slot
                     //it will also trigger the hotbar item after the panel is closed
@@ -85,12 +85,12 @@ public class Utils implements Listener {
         }
 
         //the panels proper position
-        panel = plugin.openPanels.getOpenPanel(p.getName(),position);
+        panel = ctx.openPanels.getOpenPanel(p.getName(),position);
 
         //this loops through all the items in the panel
         String foundSlot = null;
         for(String item : Objects.requireNonNull(panel.getConfig().getConfigurationSection("item")).getKeys(false)){
-            String slot = plugin.tex.placeholdersNoColour(panel, position, p, item);
+            String slot = ctx.tex.placeholdersNoColour(panel, position, p, item);
             if (slot.equals(Integer.toString(clickedSlot))) {
                 foundSlot = item;
                 break;
@@ -101,7 +101,7 @@ public class Utils implements Listener {
         if(foundSlot == null){
             // Loop through all items to check their duplicate configurations
             for(String item : Objects.requireNonNull(panel.getConfig().getConfigurationSection("item")).getKeys(false)){
-                String section = plugin.has.hasSection(panel, position, panel.getConfig().getConfigurationSection("item." + item), p);
+                String section = ctx.has.hasSection(panel, position, panel.getConfig().getConfigurationSection("item." + item), p);
 
                 // Check if this item has a duplicate configuration
                 if(panel.getConfig().contains("item." + item + section + ".duplicate")) {
@@ -122,7 +122,7 @@ public class Utils implements Listener {
         }
 
         //get the section of the slot that was clicked
-        String section = plugin.has.hasSection(panel,position,panel.getConfig().getConfigurationSection("item." + foundSlot), p);
+        String section = ctx.has.hasSection(panel,position,panel.getConfig().getConfigurationSection("item." + foundSlot), p);
 
         if(panel.getConfig().contains("item." + foundSlot + section + ".itemType")){
             if(panel.getConfig().getStringList("item." + foundSlot + section + ".itemType").contains("placeable")){
@@ -152,7 +152,7 @@ public class Utils implements Listener {
             boolean validClickFound = false;
 
             for(String playerInput : playerInputs) {
-                String validInput = plugin.commandRunner.hasCorrectClick(playerInput, click);
+                String validInput = ctx.commandRunner.hasCorrectClick(playerInput, click);
                 if(!validInput.isEmpty()) {
                     filteredPlayerInputs.add(validInput);
                     validClickFound = true;
@@ -161,8 +161,8 @@ public class Utils implements Listener {
 
             // Only process player input if we have valid inputs for this click type
             if(validClickFound) {
-                plugin.inputUtils.playerInput.put(p, new PlayerInput(panel, filteredPlayerInputs, cancelCommands, click));
-                plugin.inputUtils.sendInputMessage(panel, position, p);
+                ctx.inputUtils.playerInput.put(p, new PlayerInput(panel, filteredPlayerInputs, cancelCommands, click));
+                ctx.inputUtils.sendInputMessage(panel, position, p);
             }
         }
 
@@ -178,11 +178,11 @@ public class Utils implements Listener {
                     }
                 }
                 if (panel.getConfig().contains("item." + foundSlot + section + ".multi-paywall")) {
-                    plugin.commandRunner.runMultiPaywall(panel, position, p,
+                    ctx.commandRunner.runMultiPaywall(panel, position, p,
                             panel.getConfig().getStringList("item." + foundSlot + section + ".multi-paywall"),
                             commands, e.getClick());
                 } else {
-                    plugin.commandRunner.runCommands(panel, position, p, commands, e.getClick());
+                    ctx.commandRunner.runCommands(panel, position, p, commands, e.getClick());
                 }
             }
         }

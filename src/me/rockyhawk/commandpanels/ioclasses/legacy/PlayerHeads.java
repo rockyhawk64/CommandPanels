@@ -1,11 +1,11 @@
 package me.rockyhawk.commandpanels.ioclasses.legacy;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 
 public class PlayerHeads {
-    CommandPanels plugin;
-    public PlayerHeads(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public PlayerHeads(Context pl) {
+        this.ctx = pl;
     }
 
     public boolean ifSkullOrHead(String material) {
@@ -13,7 +13,7 @@ public class PlayerHeads {
     }
 
     public String playerHeadString() {
-        if(plugin.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+        if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
             return "SKULL_ITEM";
         }else{
             return "PLAYER_HEAD";

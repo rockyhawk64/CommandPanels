@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.ioclasses.nbt;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.ChatColor;
@@ -23,7 +23,7 @@ PersistentDataHandler.java <-- Fallback using PersistentDataContainer
 public class NBTManager {
     private final NBTHandler handler;
 
-    public NBTManager(CommandPanels plugin) {
+    public NBTManager(Context ctx) {
         NBTHandler nbtHandler;
 
         try {
@@ -41,8 +41,8 @@ public class NBTManager {
                 throw new IllegalStateException("NBTAPI test failed – values didn't match.");
             }
         } catch (Throwable ex) {
-            plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[CommandPanels] NBTAPI Error: version being used may not be compatible with this version of Minecraft. Falling back to use PersistentData.");
-            nbtHandler = new PersistentDataHandler(plugin);
+            ctx.plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[CommandPanels] NBTAPI Error: version being used may not be compatible with this version of Minecraft. Falling back to use PersistentData.");
+            nbtHandler = new PersistentDataHandler(ctx.plugin);
         }
 
         this.handler = nbtHandler;

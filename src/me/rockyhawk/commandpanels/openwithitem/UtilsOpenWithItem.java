@@ -1,8 +1,8 @@
 package me.rockyhawk.commandpanels.openwithitem;
 
-import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.ioclasses.iteminhand.GetItemInHand;
-import me.rockyhawk.commandpanels.ioclasses.iteminhand.GetItemInHand_Legacy;
+import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.openwithitem.iteminhand.GetItemInHand;
+import me.rockyhawk.commandpanels.openwithitem.iteminhand.GetItemInHandLegacy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,14 +21,14 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class UtilsOpenWithItem implements Listener {
-    CommandPanels plugin;
-    public UtilsOpenWithItem(CommandPanels pl) {
-        this.plugin = pl;
+    Context ctx;
+    public UtilsOpenWithItem(Context pl) {
+        this.ctx = pl;
     }
     @EventHandler
     public void onAnyClick(InventoryClickEvent e) {
         //on a click when in any inventory
-        if(!plugin.openWithItem){
+        if(!ctx.plugin.openWithItem){
             //if none of the panels have open-with-item
             return;
         }
@@ -41,7 +41,7 @@ public class UtilsOpenWithItem implements Listener {
             return;
         }
         if(e.getClickedInventory().getType() == InventoryType.PLAYER && !e.isCancelled()) {
-            if (plugin.hotbar.stationaryExecute(e.getSlot(), p,e.getClick(), true)) {
+            if (ctx.hotbar.stationaryExecute(e.getSlot(), p,e.getClick(), true)) {
                 e.setCancelled(true);
                 p.updateInventory();
             }
@@ -50,7 +50,7 @@ public class UtilsOpenWithItem implements Listener {
     @EventHandler
     public void onPlayerUse(PlayerInteractEvent e){
         //item right-clicked only (not left because that causes issues when things are interacted with)
-        if(!plugin.openWithItem){
+        if(!ctx.plugin.openWithItem){
             //if none of the panels have open-with-item
             return;
         }
@@ -62,7 +62,7 @@ public class UtilsOpenWithItem implements Listener {
             return;
         }
         Player p = e.getPlayer();
-        if(plugin.hotbar.itemCheckExecute(e.getItem(),p,true,false)){
+        if(ctx.hotbar.itemCheckExecute(e.getItem(),p,true,false)){
             e.setCancelled(true);
             p.updateInventory();
         }
@@ -71,19 +71,19 @@ public class UtilsOpenWithItem implements Listener {
     public void onBlockPlace(BlockPlaceEvent e)
     {
         //item right-clicked only (not left because that causes issues when things are interacted with)
-        if(!plugin.openWithItem){
+        if(!ctx.plugin.openWithItem){
             //if none of the panels have open-with-item
             return;
         }
 
         Player p = e.getPlayer();
         if(Bukkit.getVersion().contains("1.8")){
-            if(plugin.hotbar.itemCheckExecute(e.getPlayer().getItemInHand(),p,false,false)){
+            if(ctx.hotbar.itemCheckExecute(e.getPlayer().getItemInHand(),p,false,false)){
                 e.setCancelled(true);
                 p.updateInventory();
             }
         }else{
-            if(plugin.hotbar.itemCheckExecute(e.getPlayer().getInventory().getItemInMainHand(),p,false,false)){
+            if(ctx.hotbar.itemCheckExecute(e.getPlayer().getInventory().getItemInMainHand(),p,false,false)){
                 e.setCancelled(true);
                 p.updateInventory();
             }
@@ -92,16 +92,16 @@ public class UtilsOpenWithItem implements Listener {
     }
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e){
-        plugin.hotbar.updateHotbarItems(e.getPlayer());
+        ctx.hotbar.updateHotbarItems(e.getPlayer());
     }
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e){
-        plugin.hotbar.updateHotbarItems(e.getPlayer());
+        ctx.hotbar.updateHotbarItems(e.getPlayer());
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e){
-        if(!plugin.openWithItem){
+        if(!ctx.plugin.openWithItem){
             //if none of the panels have open-with-item
             return;
         }
@@ -110,10 +110,10 @@ public class UtilsOpenWithItem implements Listener {
         try {
             for (ItemStack s : new ArrayList<>(e.getDrops())) {
                 try {
-                    if (plugin.nbt.getNBTValue(s, "CommandPanelsHotbar") != null &&
-                            !String.valueOf(plugin.nbt.getNBTValue(s, "CommandPanelsHotbar")).isEmpty()) {
+                    if (ctx.nbt.getNBTValue(s, "CommandPanelsHotbar") != null &&
+                            !String.valueOf(ctx.nbt.getNBTValue(s, "CommandPanelsHotbar")).isEmpty()) {
                         //do not remove items that are not stationary
-                        if (!String.valueOf(plugin.nbt.getNBTValue(s, "CommandPanelsHotbar")).endsWith("-1")) {
+                        if (!String.valueOf(ctx.nbt.getNBTValue(s, "CommandPanelsHotbar")).endsWith("-1")) {
                             e.getDrops().remove(s);
                         }
                     }
@@ -123,28 +123,28 @@ public class UtilsOpenWithItem implements Listener {
     }
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e){
-        plugin.hotbar.updateHotbarItems(e.getPlayer());
+        ctx.hotbar.updateHotbarItems(e.getPlayer());
     }
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e){
-        plugin.hotbar.stationaryItems.remove(e.getPlayer().getUniqueId());
+        ctx.hotbar.stationaryItems.remove(e.getPlayer().getUniqueId());
     }
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent e){
-        if(!plugin.openWithItem){
+        if(!ctx.plugin.openWithItem){
             //if none of the panels have open-with-item
             return;
         }
         //if item dropped
         Player p = e.getPlayer();
-        if(plugin.hotbar.itemCheckExecute(e.getItemDrop().getItemStack(),p,false,true)){
+        if(ctx.hotbar.itemCheckExecute(e.getItemDrop().getItemStack(),p,false,true)){
             e.setCancelled(true);
             p.updateInventory();
         }
     }
     @EventHandler
     public void onInteractEntity(PlayerInteractEntityEvent e){
-        if(!plugin.openWithItem){
+        if(!ctx.plugin.openWithItem){
             //if none of the panels have open-with-item
             return;
         }
@@ -152,11 +152,11 @@ public class UtilsOpenWithItem implements Listener {
         Player p = e.getPlayer();
         ItemStack clicked;
         if(Bukkit.getVersion().contains("1.8")){
-            clicked =  new GetItemInHand_Legacy(plugin).itemInHand(p);
+            clicked =  new GetItemInHandLegacy().itemInHand(p);
         }else{
-            clicked = new GetItemInHand(plugin).itemInHand(p);
+            clicked = new GetItemInHand().itemInHand(p);
         }
-        if(plugin.hotbar.itemCheckExecute(clicked,p,true,false)){
+        if(ctx.hotbar.itemCheckExecute(clicked,p,true,false)){
             e.setCancelled(true);
             p.updateInventory();
         }

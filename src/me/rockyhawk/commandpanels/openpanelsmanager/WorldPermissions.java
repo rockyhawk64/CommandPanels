@@ -1,15 +1,9 @@
 package me.rockyhawk.commandpanels.openpanelsmanager;
 
-import me.rockyhawk.commandpanels.CommandPanels;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class PanelPermissions {
-    CommandPanels plugin;
-    public PanelPermissions(CommandPanels pl) {
-        this.plugin = pl;
-    }
-
+public class WorldPermissions {
     //if panel has the world enabled
     public boolean isPanelWorldEnabled(Player p, ConfigurationSection panelConfig){
         if(panelConfig.contains("disabled-worlds")){

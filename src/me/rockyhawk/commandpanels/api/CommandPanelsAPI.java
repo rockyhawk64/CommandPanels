@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.api;
 
-import me.rockyhawk.commandpanels.CommandPanels;
+import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,31 +12,31 @@ import java.io.IOException;
 import java.util.List;
 
 public class CommandPanelsAPI {
-    //set to public to adjust any public settings within the plugin through the API
-    public CommandPanels plugin;
+    //Public using CommandPanels and not Context for API usage
+    public Context ctx;
 
-    public CommandPanelsAPI(CommandPanels pl) {
-        this.plugin = pl;
+    public CommandPanelsAPI(Context pl) {
+        this.ctx = pl;
     }
 
     //returns true if the player has a panel open
     public boolean isPanelOpen(Player p){
-        return plugin.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top);
+        return ctx.openPanels.hasPanelOpen(p.getName(),PanelPosition.Top);
     }
 
     //get the name of a panel currently open, will return null if panel is not open
     public Panel getOpenPanel(Player p, PanelPosition position){
-        return plugin.openPanels.getOpenPanel(p.getName(), position);
+        return ctx.openPanels.getOpenPanel(p.getName(), position);
     }
 
     //loaded panels in folder
     public List<Panel> getPanelsLoaded(){
-        return plugin.panelList;
+        return ctx.plugin.panelList;
     }
 
     //import panel into folder
     public void addPanel(Panel panel) throws IOException{
-        File addedFile = new File(plugin.panelsf + File.separator + panel.getName() + ".yml");
+        File addedFile = new File(ctx.configHandler.panelsFolder, panel.getName() + ".yml");
         YamlConfiguration newYaml = new YamlConfiguration();
         if(panel.getConfig().contains("panels")){
             newYaml.set("",panel.getConfig());
@@ -44,15 +44,15 @@ public class CommandPanelsAPI {
             newYaml.set("panels." + panel.getName(),panel.getConfig());
         }
         newYaml.save(addedFile);
-        plugin.reloadPanelFiles();
+        ctx.reloader.reloadPanelFiles();
     }
 
     //remove panel from folder
     public void removePanel(Panel panel){
-        for(Panel panels : plugin.panelList){
+        for(Panel panels : ctx.plugin.panelList){
             if(panels.getName().equals(panel.getName())){
                 if(panels.getFile().delete()){
-                    plugin.reloadPanelFiles();
+                    ctx.reloader.reloadPanelFiles();
                 }
             }
         }
@@ -60,7 +60,7 @@ public class CommandPanelsAPI {
 
     //get panel from folder
     public Panel getPanel(String panelName){
-        for(Panel panel : plugin.panelList) {
+        for(Panel panel : ctx.plugin.panelList) {
             if(panel.getName().equals(panelName)) {
                 return panel;
             }
@@ -70,11 +70,11 @@ public class CommandPanelsAPI {
 
     //if the players inventory has no panels in it
     public boolean hasNormalInventory(Player p){
-        return plugin.inventorySaver.hasNormalInventory(p);
+        return ctx.inventorySaver.hasNormalInventory(p);
     }
 
     //make custom item using items section
     public ItemStack makeItem(Player p, ConfigurationSection itemSection){
-        return plugin.itemCreate.makeCustomItemFromConfig(null,PanelPosition.Top,itemSection, p, true, true, false);
+        return ctx.itemCreate.makeCustomItemFromConfig(null,PanelPosition.Top,itemSection, p, true, true, false);
     }
 }
