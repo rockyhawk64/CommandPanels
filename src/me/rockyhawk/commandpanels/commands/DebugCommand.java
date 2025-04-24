@@ -18,23 +18,23 @@ public class DebugCommand implements CommandExecutor {
                 //command /cpd
                 if(!(sender instanceof Player)) {
                     ctx.debug.consoleDebug = !ctx.debug.consoleDebug;
-                    sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.GREEN + "Global Debug Mode: " + ctx.debug.consoleDebug));
+                    sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.GREEN + "Global Debug Mode: " + ctx.debug.consoleDebug));
                     return true;
                 }
 
                 Player p = (Player)sender;
                 if(ctx.debug.isEnabled(p)){
                     ctx.debug.debugSet.remove(p);
-                    sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.GREEN + "Personal Debug Mode Disabled!"));
+                    sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.GREEN + "Personal Debug Mode Disabled!"));
                 }else{
                     ctx.debug.debugSet.add(p);
-                    sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.GREEN + "Personal Debug Mode Enabled!"));
+                    sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.GREEN + "Personal Debug Mode Enabled!"));
                 }
             }else{
-                sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "Usage: /cpd"));
+                sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "Usage: /cpd"));
             }
         }else{
-            sender.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
+            sender.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
         }
         return true;
     }

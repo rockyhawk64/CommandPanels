@@ -2,7 +2,7 @@ package me.rockyhawk.commandpanels;
 
 import me.rockyhawk.commandpanels.api.CommandPanelsAPI;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.openpanelsmanager.*;
+import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;

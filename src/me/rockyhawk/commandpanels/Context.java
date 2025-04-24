@@ -1,59 +1,57 @@
 package me.rockyhawk.commandpanels;
 
-import me.rockyhawk.commandpanels.classresources.ExecuteOpenVoids;
-import me.rockyhawk.commandpanels.classresources.HasSections;
-import me.rockyhawk.commandpanels.classresources.ItemCreation;
-import me.rockyhawk.commandpanels.classresources.MiniMessageUtils;
-import me.rockyhawk.commandpanels.classresources.customheads.GetCustomHeads;
-import me.rockyhawk.commandpanels.classresources.item_fall.ItemFallManager;
-import me.rockyhawk.commandpanels.classresources.placeholders.CreateText;
-import me.rockyhawk.commandpanels.classresources.placeholders.HexColours;
-import me.rockyhawk.commandpanels.classresources.placeholders.Placeholders;
-import me.rockyhawk.commandpanels.classresources.placeholders.expansion.PlaceholderAPI;
+import me.rockyhawk.commandpanels.interaction.click.InteractionHandler;
+import me.rockyhawk.commandpanels.manager.open.OpenPanel;
+import me.rockyhawk.commandpanels.items.HasSections;
+import me.rockyhawk.commandpanels.items.ItemCreation;
+import me.rockyhawk.commandpanels.formatter.MiniMessage;
+import me.rockyhawk.commandpanels.items.customheads.GetCustomHeads;
+import me.rockyhawk.commandpanels.items.dropitem.DroppedItemHandler;
+import me.rockyhawk.commandpanels.formatter.CreateText;
+import me.rockyhawk.commandpanels.formatter.HexColours;
+import me.rockyhawk.commandpanels.formatter.placeholders.Placeholders;
+import me.rockyhawk.commandpanels.formatter.placeholders.PlaceholderAPI;
 import me.rockyhawk.commandpanels.commands.*;
-import me.rockyhawk.commandpanels.commandtags.CommandRunner;
-import me.rockyhawk.commandpanels.completetabs.PanelTabComplete;
-import me.rockyhawk.commandpanels.completetabs.DataTabComplete;
-import me.rockyhawk.commandpanels.completetabs.ImportTabComplete;
-import me.rockyhawk.commandpanels.completetabs.UpdateTabComplete;
+import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
+import me.rockyhawk.commandpanels.commands.tabcomplete.PanelTabComplete;
+import me.rockyhawk.commandpanels.commands.tabcomplete.DataTabComplete;
+import me.rockyhawk.commandpanels.commands.tabcomplete.ImportTabComplete;
+import me.rockyhawk.commandpanels.commands.tabcomplete.UpdateTabComplete;
 import me.rockyhawk.commandpanels.configuration.ConfigHandler;
-import me.rockyhawk.commandpanels.customcommands.PanelCommands;
-import me.rockyhawk.commandpanels.datamanager.DebugManager;
-import me.rockyhawk.commandpanels.datamanager.PanelDataLoader;
-import me.rockyhawk.commandpanels.datamanager.PanelDataPlayerManager;
+import me.rockyhawk.commandpanels.commands.opencommands.OpenCommands;
+import me.rockyhawk.commandpanels.configuration.DebugManager;
+import me.rockyhawk.commandpanels.formatter.data.DataLoader;
+import me.rockyhawk.commandpanels.formatter.data.DataManager;
 import me.rockyhawk.commandpanels.deluxecompatibility.CompatibilityConverter;
-import me.rockyhawk.commandpanels.editor.CommandPanelsEditor;
-import me.rockyhawk.commandpanels.editor.EditorTabComplete;
-import me.rockyhawk.commandpanels.editor.PanelDownloader;
-import me.rockyhawk.commandpanels.floodgate.OpenFloodgateGUI;
-import me.rockyhawk.commandpanels.generatepanels.GenerateCommand;
-import me.rockyhawk.commandpanels.generatepanels.GenUtils;
-import me.rockyhawk.commandpanels.generatepanels.TabCompleteGenerate;
-import me.rockyhawk.commandpanels.interactives.PanelRefresher;
-import me.rockyhawk.commandpanels.interactives.OpenOnJoin;
-import me.rockyhawk.commandpanels.interactives.OutsideClickEvent;
-import me.rockyhawk.commandpanels.interactives.input.PlayerInputUtils;
-import me.rockyhawk.commandpanels.ioclasses.legacy.LegacyVersion;
-import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
-import me.rockyhawk.commandpanels.ioclasses.legacy.PlayerHeads;
-import me.rockyhawk.commandpanels.ioclasses.nbt.NBTManager;
-import me.rockyhawk.commandpanels.ioclasses.potions.ClassicPotionData;
-import me.rockyhawk.commandpanels.ioclasses.potions.LegacyPotionData;
-import me.rockyhawk.commandpanels.openpanelsmanager.OpenGUI;
-import me.rockyhawk.commandpanels.openpanelsmanager.OpenPanelsLoader;
-import me.rockyhawk.commandpanels.openpanelsmanager.WorldPermissions;
-import me.rockyhawk.commandpanels.openpanelsmanager.UtilsPanelsLoader;
+import me.rockyhawk.commandpanels.commands.editor.CommandPanelsEditor;
+import me.rockyhawk.commandpanels.commands.editor.EditorTabComplete;
+import me.rockyhawk.commandpanels.commands.editor.PanelDownloader;
+import me.rockyhawk.commandpanels.builder.floodgate.OpenFloodgateGUI;
+import me.rockyhawk.commandpanels.generate.GenerateCommand;
+import me.rockyhawk.commandpanels.generate.GenUtils;
+import me.rockyhawk.commandpanels.generate.GenTabComplete;
+import me.rockyhawk.commandpanels.manager.refresh.PanelRefresher;
+import me.rockyhawk.commandpanels.manager.OpenEvent;
+import me.rockyhawk.commandpanels.interaction.click.OutsideHandler;
+import me.rockyhawk.commandpanels.interaction.input.PlayerInputUtils;
+import me.rockyhawk.commandpanels.versions.VersionManager;
+import me.rockyhawk.commandpanels.nbt.NBTManager;
+import me.rockyhawk.commandpanels.items.potions.ClassicPotionData;
+import me.rockyhawk.commandpanels.items.potions.LegacyPotionData;
+import me.rockyhawk.commandpanels.builder.OpenGUI;
+import me.rockyhawk.commandpanels.manager.session.SessionHandler;
+import me.rockyhawk.commandpanels.manager.session.SessionUtils;
 import me.rockyhawk.commandpanels.openwithitem.HotbarItemLoader;
-import me.rockyhawk.commandpanels.openwithitem.SwapItemEvent;
-import me.rockyhawk.commandpanels.openwithitem.UtilsChestSortEvent;
-import me.rockyhawk.commandpanels.openwithitem.UtilsOpenWithItem;
-import me.rockyhawk.commandpanels.panelblocks.BlocksTabComplete;
-import me.rockyhawk.commandpanels.panelblocks.BlocksCommand;
-import me.rockyhawk.commandpanels.panelblocks.PanelBlockOnClick;
-import me.rockyhawk.commandpanels.playerinventoryhandler.InventorySaver;
-import me.rockyhawk.commandpanels.playerinventoryhandler.ItemStackSerializer;
-import me.rockyhawk.commandpanels.playerinventoryhandler.pickupevent.EntityPickupEvent;
-import me.rockyhawk.commandpanels.playerinventoryhandler.pickupevent.LegacyPlayerEvent;
+import me.rockyhawk.commandpanels.openwithitem.events.SwapItemEvent;
+import me.rockyhawk.commandpanels.openwithitem.events.UtilsChestSortEvent;
+import me.rockyhawk.commandpanels.openwithitem.events.HotbarEvents;
+import me.rockyhawk.commandpanels.interaction.blocks.BlockTabComplete;
+import me.rockyhawk.commandpanels.interaction.blocks.BlockCommand;
+import me.rockyhawk.commandpanels.interaction.blocks.BlockEvents;
+import me.rockyhawk.commandpanels.inventory.InventorySaver;
+import me.rockyhawk.commandpanels.inventory.ItemStackSerializer;
+import me.rockyhawk.commandpanels.inventory.pickupevent.EntityPickupEvent;
+import me.rockyhawk.commandpanels.inventory.pickupevent.LegacyPlayerEvent;
 import me.rockyhawk.commandpanels.updater.Updater;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -69,32 +67,31 @@ public class Context {
     public PanelDownloader downloader;
     public ConfigHandler configHandler;
     public Economy econ;
-    public LoadReloadCommand reloader;
+    public ReloadCommand reloader;
 
     public CommandRunner commandRunner;
-    public PanelDataLoader panelData;
-    public PanelDataPlayerManager panelDataPlayers;
+    public DataLoader panelData;
+    public DataManager panelDataPlayers;
 
+    public OpenCommands openCommands;
     public Placeholders placeholders;
     public DebugManager debug;
-    public CreateText tex;
+    public CreateText text;
     public HexColours hex;
 
-    public MiniMessageUtils miniMessage;
+    public MiniMessage miniMessage;
 
-    public ExecuteOpenVoids openVoids;
+    public OpenPanel openPanel;
     public ItemCreation itemCreate;
     public HasSections has;
     public GetCustomHeads customHeads;
     public Updater updater;
-    public PlayerHeads getHeads;
     public ClassicPotionData classicPotion;
     public LegacyPotionData legacyPotion;
-    public LegacyVersion legacy;
+    public VersionManager version;
 
-    public OpenPanelsLoader openPanels;
+    public SessionHandler openPanels;
     public OpenGUI createGUI;
-    public WorldPermissions worldPerms;
     public HotbarItemLoader hotbar;
     public NBTManager nbt;
 
@@ -113,37 +110,36 @@ public class Context {
     private void init(){
         //get plugin classes
         downloader = new PanelDownloader(this);
-        panelData = new PanelDataLoader(this);
+        panelData = new DataLoader(this);
         inventorySaver = new InventorySaver(this);
         configHandler = new ConfigHandler(this);
+        version = new VersionManager();
         econ = null;
 
         deluxeConverter = new CompatibilityConverter(this);
-        reloader = new LoadReloadCommand(this);
+        reloader = new ReloadCommand(this);
 
         commandRunner = new CommandRunner(this);
-        panelDataPlayers = new PanelDataPlayerManager();
+        panelDataPlayers = new DataManager();
 
         placeholders = new Placeholders(this);
         debug = new DebugManager();
-        tex = new CreateText(this);
+        text = new CreateText(this);
         hex = new HexColours(this);
 
         miniMessage = null;
 
-        openVoids = new ExecuteOpenVoids(this);
+        openPanel = new OpenPanel(this);
         itemCreate = new ItemCreation(this);
         has = new HasSections(this);
         customHeads = new GetCustomHeads(this);
         updater = new Updater(this);
-        getHeads = new PlayerHeads(this);
         classicPotion = new ClassicPotionData();
         legacyPotion = new LegacyPotionData();
-        legacy = new LegacyVersion(this);
 
-        openPanels = new OpenPanelsLoader(this);
+        openCommands = new OpenCommands(this);
+        openPanels = new SessionHandler(this);
         createGUI = new OpenGUI(this);
-        worldPerms = new WorldPermissions();
         hotbar = new HotbarItemLoader(this);
         nbt = new NBTManager(this);
 
@@ -151,7 +147,7 @@ public class Context {
         itemSerializer = new ItemStackSerializer(this);
         inputUtils = new PlayerInputUtils(this);
 
-        tag = tex.colour(configHandler.config.getString("config.format.tag"));
+        tag = text.colour(configHandler.config.getString("config.format.tag"));
 
         //setup class files
         setupEconomy();
@@ -159,7 +155,7 @@ public class Context {
         plugin.getCommand("commandpanel").setExecutor(new PanelCommand(this));
         plugin.getCommand("commandpanel").setTabCompleter(new PanelTabComplete(this));
 
-        plugin.getCommand("commandpanelgenerate").setTabCompleter(new TabCompleteGenerate());
+        plugin.getCommand("commandpanelgenerate").setTabCompleter(new GenTabComplete());
         plugin.getCommand("commandpanelgenerate").setExecutor(new GenerateCommand(this));
 
         plugin.getCommand("commandpaneldata").setTabCompleter(new DataTabComplete(this));
@@ -179,7 +175,7 @@ public class Context {
         plugin.getCommand("commandpanelversion").setExecutor(new VersionCommand(this));
         plugin.getCommand("commandpanellist").setExecutor(new ListCommand(this));
 
-        if(this.legacy.MAJOR_VERSION.greaterThanOrEqualTo(MinecraftVersions.v1_12)){
+        if(this.version.isAtLeast("1.12")){
             Bukkit.getServer().getPluginManager().registerEvents(new EntityPickupEvent(this), plugin);
         }else{
             Bukkit.getServer().getPluginManager().registerEvents(new LegacyPlayerEvent(this), plugin);
@@ -191,20 +187,20 @@ public class Context {
             Class.forName("net.kyori.adventure.text.format.TextDecoration");
             Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
             Class.forName("net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer");
-            miniMessage = new MiniMessageUtils(this);
+            miniMessage = new MiniMessage(this);
         } catch (ClassNotFoundException ignore) {
             //do not initialise miniMessage
         }
 
-        Bukkit.getServer().getPluginManager().registerEvents(new Utils(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new InteractionHandler(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(inventorySaver, plugin);
         Bukkit.getServer().getPluginManager().registerEvents(inputUtils, plugin);
         Bukkit.getServer().getPluginManager().registerEvents(panelDataPlayers, plugin);
-        Bukkit.getServer().getPluginManager().registerEvents(new UtilsPanelsLoader(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new SessionUtils(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(generator, plugin);
-        Bukkit.getServer().getPluginManager().registerEvents(new ItemFallManager(this), plugin);
-        Bukkit.getServer().getPluginManager().registerEvents(new OpenOnJoin(this), plugin);
-        Bukkit.getServer().getPluginManager().registerEvents(new OutsideClickEvent(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new DroppedItemHandler(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new OpenEvent(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new OutsideHandler(this), plugin);
         if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate")) {
             Bukkit.getServer().getPluginManager().registerEvents(new OpenFloodgateGUI(this), plugin);
         }
@@ -218,15 +214,15 @@ public class Context {
             Bukkit.getServer().getPluginManager().registerEvents(new PanelRefresher(this), plugin);
         }
         if(configHandler.isTrue("config.custom-commands")){
-            Bukkit.getServer().getPluginManager().registerEvents(new PanelCommands(this), plugin);
+            Bukkit.getServer().getPluginManager().registerEvents(openCommands, plugin);
         }
         if(configHandler.isTrue("config.hotbar-items")){
-            Bukkit.getServer().getPluginManager().registerEvents(new UtilsOpenWithItem(this), plugin);
+            Bukkit.getServer().getPluginManager().registerEvents(new HotbarEvents(this), plugin);
         }
         if(configHandler.isTrue("config.panel-blocks")){
-            Objects.requireNonNull(plugin.getCommand("commandpanelblock")).setExecutor(new BlocksCommand(this));
-            Objects.requireNonNull(plugin.getCommand("commandpanelblock")).setTabCompleter(new BlocksTabComplete(this));
-            Bukkit.getServer().getPluginManager().registerEvents(new PanelBlockOnClick(this), plugin);
+            Objects.requireNonNull(plugin.getCommand("commandpanelblock")).setExecutor(new BlockCommand(this));
+            Objects.requireNonNull(plugin.getCommand("commandpanelblock")).setTabCompleter(new BlockTabComplete(this));
+            Bukkit.getServer().getPluginManager().registerEvents(new BlockEvents(this), plugin);
         }
         if (!Bukkit.getVersion().contains("1.8")) {
             Bukkit.getServer().getPluginManager().registerEvents(new SwapItemEvent(this), plugin);

@@ -2,7 +2,7 @@ package me.rockyhawk.commandpanels.openwithitem;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,14 +14,17 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class HotbarItemLoader {
-    Context ctx;
+    private final Context ctx;
+    public GiveHotbarItem give;
+
     public HotbarItemLoader(Context pl) {
-        this.ctx = pl;
+        ctx = pl;
+        give = new GiveHotbarItem(ctx);
         reloadHotbarSlots(); //Run on initialisation
     }
 
     //stationary slots 0-8 are the hotbar, using 9-35 for inside the inventory
-    HashMap<UUID,HotbarPlayerManager> stationaryItems = new HashMap<>();
+    public HashMap<UUID, PlayerManager> stationaryItems = new HashMap<>();
 
     //will compile the ArrayList {slot 0-4, index of panelNames}
     public void reloadHotbarSlots() {
@@ -88,7 +91,7 @@ public class HotbarItemLoader {
                                 .split(":")[0].equals(panel.getName())){
                     if(openPanel) {
                         //only open panel automatically if there are no commands and if world is not disabled
-                        if(!ctx.worldPerms.isPanelWorldEnabled(p,panel.getConfig())){
+                        if(!ctx.openPanel.permission.isPanelWorldEnabled(p,panel.getConfig())){
                             return false;
                         }
                         if(panel.getHotbarSection(p).contains("commands")){
@@ -123,7 +126,7 @@ public class HotbarItemLoader {
         }
 
         //remove any old hotbar items
-        stationaryItems.put(p.getUniqueId(),new HotbarPlayerManager());
+        stationaryItems.put(p.getUniqueId(),new PlayerManager());
         for(int i = 0; i <= 35; i++){
             try {
                 if (ctx.nbt.getNBTValue(p.getInventory().getItem(i), "CommandPanelsHotbar") != null &&
@@ -138,7 +141,7 @@ public class HotbarItemLoader {
 
         //add current hotbar items
         for(Panel panel : ctx.plugin.panelList) { //will loop through all the files in folder
-            if(!ctx.worldPerms.isPanelWorldEnabled(p,panel.getConfig())){
+            if(!ctx.openPanel.permission.isPanelWorldEnabled(p,panel.getConfig())){
                 continue;
             }
             if (p.hasPermission("commandpanel.panel." + panel.getConfig().getString("perm")) && panel.hasHotbarItem()) {

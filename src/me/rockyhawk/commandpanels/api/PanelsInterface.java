@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.api;
 
-import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 
 public class PanelsInterface {
 

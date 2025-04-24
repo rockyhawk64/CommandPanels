@@ -2,7 +2,7 @@ package me.rockyhawk.commandpanels.commands;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -33,7 +33,7 @@ public class PanelCommand implements CommandExecutor {
             return true;
         }
         if (panel == null) {
-            sender.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.nopanel")));
+            sender.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.nopanel")));
             return true;
         }
         boolean disableCommand = false;
@@ -50,11 +50,11 @@ public class PanelCommand implements CommandExecutor {
                 if (!args[1].equals("item")) {
                     if (args[1].equalsIgnoreCase("all")) {
                         for (Player player : Bukkit.getOnlinePlayers())
-                            ctx.openVoids.openCommandPanel(sender, player, panel.copy(), PanelPosition.Top, true);
+                            ctx.openPanel.open(sender, player, panel.copy(), PanelPosition.Top);
                     } else
-                        ctx.openVoids.openCommandPanel(sender, Bukkit.getServer().getPlayer(args[1]), panel.copy(), PanelPosition.Top, true);
+                        ctx.openPanel.open(sender, Bukkit.getServer().getPlayer(args[1]), panel.copy(), PanelPosition.Top);
                 } else {
-                    sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "Usage: /cp <panel> [item] [player|all]"));
+                    sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "Usage: /cp <panel> [item] [player|all]"));
                 }
                 return true;
             } else if (args.length == 3) {
@@ -62,15 +62,15 @@ public class PanelCommand implements CommandExecutor {
                     if (args[2].equalsIgnoreCase("all")) {
                         // if the argument is all open the panel for all of the players
                         for (Player player : Bukkit.getOnlinePlayers())
-                            ctx.openVoids.openCommandPanel(sender, player, panel.copy(), PanelPosition.Top, true);
+                            ctx.openPanel.open(sender, player, panel.copy(), PanelPosition.Top);
                     } else
-                        ctx.openVoids.giveHotbarItem(sender, Bukkit.getServer().getPlayer(args[2]), panel.copy(), true);
+                        ctx.hotbar.give.giveHotbarItem(sender, Bukkit.getServer().getPlayer(args[2]), panel.copy());
                 } else {
-                    sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "Usage: /cp <panel> item [player|all]"));
+                    sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "Usage: /cp <panel> item [player|all]"));
                 }
                 return true;
             } else {
-                sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "Please execute command directed to a Player!"));
+                sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "Please execute command directed to a Player!"));
                 return true;
             }
         } else {
@@ -79,21 +79,21 @@ public class PanelCommand implements CommandExecutor {
             //do player command
             if (args.length == 1) {
                 if (!disableCommand) {
-                    ctx.openVoids.openCommandPanel(sender, p, panel.copy(), PanelPosition.Top, false);
+                    ctx.openPanel.open(sender, p, panel.copy(), PanelPosition.Top);
                 }
                 return true;
             } else if (args.length == 2) {
                 if (args[1].equals("item")) {
 
-                    ctx.openVoids.giveHotbarItem(sender, p, panel.copy(), false);
+                    ctx.hotbar.give.giveHotbarItem(sender, p, panel.copy());
                 } else {
                     if (!disableCommand) {
                         if (args[1].equalsIgnoreCase("all")) {
                             // if the argument is all open the panel for all of the players
                             for (Player player : Bukkit.getOnlinePlayers())
-                                ctx.openVoids.openCommandPanel(sender, player, panel.copy(), PanelPosition.Top, true);
+                                ctx.openPanel.open(sender, player, panel.copy(), PanelPosition.Top);
                         } else
-                            ctx.openVoids.openCommandPanel(sender, Bukkit.getServer().getPlayer(args[1]), panel.copy(), PanelPosition.Top, true);
+                            ctx.openPanel.open(sender, Bukkit.getServer().getPlayer(args[1]), panel.copy(), PanelPosition.Top);
                     }
                 }
                 return true;
@@ -101,18 +101,18 @@ public class PanelCommand implements CommandExecutor {
                 if (args[2].equalsIgnoreCase("all")) {
                     // if the argument is all open the panel for all of the players
                     for (Player player : Bukkit.getOnlinePlayers())
-                        ctx.openVoids.giveHotbarItem(sender, player, panel.copy(), true);
+                        ctx.hotbar.give.giveHotbarItem(sender, player, panel.copy());
                 } else
-                    ctx.openVoids.giveHotbarItem(sender, Bukkit.getServer().getPlayer(args[2]), panel.copy(), true);
+                    ctx.hotbar.give.giveHotbarItem(sender, Bukkit.getServer().getPlayer(args[2]), panel.copy());
                 return true;
             }
         }
-        sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "Usage: /cp <panel> [player|all:item] [player|all]"));
+        sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "Usage: /cp <panel> [player|all:item] [player|all]"));
         return true;
     }
 
     private void helpMessage(CommandSender p) {
-        p.sendMessage(ctx.tex.colour( ctx.tag + ChatColor.GREEN + "Commands:"));
+        p.sendMessage(ctx.text.colour( ctx.tag + ChatColor.GREEN + "Commands:"));
         p.sendMessage(ChatColor.GOLD + "/cp <panel> [player:item] [player] " + ChatColor.WHITE + "Open a command panel.");
         if (p.hasPermission("commandpanel.reload")) {
             p.sendMessage(ChatColor.GOLD + "/cpr " + ChatColor.WHITE + "Reloads plugin config.");

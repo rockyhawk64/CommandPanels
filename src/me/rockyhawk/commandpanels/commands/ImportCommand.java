@@ -18,7 +18,7 @@ public class ImportCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender.hasPermission("commandpanel.import")) {
             if(!ctx.configHandler.isTrue("config.enable-import-command")){
-                sender.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.disabled")));
+                sender.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.disabled")));
                 return true;
             }
             if (args.length == 2) {
@@ -34,10 +34,10 @@ public class ImportCommand implements CommandExecutor {
                 return true;
             }
         } else {
-            sender.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
+            sender.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
             return true;
         }
-        sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "Usage: /cpi <file name> <url>"));
+        sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "Usage: /cpi <file name> <url>"));
         return true;
     }
 }

@@ -42,7 +42,7 @@ public class DataCommand implements CommandExecutor {
                     } else
                         ctx.panelData.clearData(ctx.panelDataPlayers.getOffline(args[1]));
                     if (sendPlayerMessage) {
-                        sender.sendMessage(ctx.tex.colour(ctx.tag
+                        sender.sendMessage(ctx.text.colour(ctx.tag
                                 + ChatColor.GREEN + "Cleared all data for "
                                 + ChatColor.WHITE + (count == 0 ? args[1] : count + "" + ChatColor.GREEN + " players")));
                     }
@@ -60,7 +60,7 @@ public class DataCommand implements CommandExecutor {
                     } else
                         ctx.panelData.delUserData(ctx.panelDataPlayers.getOffline(args[1]), args[2]);
                     if (sendPlayerMessage) {
-                        sender.sendMessage(ctx.tex.colour(ctx.tag
+                        sender.sendMessage(ctx.text.colour(ctx.tag
                                 + ChatColor.GREEN + "Removed "
                                 + ChatColor.WHITE + args[2]
                                 + ChatColor.GREEN + " from "
@@ -69,7 +69,7 @@ public class DataCommand implements CommandExecutor {
                     return true;
                 } else if (args[0].equals("get")) {
                     //for the get command
-                    sender.sendMessage(ctx.tex.colour(ctx.tag
+                    sender.sendMessage(ctx.text.colour(ctx.tag
                             + ChatColor.GREEN + "Value of data is "
                             + ChatColor.WHITE + ctx.panelData.getUserData(ctx.panelDataPlayers.getOffline(args[1]), args[2])));
                     return true;
@@ -87,7 +87,7 @@ public class DataCommand implements CommandExecutor {
                         ctx.panelData.setUserData(ctx.panelDataPlayers.getOffline(args[1]), args[2], args[3], true);
                     }
                     if (sendPlayerMessage) {
-                        sender.sendMessage(ctx.tex.colour(ctx.tag
+                        sender.sendMessage(ctx.text.colour(ctx.tag
                                 + ChatColor.GREEN + "Set "
                                 + ChatColor.WHITE + args[2]
                                 + ChatColor.GREEN + " to "
@@ -107,7 +107,7 @@ public class DataCommand implements CommandExecutor {
                     } else
                         ctx.panelData.setUserData(ctx.panelDataPlayers.getOffline(args[1]), args[2], args[3], false);
                     if (sendPlayerMessage) {
-                        sender.sendMessage(ctx.tex.colour(ctx.tag
+                        sender.sendMessage(ctx.text.colour(ctx.tag
                                 + ChatColor.GREEN + "Set "
                                 + ChatColor.WHITE + args[2]
                                 + ChatColor.GREEN + " to "
@@ -119,9 +119,9 @@ public class DataCommand implements CommandExecutor {
                 }
                 return true;
             }
-            sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "Usage: /cpdata <set:add:get:remove:clear> <player|all|online> <data> [value]"));
+            sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "Usage: /cpdata <set:add:get:remove:clear> <player|all|online> <data> [value]"));
         } else {
-            sender.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
+            sender.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
         }
         return true;
     }

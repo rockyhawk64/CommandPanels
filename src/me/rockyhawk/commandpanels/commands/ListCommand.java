@@ -23,11 +23,11 @@ public class ListCommand implements CommandExecutor {
                 //check to make sure the panels isn't empty
                 try {
                     if (ctx.plugin.panelList == null) {
-                        sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "No panels found!"));
+                        sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "No panels found!"));
                         return true;
                     }
                 }catch(Exception b){
-                    sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "No panels found!"));
+                    sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "No panels found!"));
                     return true;
                 }
 
@@ -39,10 +39,10 @@ public class ListCommand implements CommandExecutor {
                         page = Integer.parseInt(args[0]);
                         skip = page*8-8;
                     }catch (Exception e){
-                        sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "Inaccessible Page"));
+                        sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "Inaccessible Page"));
                     }
                 }
-                sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.DARK_AQUA + "Panels: (Page " + page + ")"));
+                sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.DARK_AQUA + "Panels: (Page " + page + ")"));
                 for (int f = skip; panels.size() > f && skip+8 > f; f++) {
                     if(panels.get(f).getFile() == null){ continue; }
 
@@ -53,11 +53,11 @@ public class ListCommand implements CommandExecutor {
                 }
                 sender.sendMessage(ChatColor.AQUA + "Type /cpl " + (page+1) + " to read next page");
             }else{
-                sender.sendMessage(ctx.tex.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
+                sender.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
             }
             return true;
         }
-        sender.sendMessage(ctx.tex.colour(ctx.tag + ChatColor.RED + "Usage: /cpl"));
+        sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "Usage: /cpl"));
         return true;
     }
 }

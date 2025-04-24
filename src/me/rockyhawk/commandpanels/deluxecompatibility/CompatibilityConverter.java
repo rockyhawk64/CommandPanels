@@ -37,7 +37,7 @@ public class CompatibilityConverter {
                 }
             } else {
                 // Single menu format
-                List<String> requirements = convertMenu(inputYaml, ChatColor.stripColor(ctx.tex.colour(inputYaml.getString("menu_title"))), panelsSection);
+                List<String> requirements = convertMenu(inputYaml, ChatColor.stripColor(ctx.text.colour(inputYaml.getString("menu_title"))), panelsSection);
                 allRequirementDetails.addAll(requirements);
             }
 

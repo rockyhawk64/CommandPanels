@@ -1,7 +1,6 @@
 package me.rockyhawk.commandpanels.configuration;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.ioclasses.legacy.MinecraftVersions;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CharSequenceReader;
 import org.bukkit.Bukkit;
@@ -77,7 +76,7 @@ public class ConfigHandler {
         //save the example files and the template.yml file
         if (!panelsFolder.exists()) {
             try {
-                if(ctx.legacy.MAJOR_VERSION.lessThanOrEqualTo(MinecraftVersions.v1_12)){
+                if(ctx.version.isBelow("1.13")){
                     FileConfiguration exampleFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(ctx.plugin.getResource("exampleLegacy.yml")));
                     exampleFileConfiguration.save(new File(panelsFolder + File.separator + "example.yml"));
                 }else {

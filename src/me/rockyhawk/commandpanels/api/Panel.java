@@ -1,9 +1,9 @@
 package me.rockyhawk.commandpanels.api;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.classresources.placeholders.PanelPlaceholders;
-import me.rockyhawk.commandpanels.openpanelsmanager.PanelOpenType;
-import me.rockyhawk.commandpanels.openpanelsmanager.PanelPosition;
+import me.rockyhawk.commandpanels.formatter.placeholders.PanelPlaceholders;
+import me.rockyhawk.commandpanels.manager.PanelOpenType;
+import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -122,7 +122,7 @@ public class Panel{
     //open the panel for the player
     public void open(Player p, PanelPosition position){
         isOpen = true;
-        plugin.ctx.openVoids.openCommandPanel(p, p, this, position, false);
+        plugin.ctx.openPanel.open(p, p, this, position);
     }
 
     //create blank clone
