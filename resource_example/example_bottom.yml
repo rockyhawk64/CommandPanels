@@ -19,11 +19,11 @@ panels:
           - cpc
       '4':
         material: cps= self
-        name: '&7Name: &eRockyHawk'
+        name: '&7Name: &e%cp-player-name%'
         lore:
           - ''
           - '&8Example Panel made by:'
-          - '&8RockyHawk'
+          - '&7RockyHawk'
       '8':
         material: ENDER_PEARL
         name: '&bOpen Player Browser'

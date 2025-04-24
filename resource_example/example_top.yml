@@ -127,7 +127,7 @@ panels:
         leatherarmor: RED
       '42':
         material: IRON_AXE
-        name: '#4eabd1Crazy #b6d1eaColours'
+        name: '&#4eabd1Crazy &#b6d1eaColours'
         lore:
           - '&71.16+ you can use HEX colours!'
       '44':

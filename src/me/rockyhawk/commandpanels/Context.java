@@ -22,7 +22,7 @@ import me.rockyhawk.commandpanels.commands.opencommands.OpenCommands;
 import me.rockyhawk.commandpanels.configuration.DebugManager;
 import me.rockyhawk.commandpanels.formatter.data.DataLoader;
 import me.rockyhawk.commandpanels.formatter.data.DataManager;
-import me.rockyhawk.commandpanels.deluxecompatibility.CompatibilityConverter;
+import me.rockyhawk.commandpanels.generate.deluxecompatibility.CompatibilityConverter;
 import me.rockyhawk.commandpanels.commands.editor.CommandPanelsEditor;
 import me.rockyhawk.commandpanels.commands.editor.EditorTabComplete;
 import me.rockyhawk.commandpanels.commands.editor.PanelDownloader;

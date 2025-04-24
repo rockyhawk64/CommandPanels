@@ -1,7 +1,6 @@
 package me.rockyhawk.commandpanels.api;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.formatter.placeholders.PanelPlaceholders;
 import me.rockyhawk.commandpanels.manager.PanelOpenType;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Material;

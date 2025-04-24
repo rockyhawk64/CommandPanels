@@ -2,12 +2,12 @@ package me.rockyhawk.commandpanels.api;
 
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 
-public class PanelsInterface {
+public class PanelInterface {
 
     public String playerName;
     private Panel top,middle,bottom = null;
 
-    public PanelsInterface(String player){
+    public PanelInterface(String player){
         playerName = player;
     }
 

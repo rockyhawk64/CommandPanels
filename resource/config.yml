@@ -12,7 +12,6 @@ config:
   custom-commands: true
   auto-register-commands: false
   auto-update-panels: false
-  server-ping-timeout: 10
   stop-sound: true
   disabled-world-message: true
   panel-snooper: false

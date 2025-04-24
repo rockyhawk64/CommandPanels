@@ -27,7 +27,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
 
     @Override
     public String getVersion() {
-        return "1.0.0";
+        return ctx.plugin.getDescription().getVersion();
     }
 
     @Override
@@ -42,6 +42,6 @@ public class PlaceholderAPI extends PlaceholderExpansion {
     */
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String identifier) {
-        return ctx.placeholders.cpPlaceholders(null, PanelPosition.Top, (Player)player, identifier);
+        return ctx.placeholders.resolvePlaceholder(null, PanelPosition.Top, (Player)player, identifier);
     }
 }

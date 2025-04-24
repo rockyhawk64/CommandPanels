@@ -1,4 +1,4 @@
-package me.rockyhawk.commandpanels.deluxecompatibility;
+package me.rockyhawk.commandpanels.generate.deluxecompatibility;
 
 import me.rockyhawk.commandpanels.Context;
 import org.bukkit.Bukkit;

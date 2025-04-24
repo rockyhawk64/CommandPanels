@@ -3,7 +3,7 @@ package me.rockyhawk.commandpanels.manager.session;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.events.PanelClosedEvent;
-import me.rockyhawk.commandpanels.api.PanelsInterface;
+import me.rockyhawk.commandpanels.api.PanelInterface;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -21,12 +21,12 @@ public class SessionHandler {
     The configuration section is opened directly
     into the correct panel, so there is no need for the panel name
     */
-    public HashMap<String, PanelsInterface> openPanels = new HashMap<>(); //player name and panel interface
+    public HashMap<String, PanelInterface> openPanels = new HashMap<>(); //player name and panel interface
     public HashSet<String> skipPanelClose = new HashSet<>(); //don't remove the player if they are in this list
 
     //this will return the panel CF based on the player, if it isn't there it returns null
     public Panel getOpenPanel(String playerName, PanelPosition position){
-        for(Map.Entry<String, PanelsInterface> entry : openPanels.entrySet()){
+        for(Map.Entry<String, PanelInterface> entry : openPanels.entrySet()){
             if(entry.getKey().equals(playerName)){
                 return entry.getValue().getPanel(position);
             }
@@ -36,7 +36,7 @@ public class SessionHandler {
 
     //true if the player has the corresponding panel open in the location
     public boolean hasPanelOpen(String playerName, String panelName, PanelPosition position){
-        for(Map.Entry<String, PanelsInterface> entry : openPanels.entrySet()){
+        for(Map.Entry<String, PanelInterface> entry : openPanels.entrySet()){
             try {
                 if (entry.getKey().equals(playerName) && entry.getValue().getPanel(position).getName().equals(panelName)) {
                     return true;
@@ -50,7 +50,7 @@ public class SessionHandler {
 
     //true if the player has a panel open
     public boolean hasPanelOpen(String playerName, PanelPosition position) {
-        for(Map.Entry<String, PanelsInterface> entry : openPanels.entrySet()){
+        for(Map.Entry<String, PanelInterface> entry : openPanels.entrySet()){
             try {
                 if(entry.getKey().equals(playerName) && entry.getValue().getPanel(position) != null){
                     return true;
@@ -65,7 +65,7 @@ public class SessionHandler {
     //tell loader that a panel has been opened
     public void openPanelForLoader(String playerName, Panel panel, PanelPosition position){
         if(!openPanels.containsKey(playerName)){
-            openPanels.put(playerName, new PanelsInterface(playerName));
+            openPanels.put(playerName, new PanelInterface(playerName));
         }
         openPanels.get(playerName).setPanel(panel,position);
         openPanels.get(playerName).getPanel(position).isOpen = true;
