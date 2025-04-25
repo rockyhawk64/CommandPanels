@@ -1,7 +1,9 @@
 package me.rockyhawk.commandpanels.interaction.click;
 
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.events.PanelInteractionEvent;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -25,6 +27,10 @@ public class OutsideHandler {
         if ((panelOpen || e.getClick() == ClickType.DOUBLE_CLICK) && isOutsideClick) {
             Panel panel = handler.ctx.openPanels.getOpenPanel(p.getName(), PanelPosition.Top);
             if (panel != null && panel.getConfig().contains("outside-commands")) {
+                PanelInteractionEvent interactionEvent = new PanelInteractionEvent(p, e.getSlot(), panel, null);
+                Bukkit.getPluginManager().callEvent(interactionEvent);
+                if (interactionEvent.isCancelled()) return;
+
                 runCommands(panel.getConfig().getStringList("outside-commands"), panel, p, e);
                 return;
             }

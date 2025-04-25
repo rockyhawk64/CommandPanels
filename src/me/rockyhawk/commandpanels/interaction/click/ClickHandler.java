@@ -1,7 +1,10 @@
 package me.rockyhawk.commandpanels.interaction.click;
 
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.events.PanelInteractionEvent;
+import me.rockyhawk.commandpanels.events.PanelOpenedEvent;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
 
@@ -39,6 +42,10 @@ public class ClickHandler {
             e.setCancelled(true);
             return;
         }
+
+        PanelInteractionEvent interactionEvent = new PanelInteractionEvent(p, e.getSlot(), panel, position);
+        Bukkit.getPluginManager().callEvent(interactionEvent);
+        if (interactionEvent.isCancelled()) return;
 
         actionExecutor.execute(panel, p, e, foundSlot, position);
     }
