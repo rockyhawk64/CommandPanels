@@ -120,7 +120,7 @@ public class SessionHandler {
         if (panel.getConfig().contains("commands-on-close")) {
             //execute commands on panel close
             try {
-                ctx.commandRunner.runCommands(panel,position,Bukkit.getPlayer(playerName),panel.getConfig().getStringList("commands-on-close"), null);
+                ctx.commands.runCommands(panel,position,Bukkit.getPlayer(playerName),panel.getConfig().getStringList("commands-on-close"), null);
             }catch(Exception s){
                 ctx.debug.send(s,null, ctx);
             }

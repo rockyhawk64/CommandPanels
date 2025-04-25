@@ -1,49 +1,65 @@
 package me.rockyhawk.commandpanels.interaction.commands.paywalls;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.interaction.commands.PaywallEvent;
+import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.interaction.commands.PaywallOutput;
+import me.rockyhawk.commandpanels.interaction.commands.PaywallResolver;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.ChatColor;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.entity.Player;
 
-import java.util.Objects;
+public class Paywall implements PaywallResolver {
 
-public class Paywall implements Listener {
-    Context plugin;
-    public Paywall(Context pl) {
-        this.plugin = pl;
-    }
+    @Override
+    public PaywallOutput handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command, boolean performOperation) {
+        // Only handle commands that start with "paywall="
+        if (!command.toLowerCase().startsWith("paywall=")) {
+            return PaywallOutput.NotApplicable;
+        }
 
-    @EventHandler
-    public void commandTag(PaywallEvent e){
-        if(e.name.equalsIgnoreCase("paywall=")){
-            //if player uses paywall= [price]
-            try {
-                if (plugin.econ != null) {
-                    double paywallAmount = Double.parseDouble(e.args[0]);
-                    if (plugin.econ.getBalance(e.p) >= paywallAmount) {
-                        if (e.doDelete) plugin.econ.withdrawPlayer(e.p, paywallAmount);
-                        if (plugin.configHandler.isTrue("purchase.currency.enable") && e.doDelete) {
-                            plugin.text.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.configHandler.config.getString("purchase.currency.success")).replaceAll("%cp-args%", e.args[0]));
-                        }
-                        e.PAYWALL_OUTPUT = PaywallOutput.Passed;
-                    } else {
-                        if (plugin.configHandler.isTrue("purchase.currency.enable")) {
-                            plugin.text.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(plugin.configHandler.config.getString("purchase.currency.failure")));
-                        }
-                        e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
-                    }
-                } else {
-                    plugin.text.sendString(e.p, plugin.tag + ChatColor.RED + "Paying Requires Vault and an Economy to work!");
-                    e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
+        try {
+            if (ctx.econ != null) {
+                String[] args = command.substring("paywall=".length()).trim().split(" ");
+                if (args.length < 1) {
+                    ctx.text.sendString(player, ctx.tag + "Invalid paywall usage. Missing amount.");
+                    return PaywallOutput.Blocked;
                 }
-            } catch (Exception buyc) {
-                plugin.debug.send(buyc, e.p, plugin);
-                plugin.text.sendString(e.p, plugin.tag + plugin.configHandler.config.getString("config.format.error") + " " + "commands: " + e.name);
-                e.PAYWALL_OUTPUT = PaywallOutput.Blocked;
+
+                double paywallAmount = Double.parseDouble(args[0]);
+
+                if (ctx.econ.getBalance(player) >= paywallAmount) {
+                    if (performOperation) {
+                        ctx.econ.withdrawPlayer(player, paywallAmount);
+                    }
+
+                    if (ctx.configHandler.isTrue("purchase.currency.enable") && performOperation) {
+                        String successMsg = ctx.configHandler.config.getString("purchase.currency.success");
+                        if (successMsg != null) {
+                            ctx.text.sendString(panel, PanelPosition.Top, player,
+                                    successMsg.replaceAll("%cp-args%", args[0]));
+                        }
+                    }
+
+                    return PaywallOutput.Passed;
+                } else {
+                    if (ctx.configHandler.isTrue("purchase.currency.enable")) {
+                        String failureMsg = ctx.configHandler.config.getString("purchase.currency.failure");
+                        if (failureMsg != null) {
+                            ctx.text.sendString(panel, PanelPosition.Top, player, failureMsg);
+                        }
+                    }
+                    return PaywallOutput.Blocked;
+                }
+            } else {
+                ctx.text.sendString(player, ctx.tag + ChatColor.RED + "Paying Requires Vault and an Economy to work!");
+                return PaywallOutput.Blocked;
             }
+
+        } catch (Exception ex) {
+            ctx.debug.send(ex, player, ctx);
+            ctx.text.sendString(player,
+                    ctx.tag + ctx.configHandler.config.getString("config.format.error") + " command: paywall");
+            return PaywallOutput.Blocked;
         }
     }
 }

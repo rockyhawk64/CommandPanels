@@ -41,7 +41,7 @@ public class OpenEvent implements Listener {
         String joinString = joinType + (world.isEmpty() ? "" : "."+ world);
         if(ctx.configHandler.config.contains(joinString)){
             String command = "open= " + ctx.configHandler.config.getString(joinString);
-            ctx.commandRunner.runCommand(null, PanelPosition.Top,p, command);
+            ctx.commands.runCommand(null, PanelPosition.Top,p, command);
         }
     }
 }

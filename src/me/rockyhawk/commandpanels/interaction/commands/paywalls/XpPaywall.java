@@ -1,62 +1,81 @@
 package me.rockyhawk.commandpanels.interaction.commands.paywalls;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.interaction.commands.PaywallEvent;
+import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.interaction.commands.PaywallOutput;
+import me.rockyhawk.commandpanels.interaction.commands.PaywallResolver;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 
-import java.util.Objects;
+public class XpPaywall implements PaywallResolver {
 
-public class XpPaywall implements Listener {
-    Context ctx;
-    public XpPaywall(Context pl) {
-        this.ctx = pl;
-    }
+    @Override
+    public PaywallOutput handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command, boolean performOperation) {
+        if (!command.toLowerCase().startsWith("xp-paywall=")) {
+            return PaywallOutput.NotApplicable;
+        }
 
-    @EventHandler
-    public void commandTag(PaywallEvent e){
-        if(e.name.equalsIgnoreCase("xp-paywall=")){
-            //if player uses xp-paywall= <price> <level:points>
-            try {
-                int balance;
-                if (e.args[1].startsWith("level")) {
-                    balance = e.p.getLevel();
-                } else {
-                    balance = getPlayerExp(e.p);
-                }
-                if (balance >= Integer.parseInt(e.args[0])) {
-                    if (e.args[1].startsWith("level")) {
-                        if (e.doDelete) e.p.setLevel(e.p.getLevel() - Integer.parseInt(e.args[0]));
-                    } else {
-                        if (e.doDelete) removePlayerExp(e.p, Integer.parseInt(e.args[0]));
-                    }
-                    //if the message is empty don't send
-                    if (ctx.configHandler.isTrue("purchase.xp.enable") && e.doDelete) {
-                        ctx.text.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(ctx.configHandler.config.getString("purchase.xp.success")).replaceAll("%cp-args%", e.args[0]));
-                    }
-                    e.PAYWALL_OUTPUT = PaywallOutput.Passed;
-                } else {
-                    if (ctx.configHandler.isTrue("purchase.xp.enable")) {
-                        ctx.text.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(ctx.configHandler.config.getString("purchase.xp.failure")));
-                    }
-                    e.PAYWALL_OUTPUT =  PaywallOutput.Blocked;
-                }
-            } catch (Exception buyc) {
-                ctx.debug.send(buyc, e.p, ctx);
-                ctx.text.sendString(e.p, ctx.tag + ctx.configHandler.config.getString("config.format.error") + " " + "commands: " + e.name);
-                e.PAYWALL_OUTPUT =  PaywallOutput.Blocked;
+        // Split command arguments (price and level/points)
+        String[] args = command.substring("xp-paywall=".length()).trim().split(" ");
+        if (args.length < 2) {
+            ctx.text.sendString(player, ctx.tag + "Invalid xp-paywall usage. Not enough arguments.");
+            return PaywallOutput.Blocked;
+        }
+
+        try {
+            // Determine the player's balance (XP or level)
+            int balance = 0;
+            if (args[1].startsWith("level")) {
+                balance = player.getLevel();
+            } else {
+                balance = getPlayerExp(player);
             }
+
+            int requiredAmount = Integer.parseInt(args[0]);
+
+            if (balance >= requiredAmount) {
+                if (args[1].startsWith("level")) {
+                    if (performOperation) {
+                        player.setLevel(player.getLevel() - requiredAmount);
+                    }
+                } else {
+                    if (performOperation) {
+                        removePlayerExp(player, requiredAmount);
+                    }
+                }
+
+                // Send success message if enabled
+                if (ctx.configHandler.isTrue("purchase.xp.enable") && performOperation) {
+                    String successMsg = ctx.configHandler.config.getString("purchase.xp.success");
+                    if (successMsg != null) {
+                        ctx.text.sendString(panel, PanelPosition.Top, player,
+                                successMsg.replaceAll("%cp-args%", args[0]));
+                    }
+                }
+
+                return PaywallOutput.Passed;
+            } else {
+                // Send failure message if enabled
+                if (ctx.configHandler.isTrue("purchase.xp.enable")) {
+                    String failureMsg = ctx.configHandler.config.getString("purchase.xp.failure");
+                    if (failureMsg != null) {
+                        ctx.text.sendString(panel, PanelPosition.Top, player, failureMsg);
+                    }
+                }
+                return PaywallOutput.Blocked;
+            }
+        } catch (Exception ex) {
+            ctx.debug.send(ex, player, ctx);
+            ctx.text.sendString(player, ctx.tag + ctx.configHandler.config.getString("config.format.error")
+                    + " command: xp-paywall");
+            return PaywallOutput.Blocked;
         }
     }
 
-    //Experience math is a bit doggy doo doo so these will help to calculate values
+    // Experience math is a bit doggy doo doo so these will help to calculate values
     // Calculate total experience up to a level
 
     // @author thelonelywolf@https://github.com/TheLonelyWolf1
-    // @date 06 August 2021
     private int getExpAtLevel(int level) {
         if (level <= 16) {
             return (int) (Math.pow(level, 2) + 6 * level);

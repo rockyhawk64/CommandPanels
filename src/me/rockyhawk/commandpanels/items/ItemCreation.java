@@ -496,7 +496,7 @@ public class ItemCreation {
             //check that the panel is already open and not running commands when opening
             if (itemSection.contains("refresh-commands") && ctx.openPanels.hasPanelOpen(p.getName(), panel.getName(), position)) {
                 try {
-                    ctx.commandRunner.runCommands(panel,position,p,itemSection.getStringList("refresh-commands"), null);
+                    ctx.commands.runCommands(panel,position,p,itemSection.getStringList("refresh-commands"), null);
                 }catch(Exception ex){
                     ctx.debug.send(ex,p, ctx);
                 }

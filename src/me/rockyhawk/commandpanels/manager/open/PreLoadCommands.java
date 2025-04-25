@@ -15,7 +15,7 @@ public class PreLoadCommands {
     public void executePreLoad(Panel panel, PanelPosition position, Player p) {
         if (panel.getConfig().contains("pre-load-commands")) {
             try {
-                ctx.commandRunner.runCommands(panel, position, p, panel.getConfig().getStringList("pre-load-commands"), null);
+                ctx.commands.runCommands(panel, position, p, panel.getConfig().getStringList("pre-load-commands"), null);
             } catch (Exception e) {
                 ctx.debug.send(e, p, ctx);
             }

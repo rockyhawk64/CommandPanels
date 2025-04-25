@@ -86,7 +86,7 @@ public class Panel{
     public ItemStack getHotbarItem(Player p){
         if (this.getConfig().contains("open-with-item.pre-load-commands")) {
             try {
-                plugin.ctx.commandRunner.runCommands(this,PanelPosition.Top,p, this.getConfig().getStringList("open-with-item.pre-load-commands"), null);
+                plugin.ctx.commands.runCommands(this,PanelPosition.Top,p, this.getConfig().getStringList("open-with-item.pre-load-commands"), null);
             }catch(Exception s){
                 plugin.ctx.debug.send(s,p, plugin.ctx);
             }

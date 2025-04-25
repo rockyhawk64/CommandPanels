@@ -1,44 +1,64 @@
 package me.rockyhawk.commandpanels.interaction.commands.paywalls;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.interaction.commands.PaywallEvent;
+import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.interaction.commands.PaywallOutput;
+import me.rockyhawk.commandpanels.interaction.commands.PaywallResolver;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.entity.Player;
 
-import java.util.Objects;
+public class DataPaywall implements PaywallResolver {
 
-public class DataPaywall implements Listener {
-    Context ctx;
-    public DataPaywall(Context pl) {
-        this.ctx = pl;
-    }
+    @Override
+    public PaywallOutput handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command, boolean performOperation) {
+        // Only handle commands that start with "data-paywall="
+        if (!command.toLowerCase().startsWith("data-paywall=")) {
+            return PaywallOutput.NotApplicable;
+        }
 
-    @EventHandler
-    public void commandTag(PaywallEvent e){
-        if(e.name.equalsIgnoreCase("data-paywall=")){
-            //if player uses data-paywall= <data> <amount>
-            try {
-                if (Double.parseDouble(ctx.panelData.getUserData(e.p.getUniqueId(), e.args[0])) >= Double.parseDouble(e.args[1])) {
-                    if (e.doDelete)
-                        ctx.panelData.doDataMath(e.p.getUniqueId(), e.args[0], "-" + ctx.text.placeholdersNoColour(e.panel, PanelPosition.Top, e.p, e.args[1]));
-                    //if the message is empty don't send
-                    if (ctx.configHandler.isTrue("purchase.data.enable")) {
-                        ctx.text.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(ctx.configHandler.config.getString("purchase.data.success")).replaceAll("%cp-args%", e.args[0]));
-                    }
-                    e.PAYWALL_OUTPUT = PaywallOutput.Passed;
-                } else {
-                    if (ctx.configHandler.isTrue("purchase.data.enable")) {
-                        ctx.text.sendString(e.panel, PanelPosition.Top, e.p, Objects.requireNonNull(ctx.configHandler.config.getString("purchase.data.failure")));
-                    }
-                    e.PAYWALL_OUTPUT =  PaywallOutput.Blocked;
+        // Strip prefix and split args
+        String[] args = command.substring("data-paywall=".length()).trim().split(" ");
+        if (args.length < 2) {
+            ctx.text.sendString(player, ctx.tag + "Invalid data-paywall usage. Not enough arguments.");
+            return PaywallOutput.Blocked;
+        }
+
+        try {
+            String dataKey = args[0];
+            String amountStr = args[1];
+            double requiredAmount = Double.parseDouble(amountStr);
+            double currentAmount = Double.parseDouble(ctx.panelData.getUserData(player.getUniqueId(), dataKey));
+
+            if (currentAmount >= requiredAmount) {
+                if (performOperation) {
+                    ctx.panelData.doDataMath(player.getUniqueId(), dataKey,
+                            "-" + ctx.text.placeholdersNoColour(panel, PanelPosition.Top, player, amountStr));
                 }
-            } catch (Exception buyc) {
-                ctx.debug.send(buyc, e.p, ctx);
-                ctx.text.sendString(e.p, ctx.tag + ctx.configHandler.config.getString("config.format.error") + " " + "commands: " + e.name);
-                e.PAYWALL_OUTPUT =  PaywallOutput.Blocked;
+
+                if (ctx.configHandler.isTrue("purchase.data.enable")) {
+                    String successMsg = ctx.configHandler.config.getString("purchase.data.success");
+                    if (successMsg != null) {
+                        ctx.text.sendString(panel, PanelPosition.Top, player,
+                                successMsg.replace("%cp-args%", dataKey));
+                    }
+                }
+
+                return PaywallOutput.Passed;
+            } else {
+                if (ctx.configHandler.isTrue("purchase.data.enable")) {
+                    String failureMsg = ctx.configHandler.config.getString("purchase.data.failure");
+                    if (failureMsg != null) {
+                        ctx.text.sendString(panel, PanelPosition.Top, player, failureMsg);
+                    }
+                }
+                return PaywallOutput.Blocked;
             }
+
+        } catch (Exception ex) {
+            ctx.debug.send(ex, player, ctx);
+            ctx.text.sendString(player, ctx.tag + ctx.configHandler.config.getString("config.format.error")
+                    + " command: data-paywall");
+            return PaywallOutput.Blocked;
         }
     }
 }

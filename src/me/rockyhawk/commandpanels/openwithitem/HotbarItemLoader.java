@@ -56,7 +56,7 @@ public class HotbarItemLoader {
                     return false;
                 }
                 if(panel.getHotbarSection(p).contains("commands")){
-                    ctx.commandRunner.runCommands(panel,PanelPosition.Top,p,panel.getHotbarSection(p).getStringList("commands"),click);
+                    ctx.commands.runCommands(panel,PanelPosition.Top,p,panel.getHotbarSection(p).getStringList("commands"),click);
                     return true;
                 }
                 panel.open(p, PanelPosition.Top);
@@ -96,7 +96,7 @@ public class HotbarItemLoader {
                         }
                         if(panel.getHotbarSection(p).contains("commands")){
                             for(String command : panel.getHotbarSection(p).getStringList("commands")){
-                                ctx.commandRunner.runCommand(panel,PanelPosition.Top,p, command);
+                                ctx.commands.runCommand(panel,PanelPosition.Top,p, command);
                             }
                             return true;
                         }

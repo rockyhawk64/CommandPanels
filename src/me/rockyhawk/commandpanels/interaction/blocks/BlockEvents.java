@@ -61,7 +61,7 @@ public class BlockEvents implements Listener {
                 if(ctx.configHandler.blockConfig.contains("blocks." + configLocation + ".commands")){
                     if(!isVoid) {
                         for (String command : ctx.configHandler.blockConfig.getStringList("blocks." + configLocation + ".commands")) {
-                            ctx.commandRunner.runCommand(null, PanelPosition.Top, p, command);
+                            ctx.commands.runCommand(null, PanelPosition.Top, p, command);
                         }
                     }
                     return true;
@@ -69,7 +69,7 @@ public class BlockEvents implements Listener {
                 //uses the open= tag because it will open a panel with panel names, but also works with open= features like placeholders
                 if(!isVoid) {
                     String command = "open= " + ctx.configHandler.blockConfig.getString("blocks." + configLocation + ".panel");
-                    ctx.commandRunner.runCommand(null, PanelPosition.Top, p, command);
+                    ctx.commands.runCommand(null, PanelPosition.Top, p, command);
                 }
                 return true;
             }

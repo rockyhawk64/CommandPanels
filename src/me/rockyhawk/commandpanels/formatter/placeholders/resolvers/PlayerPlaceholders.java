@@ -7,7 +7,7 @@ import me.rockyhawk.commandpanels.formatter.placeholders.PlaceholderResolver;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Bukkit;
 
-public class Player implements PlaceholderResolver {
+public class PlayerPlaceholders implements PlaceholderResolver {
     @Override
     public boolean canResolve(String identifier) {
         return identifier.matches("^(player|online|panel|tag)-.*");

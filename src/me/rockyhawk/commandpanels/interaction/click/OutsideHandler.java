@@ -1,38 +1,45 @@
 package me.rockyhawk.commandpanels.interaction.click;
 
-import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 
-public class OutsideHandler implements Listener {
-    Context ctx;
-    public OutsideHandler(Context pl) {
-        this.ctx = pl;
-    }
-    @EventHandler
-    public void onOutsideClick(InventoryClickEvent e){
-        Player p = (Player)e.getWhoClicked();
+import java.util.List;
 
-        //cancel while a panel is open
-        if(ctx.openPanels.hasPanelOpen(p.getName(), PanelPosition.Top) || e.getClick() == ClickType.DOUBLE_CLICK){
-            return;
+public class OutsideHandler {
+    private final InteractionHandler handler;
+
+    protected OutsideHandler(InteractionHandler handler) {
+        this.handler = handler;
+    }
+
+    protected void handle(InventoryClickEvent e) {
+        Player p = (Player) e.getWhoClicked();
+
+        boolean panelOpen = handler.ctx.openPanels.hasPanelOpen(p.getName(), PanelPosition.Top);
+        boolean isOutsideClick = e.getSlotType() == InventoryType.SlotType.OUTSIDE;
+
+        if ((panelOpen || e.getClick() == ClickType.DOUBLE_CLICK) && isOutsideClick) {
+            Panel panel = handler.ctx.openPanels.getOpenPanel(p.getName(), PanelPosition.Top);
+            if (panel != null && panel.getConfig().contains("outside-commands")) {
+                runCommands(panel.getConfig().getStringList("outside-commands"), panel, p, e);
+                return;
+            }
         }
 
-        //if there is no panel open, use outside-commands from config.yml
-        if(e.getSlotType() == InventoryType.SlotType.OUTSIDE){
-            //if the panel is clicked on the outside area of the GUI
-            if (ctx.configHandler.config.contains("outside-commands")) {
-                try {
-                    ctx.commandRunner.runCommands(null,PanelPosition.Top,p, ctx.configHandler.config.getStringList("outside-commands"),e.getClick());
-                }catch(Exception s){
-                    ctx.debug.send(s,p, ctx);
-                }
-            }
+        if (isOutsideClick && !panelOpen && handler.ctx.configHandler.config.contains("config.outside-commands")) {
+            runCommands(handler.ctx.configHandler.config.getStringList("config.outside-commands"), null, p, e);
+        }
+    }
+
+    private void runCommands(List<String> commands, Panel panel, Player player, InventoryClickEvent e) {
+        try {
+            handler.ctx.commands.runCommands(panel, PanelPosition.Top, player, commands, e.getClick());
+        } catch (Exception ex) {
+            handler.ctx.debug.send(ex, player, handler.ctx);
         }
     }
 }

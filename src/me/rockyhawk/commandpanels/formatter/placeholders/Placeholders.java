@@ -35,7 +35,7 @@ public class Placeholders {
         resolvers.add(new Name());
         resolvers.add(new NBT());
         resolvers.add(new PanelSpecific());
-        resolvers.add(new Player());
+        resolvers.add(new PlayerPlaceholders());
         resolvers.add(new PlayerOnline());
         resolvers.add(new Potion());
         resolvers.add(new Random());

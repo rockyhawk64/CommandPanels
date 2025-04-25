@@ -18,7 +18,7 @@ public class MathData implements PlaceholderResolver {
         try {
             String point_value = identifier.replace("mathdata-", "");
             String command = "math-data= " + point_value.split(",")[0] + " " + point_value.split(",")[1];
-            ctx.commandRunner.runCommand(panel,position,p,command);
+            ctx.commands.runCommand(panel,position,p,command);
             return "";
         }catch (Exception ex){
             ctx.debug.send(ex,p, ctx);

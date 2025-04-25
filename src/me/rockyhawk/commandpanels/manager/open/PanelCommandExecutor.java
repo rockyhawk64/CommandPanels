@@ -15,7 +15,7 @@ public class PanelCommandExecutor {
     public void executeOpenCommands(Panel panel, PanelPosition position, Player p) {
         if (panel.getConfig().contains("commands-on-open")) {
             try {
-                ctx.commandRunner.runCommands(panel, position, p, panel.getConfig().getStringList("commands-on-open"), null);
+                ctx.commands.runCommands(panel, position, p, panel.getConfig().getStringList("commands-on-open"), null);
             } catch (Exception e) {
                 p.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.error") + " commands-on-open: " + panel.getConfig().getString("commands-on-open")));
             }

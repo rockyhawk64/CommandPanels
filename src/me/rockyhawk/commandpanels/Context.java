@@ -32,7 +32,6 @@ import me.rockyhawk.commandpanels.generate.GenUtils;
 import me.rockyhawk.commandpanels.generate.GenTabComplete;
 import me.rockyhawk.commandpanels.manager.refresh.PanelRefresher;
 import me.rockyhawk.commandpanels.manager.OpenEvent;
-import me.rockyhawk.commandpanels.interaction.click.OutsideHandler;
 import me.rockyhawk.commandpanels.interaction.input.PlayerInputUtils;
 import me.rockyhawk.commandpanels.versions.VersionManager;
 import me.rockyhawk.commandpanels.nbt.NBTManager;
@@ -69,7 +68,7 @@ public class Context {
     public Economy econ;
     public ReloadCommand reloader;
 
-    public CommandRunner commandRunner;
+    public CommandRunner commands;
     public DataLoader panelData;
     public DataManager panelDataPlayers;
 
@@ -119,7 +118,7 @@ public class Context {
         deluxeConverter = new CompatibilityConverter(this);
         reloader = new ReloadCommand(this);
 
-        commandRunner = new CommandRunner(this);
+        commands = new CommandRunner(this);
         panelDataPlayers = new DataManager();
 
         placeholders = new Placeholders(this);
@@ -200,7 +199,6 @@ public class Context {
         Bukkit.getServer().getPluginManager().registerEvents(generator, plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new DroppedItemHandler(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new OpenEvent(this), plugin);
-        Bukkit.getServer().getPluginManager().registerEvents(new OutsideHandler(this), plugin);
         if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate")) {
             Bukkit.getServer().getPluginManager().registerEvents(new OpenFloodgateGUI(this), plugin);
         }
