@@ -1,7 +1,7 @@
 package me.rockyhawk.commandpanels.api;
 
 import me.rockyhawk.commandpanels.CommandPanels;
-import me.rockyhawk.commandpanels.manager.PanelOpenType;
+import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -115,7 +115,7 @@ public class Panel{
 
     //this will make a preview of the inventory using a certain player on the top
     public Inventory getInventory(Player p){
-        return plugin.ctx.createGUI.openGui(this,p,PanelPosition.Top, PanelOpenType.Return,0);
+        return new PanelBuilder(plugin.ctx).getInv(this,p,PanelPosition.Top,0);
     }
 
     //open the panel for the player

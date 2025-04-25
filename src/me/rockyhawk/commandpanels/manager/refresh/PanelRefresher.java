@@ -2,8 +2,8 @@ package me.rockyhawk.commandpanels.manager.refresh;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.events.PanelOpenedEvent;
-import me.rockyhawk.commandpanels.manager.PanelOpenType;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -64,6 +64,7 @@ public class PanelRefresher implements Listener {
         new BukkitRunnable(){
             int c = 0;
             int animatecount = 0;
+            PanelBuilder builder = new PanelBuilder(ctx);
             @Override
             public void run() {
                 //counter counts to refresh delay (in ticks) then restarts
@@ -94,7 +95,7 @@ public class PanelRefresher implements Listener {
                                 //reload the panel is debug is enabled (only personal debug)
                                 pn.setConfig(YamlConfiguration.loadConfiguration(pn.getFile()));
                             }
-                            ctx.createGUI.openGui(pn, p,e.getPosition(), PanelOpenType.Refresh,animatecount);
+                            builder.refreshInv(pn, p,e.getPosition(),animatecount);
                         } catch (Exception ex) {
                             //error opening gui
                             p.closeInventory();

@@ -31,13 +31,13 @@ import me.rockyhawk.commandpanels.generate.GenerateCommand;
 import me.rockyhawk.commandpanels.generate.GenUtils;
 import me.rockyhawk.commandpanels.generate.GenTabComplete;
 import me.rockyhawk.commandpanels.manager.refresh.PanelRefresher;
-import me.rockyhawk.commandpanels.manager.OpenEvent;
+import me.rockyhawk.commandpanels.manager.PlayerJoinEvent;
 import me.rockyhawk.commandpanels.interaction.input.PlayerInputUtils;
 import me.rockyhawk.commandpanels.versions.VersionManager;
 import me.rockyhawk.commandpanels.nbt.NBTManager;
 import me.rockyhawk.commandpanels.items.potions.ClassicPotionData;
 import me.rockyhawk.commandpanels.items.potions.LegacyPotionData;
-import me.rockyhawk.commandpanels.builder.OpenGUI;
+import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.manager.session.SessionHandler;
 import me.rockyhawk.commandpanels.manager.session.SessionUtils;
 import me.rockyhawk.commandpanels.openwithitem.HotbarItemLoader;
@@ -90,7 +90,6 @@ public class Context {
     public VersionManager version;
 
     public SessionHandler openPanels;
-    public OpenGUI createGUI;
     public HotbarItemLoader hotbar;
     public NBTManager nbt;
 
@@ -138,7 +137,6 @@ public class Context {
 
         openCommands = new OpenCommands(this);
         openPanels = new SessionHandler(this);
-        createGUI = new OpenGUI(this);
         hotbar = new HotbarItemLoader(this);
         nbt = new NBTManager(this);
 
@@ -198,7 +196,7 @@ public class Context {
         Bukkit.getServer().getPluginManager().registerEvents(new SessionUtils(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(generator, plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new DroppedItemHandler(this), plugin);
-        Bukkit.getServer().getPluginManager().registerEvents(new OpenEvent(this), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoinEvent(this), plugin);
         if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate")) {
             Bukkit.getServer().getPluginManager().registerEvents(new OpenFloodgateGUI(this), plugin);
         }

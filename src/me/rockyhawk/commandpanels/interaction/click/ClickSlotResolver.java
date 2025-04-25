@@ -23,7 +23,7 @@ public class ClickSlotResolver {
 
             if (e.getSlotType() == InventoryType.SlotType.CONTAINER) {
                 if (handler.ctx.openPanels.hasPanelOpen(p.getName(), PanelPosition.Middle)) {
-                    e.setCancelled(false);
+                    e.setCancelled(true);
                     return PanelPosition.Middle;
                 }
             } else {

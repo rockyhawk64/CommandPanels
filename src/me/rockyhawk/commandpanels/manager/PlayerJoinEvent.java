@@ -7,15 +7,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 
-public class OpenEvent implements Listener {
+public class PlayerJoinEvent implements Listener {
     Context ctx;
-    public OpenEvent(Context pl) {
+    public PlayerJoinEvent(Context pl) {
         this.ctx = pl;
     }
     @EventHandler
-    public void onWorldLogin(PlayerJoinEvent e){
+    public void onWorldLogin(org.bukkit.event.player.PlayerJoinEvent e){
         if (!e.getPlayer().hasPlayedBefore() && ctx.configHandler.config.contains("open-on-first-login")) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, () ->
                     openOnJoin(e.getPlayer(), "open-on-first-login"), 40L);  // 2 seconds delay

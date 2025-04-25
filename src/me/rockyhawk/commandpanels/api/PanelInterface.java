@@ -20,21 +20,21 @@ public class PanelInterface {
     public void setPanel(Panel panel, PanelPosition position){
         switch(position){
             case Top:{
-                if(panel == null && top != null){
+                if(top != null){
                     top.isOpen = false;
                 }
                 top = panel;
                 return;
             }
             case Middle:{
-                if(panel == null && middle != null){
+                if(middle != null){
                     middle.isOpen = false;
                 }
                 middle = panel;
                 return;
             }
             case Bottom:{
-                if(panel == null && bottom != null){
+                if(bottom != null){
                     bottom.isOpen = false;
                 }
                 bottom = panel;

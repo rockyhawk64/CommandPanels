@@ -2,8 +2,8 @@ package me.rockyhawk.commandpanels.manager.open;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.events.PanelOpenedEvent;
-import me.rockyhawk.commandpanels.manager.PanelOpenType;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -40,7 +40,7 @@ public class OpenPanel {
 
         boolean openForOtherUser = !(sender instanceof Player && sender == p);
 
-        if (!permission.hasPermission(sender, p, panel, openForOtherUser)) return;
+        if (!permission.hasPermission(sender, p, panel, position, openForOtherUser)) return;
 
         if (position != PanelPosition.Top && !ctx.openPanels.hasPanelOpen(p.getName(), PanelPosition.Top)) {
             sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "Cannot open a panel without a panel at the top already."));
@@ -58,7 +58,7 @@ public class OpenPanel {
         preloader.executePreLoad(panel, position, p);
 
         try {
-            ctx.createGUI.openGui(panel, p, position, PanelOpenType.Normal, 0);
+            new PanelBuilder(ctx).openInv(panel, p, position, 0);
             commandExecutor.executeOpenCommands(panel, position, p);
             soundPlayer.playOpenSound(panel, p);
 

@@ -1,7 +1,7 @@
 package me.rockyhawk.commandpanels.commands;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.manager.PanelOpenType;
+import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -38,7 +38,7 @@ public class UpdateCommand implements CommandExecutor {
                 if(args[1].equalsIgnoreCase("all")){
                     for(PanelPosition papo : PanelPosition.values()){
                         if(ctx.openPanels.hasPanelOpen(name, papo)) {
-                            ctx.createGUI.openGui(ctx.openPanels.getOpenPanel(name, papo), targetPlayer, papo, PanelOpenType.Refresh, 0);
+                            new PanelBuilder(ctx).refreshInv(ctx.openPanels.getOpenPanel(name, papo), targetPlayer, papo, 0);
                         }
                     }
                 } else {
@@ -50,7 +50,7 @@ public class UpdateCommand implements CommandExecutor {
                     }
 
                     if(ctx.openPanels.hasPanelOpen(name, pp)) {
-                        ctx.createGUI.openGui(ctx.openPanels.getOpenPanel(name, pp), targetPlayer, pp, PanelOpenType.Refresh, 0);
+                        new PanelBuilder(ctx).refreshInv(ctx.openPanels.getOpenPanel(name, pp), targetPlayer, pp, 0);
                     }
                 }
 

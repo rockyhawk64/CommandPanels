@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.manager.open;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -13,7 +14,7 @@ public class PermissionValidator {
         this.ctx = ctx;
     }
 
-    public boolean hasPermission(CommandSender sender, Player p, Panel panel, boolean openForOtherUser) {
+    public boolean hasPermission(CommandSender sender, Player p, Panel panel, PanelPosition position, boolean openForOtherUser) {
         String permMessage = panel.getConfig().getString("custom-messages.perms");
         String defaultPerm = ctx.configHandler.config.getString("config.format.perms");
 
