@@ -34,7 +34,7 @@ public class ItemPlacer {
                     : 0;
 
             if (config.contains("custom-item." + materialName)) {
-                empty = bld.ctx.itemCreate.makeItemFromConfig(panel, pos, config.getConfigurationSection("custom-item." + materialName), p, true, true, true);
+                empty = bld.ctx.itemBuilder.buildItem(panel, pos, config.getConfigurationSection("custom-item." + materialName), p, true);
             } else {
                 empty = new ItemStack(Objects.requireNonNull(Material.matchMaterial(materialName.toUpperCase())), 1, id);
                 ItemMeta meta = empty.getItemMeta();

@@ -1,8 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.click;
 
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.events.PanelInteractionEvent;
-import me.rockyhawk.commandpanels.events.PanelOpenedEvent;
+import me.rockyhawk.commandpanels.api.events.PanelInteractionEvent;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

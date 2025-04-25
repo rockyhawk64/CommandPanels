@@ -61,14 +61,12 @@ public class CreateText {
     }
 
     //papi except if it is a String List
-    public List<String> placeholdersList(Panel panel,PanelPosition position, Player p, List<String> setpapi, boolean placeholder) {
+    public List<String> placeholdersList(Panel panel,PanelPosition position, Player p, List<String> setpapi) {
         try {
-            if(placeholder) {
-                int tempInt = 0;
-                for (String temp : setpapi) {
-                    setpapi.set(tempInt, attachPlaceholders(panel,position, p, temp));
-                    tempInt += 1;
-                }
+            int tempInt = 0;
+            for (String temp : setpapi) {
+                setpapi.set(tempInt, attachPlaceholders(panel,position, p, temp));
+                tempInt += 1;
             }
         }catch(Exception ignore){}
         int tempInt = 0;

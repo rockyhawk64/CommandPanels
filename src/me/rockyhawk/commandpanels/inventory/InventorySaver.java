@@ -1,7 +1,7 @@
 package me.rockyhawk.commandpanels.inventory;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.events.PanelOpenedEvent;
+import me.rockyhawk.commandpanels.api.events.PanelOpenedEvent;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

@@ -14,7 +14,7 @@ public class GiveItemTag implements TagResolver {
         if (!command.startsWith("give-item=")) return false;
 
         String[] args = command.split("\\s+");
-        ItemStack itm = ctx.itemCreate.makeCustomItemFromConfig(null, pos, panel.getConfig().getConfigurationSection("custom-item." + args[1]), player, true, true, false);
+        ItemStack itm = ctx.itemBuilder.buildItem(null, pos, panel.getConfig().getConfigurationSection("custom-item." + args[1]), player, false);
 
         if (args.length == 3) {
             try {

@@ -3,7 +3,7 @@ package me.rockyhawk.commandpanels.manager.open;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.builder.PanelBuilder;
-import me.rockyhawk.commandpanels.events.PanelOpenedEvent;
+import me.rockyhawk.commandpanels.api.events.PanelOpenedEvent;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

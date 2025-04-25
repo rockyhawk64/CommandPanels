@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.api.item.NBTItem;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.formatter.placeholders.PlaceholderResolver;
+import me.rockyhawk.commandpanels.items.CompareUtil;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -33,8 +34,9 @@ public class Identical implements PlaceholderResolver {
 
         try {
             //if it is a regular custom item
-            ItemStack confItm = ctx.itemCreate.makeItemFromConfig(panel,position,panel.getConfig().getConfigurationSection("custom-item." + matLoc),p,true,true, false);
-            if(ctx.itemCreate.isIdentical(confItm,itm, Objects.requireNonNull(panel.getConfig().getConfigurationSection("custom-item." + matLoc)).contains("nbt"))){
+            ItemStack confItm = ctx.itemBuilder.buildItem(panel,position,panel.getConfig().getConfigurationSection("custom-item." + matLoc),p, false);
+            CompareUtil identical = new CompareUtil(ctx);
+            if(identical.isIdentical(confItm,itm, Objects.requireNonNull(panel.getConfig().getConfigurationSection("custom-item." + matLoc)).contains("nbt"))){
                 isIdentical = true;
             }
 

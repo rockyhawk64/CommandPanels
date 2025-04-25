@@ -2,7 +2,7 @@ package me.rockyhawk.commandpanels.builder.floodgate;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.events.PanelOpenedEvent;
+import me.rockyhawk.commandpanels.api.events.PanelOpenedEvent;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -146,7 +146,7 @@ public class OpenFloodgateGUI implements Listener {
                             break;
                         case "dropdown":
                             form.dropdown(ctx.text.placeholders(e.getPanel(), null, e.getPlayer(), fieldConfig.getString("text").replaceAll("\\\\n", "\n")),
-                                    ctx.text.placeholdersList(e.getPanel(), null, e.getPlayer(), fieldConfig.getStringList("options"), true));
+                                    ctx.text.placeholdersList(e.getPanel(), null, e.getPlayer(), fieldConfig.getStringList("options")));
                             commandsOrder.add(key);
                             break;
                     }

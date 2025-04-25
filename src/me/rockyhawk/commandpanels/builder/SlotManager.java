@@ -32,7 +32,7 @@ public class SlotManager {
                 section += ".animate" + animateValue;
             }
 
-            ItemStack item = bld.ctx.itemCreate.makeItemFromConfig(panel, position, config.getConfigurationSection("item." + itemKey + section), p, true, true, true);
+            ItemStack item = bld.ctx.itemBuilder.buildItem(panel, position, config.getConfigurationSection("item." + itemKey + section), p, true);
             int slot = Integer.parseInt(bld.ctx.text.placeholdersNoColour(panel, position, p, itemKey));
             setItem(item, slot, inv, p, position);
             takenSlots.add(slot);

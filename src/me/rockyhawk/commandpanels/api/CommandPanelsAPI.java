@@ -75,6 +75,6 @@ public class CommandPanelsAPI {
 
     //make custom item using items section
     public ItemStack makeItem(Player p, ConfigurationSection itemSection){
-        return ctx.itemCreate.makeCustomItemFromConfig(null,PanelPosition.Top,itemSection, p, true, true, false);
+        return ctx.itemBuilder.buildItem(null,PanelPosition.Top,itemSection, p, false);
     }
 }

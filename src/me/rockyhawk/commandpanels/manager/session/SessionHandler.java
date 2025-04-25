@@ -2,7 +2,7 @@ package me.rockyhawk.commandpanels.manager.session;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.events.PanelClosedEvent;
+import me.rockyhawk.commandpanels.api.events.PanelClosedEvent;
 import me.rockyhawk.commandpanels.api.PanelInterface;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

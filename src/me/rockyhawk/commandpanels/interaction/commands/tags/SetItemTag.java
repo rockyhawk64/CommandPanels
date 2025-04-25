@@ -14,7 +14,7 @@ public class SetItemTag implements TagResolver {
         if (!command.startsWith("setitem=")) return false;
 
         String[] args = command.split("\\s+");
-        ItemStack item = ctx.itemCreate.makeItemFromConfig(null, pos, panel.getConfig().getConfigurationSection("custom-item." + args[1]), player, true, true, false);
+        ItemStack item = ctx.itemBuilder.buildItem(null, pos, panel.getConfig().getConfigurationSection("custom-item." + args[1]), player, false);
         PanelPosition position = PanelPosition.valueOf(args[3]);
 
         if (position == PanelPosition.Top) {

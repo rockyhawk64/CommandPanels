@@ -105,8 +105,10 @@ public class GenUtils implements Listener {
         }else{
             file.set("panels." + date + ".empty", "BLACK_STAINED_GLASS_PANE");
         }
+
         //add items
-        file = ctx.itemCreate.generatePanelFile(date,inv,file);
+        GenItemUtils items = new GenItemUtils(ctx);
+        file = items.generatePanelFile(date,inv,file);
 
         try {
             file.save(new File(ctx.configHandler.panelsFolder + File.separator + date + ".yml"));

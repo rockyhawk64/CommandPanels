@@ -24,25 +24,25 @@ public class Placeholders {
 
     // Loads built in placeholders
     private void loadPlaceholders() {
-        resolvers.add(new CheckInventory());
-        resolvers.add(new Damaged());
-        resolvers.add(new Data());
+        resolvers.add(new CheckInventoryPlaceholder());
+        resolvers.add(new DamagedPlaceholder());
+        resolvers.add(new DataPlaceholder());
         resolvers.add(new Identical());
-        resolvers.add(new Lore());
-        resolvers.add(new Material());
-        resolvers.add(new MathData());
-        resolvers.add(new ModelData());
-        resolvers.add(new Name());
-        resolvers.add(new NBT());
-        resolvers.add(new PanelSpecific());
+        resolvers.add(new LorePlaceholder());
+        resolvers.add(new MaterialPlaceholder());
+        resolvers.add(new MathDataPlaceholder());
+        resolvers.add(new ModelDataPlaceholder());
+        resolvers.add(new NamePlaceholder());
+        resolvers.add(new NBTPlaceholder());
+        resolvers.add(new CustomPlaceholders());
         resolvers.add(new PlayerPlaceholders());
-        resolvers.add(new PlayerOnline());
-        resolvers.add(new Potion());
-        resolvers.add(new Random());
-        resolvers.add(new Server());
-        resolvers.add(new SetData());
-        resolvers.add(new Stack());
-        resolvers.add(new UUID());
+        resolvers.add(new PlayerOnlinePlaceholder());
+        resolvers.add(new PotionPlaceholder());
+        resolvers.add(new RandomPlaceholder());
+        resolvers.add(new ServerPlaceholder());
+        resolvers.add(new SetDataPlaceholder());
+        resolvers.add(new StackPlaceholder());
+        resolvers.add(new UUIDPlaceholder());
 
     }
 

@@ -3,7 +3,7 @@ package me.rockyhawk.commandpanels;
 import me.rockyhawk.commandpanels.interaction.click.InteractionHandler;
 import me.rockyhawk.commandpanels.manager.open.OpenPanel;
 import me.rockyhawk.commandpanels.items.HasSections;
-import me.rockyhawk.commandpanels.items.ItemCreation;
+import me.rockyhawk.commandpanels.items.builder.ItemBuilder;
 import me.rockyhawk.commandpanels.formatter.MiniMessage;
 import me.rockyhawk.commandpanels.items.customheads.GetCustomHeads;
 import me.rockyhawk.commandpanels.items.dropitem.DroppedItemHandler;
@@ -35,9 +35,8 @@ import me.rockyhawk.commandpanels.manager.PlayerJoinEvent;
 import me.rockyhawk.commandpanels.interaction.input.PlayerInputUtils;
 import me.rockyhawk.commandpanels.versions.VersionManager;
 import me.rockyhawk.commandpanels.nbt.NBTManager;
-import me.rockyhawk.commandpanels.items.potions.ClassicPotionData;
-import me.rockyhawk.commandpanels.items.potions.LegacyPotionData;
-import me.rockyhawk.commandpanels.builder.PanelBuilder;
+import me.rockyhawk.commandpanels.items.builder.itemcomponents.potions.Potion_1_8;
+import me.rockyhawk.commandpanels.items.builder.itemcomponents.potions.Potion_1_20_4;
 import me.rockyhawk.commandpanels.manager.session.SessionHandler;
 import me.rockyhawk.commandpanels.manager.session.SessionUtils;
 import me.rockyhawk.commandpanels.openwithitem.HotbarItemLoader;
@@ -81,12 +80,12 @@ public class Context {
     public MiniMessage miniMessage;
 
     public OpenPanel openPanel;
-    public ItemCreation itemCreate;
+    public ItemBuilder itemBuilder;
     public HasSections has;
     public GetCustomHeads customHeads;
     public Updater updater;
-    public ClassicPotionData classicPotion;
-    public LegacyPotionData legacyPotion;
+    public Potion_1_8 potion_1_8;
+    public Potion_1_20_4 potion_1_20_4;
     public VersionManager version;
 
     public SessionHandler openPanels;
@@ -128,12 +127,12 @@ public class Context {
         miniMessage = null;
 
         openPanel = new OpenPanel(this);
-        itemCreate = new ItemCreation(this);
+        itemBuilder = new ItemBuilder(this);
         has = new HasSections(this);
         customHeads = new GetCustomHeads(this);
         updater = new Updater(this);
-        classicPotion = new ClassicPotionData();
-        legacyPotion = new LegacyPotionData();
+        potion_1_8 = new Potion_1_8();
+        potion_1_20_4 = new Potion_1_20_4();
 
         openCommands = new OpenCommands(this);
         openPanels = new SessionHandler(this);

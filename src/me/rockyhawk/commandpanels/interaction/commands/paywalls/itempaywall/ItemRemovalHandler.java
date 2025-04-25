@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands.paywalls.itempaywall;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.items.CompareUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,11 +23,12 @@ public class ItemRemovalHandler {
     }
 
     private InventoryOperationResult removeItemFromInventory(Context ctx, ItemStack[] inventory, ItemStack itemToRemove, boolean ignoreNBT, boolean performOperation) {
+        CompareUtil identical = new CompareUtil(ctx);
         int amountToRemove = itemToRemove.getAmount();
         int count = 0;
 
         for (ItemStack item : inventory) {
-            if (item != null && ctx.itemCreate.isIdentical(item, itemToRemove, !ignoreNBT)) {
+            if (item != null && identical.isIdentical(item, itemToRemove, !ignoreNBT)) {
                 count += item.getAmount();
             }
         }
@@ -41,7 +43,7 @@ public class ItemRemovalHandler {
 
         for (int i = 0; i < inventory.length; i++) {
             ItemStack currentItem = inventory[i];
-            if (currentItem != null && ctx.itemCreate.isIdentical(currentItem, itemToRemove, !ignoreNBT)) {
+            if (currentItem != null && identical.isIdentical(currentItem, itemToRemove, !ignoreNBT)) {
                 int removeAmount = Math.min(currentItem.getAmount(), amountToRemove);
                 currentItem.setAmount(currentItem.getAmount() - removeAmount);
                 amountToRemove -= removeAmount;

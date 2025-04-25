@@ -18,7 +18,7 @@ public class ItemValidator {
     public ItemStack createItemFromArgs(String[] args, Panel panel, PanelPosition pos, Player player) {
         ItemStack sellItem;
         if (Material.matchMaterial(args[0]) == null) {
-            sellItem = ctx.itemCreate.makeCustomItemFromConfig(panel, pos, panel.getConfig().getConfigurationSection("custom-item." + args[0]), player, true, true, false);
+            sellItem = ctx.itemBuilder.buildItem(panel, pos, panel.getConfig().getConfigurationSection("custom-item." + args[0]), player, false);
             sellItem.setAmount(Integer.parseInt(args[1]));
         } else {
             sellItem = new ItemStack(Material.matchMaterial(args[0]), Integer.parseInt(args[1]));

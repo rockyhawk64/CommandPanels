@@ -73,13 +73,13 @@ public class Panel{
     public ItemStack getItem(Player p, int slot){
         String section = plugin.ctx.has.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("item." + slot), p);
         ConfigurationSection itemSection = panelConfig.getConfigurationSection("item." + slot + section);
-        return plugin.ctx.itemCreate.makeItemFromConfig(this,PanelPosition.Top,itemSection, p, true, true, false);
+        return plugin.ctx.itemBuilder.buildItem(this,PanelPosition.Top,itemSection, p, false);
     }
 
     public ItemStack getCustomItem(Player p, String itemName){
         String section = plugin.ctx.has.hasSection(this,PanelPosition.Top,panelConfig.getConfigurationSection("custom-item." + itemName), p);
         ConfigurationSection itemSection = panelConfig.getConfigurationSection("custom-item." + itemName + section);
-        return plugin.ctx.itemCreate.makeCustomItemFromConfig(this,PanelPosition.Top,itemSection, p, true, true, false);
+        return plugin.ctx.itemBuilder.buildItem(this,PanelPosition.Top,itemSection, p, false);
     }
 
     //NBT will equal to panelName:slot and the slot will be -1 if item is not stationery
@@ -91,7 +91,7 @@ public class Panel{
                 plugin.ctx.debug.send(s,p, plugin.ctx);
             }
         }
-        ItemStack s = plugin.ctx.itemCreate.makeItemFromConfig(this,PanelPosition.Top,getHotbarSection(p), p, true, true, false);
+        ItemStack s = plugin.ctx.itemBuilder.buildItem(this,PanelPosition.Top,getHotbarSection(p), p, false);
         String slot = "-1";
         if(getHotbarSection(p).isSet("stationary")){
             slot = getHotbarSection(p).getString("stationary");

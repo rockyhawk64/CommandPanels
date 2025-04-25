@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.items.dropitem;
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.events.PanelClosedEvent;
+import me.rockyhawk.commandpanels.api.events.PanelClosedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
