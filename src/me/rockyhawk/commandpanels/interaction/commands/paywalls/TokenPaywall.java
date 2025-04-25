@@ -20,7 +20,7 @@ public class TokenPaywall implements PaywallResolver {
             return PaywallOutput.NotApplicable;
         }
 
-        String[] args = command.substring("tokenpaywall=".length()).trim().split(" ");
+        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command.substring("tokenpaywall=".length()).trim()).split(" ");
         if (args.length < 1) {
             ctx.text.sendString(player, ctx.tag + "Invalid tokenpaywall usage. Not enough arguments.");
             return PaywallOutput.Blocked;

@@ -13,7 +13,7 @@ public class SetItemTag implements TagResolver {
     public boolean handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command) {
         if (!command.startsWith("setitem=")) return false;
 
-        String[] args = command.split("\\s+");
+        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");
         ItemStack item = ctx.itemBuilder.buildItem(null, pos, panel.getConfig().getConfigurationSection("custom-item." + args[1]), player, false);
         PanelPosition position = PanelPosition.valueOf(args[3]);
 

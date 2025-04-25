@@ -13,7 +13,7 @@ public class OpenTag implements TagResolver {
         if (!command.startsWith("open=")) return false;
 
         String[] args = command.split("\\s");
-        String panelName = args[1];
+        String panelName = ctx.text.placeholders(panel, pos, player, args[1]);
 
         String cmd = command.replace("open=","").replace(panelName,"").trim();
 

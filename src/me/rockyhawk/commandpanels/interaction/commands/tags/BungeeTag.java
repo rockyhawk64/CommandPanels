@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 public class BungeeTag implements TagResolver {
     @Override
     public boolean handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command) {
-        String[] args = command.split("\\s+");  // Arguments are space-separated
+        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");  // Arguments are space-separated
         if(command.startsWith("force-server=")){
             //this contacts bungee and tells it to send the server change command without checking permissions
             ByteArrayDataOutput out = ByteStreams.newDataOutput();

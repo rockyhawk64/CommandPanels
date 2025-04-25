@@ -34,6 +34,15 @@ public class SlotManager {
 
             ItemStack item = bld.ctx.itemBuilder.buildItem(panel, position, config.getConfigurationSection("item." + itemKey + section), p, true);
             int slot = Integer.parseInt(bld.ctx.text.placeholdersNoColour(panel, position, p, itemKey));
+
+            if (config.contains("item." + itemKey + section + ".itemType") && config.getStringList("item." + itemKey + section + ".itemType").contains("placeable")) {
+                if(!bld.isFirstBuild){
+                    setItem(p.getOpenInventory().getItem(slot), slot, inv, p, position);
+                    takenSlots.add(slot);
+                    continue;
+                }
+            }
+
             setItem(item, slot, inv, p, position);
             takenSlots.add(slot);
 

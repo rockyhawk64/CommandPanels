@@ -22,10 +22,12 @@ public class ItemPlacer {
     public void placeEmptyItems(Panel panel, Player p, PanelPosition pos, Inventory inv) {
         ConfigurationSection config = panel.getConfig();
 
-        if (!config.contains("empty")) return;
-
-        String materialName = bld.ctx.text.placeholdersNoColour(panel, pos, p, config.getString("empty"));
-        if (materialName.equals("AIR")) return;
+        String materialName;
+        if (config.contains("empty")){
+            materialName = bld.ctx.text.placeholdersNoColour(panel, pos, p, config.getString("empty"));
+        }else{
+            materialName = "AIR";
+        }
 
         ItemStack empty;
         try {

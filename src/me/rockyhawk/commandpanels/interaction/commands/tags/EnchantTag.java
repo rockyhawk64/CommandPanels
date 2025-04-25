@@ -15,7 +15,7 @@ public class EnchantTag implements TagResolver {
     public boolean handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command) {
         if (!command.startsWith("enchant=")) return false;
 
-        String[] args = command.split("\\s+");
+        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");
         PanelPosition position = PanelPosition.valueOf(args[2]);
         ItemStack editItem;
 

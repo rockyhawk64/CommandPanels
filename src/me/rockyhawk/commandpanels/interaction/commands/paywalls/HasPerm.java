@@ -14,9 +14,9 @@ public class HasPerm implements PaywallResolver {
         String[] args;
         boolean normal = false;
         if (command.toLowerCase().startsWith("hasperm=")) {
-            args = command.substring("hasperm=".length()).trim().split(" ");
+            args = ctx.text.attachPlaceholders(panel, pos, player, command.substring("hasperm=".length()).trim()).split(" ");
         }else if(command.toLowerCase().startsWith("hasnoperm=")){
-            args = command.substring("hasnoperm=".length()).trim().split(" ");
+            args = ctx.text.attachPlaceholders(panel, pos, player, command.substring("hasnoperm=".length()).trim()).split(" ");
             normal = true;
         }else{
             return PaywallOutput.NotApplicable;

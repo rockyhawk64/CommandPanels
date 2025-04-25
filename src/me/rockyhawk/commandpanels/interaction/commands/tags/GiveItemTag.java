@@ -13,7 +13,7 @@ public class GiveItemTag implements TagResolver {
     public boolean handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command) {
         if (!command.startsWith("give-item=")) return false;
 
-        String[] args = command.split("\\s+");
+        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");
         ItemStack itm = ctx.itemBuilder.buildItem(null, pos, panel.getConfig().getConfigurationSection("custom-item." + args[1]), player, false);
 
         if (args.length == 3) {

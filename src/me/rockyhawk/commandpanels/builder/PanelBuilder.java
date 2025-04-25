@@ -11,6 +11,7 @@ public class PanelBuilder {
     protected final PanelFactory factory;
     protected final SlotManager slotManager;
     protected final ItemPlacer itemPlacer;
+    protected boolean isFirstBuild;
 
     public PanelBuilder(Context ctx) {
         this.ctx = ctx;
@@ -20,6 +21,7 @@ public class PanelBuilder {
     }
 
     public void openInv(Panel panel, Player p, PanelPosition position, int animateValue) {
+        isFirstBuild = true;
         Inventory inv = buildInv(panel, p, position, animateValue);
         if (position == PanelPosition.Top) {
             p.openInventory(inv);
@@ -28,6 +30,7 @@ public class PanelBuilder {
     }
 
     public void refreshInv(Panel panel, Player p, PanelPosition position, int animateValue) {
+        isFirstBuild = false;
         Inventory inv = buildInv(panel, p, position, animateValue);
         if (ctx.version.isAtLeast("1.21.5") && position == PanelPosition.Top) {
             p.getOpenInventory().setTitle(TitleHandler.getTitle(ctx, panel, p, position, animateValue));
@@ -38,6 +41,7 @@ public class PanelBuilder {
     }
 
     public Inventory getInv(Panel panel, Player p, PanelPosition position, int animateValue) {
+        isFirstBuild = true;
         return buildInv(panel, p, position, animateValue);
     }
 

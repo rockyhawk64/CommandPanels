@@ -27,10 +27,9 @@ public class ClickHandler {
 
         if(e.getSlotType() == InventoryType.SlotType.OUTSIDE) return;
 
-        PanelPosition position = slotResolver.resolveSlotPosition(e, panel, p, clickedSlot);
+        PanelPosition position = slotResolver.resolveSlotPosition(e, panel, p);
         if(position == PanelPosition.Middle) clickedSlot -= 9;
         if (position == null) {
-            e.setCancelled(true);
             return;
         }
 

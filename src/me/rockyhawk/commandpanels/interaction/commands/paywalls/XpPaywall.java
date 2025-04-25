@@ -16,7 +16,7 @@ public class XpPaywall implements PaywallResolver {
         }
 
         // Split command arguments (price and level/points)
-        String[] args = command.substring("xp-paywall=".length()).trim().split(" ");
+        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command.substring("xp-paywall=".length()).trim()).split(" ");
         if (args.length < 2) {
             ctx.text.sendString(player, ctx.tag + "Invalid xp-paywall usage. Not enough arguments.");
             return PaywallOutput.Blocked;

@@ -14,12 +14,12 @@ public class DataDelTag implements TagResolver {
     public boolean handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command) {
         if (!command.startsWith("del-data=")) return false;
 
-        String[] args = command.split("\\s");
+        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");
         args = Arrays.copyOfRange(args, 1, args.length); // Remove the tag name
 
         if (args.length == 2) {
             ctx.panelData.delUserData(
-                    ctx.panelDataPlayers.getOffline(ctx.text.placeholdersNoColour(panel, pos, player, args[1])),
+                    ctx.panelDataPlayers.getOffline(args[1]),
                     ctx.text.placeholdersNoColour(panel, pos, player, args[0])
             );
             return true;

@@ -32,11 +32,13 @@ public class CommandRunner {
                 if (command.equals("")) continue;
             }
 
-            if (runPaywalls(panel, position, p, command, true) == PaywallOutput.Blocked) {
+            PaywallOutput output = runPaywalls(panel, position, p, command, true);
+            if (output == PaywallOutput.Blocked) {
                 break;
+            }else if(output == PaywallOutput.NotApplicable){
+                //Run the command as this is not a paywall
+                runCommand(panel, position, p, command);
             }
-
-            runCommand(panel, position, p, command);
         }
     }
 

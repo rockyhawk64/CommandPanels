@@ -17,7 +17,7 @@ public class DataPaywall implements PaywallResolver {
         }
 
         // Strip prefix and split args
-        String[] args = command.substring("data-paywall=".length()).trim().split(" ");
+        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command.substring("data-paywall=".length()).trim()).split(" ");
         if (args.length < 2) {
             ctx.text.sendString(player, ctx.tag + "Invalid data-paywall usage. Not enough arguments.");
             return PaywallOutput.Blocked;

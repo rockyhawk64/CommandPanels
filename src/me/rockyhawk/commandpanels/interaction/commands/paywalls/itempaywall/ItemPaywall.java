@@ -25,7 +25,7 @@ public class ItemPaywall implements PaywallResolver {
         }
 
         try {
-            String[] args = command.substring("item-paywall=".length()).trim().split(" ");
+            String[] args = ctx.text.attachPlaceholders(panel, pos, player, command.substring("item-paywall=".length()).trim()).split(" ");
             if (args.length < 2) {
                 ctx.text.sendString(player, ctx.tag + "Invalid item-paywall usage. Not enough arguments.");
                 return PaywallOutput.Blocked;

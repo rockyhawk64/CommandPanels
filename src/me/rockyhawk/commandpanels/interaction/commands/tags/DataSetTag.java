@@ -14,12 +14,12 @@ public class DataSetTag implements TagResolver {
     public boolean handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command) {
         if (!command.startsWith("set-data=")) return false;
 
-        String[] args = command.split("\\s");
+        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");
         args = Arrays.copyOfRange(args, 1, args.length); // Remove the tag name
 
         if (args.length == 3) {
             ctx.panelData.setUserData(
-                    ctx.panelDataPlayers.getOffline(ctx.text.placeholdersNoColour(panel, pos, player, args[2])),
+                    ctx.panelDataPlayers.getOffline(args[2]),
                     ctx.text.placeholdersNoColour(panel, pos, player, args[0]),
                     ctx.text.placeholdersNoColour(panel, pos, player, args[1]), true
             );

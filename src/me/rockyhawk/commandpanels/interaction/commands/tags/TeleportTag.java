@@ -17,7 +17,7 @@ public class TeleportTag implements TagResolver {
     public boolean handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command) {
         if (!command.startsWith("teleport=")) return false;
 
-        String[] args = command.split("\\s");
+        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");
         args = Arrays.copyOfRange(args, 1, args.length); // Remove the tag name
 
         float x, y, z, yaw = 0, pitch = 0;

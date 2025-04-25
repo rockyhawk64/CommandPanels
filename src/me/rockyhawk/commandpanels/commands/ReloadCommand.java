@@ -110,7 +110,9 @@ public class ReloadCommand implements CommandExecutor {
                     }
                 }else{
                     //error in the file, was not a valid commandpanels file and/or could not be converted
-                    ctx.plugin.getServer().getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error in: " + fileName);
+                    Bukkit.getScheduler().runTask(ctx.plugin, () -> {
+                        ctx.plugin.getServer().getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error in: " + fileName);
+                    });
                 }
                 continue;
             }

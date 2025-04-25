@@ -13,7 +13,7 @@ public class BasicTags implements TagResolver {
 
     @Override
     public boolean handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command) {
-        String[] args = command.split("\\s+");  // Arguments are space-separated
+        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");  // Arguments are space-separated
         args = Arrays.copyOfRange(args, 1, args.length); // Remove first element from args
         if (command.startsWith("console=")) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.join(" ", args));

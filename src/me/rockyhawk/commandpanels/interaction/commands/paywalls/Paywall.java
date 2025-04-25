@@ -19,7 +19,7 @@ public class Paywall implements PaywallResolver {
 
         try {
             if (ctx.econ != null) {
-                String[] args = command.substring("paywall=".length()).trim().split(" ");
+                String[] args = ctx.text.attachPlaceholders(panel, pos, player, command.substring("paywall=".length()).trim()).split(" ");
                 if (args.length < 1) {
                     ctx.text.sendString(player, ctx.tag + "Invalid paywall usage. Missing amount.");
                     return PaywallOutput.Blocked;

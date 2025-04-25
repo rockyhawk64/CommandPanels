@@ -14,7 +14,7 @@ public class ClickSlotResolver {
         this.handler = handler;
     }
 
-    protected PanelPosition resolveSlotPosition(InventoryClickEvent e, Panel panel, Player p, int clickedSlot) {
+    protected PanelPosition resolveSlotPosition(InventoryClickEvent e, Panel panel, Player p) {
         if (e.getClickedInventory().getType() == InventoryType.PLAYER) {
             if (e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
                 e.setCancelled(true);
