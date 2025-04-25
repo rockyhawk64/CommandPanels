@@ -24,41 +24,50 @@ public class ReloadCommand implements CommandExecutor {
     @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (label.equalsIgnoreCase("cpr") || label.equalsIgnoreCase("commandpanelreload") || label.equalsIgnoreCase("cpanelr")) {
-            if (sender.hasPermission("commandpanel.reload")) {
-                //close all the panels
-                for(String name : ctx.openPanels.openPanels.keySet()){
-                    ctx.openPanels.closePanelForLoader(name, PanelPosition.Top);
-                    try {
-                        Bukkit.getPlayer(name).closeInventory();
-                    }catch (Exception ignore){}
-                }
-
-                reloadPanelFiles();
-                ctx.configHandler.onPluginLoad();
-
-                //load all known player UUIDs for data
-                ctx.panelDataPlayers.reloadAllPlayers();
-
-                //check for duplicates
-                checkDuplicatePanel(sender);
-
-                //reloadHotbarSlots
-                ctx.hotbar.reloadHotbarSlots();
-
-                //reload tag
-                ctx.tag = ctx.text.colour(ctx.configHandler.config.getString("config.format.tag"));
-
-                //add custom commands to commands.yml
-                if(ctx.configHandler.isTrue("config.auto-register-commands")) {
-                    ctx.openCommands.registerCommands();
-                }
-
-                sender.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.reload")));
-            }else{
+            if (!sender.hasPermission("commandpanel.reload")) {
                 sender.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
+                return true;
             }
+
+            // Run async for file and data loading
+            Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, () -> {
+                reloadPanelFiles(); // heavy file I/O
+                ctx.panelDataPlayers.reloadAllPlayers(); // player data reload
+
+                // Switch back to main thread for Bukkit API usage
+                Bukkit.getScheduler().runTask(ctx.plugin, () -> {
+                    // Close all open panels
+                    for (String name : ctx.openPanels.openPanels.keySet()) {
+                        ctx.openPanels.closePanelForLoader(name, PanelPosition.Top);
+                        try {
+                            Bukkit.getPlayer(name).closeInventory();
+                        } catch (Exception ignore) {}
+                    }
+
+                    ctx.configHandler.onPluginLoad();
+
+                    // Check for duplicates (cheap, but interacts with sender)
+                    checkDuplicatePanel(sender);
+
+                    // reloadHotbarSlots
+                    ctx.hotbar.reloadHotbarSlots();
+
+                    // reload tag
+                    ctx.tag = ctx.text.colour(ctx.configHandler.config.getString("config.format.tag"));
+
+                    // register custom commands
+                    if (ctx.configHandler.isTrue("config.auto-register-commands")) {
+                        ctx.openCommands.registerCommands();
+                    }
+
+                    // send success message
+                    sender.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.reload")));
+                });
+            });
+
             return true;
         }
+
         sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "Usage: /cpr"));
         return true;
     }
