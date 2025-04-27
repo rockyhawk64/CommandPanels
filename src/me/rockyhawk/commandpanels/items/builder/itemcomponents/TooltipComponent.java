@@ -4,6 +4,7 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.items.builder.ItemComponent;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
+import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -19,6 +20,11 @@ public class TooltipComponent implements ItemComponent {
         if(!section.contains("tooltip")) return item;
 
         //Tooltip Style 1.21.4+
+        if(ctx.version.isBelow("1.21.4")) {
+            player.sendMessage(ChatColor.RED + "Custom tooltips are 1.21.4+");
+            return item;
+        }
+
         ItemMeta itemMeta = item.getItemMeta();
         assert itemMeta != null;
 
@@ -27,7 +33,7 @@ public class TooltipComponent implements ItemComponent {
             Method setTooltipMethod = ItemMeta.class.getMethod("setTooltipStyle", NamespacedKey.class);
 
             // Invoke it dynamically
-            setTooltipMethod.invoke(itemMeta, NamespacedKey.fromString(ctx.text.placeholders(panel, pos, player, section.getString("tooltip-style"))));
+            setTooltipMethod.invoke(itemMeta, NamespacedKey.fromString(ctx.text.placeholders(panel, pos, player, section.getString("tooltip"))));
 
             item.setItemMeta(itemMeta);
         } catch (NoSuchMethodException e) {
