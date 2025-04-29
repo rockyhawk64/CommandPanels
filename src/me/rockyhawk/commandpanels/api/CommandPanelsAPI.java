@@ -48,9 +48,9 @@ public class CommandPanelsAPI {
     }
 
     //remove panel from folder
-    public void removePanel(Panel panel){
+    public void removePanel(String panelName){
         for(Panel panels : ctx.plugin.panelList){
-            if(panels.getName().equals(panel.getName())){
+            if(panels.getName().equals(panelName)){
                 if(panels.getFile().delete()){
                     ctx.reloader.reloadPanelFiles();
                 }
