@@ -4,6 +4,7 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.items.builder.ItemComponent;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
+import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -18,7 +19,11 @@ public class ItemModelComponent implements ItemComponent {
     public ItemStack apply(ItemStack item, ConfigurationSection section, Context ctx, Player player, Panel panel, PanelPosition pos, boolean addNBT) {
         if(!section.contains("itemmodel")) return item;
 
-        //Item Model 1.21.4+
+        if(ctx.version.isBelow("1.21.4")) {
+            player.sendMessage(ChatColor.RED + "Item Model is 1.21.4+");
+            return item;
+        }
+
         ItemMeta itemMeta = item.getItemMeta();
         assert itemMeta != null;
 

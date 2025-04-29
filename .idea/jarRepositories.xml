@@ -92,6 +92,11 @@
       <option name="url" value="https://repo.jeff-media.com/public/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="reposilite-repository-releases" />
+      <option name="name" value="Reposilite Repository" />
+      <option name="url" value="https://repo.nexomc.com/releases" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="jboss.community" />
       <option name="name" value="JBoss Community repository" />
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />

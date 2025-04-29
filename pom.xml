@@ -91,6 +91,14 @@
             <id>jeff-media-public</id>
             <url>https://repo.jeff-media.com/public/</url>
         </repository>
+
+        <!-- Nexo -->
+        <repository>
+            <id>reposilite-repository-releases</id>
+            <name>Reposilite Repository</name>
+            <url>https://repo.nexomc.com/releases</url>
+        </repository>
+
         <repository>
             <id>ess-repo</id>
             <url>https://repo.essentialsx.net/releases/</url>
@@ -172,6 +180,8 @@
             <version>1.7.1</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- MMOItems -->
         <dependency>
             <groupId>net.Indyuce</groupId>
             <artifactId>MMOItems-API</artifactId>
@@ -184,6 +194,22 @@
             <version>1.6.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Nexo -->
+        <dependency>
+            <groupId>com.nexomc</groupId>
+            <artifactId>nexo</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.byteflux</groupId>
+                    <artifactId>libby-bukkit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <dependency>
             <groupId>com.arcaniax</groupId>
             <artifactId>HeadDatabase-API</artifactId>
