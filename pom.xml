@@ -44,11 +44,11 @@
                                 </relocation>
                                 <relocation>
                                     <pattern>org.bstats</pattern>
-                                    <shadedPattern>me.rockyhawk.commandpanels.bstats</shadedPattern>
+                                    <shadedPattern>me.rockyhawk.commandpanels.libs.bstats</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>de.tr7zw.changeme.nbtapi</pattern>
-                                    <shadedPattern>me.rockyhawk.commandpanels.nbtapi</shadedPattern>
+                                    <shadedPattern>me.rockyhawk.commandpanels.libs.nbtapi</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
