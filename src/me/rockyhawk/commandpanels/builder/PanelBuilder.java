@@ -33,7 +33,8 @@ public class PanelBuilder {
         isFirstBuild = false;
         Inventory inv = buildInv(panel, p, position, animateValue);
         if (ctx.version.isAtLeast("1.21.5") && position == PanelPosition.Top) {
-            p.getOpenInventory().setTitle(TitleHandler.getTitle(ctx, panel, p, position, animateValue));
+            TitleHandler title = new TitleHandler();
+            p.getOpenInventory().setTitle(title.getTitle(ctx, panel, p, position, animateValue));
         }
         if (position == PanelPosition.Top) {
             slotManager.setStorageContents(p, slotManager.getStorageContents(inv));

@@ -19,7 +19,8 @@ public class PanelFactory {
     public Inventory createInventory(Panel panel, Player p, PanelPosition position, int animateValue) {
         ConfigurationSection config = panel.getConfig();
         if (position == PanelPosition.Top) {
-            String title = TitleHandler.getTitle(ctx, panel, p, position, animateValue);
+            TitleHandler titleHandler = new TitleHandler();
+            String title = titleHandler.getTitle(ctx, panel, p, position, animateValue);
             String rows = config.getString("rows");
 
             if (rows.matches("\\d+")) {
