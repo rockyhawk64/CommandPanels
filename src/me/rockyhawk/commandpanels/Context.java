@@ -106,11 +106,11 @@ public class Context {
     @SuppressWarnings("DataFlowIssue")
     private void init(){
         //get plugin classes
+        version = new VersionManager();
         downloader = new PanelDownloader(this);
         panelData = new DataLoader(this);
         inventorySaver = new InventorySaver(this);
         configHandler = new ConfigHandler(this);
-        version = new VersionManager();
         econ = null;
 
         deluxeConverter = new CompatibilityConverter(this);
