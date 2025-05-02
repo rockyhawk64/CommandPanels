@@ -42,6 +42,10 @@ public class PlaceholderAPI extends PlaceholderExpansion {
     */
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String identifier) {
-        return ctx.placeholders.resolvePlaceholder(null, PanelPosition.Top, (Player)player, identifier);
+        try {
+            return ctx.placeholders.resolvePlaceholder(null, PanelPosition.Top, (Player) player, identifier);
+        }catch (Exception e){
+            return "null";
+        }
     }
 }

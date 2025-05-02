@@ -96,7 +96,6 @@ public class Context {
     public InventorySaver inventorySaver;
     public ItemStackSerializer itemSerializer;
     public PlayerInputUtils inputUtils;
-    public CompatibilityConverter deluxeConverter;
 
     public Context(CommandPanels pl) {
         plugin = pl;
@@ -108,23 +107,30 @@ public class Context {
         //get plugin classes
         version = new VersionManager();
         downloader = new PanelDownloader(this);
-        panelData = new DataLoader(this);
-        inventorySaver = new InventorySaver(this);
-        configHandler = new ConfigHandler(this);
-        econ = null;
 
-        deluxeConverter = new CompatibilityConverter(this);
-        reloader = new ReloadCommand(this);
-
-        commands = new CommandRunner(this);
-        panelDataPlayers = new DataManager();
-
+        try {
+            // Check all the minimessage classes exist before loading
+            Class.forName("net.kyori.adventure.text.Component");
+            Class.forName("net.kyori.adventure.text.format.TextDecoration");
+            Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+            Class.forName("net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer");
+            miniMessage = new MiniMessage(this);
+        } catch (ClassNotFoundException ignore) {
+            miniMessage = null;
+        }
         placeholders = new Placeholders(this);
         debug = new DebugManager();
         text = new CreateText(this);
         hex = new HexColours(this);
 
-        miniMessage = null;
+        panelData = new DataLoader(this);
+        inventorySaver = new InventorySaver(this);
+        configHandler = new ConfigHandler(this);
+        econ = null;
+
+        reloader = new ReloadCommand(this);
+        commands = new CommandRunner(this);
+        panelDataPlayers = new DataManager();
 
         openPanel = new OpenPanel(this);
         itemBuilder = new ItemBuilder(this);
@@ -175,17 +181,6 @@ public class Context {
             Bukkit.getServer().getPluginManager().registerEvents(new EntityPickupEvent(this), plugin);
         }else{
             Bukkit.getServer().getPluginManager().registerEvents(new LegacyPlayerEvent(this), plugin);
-        }
-
-        try {
-            // Check all the minimessage classes exist before loading
-            Class.forName("net.kyori.adventure.text.Component");
-            Class.forName("net.kyori.adventure.text.format.TextDecoration");
-            Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
-            Class.forName("net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer");
-            miniMessage = new MiniMessage(this);
-        } catch (ClassNotFoundException ignore) {
-            //do not initialise miniMessage
         }
 
         Bukkit.getServer().getPluginManager().registerEvents(new InteractionHandler(this), plugin);

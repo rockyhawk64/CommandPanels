@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.commands;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.generate.deluxecompatibility.CompatibilityConverter;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -99,7 +100,8 @@ public class ReloadCommand implements CommandExecutor {
             //if a yaml file is missing the 'panels' at the files root
             if(!checkPanels(YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)))){
                 //try converting the file
-                YamlConfiguration convertedYaml = ctx.deluxeConverter.tryConversion(fileName, YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)));
+                CompatibilityConverter deluxeConverter = new CompatibilityConverter(ctx);
+                YamlConfiguration convertedYaml = deluxeConverter.tryConversion(fileName, YamlConfiguration.loadConfiguration(new File(directory + File.separator + fileName)));
                 if(convertedYaml != null){
                     //the conversion was successful
                     for (String tempName : Objects.requireNonNull(convertedYaml.getConfigurationSection("panels")).getKeys(false)) {
