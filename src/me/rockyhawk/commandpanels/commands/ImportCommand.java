@@ -28,9 +28,15 @@ public class ImportCommand implements CommandExecutor {
                     public void run() {
                         ctx.downloader.downloadPanel(sender, args[1], args[0]);
                         ctx.reloader.reloadPanelFiles();
-                        ctx.hotbar.reloadHotbarSlots();
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                ctx.hotbar.reloadHotbarSlots();
+                            }
+                        }.run();
+
                     }
-                }.run();
+                }.runTaskAsynchronously(ctx.plugin);
                 return true;
             }
         } else {
