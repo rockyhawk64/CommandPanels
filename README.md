@@ -1,4 +1,4 @@
-![TitleLogo](https://i.imgur.com/AvxtwuI.png)
+![TitleLogo](https://i.imgur.com/CDdxOxM.png)
 
 ![ShopMenu](https://i.imgur.com/w8UaAP2.png)
 
