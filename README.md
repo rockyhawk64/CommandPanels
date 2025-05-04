@@ -1,12 +1,13 @@
-![TitleLogo](https://i.imgur.com/YQMXkoi.png)
+![TitleLogo](https://i.imgur.com/AvxtwuI.png)
 
-<p align="center">
-  <a href="https://discord.gg/eUWBWh7"><img src="https://i.imgur.com/50KoZcJ.png" alt="Discord"></a> 
-  <a href="https://commandpanels.net/wiki"><img src="https://i.imgur.com/kR6n5uw.png" alt="Wiki"></a> 
-  <a href="https://commandpanels.net/editor"><img src="https://i.imgur.com/hg68XFc.png" alt="Editor"></a>
-</p>
+![ShopMenu](https://i.imgur.com/w8UaAP2.png)
 
-<img align="center" src="https://i.imgur.com/w8UaAP2.png" alt="Screenshot">
+<h2 align="center">
+  <a href="https://commandpanels.net/wiki">Wiki</a> |
+  <a href="https://commandpanels.net/editor">Editor</a> |
+  <a href="https://discord.gg/eUWBWh7">Discord</a>
+</h2>
+
 
 ## Partner
 ReviveNode is a leading Minecraft hosting provider that offers affordable and high-quality server hosting solutions. Their focus on performance, reliability, and customer support makes them the perfect partner for CommandPanels.
