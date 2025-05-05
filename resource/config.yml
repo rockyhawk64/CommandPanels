@@ -17,7 +17,7 @@ config:
   panel-snooper: false
   enable-import-command: false
   format:
-    tag: '&6[&bCommandPanels&6] '
+    tag: '&6[&bCommandPanels&6]'
     perms: '&cNo permission.'
     reload: '&aReloaded.'
     nopanel: '&cPanel not found.'

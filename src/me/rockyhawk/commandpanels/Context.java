@@ -59,7 +59,7 @@ import java.util.Objects;
 
 public class Context {
     public CommandPanels plugin;
-    public String tag = "[CommandPanels]";
+    public String tag = "[CommandPanels] ";
 
     //get plugin classes
     public PanelDownloader downloader;
@@ -148,8 +148,6 @@ public class Context {
         generator = new GenUtils(this);
         itemSerializer = new ItemStackSerializer(this);
         inputUtils = new PlayerInputUtils(this);
-
-        tag = text.colour(configHandler.config.getString("config.format.tag"));
 
         //setup class files
         setupEconomy();
