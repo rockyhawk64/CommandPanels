@@ -29,18 +29,17 @@ public class PlayerInputUtils implements Listener {
             e.setCancelled(true);
             if(e.getMessage().equalsIgnoreCase(ctx.configHandler.config.getString("input.input-cancel"))){
                 if(playerInput.get(e.getPlayer()).cancelCommands != null){
+                    final PlayerInput taskInput = playerInput.remove(e.getPlayer());
                     Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, new Runnable() {
                         public void run() {
                             if(playerInput.get(e.getPlayer()).cancelCommands != null){
-                                ctx.commands.runCommands(playerInput.get(e.getPlayer()).panel, PanelPosition.Top,e.getPlayer(), playerInput.get(e.getPlayer()).cancelCommands,playerInput.get(e.getPlayer()).click); //I have to do this to run regular Bukkit voids in an ASYNC Event
-                                playerInput.remove(e.getPlayer());
+                                ctx.commands.runCommands(taskInput.panel, PanelPosition.Top,e.getPlayer(), taskInput.cancelCommands,taskInput.click); //I have to do this to run regular Bukkit voids in an ASYNC Event
                             }
                         }
                     });
                 } else {
                     playerInput.remove(e.getPlayer());
                 }
-
                 return;
             }
             playerInput.get(e.getPlayer()).panel.placeholders.addPlaceholder("player-input",e.getMessage());
@@ -60,10 +59,10 @@ public class PlayerInputUtils implements Listener {
                 c++;
             }
 
+            final PlayerInput taskInput = playerInput.remove(e.getPlayer());
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, new Runnable() {
                 public void run() {
-                    ctx.commands.runCommands(playerInput.get(e.getPlayer()).panel, PanelPosition.Top,e.getPlayer(), playerInput.get(e.getPlayer()).commands,playerInput.get(e.getPlayer()).click); //I have to do this to run regular Bukkit voids in an ASYNC Event
-                    playerInput.remove(e.getPlayer());
+                    ctx.commands.runCommands(taskInput.panel, PanelPosition.Top,e.getPlayer(), taskInput.commands,taskInput.click); //I have to do this to run regular Bukkit voids in an ASYNC Event
                 }
             });
         }
