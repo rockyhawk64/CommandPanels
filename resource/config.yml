@@ -75,4 +75,4 @@ purchase:
   permission:
     enable: true
     success: '&aYou have successfully passed the permission check for "%cp-args%".'
-    failure: '&cInefficient Permissions'
+    failure: '&cInsufficient Permissions'
