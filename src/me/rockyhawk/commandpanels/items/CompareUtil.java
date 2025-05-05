@@ -126,7 +126,7 @@ public class CompareUtil {
             }
         }catch(Exception ignore){}
         //check for enchantments
-        if(one.getEnchantments() == two.getEnchantments()){
+        if(!one.getEnchantments().equals(two.getEnchantments())){
             if(!one.getEnchantments().isEmpty()) {
                 return false;
             }
