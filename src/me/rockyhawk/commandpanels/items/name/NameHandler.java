@@ -57,7 +57,7 @@ public class NameHandler {
                 meta.setDisplayName(name);
             }
 
-            if (lore != null) {
+            if (!lore.isEmpty()) {
                 List<String> formattedLore = loreFormatter.format(panel, lore, player);
                 meta.setLore(loreFormatter.splitListWithEscape(formattedLore));
             }
