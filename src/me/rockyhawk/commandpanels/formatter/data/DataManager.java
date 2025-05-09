@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.formatter.data;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,9 +27,16 @@ public class DataManager implements Listener {
 
     public void reloadAllPlayers(){
         knownPlayers.clear();
-        for(OfflinePlayer p : Bukkit.getOfflinePlayers()){
-            knownPlayers.put(p.getName(), p.getUniqueId());
-        }
+        try {
+            for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
+                if (p.getName() != null) {
+                    knownPlayers.put(p.getName(), p.getUniqueId());
+                }
+
+            }
+        } catch (Exception e) {
+            Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[CommandPanels] Skipping player retrieval; potential corrupt data.");
+        } // Potential corrupt data, skip
     }
 
     //Add players who have joined the server to known players
