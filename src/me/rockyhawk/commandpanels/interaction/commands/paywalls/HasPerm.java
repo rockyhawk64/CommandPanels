@@ -12,12 +12,12 @@ public class HasPerm implements PaywallResolver {
     @Override
     public PaywallOutput handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command, boolean performOperation) {
         String[] args;
-        boolean normal = false;
+        boolean normal = true;
         if (command.toLowerCase().startsWith("hasperm=")) {
             args = ctx.text.attachPlaceholders(panel, pos, player, command.substring("hasperm=".length()).trim()).split(" ");
         }else if(command.toLowerCase().startsWith("hasnoperm=")){
             args = ctx.text.attachPlaceholders(panel, pos, player, command.substring("hasnoperm=".length()).trim()).split(" ");
-            normal = true;
+            normal = false;
         }else{
             return PaywallOutput.NotApplicable;
         }
