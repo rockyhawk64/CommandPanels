@@ -33,7 +33,7 @@ jobs:
       uses: "actions/upload-artifact@v4"
       with:
         name: "${{ env.project_id_b }} CI Artifacts"
-        path: "target/"
+        path: "target/CommandPanels-SNAPSHOT.jar"
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
