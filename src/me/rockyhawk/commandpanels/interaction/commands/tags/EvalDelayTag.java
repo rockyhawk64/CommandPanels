@@ -1,10 +1,10 @@
 package me.rockyhawk.commandpanels.interaction.commands.tags;
 
+import com.loohp.platformscheduler.ScheduledRunnable;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.interaction.commands.TagResolver;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public class EvalDelayTag implements TagResolver {
         final String parsedValue = ctx.text.placeholders(panel, pos, player, args[1].trim());
         String finalCommand = String.join(" ", args).replaceFirst(args[0], "").replaceFirst(args[1], "").trim();
 
-        new BukkitRunnable() {
+        new ScheduledRunnable() {
             @Override
             public void run() {
                 try {

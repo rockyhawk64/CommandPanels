@@ -1,9 +1,9 @@
 package me.rockyhawk.commandpanels.commands.editor;
 
+import com.loohp.platformscheduler.Scheduler;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import net.md_5.bungee.api.chat.*;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -107,7 +107,7 @@ public class CommandPanelsEditor implements CommandExecutor {
 
         //get custom editor URL
         String url = "https://firebasestorage.googleapis.com/v0/b/commandpanels-website.appspot.com/o/pastes%2F" + userID + "%2F" + fileName + "?alt=media&token=" + token;
-        Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, () -> {
+        Scheduler.runTaskAsynchronously(ctx.plugin, () -> {
             ctx.downloader.downloadPanel(sender, url, fileName);
             future.complete(null);
         });

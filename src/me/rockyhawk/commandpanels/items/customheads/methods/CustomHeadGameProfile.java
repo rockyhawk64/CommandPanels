@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.items.customheads.methods;
 
+import com.loohp.platformscheduler.Scheduler;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
@@ -55,7 +56,7 @@ public class CustomHeadGameProfile implements CustomHeadProvider {
         itemStack.setItemMeta(meta);
 
         // Fetch and cache the texture asynchronously
-        Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, () -> {
+        Scheduler.runTaskAsynchronously(ctx.plugin, () -> {
             try {
                 if(ctx.debug.consoleDebug){
                     Bukkit.getServer().getConsoleSender().sendMessage(ctx.text.colour(ctx.tag +
@@ -84,12 +85,12 @@ public class CustomHeadGameProfile implements CustomHeadProvider {
                 String value = valueReader.split("\"value\" : \"")[1].split("\"")[0];
 
                 // Once the API call is finished, update the ItemStack on the main thread
-                Bukkit.getScheduler().runTask(ctx.plugin, () -> {
+                Scheduler.runTask(ctx.plugin, () -> {
                     itemStack.setItemMeta(getCustomHead(name, value).getItemMeta());
                     savedCustomHeads.put(name, new SavedCustomHead(itemStack, value, true));
                 });
             } catch (Exception ignore) {
-                Bukkit.getScheduler().runTask(ctx.plugin, () -> {
+                Scheduler.runTask(ctx.plugin, () -> {
                     //do not overwrite a valid cached head
                     if(savedCustomHeads.containsKey(name) && savedCustomHeads.get(name).isValid){
                         return;

@@ -1,13 +1,14 @@
 package me.rockyhawk.commandpanels.interaction.input;
 
+import com.loohp.platformscheduler.Scheduler;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
@@ -17,75 +18,81 @@ import java.util.Objects;
 
 public class PlayerInputUtils implements Listener {
     Context ctx;
+    private final PlainTextComponentSerializer plainSerializer = PlainTextComponentSerializer.plainText();
+    public HashMap<Player, PlayerInput> playerInput = new HashMap<>();
+
     public PlayerInputUtils(Context pl) {
         this.ctx = pl;
     }
 
-    public HashMap<Player, PlayerInput> playerInput = new HashMap<>();
-
     @EventHandler
-    public void onPlayerChat(AsyncPlayerChatEvent e) {
-        if(playerInput.containsKey(e.getPlayer())){
+    public void onPlayerChat(AsyncChatEvent e) {
+        Player player = e.getPlayer();
+        if (playerInput.containsKey(player)) {
             e.setCancelled(true);
-            if(e.getMessage().equalsIgnoreCase(ctx.configHandler.config.getString("input.input-cancel"))){
-                if(playerInput.get(e.getPlayer()).cancelCommands != null){
-                    final PlayerInput taskInput = playerInput.remove(e.getPlayer());
-                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, new Runnable() {
-                        public void run() {
-                            if(playerInput.get(e.getPlayer()).cancelCommands != null){
-                                ctx.commands.runCommands(taskInput.panel, PanelPosition.Top,e.getPlayer(), taskInput.cancelCommands,taskInput.click); //I have to do this to run regular Bukkit voids in an ASYNC Event
-                            }
-                        }
-                    });
-                } else {
-                    playerInput.remove(e.getPlayer());
+            String message = plainSerializer.serialize(e.message());
+
+            // Handle cancel keyword
+            String cancelKeyword = ctx.configHandler.config.getString("input.input-cancel");
+            if (message.equalsIgnoreCase(cancelKeyword)) {
+                PlayerInput input = playerInput.remove(player);
+                if (input.cancelCommands != null) {
+                    Scheduler.runTaskLater(ctx.plugin, () -> {
+                        ctx.commands.runCommands(input.panel, PanelPosition.Top, player, input.cancelCommands, input.click);
+                    }, 1);
                 }
                 return;
             }
-            playerInput.get(e.getPlayer()).panel.placeholders.addPlaceholder("player-input",e.getMessage());
 
-            
-            if((playerInput.get(e.getPlayer()).panel.getConfig().getString("max-input-length") != null) && (Integer.parseInt(playerInput.get(e.getPlayer()).panel.getConfig().getString("max-input-length")) != -1) && (e.getMessage().length() > Integer.parseInt(playerInput.get(e.getPlayer()).panel.getConfig().getString("max-input-length")))) {
-                e.getPlayer().sendMessage(ctx.text.colour(ctx.tag + playerInput.get(e.getPlayer()).panel.getConfig().getString("custom-messages.input")));
-                return;
-            }else if(e.getMessage().length() > Integer.parseInt(ctx.configHandler.config.getString("input.max-input-length")) && (Integer.parseInt(ctx.configHandler.config.getString("input.max-input-length")) != -1)) {
-                e.getPlayer().sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.input")));
-                return;
-            }
-            //get certain words from the input
-            int c = 0;
-            for(String message : e.getMessage().split("\\s")){
-                playerInput.get(e.getPlayer()).panel.placeholders.addPlaceholder("player-input-" + (c+1),message);
-                c++;
-            }
+            // Add the full input
+            PlayerInput input = playerInput.get(player);
+            input.panel.placeholders.addPlaceholder("player-input", message);
 
-            final PlayerInput taskInput = playerInput.remove(e.getPlayer());
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, new Runnable() {
-                public void run() {
-                    ctx.commands.runCommands(taskInput.panel, PanelPosition.Top,e.getPlayer(), taskInput.commands,taskInput.click); //I have to do this to run regular Bukkit voids in an ASYNC Event
+            // Check per-panel max length
+            String panelMax = input.panel.getConfig().getString("max-input-length");
+            if (panelMax != null) {
+                int max = Integer.parseInt(panelMax);
+                if (max != -1 && message.length() > max) {
+                    player.sendMessage(ctx.text.colour(ctx.tag + input.panel.getConfig().getString("custom-messages.input")));
+                    return;
                 }
-            });
+            }
+            // Check global max length
+            int globalMax = Integer.parseInt(ctx.configHandler.config.getString("input.max-input-length"));
+            if (globalMax != -1 && message.length() > globalMax) {
+                player.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.input")));
+                return;
+            }
+
+            // Split into words
+            String[] parts = message.split("\\s");
+            for (int i = 0; i < parts.length; i++) {
+                input.panel.placeholders.addPlaceholder("player-input-" + (i + 1), parts[i]);
+            }
+
+            // Execute commands
+            PlayerInput taskInput = playerInput.remove(player);
+            Scheduler.runTaskLater(ctx.plugin, () ->
+                    ctx.commands.runCommands(taskInput.panel, PanelPosition.Top, player, taskInput.commands, taskInput.click), 1);
         }
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        //if the player is in generate mode, remove generate mode
         playerInput.remove(e.getPlayer());
     }
 
-    public void sendInputMessage(Panel panel, PanelPosition pos, Player p){
+    public void sendInputMessage(Panel panel, PanelPosition pos, Player p) {
         List<String> inputMessages;
-        if(panel.getConfig().contains("custom-messages.input-message")){
-            //For input-message custom from in the panel
+        if (panel.getConfig().contains("custom-messages.input-message")) {
             inputMessages = new ArrayList<>(panel.getConfig().getStringList("custom-messages.input-message"));
-        }else{
-            //For input-message from the config
+        } else {
             inputMessages = new ArrayList<>(ctx.configHandler.config.getStringList("input.input-message"));
         }
-        for (String temp : inputMessages) {
-            temp = temp.replaceAll("%cp-args%", Objects.requireNonNull(ctx.configHandler.config.getString("input.input-cancel")));
-            p.sendMessage(ctx.text.placeholders(panel,pos,p, temp));
+        String cancelKeyword = ctx.configHandler.config.getString("input.input-cancel");
+        for (String line : inputMessages) {
+            String msg = line.replaceAll("%cp-args%", Objects.requireNonNull(cancelKeyword));
+            p.sendMessage(ctx.text.placeholders(panel, pos, p, msg));
         }
     }
 }

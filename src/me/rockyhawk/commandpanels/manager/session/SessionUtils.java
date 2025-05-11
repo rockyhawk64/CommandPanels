@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.manager.session;
 
+import com.loohp.platformscheduler.Scheduler;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.events.PanelClosedEvent;
@@ -42,19 +43,16 @@ public class SessionUtils implements Listener {
         //check for panelType unclosable (unclosable is Top only)
         if(ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).getConfig().contains("panelType")){
             if(ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).getConfig().getStringList("panelType").contains("unclosable")){
-                ctx.plugin.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, new Runnable() {
-                    public void run() {
-                        //end the old panel session and copy a new one
-                        if(ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top) == null){
-                            return;
-                        }
-                        ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).isOpen = false;
-                        Panel reopenedPanel = ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).copy();
-                        //re-add placeholders as they are not transferred in the Panel object
-                        reopenedPanel.placeholders.keys = ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).placeholders.keys;
-                        reopenedPanel.open(Bukkit.getPlayer(playerName), PanelPosition.Top);
+                Scheduler.runTaskLater(ctx.plugin, () -> {
+                    if(ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top) == null){
+                        return;
                     }
-                });
+                    ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).isOpen = false;
+                    Panel reopenedPanel = ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).copy();
+                    //re-add placeholders as they are not transferred in the Panel object
+                    reopenedPanel.placeholders.keys = ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).placeholders.keys;
+                    reopenedPanel.open(Bukkit.getPlayer(playerName), PanelPosition.Top);
+                }, 1);
                 return;
             }
         }

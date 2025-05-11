@@ -1,11 +1,11 @@
 package me.rockyhawk.commandpanels.commands;
 
+import com.loohp.platformscheduler.ScheduledRunnable;
 import me.rockyhawk.commandpanels.Context;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class ImportCommand implements CommandExecutor {
     Context ctx;
@@ -23,12 +23,12 @@ public class ImportCommand implements CommandExecutor {
             }
             if (args.length == 2) {
                 //import command
-                new BukkitRunnable() {
+                new ScheduledRunnable() {
                     @Override
                     public void run() {
                         ctx.downloader.downloadPanel(sender, args[1], args[0]);
                         ctx.reloader.reloadPanelFiles();
-                        new BukkitRunnable() {
+                        new ScheduledRunnable() {
                             @Override
                             public void run() {
                                 ctx.hotbar.reloadHotbarSlots();

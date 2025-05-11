@@ -1,10 +1,10 @@
 package me.rockyhawk.commandpanels.formatter.placeholders.resolvers;
 
+import com.loohp.platformscheduler.Scheduler;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.formatter.placeholders.PlaceholderResolver;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class ServerPlaceholder implements PlaceholderResolver {
             // First time checking this server, launch async ping
             if (!inProgress.containsKey(ipPort)) {
                 inProgress.put(ipPort, true);
-                Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, () -> {
+                Scheduler.runTaskAsynchronously(ctx.plugin, () -> {
                     boolean result = pingServer(ipPort);
                     cachedStatus.put(ipPort, result);
                     inProgress.remove(ipPort);

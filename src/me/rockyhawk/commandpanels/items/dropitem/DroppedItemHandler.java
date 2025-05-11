@@ -1,4 +1,5 @@
 package me.rockyhawk.commandpanels.items.dropitem;
+import com.loohp.platformscheduler.ScheduledRunnable;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.events.PanelClosedEvent;
 import org.bukkit.Bukkit;
@@ -6,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class DroppedItemHandler implements Listener {
     Context ctx;
@@ -16,7 +16,7 @@ public class DroppedItemHandler implements Listener {
 
     @EventHandler
     public void panelCloseItemsDrop(PanelClosedEvent e){
-        new BukkitRunnable(){
+        new ScheduledRunnable(){
             @Override
             public void run(){
                 for(String item : e.getPanel().getConfig().getConfigurationSection("item").getKeys(false)){

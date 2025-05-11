@@ -1,10 +1,10 @@
 package me.rockyhawk.commandpanels.updater;
 
+import com.loohp.platformscheduler.ScheduledRunnable;
 import me.rockyhawk.commandpanels.Context;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class VersionChecker {
     public void notifyUpdateOnJoin(PlayerJoinEvent e) {
         if (e.getPlayer().hasPermission("commandpanel.update") && ctx.configHandler.isTrue("updater.update-checks")) {
             if (githubNewUpdate(false)) {
-                new BukkitRunnable() {
+                new ScheduledRunnable() {
                     @Override
                     public void run() {
                         ctx.text.sendMessage(e.getPlayer(), ChatColor.YELLOW + "A new update is available for download!");
@@ -70,7 +70,7 @@ public class VersionChecker {
             updater.cachedLatestVersion = ctx.plugin.getDescription().getVersion();
         }
 
-        new BukkitRunnable() {
+        new ScheduledRunnable() {
             @Override
             public void run() {
                 try {

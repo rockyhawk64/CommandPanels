@@ -1,8 +1,8 @@
 package me.rockyhawk.commandpanels.manager;
 
+import com.loohp.platformscheduler.Scheduler;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,12 +16,12 @@ public class PlayerJoinEvent implements Listener {
     @EventHandler
     public void onWorldLogin(org.bukkit.event.player.PlayerJoinEvent e){
         if (!e.getPlayer().hasPlayedBefore() && ctx.configHandler.config.contains("open-on-first-login")) {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, () ->
+            Scheduler.runTaskLater(ctx.plugin, () ->
                     openOnJoin(e.getPlayer(), "open-on-first-login"), 40L);  // 2 seconds delay
             return;
         }
         //only opens when the player logs into the server
-        Bukkit.getScheduler().scheduleSyncDelayedTask(ctx.plugin, () ->
+        Scheduler.runTaskLater(ctx.plugin, () ->
                 openOnJoin(e.getPlayer(),"open-on-login"), 20L);  // 1 seconds delay
     }
 

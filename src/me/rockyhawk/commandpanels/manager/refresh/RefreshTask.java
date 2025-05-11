@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.manager.refresh;
 
+import com.loohp.platformscheduler.ScheduledRunnable;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.events.PanelOpenedEvent;
@@ -8,9 +9,8 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
-public class RefreshTask extends BukkitRunnable {
+public class RefreshTask extends ScheduledRunnable {
     private final Context ctx;
     private final PanelOpenedEvent event;
     private final Panel panel;
