@@ -29,8 +29,13 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
+    - name: Build CommandPanels
       run: mvn clean package
+    - name: Upload Artifact
+      uses: "actions/upload-artifact@v4"
+      with:
+        name: "CommandPanels plugin jars"
+        path: "target/CommandPanels-SNAPSHOT.jar"
       
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
