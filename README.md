@@ -25,6 +25,9 @@ Making a plugin? You can use Command Panels as a library to make your own GUIs f
 
 **Developer API** for easy GUI creation in your own plugins (using this as a dependency) or simply to interact with Command Panels.
 
+## Download (Folia Version)
+You can download the plugin from [here](https://github.com/thecatisbest/Folia-CommandPanels/actions).
+
 ## Spigot Page
 You can find the spigot page for the plugin [here](https://www.spigotmc.org/resources/67788/).
 
