@@ -32,7 +32,7 @@ public class PlayerInputUtils implements Listener {
                     final PlayerInput taskInput = playerInput.remove(e.getPlayer());
                     Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, new Runnable() {
                         public void run() {
-                            if(playerInput.get(e.getPlayer()).cancelCommands != null){
+                            if(taskInput.cancelCommands != null){
                                 ctx.commands.runCommands(taskInput.panel, PanelPosition.Top,e.getPlayer(), taskInput.cancelCommands,taskInput.click); //I have to do this to run regular Bukkit voids in an ASYNC Event
                             }
                         }
