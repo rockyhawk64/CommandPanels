@@ -201,9 +201,6 @@ public class Context {
         if(configHandler.isTrue("config.refresh-panels")){
             Bukkit.getServer().getPluginManager().registerEvents(new PanelRefresher(this), plugin);
         }
-        if(configHandler.isTrue("config.custom-commands")){
-            Bukkit.getServer().getPluginManager().registerEvents(openCommands, plugin);
-        }
         if(configHandler.isTrue("config.hotbar-items")){
             Bukkit.getServer().getPluginManager().registerEvents(new HotbarEvents(this), plugin);
         }
