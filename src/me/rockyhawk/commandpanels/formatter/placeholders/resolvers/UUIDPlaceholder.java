@@ -15,11 +15,6 @@ public class UUIDPlaceholder implements PlaceholderResolver {
 
     @Override
     public String resolve(Panel panel, PanelPosition position, Player p, String identifier, Context ctx) {
-        String dataPoint = identifier.replace("uuid-", "");
-        //get data from other user
-        if(ctx.panelDataPlayers.getOffline(dataPoint) == null){
-            return "unknown";
-        }
-        return ctx.panelDataPlayers.getOffline(dataPoint).toString();
+        return p.getUniqueId().toString();
     }
 }

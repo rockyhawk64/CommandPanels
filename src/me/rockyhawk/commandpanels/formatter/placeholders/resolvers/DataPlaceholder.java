@@ -20,9 +20,9 @@ public class DataPlaceholder implements PlaceholderResolver {
         if(dataPoint.contains(",")){
             String dataName = dataPoint.split(",")[0];
             String playerName = dataPoint.split(",")[1];
-            return ctx.panelData.getUserData(ctx.panelDataPlayers.getOffline(playerName),dataName);
+            return ctx.panelData.getUserData(playerName,dataName);
         }else{
-            return ctx.panelData.getUserData(p.getUniqueId(),dataPoint);
+            return ctx.panelData.getUserData(p.getName(),dataPoint);
         }
     }
 }

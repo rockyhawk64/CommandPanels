@@ -6,33 +6,38 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.UUID;
 
 public class DataLoader {
     Context ctx;
     public DataLoader(Context pl) {
         this.ctx = pl;
     }
-    public YamlConfiguration dataConfig;
 
-    public String getUserData(UUID playerUUID, String dataPoint){
-        return dataConfig.getString("playerData." + playerUUID + "." + dataPoint);
+    public YamlConfiguration dataConfig;
+    public DataManager dataPlayers = new DataManager(this);
+    public DataFileConverter dataFileConverter = new DataFileConverter(this);
+
+    public String getUserData(String playerName, String dataPoint){
+        return dataConfig.getString(dataPlayers.getDataProfile(playerName) + ".data." + dataPoint);
     }
 
-    public void setUserData(UUID playerUUID, String dataPoint, String dataValue, boolean overwrite){
+    public void setUserData(String playerName, String dataPoint, String dataValue, boolean overwrite){
         //if it exists no overwriting
-        if(!overwrite && dataConfig.isSet("playerData." + playerUUID + "." + dataPoint)){
+        String profile = dataPlayers.getDataProfile(playerName);
+        if(!overwrite && dataConfig.isSet(profile + ".data." + dataPoint)){
             return;
         }
-        dataConfig.set("playerData." + playerUUID + "." + dataPoint, dataValue);
+        dataConfig.set(profile + ".data." + dataPoint, dataValue);
     }
 
-    public void delUserData(UUID playerUUID, String dataPoint){
-        dataConfig.set("playerData." + playerUUID + "." + dataPoint, null);
+    public void delUserData(String playerName, String dataPoint){
+        String profile = dataPlayers.getDataProfile(playerName);
+        dataConfig.set(profile + ".data." + dataPoint, null);
     }
 
-    public void clearData(UUID playerUUID){
-        dataConfig.set("playerData." + playerUUID, null);
+    public void clearData(String playerName){
+        String profile = dataPlayers.getDataProfile(playerName);
+        dataConfig.set(profile, null);
     }
 
     public void saveDataFile(){
@@ -44,11 +49,12 @@ public class DataLoader {
         }
     }
 
-    public void doDataMath(UUID playerUUID, String dataPoint, String dataValue){
+    public void doDataMath(String playerName, String dataPoint, String dataValue){
+        String profile = dataPlayers.getDataProfile(playerName);
         BigDecimal originalValue;
         BigDecimal newValue;
         try {
-            originalValue = new BigDecimal(dataConfig.getString("playerData." + playerUUID + "." + dataPoint));
+            originalValue = new BigDecimal(dataConfig.getString(profile + ".data." + dataPoint));
         }catch(Exception ex){
             ctx.debug.send(ex,null, ctx);
             originalValue = new BigDecimal("1");
@@ -89,10 +95,10 @@ public class DataLoader {
 
         //if number is integer
         if(output.stripTrailingZeros().scale() <= 0){
-            dataConfig.set("playerData." + playerUUID + "." + dataPoint, output.stripTrailingZeros().toPlainString());
+            dataConfig.set(profile + ".data." + dataPoint, output.stripTrailingZeros().toPlainString());
             return;
         }
 
-        dataConfig.set("playerData." + playerUUID + "." + dataPoint, output.toPlainString());
+        dataConfig.set(profile + ".data." + dataPoint, output.toPlainString());
     }
 }

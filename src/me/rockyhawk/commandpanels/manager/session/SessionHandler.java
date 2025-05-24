@@ -96,6 +96,11 @@ public class SessionHandler {
         PanelClosedEvent closedEvent = new PanelClosedEvent(Bukkit.getPlayer(playerName),panel,position);
         Bukkit.getPluginManager().callEvent(closedEvent);
 
+        //Save the data file so changes are updated
+        Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, () -> {
+            ctx.panelData.saveDataFile();
+        });
+
         openPanels.get(playerName).setPanel(null,position);
         //remove if all panels closed or if top panel is closed
         if(openPanels.get(playerName).allClosed()){

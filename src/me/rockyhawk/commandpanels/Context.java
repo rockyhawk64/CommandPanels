@@ -21,8 +21,6 @@ import me.rockyhawk.commandpanels.configuration.ConfigHandler;
 import me.rockyhawk.commandpanels.commands.opencommands.OpenCommands;
 import me.rockyhawk.commandpanels.configuration.DebugManager;
 import me.rockyhawk.commandpanels.formatter.data.DataLoader;
-import me.rockyhawk.commandpanels.formatter.data.DataManager;
-import me.rockyhawk.commandpanels.generate.deluxecompatibility.CompatibilityConverter;
 import me.rockyhawk.commandpanels.commands.editor.CommandPanelsEditor;
 import me.rockyhawk.commandpanels.commands.editor.EditorTabComplete;
 import me.rockyhawk.commandpanels.commands.editor.PanelDownloader;
@@ -69,7 +67,6 @@ public class Context {
 
     public CommandRunner commands;
     public DataLoader panelData;
-    public DataManager panelDataPlayers;
 
     public OpenCommands openCommands;
     public Placeholders placeholders;
@@ -130,7 +127,6 @@ public class Context {
 
         reloader = new ReloadCommand(this);
         commands = new CommandRunner(this);
-        panelDataPlayers = new DataManager();
 
         openPanel = new OpenPanel(this);
         itemBuilder = new ItemBuilder(this);
@@ -184,7 +180,6 @@ public class Context {
         Bukkit.getServer().getPluginManager().registerEvents(new InteractionHandler(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(inventorySaver, plugin);
         Bukkit.getServer().getPluginManager().registerEvents(inputUtils, plugin);
-        Bukkit.getServer().getPluginManager().registerEvents(panelDataPlayers, plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new SessionUtils(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(generator, plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new DroppedItemHandler(this), plugin);

@@ -1,9 +1,7 @@
 package me.rockyhawk.commandpanels.commands;
 
 import me.rockyhawk.commandpanels.Context;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -33,14 +31,13 @@ public class DataCommand implements CommandExecutor {
             if (args.length == 2) {
                 //for the clear command
                 if (args[0].equals("clear")) {
-                    if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("online")) {
-                        for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-                            if (args[1].equalsIgnoreCase("online") && !player.isOnline()) continue;
-                            ctx.panelData.clearData(ctx.panelDataPlayers.getOffline(player.getName()));
+                    if (args[1].equalsIgnoreCase("all")) {
+                        for (String player : ctx.panelData.dataPlayers.getPlayerNames()) {
+                            ctx.panelData.clearData(player);
                             count++;
                         }
                     } else
-                        ctx.panelData.clearData(ctx.panelDataPlayers.getOffline(args[1]));
+                        ctx.panelData.clearData(args[1]);
                     if (sendPlayerMessage) {
                         sender.sendMessage(ctx.text.colour(ctx.tag
                                 + ChatColor.GREEN + "Cleared all data for "
@@ -51,14 +48,13 @@ public class DataCommand implements CommandExecutor {
             } else if (args.length == 3) {
                 //for the remove command
                 if (args[0].equals("remove")) {
-                    if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("online")) {
-                        for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-                            if (args[1].equalsIgnoreCase("online") && !player.isOnline()) continue;
-                            ctx.panelData.delUserData(ctx.panelDataPlayers.getOffline(player.getName()), args[2]);
+                    if (args[1].equalsIgnoreCase("all")) {
+                        for (String player : ctx.panelData.dataPlayers.getPlayerNames()) {
+                            ctx.panelData.delUserData(player, args[2]);
                             count++;
                         }
                     } else
-                        ctx.panelData.delUserData(ctx.panelDataPlayers.getOffline(args[1]), args[2]);
+                        ctx.panelData.delUserData(args[1], args[2]);
                     if (sendPlayerMessage) {
                         sender.sendMessage(ctx.text.colour(ctx.tag
                                 + ChatColor.GREEN + "Removed "
@@ -71,20 +67,19 @@ public class DataCommand implements CommandExecutor {
                     //for the get command
                     sender.sendMessage(ctx.text.colour(ctx.tag
                             + ChatColor.GREEN + "Value of data is "
-                            + ChatColor.WHITE + ctx.panelData.getUserData(ctx.panelDataPlayers.getOffline(args[1]), args[2])));
+                            + ChatColor.WHITE + ctx.panelData.getUserData(args[1], args[2])));
                     return true;
                 }
             } else if (args.length == 4) {
                 if (args[0].equals("set")) {
                     //for set command
-                    if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("online")) {
-                        for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-                            if (args[1].equalsIgnoreCase("online") && !player.isOnline()) continue;
-                            ctx.panelData.setUserData(ctx.panelDataPlayers.getOffline(player.getName()), args[2], args[3], true);
+                    if (args[1].equalsIgnoreCase("all")) {
+                        for (String player : ctx.panelData.dataPlayers.getPlayerNames()) {
+                            ctx.panelData.setUserData(player, args[2], args[3], true);
                             count++;
                         }
                     } else {
-                        ctx.panelData.setUserData(ctx.panelDataPlayers.getOffline(args[1]), args[2], args[3], true);
+                        ctx.panelData.setUserData(args[1], args[2], args[3], true);
                     }
                     if (sendPlayerMessage) {
                         sender.sendMessage(ctx.text.colour(ctx.tag
@@ -97,15 +92,13 @@ public class DataCommand implements CommandExecutor {
                     }
                 } else {
                     //for add command
-                    if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("online")) {
-
-                        for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-                            if (args[1].equalsIgnoreCase("online") && !player.isOnline()) continue;
-                            ctx.panelData.setUserData(ctx.panelDataPlayers.getOffline(player.getName()), args[2], args[3], false);
+                    if (args[1].equalsIgnoreCase("all")) {
+                        for (String player : ctx.panelData.dataPlayers.getPlayerNames()) {
+                            ctx.panelData.setUserData(player, args[2], args[3], false);
                             count++;
                         }
                     } else
-                        ctx.panelData.setUserData(ctx.panelDataPlayers.getOffline(args[1]), args[2], args[3], false);
+                        ctx.panelData.setUserData(args[1], args[2], args[3], false);
                     if (sendPlayerMessage) {
                         sender.sendMessage(ctx.text.colour(ctx.tag
                                 + ChatColor.GREEN + "Set "

@@ -47,6 +47,9 @@ public class ConfigHandler {
         ctx.inventorySaver.inventoryConfig = YamlConfiguration.loadConfiguration(new File(ctx.plugin.getDataFolder() + File.separator + "inventories.yml"));
         config = YamlConfiguration.loadConfiguration(new File(ctx.plugin.getDataFolder() + File.separator + "config.yml"));
 
+        // CONVERT data.yml OLD layout to NEW layout
+        ctx.panelData.dataFileConverter.convertOldProfileLayout();
+
         //Initialise the config files on load
         File configFile = new File(ctx.plugin.getDataFolder() + File.separator + "config.yml");
         if (!configFile.exists()) {

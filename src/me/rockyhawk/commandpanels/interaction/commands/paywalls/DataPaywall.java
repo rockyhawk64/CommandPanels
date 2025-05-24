@@ -27,11 +27,11 @@ public class DataPaywall implements PaywallResolver {
             String dataKey = args[0];
             String amountStr = args[1];
             double requiredAmount = Double.parseDouble(amountStr);
-            double currentAmount = Double.parseDouble(ctx.panelData.getUserData(player.getUniqueId(), dataKey));
+            double currentAmount = Double.parseDouble(ctx.panelData.getUserData(player.getName(), dataKey));
 
             if (currentAmount >= requiredAmount) {
                 if (performOperation) {
-                    ctx.panelData.doDataMath(player.getUniqueId(), dataKey,
+                    ctx.panelData.doDataMath(player.getName(), dataKey,
                             "-" + ctx.text.placeholdersNoColour(panel, PanelPosition.Top, player, amountStr));
                 }
 
