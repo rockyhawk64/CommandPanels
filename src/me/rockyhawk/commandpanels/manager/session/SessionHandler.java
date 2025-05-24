@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.manager.session;
 
+import com.loohp.platformscheduler.Scheduler;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.api.events.PanelClosedEvent;
@@ -95,6 +96,11 @@ public class SessionHandler {
         //fire PanelClosedEvent
         PanelClosedEvent closedEvent = new PanelClosedEvent(Bukkit.getPlayer(playerName),panel,position);
         Bukkit.getPluginManager().callEvent(closedEvent);
+
+        //Save the data file so changes are updated
+        Scheduler.runTaskAsynchronously(ctx.plugin, () -> {
+            ctx.panelData.saveDataFile();
+        });
 
         openPanels.get(playerName).setPanel(null,position);
         //remove if all panels closed or if top panel is closed

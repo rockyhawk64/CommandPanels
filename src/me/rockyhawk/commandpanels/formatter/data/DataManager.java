@@ -1,47 +1,104 @@
 package me.rockyhawk.commandpanels.formatter.data;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.event.EventHandler;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataManager implements Listener {
-    //will return UUID if found or null
-    public UUID getOffline(String playerName){
-        return knownPlayers.getOrDefault(playerName, null);
+    private final DataLoader loader;
+
+    //will return string for the location in the data config
+    //RESOLVED profiles have a UUID and Player Name linked
+    //UNRESOLVED profiles had data assigned before they were online to find a UUID
+    public String getDataProfile(String playerName){
+        Player player = Bukkit.getPlayer(playerName);
+
+        // If there is an unresolved profile for this player
+        boolean hasUnresolvedProfile = containsNoCase(loader.dataConfig, playerName);
+
+        // Player is not null/exists on the server
+        if(player != null){
+            //Update name and creates resolved profile entry if not already there
+            loader.dataConfig.set("player_data.resolved_profiles." + player.getUniqueId() + ".last_known_name", player.getName());
+
+            //Merge unresolved to unresolved if unresolved profile was found
+            if(hasUnresolvedProfile){
+                mergeProfiles(player);
+            }
+
+            return "player_data.resolved_profiles." + player.getUniqueId();
+        }
+
+        // Use unresolved profile if player does not exist (creation of section is not necessary until data is written)
+        return "player_data.unresolved_profiles." + playerName;
     }
 
     //Run on initialisation
-    public DataManager() {
-        reloadAllPlayers();
+    public DataManager(DataLoader dataLoader) {
+        this.loader = dataLoader;
     }
 
-    //Bukkit.getOfflinePlayer uses MojangAPI and can be very slow if a player has never joined the server before
-    //Will get all players who have ever joined the server before and use them
-    private HashMap<String, UUID> knownPlayers = new HashMap<>();
+    // Will get all player names that have data entries
+    public List<String> getPlayerNames() {
+        List<String> players = new ArrayList<>();
 
-    public void reloadAllPlayers(){
-        knownPlayers.clear();
-        try {
-            for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
-                if (p.getName() != null) {
-                    knownPlayers.put(p.getName(), p.getUniqueId());
+        ConfigurationSection unresolved = loader.dataConfig.getConfigurationSection("player_data.unresolved_profiles");
+        ConfigurationSection resolved = loader.dataConfig.getConfigurationSection("player_data.resolved_profiles");
+
+        // Collect all unresolved profile names (keys)
+        if (unresolved != null) {
+            players.addAll(unresolved.getKeys(false));
+        }
+
+        // Collect all resolved profile names from the last_known_name field
+        if (resolved != null) {
+            for (String uuidKey : resolved.getKeys(false)) {
+                String path = "player_data.resolved_profiles." + uuidKey + ".last_known_name";
+                String lastKnownName = loader.dataConfig.getString(path);
+                if (lastKnownName != null && !lastKnownName.isEmpty()) {
+                    players.add(lastKnownName);
                 }
-
             }
-        } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[CommandPanels] Skipping player retrieval; potential corrupt data.");
-        } // Potential corrupt data, skip
+        }
+
+        return players;
     }
 
-    //Add players who have joined the server to known players
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        knownPlayers.put(e.getPlayer().getName(), e.getPlayer().getUniqueId());
+    //Same as contains but is not case-sensitive since Minecraft usernames are not case-sensitive
+    private boolean containsNoCase(YamlConfiguration config, String targetKey) {
+        ConfigurationSection section = config.getConfigurationSection("player_data.unresolved_profiles");
+        if (section == null) return false;
+
+        for (String key : section.getKeys(false)) {
+            if (key.equalsIgnoreCase(targetKey)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void mergeProfiles(Player player) {
+        ConfigurationSection source = loader.dataConfig.getConfigurationSection("player_data.unresolved_profiles." + player.getName() + ".data");
+        ConfigurationSection target = loader.dataConfig.getConfigurationSection("player_data.resolved_profiles." + player.getUniqueId() + ".data");
+
+        if (source == null) return;
+
+        if (target == null) {
+            target = loader.dataConfig.createSection("player_data.resolved_profiles." + player.getUniqueId() + ".data");
+        }
+
+        for (String key : source.getKeys(false)) {
+            Object sourceValue = source.get(key);
+            // Overwrite or add the value in target
+            target.set(key, sourceValue);
+        }
+
+        // Remove unresolved profile after merge
+        loader.dataConfig.set("player_data.unresolved_profiles." + player.getName(), null);
     }
 }

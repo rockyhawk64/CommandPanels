@@ -136,7 +136,7 @@ public class InventorySaver implements Listener {
                     found = true;
                     break;
                 }
-                if(cont.get(i).isSimilar(item)){
+                if(cont.get(i).getAmount() < cont.get(i).getMaxStackSize() && cont.get(i).isSimilar(item)){
                     cont.get(i).setAmount(cont.get(i).getAmount() + item.getAmount());
                     found = true;
                     break;

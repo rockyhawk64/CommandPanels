@@ -52,20 +52,16 @@ public class SlotManager {
     }
 
     protected void setItem(ItemStack item, int slot, Inventory inv, Player p, PanelPosition position) {
-        try {
-            if (position == PanelPosition.Top) {
-                inv.setItem(slot, item);
-            } else if (position == PanelPosition.Middle) {
-                if (slot + 9 < 36) {
-                    p.getInventory().setItem(slot + 9, item);
-                }
-            } else {
-                if (slot < 9) {
-                    p.getInventory().setItem(slot, item);
-                }
+        if(position == PanelPosition.Top){
+            inv.setItem(slot, item);
+        }else if(position == PanelPosition.Middle){
+            if(slot+9 < 36) {
+                p.getInventory().setItem(slot + 9, item);
             }
-        }catch (ArrayIndexOutOfBoundsException ignore){
-            // Ignore only for errors where items that do not fit in the inventory exist in the panel
+        }else{
+            if(slot < 9) {
+                p.getInventory().setItem(slot, item);
+            }
         }
     }
 

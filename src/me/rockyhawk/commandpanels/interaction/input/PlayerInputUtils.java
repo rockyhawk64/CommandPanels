@@ -35,17 +35,17 @@ public class PlayerInputUtils implements Listener {
             // Handle cancel keyword
             String cancelKeyword = ctx.configHandler.config.getString("input.input-cancel");
             if (message.equalsIgnoreCase(cancelKeyword)) {
-                PlayerInput input = playerInput.remove(player);
-                if (input.cancelCommands != null) {
-                    Scheduler.runTaskLater(ctx.plugin, () -> {
+                final PlayerInput input = playerInput.remove(player);
+                Scheduler.runTaskLater(ctx.plugin, () -> {
+                    if (input.cancelCommands != null) {
                         ctx.commands.runCommands(input.panel, PanelPosition.Top, player, input.cancelCommands, input.click);
-                    }, 1);
-                }
+                    }
+                }, 1);
                 return;
             }
 
             // Add the full input
-            PlayerInput input = playerInput.get(player);
+            final PlayerInput input = playerInput.get(player);
             input.panel.placeholders.addPlaceholder("player-input", message);
 
             // Check per-panel max length
@@ -71,7 +71,7 @@ public class PlayerInputUtils implements Listener {
             }
 
             // Execute commands
-            PlayerInput taskInput = playerInput.remove(player);
+            final PlayerInput taskInput = playerInput.remove(player);
             Scheduler.runTaskLater(ctx.plugin, () ->
                     ctx.commands.runCommands(taskInput.panel, PanelPosition.Top, player, taskInput.commands, taskInput.click), 1);
         }

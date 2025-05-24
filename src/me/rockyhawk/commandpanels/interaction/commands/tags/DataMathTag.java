@@ -19,7 +19,7 @@ public class DataMathTag implements TagResolver {
 
         if (args.length == 3) {
             ctx.panelData.doDataMath(
-                    ctx.panelDataPlayers.getOffline(args[2]),
+                    args[2],
                     ctx.text.placeholdersNoColour(panel, pos, player, args[0]),
                     ctx.text.placeholdersNoColour(panel, pos, player, args[1])
             );
@@ -27,7 +27,7 @@ public class DataMathTag implements TagResolver {
         }
 
         ctx.panelData.doDataMath(
-                player.getUniqueId(),
+                player.getName(),
                 ctx.text.placeholdersNoColour(panel, pos, player, args[0]),
                 ctx.text.placeholdersNoColour(panel, pos, player, args[1])
         );
