@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.formatter.data;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -44,5 +45,8 @@ public class DataFileConverter {
 
         // Save the config after
         loader.saveDataFile();
+
+        // Send message for conversion
+        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandPanels] Data file (data.yml) has been converted to the newest format!");
     }
 }
