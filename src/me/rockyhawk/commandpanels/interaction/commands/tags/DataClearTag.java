@@ -17,7 +17,7 @@ public class DataClearTag implements TagResolver {
         String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");
         args = Arrays.copyOfRange(args, 1, args.length); // Remove the tag name
 
-        ctx.panelData.clearData(ctx.panelDataPlayers.getOffline(args[0]));
+        ctx.panelData.clearData(args[0]);
         return true;
     }
 }

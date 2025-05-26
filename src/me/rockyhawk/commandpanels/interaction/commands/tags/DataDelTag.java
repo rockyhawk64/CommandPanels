@@ -19,14 +19,14 @@ public class DataDelTag implements TagResolver {
 
         if (args.length == 2) {
             ctx.panelData.delUserData(
-                    ctx.panelDataPlayers.getOffline(args[1]),
+                    args[1],
                     ctx.text.placeholdersNoColour(panel, pos, player, args[0])
             );
             return true;
         }
 
         ctx.panelData.delUserData(
-                player.getUniqueId(),
+                player.getName(),
                 ctx.text.placeholdersNoColour(panel, pos, player, args[0])
         );
         return true;

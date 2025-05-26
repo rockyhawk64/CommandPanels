@@ -33,7 +33,6 @@ public class ReloadCommand implements CommandExecutor {
             // Run async for file and data loading
             Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, () -> {
                 reloadPanelFiles(); // heavy file I/O
-                ctx.panelDataPlayers.reloadAllPlayers(); // player data reload
 
                 // Switch back to main thread for Bukkit API usage
                 Bukkit.getScheduler().runTask(ctx.plugin, () -> {
@@ -45,6 +44,7 @@ public class ReloadCommand implements CommandExecutor {
                         } catch (Exception ignore) {}
                     }
 
+                    // Do config file refreshes
                     ctx.configHandler.onPluginLoad();
 
                     // Check for duplicates (cheap, but interacts with sender)
