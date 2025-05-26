@@ -44,9 +44,10 @@ public class ClickActionExecutor {
             }
 
             if (validClick) {
-                List<String> cancelCommands = panel.getConfig().contains("item." + foundSlot + section + ".player-input-cancel")
-                        ? panel.getConfig().getStringList("item." + foundSlot + section + ".player-input-cancel")
-                        : null;
+                List<String> cancelCommands = panel.getConfig().getStringList("item." + foundSlot + section + ".player-input-cancel");
+                if (cancelCommands.isEmpty()) {
+                    cancelCommands = null;
+                }
                 handler.ctx.inputUtils.playerInput.put(p, new PlayerInput(panel, filtered, cancelCommands, click));
                 handler.ctx.inputUtils.sendInputMessage(panel, position, p);
             }
