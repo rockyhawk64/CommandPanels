@@ -23,10 +23,7 @@ Making a plugin? You can use Command Panels as a library to make your own GUIs f
 
 **Player Inventory** allows you to extend the GUI into the player's inventory area underneath, to make advanced menu experiences!
 
-**Developer API** for easy GUI creation in your own plugins (using this as a dependency) or simply to interact with Command Panels.
-
-## Spigot Page
-You can find the spigot page for the plugin [here](https://www.spigotmc.org/resources/67788/).
+**Floodgate Forms** to create custom Bedrock GUIs with full support for both SimpleForms and CustomForms that allows inputs such as sliders, dropdowns, etc.
 
 ## Partner
 
