@@ -125,6 +125,7 @@ public class Context {
         configHandler = new ConfigHandler(this);
         econ = null;
 
+        openCommands = new OpenCommands(this);
         reloader = new ReloadCommand(this);
         commands = new CommandRunner(this);
 
@@ -136,7 +137,6 @@ public class Context {
         potion_1_8 = new Potion_1_8();
         potion_1_20_4 = new Potion_1_20_4();
 
-        openCommands = new OpenCommands(this);
         openPanels = new SessionHandler(this);
         hotbar = new HotbarItemLoader(this);
         nbt = new NBTManager(this);

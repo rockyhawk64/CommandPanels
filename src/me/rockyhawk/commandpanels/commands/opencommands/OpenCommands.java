@@ -2,24 +2,13 @@ package me.rockyhawk.commandpanels.commands.opencommands;
 
 import com.google.common.collect.Maps;
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +31,9 @@ public class OpenCommands {
 
     public OpenCommands(Context pl) {
         this.ctx = pl;
+        if(ctx.version.isAtLeast("1.13")){
+            Bukkit.getServer().getPluginManager().registerEvents(new PriorityHandler(this), ctx.plugin);
+        }
     }
 
     private void unloadCommands() {
@@ -70,12 +62,18 @@ public class OpenCommands {
             String commandName = panelCommands.remove(0);
             Command command = new BaseCommandPanel(ctx, panel, commandName, panelCommands);
 
+            // Forcefully replace command if it was known from another plugin
+            Command existing = knownCommands.remove(commandName);
+            if (existing != null) {
+                command.unregister(commandMap);
+            }
+
             commandMap.register(command.getName(), "commandpanels", command);
             commands.put(command.getName(), command);
         });
     }
 
-    private CommandMap getCommandMap() {
+    protected CommandMap getCommandMap() {
         try {
             final Class<? extends Server> serverClass = Bukkit.getServer().getClass();
             final Field commandMapField = serverClass.getDeclaredField("commandMap");
@@ -88,7 +86,11 @@ public class OpenCommands {
 
 
     public void registerCommands(){
+        if (ctx.version.isBelow("1.13")) return;
         unloadCommands();
+        if (!ctx.configHandler.isTrue("config.auto-register-commands")) {
+            return;
+        }
         loadCommands();
         Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
     }

@@ -53,6 +53,11 @@ public class ReloadCommand implements CommandExecutor {
                     // reloadHotbarSlots
                     ctx.hotbar.reloadHotbarSlots();
 
+                    // register custom commands (does not run on plugin load as PriorityHandler will do that)
+                    if (ctx.configHandler.isTrue("config.auto-register-commands")) {
+                        ctx.openCommands.registerCommands();
+                    }
+
                     // send success message
                     sender.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.reload")));
                 });
@@ -71,11 +76,6 @@ public class ReloadCommand implements CommandExecutor {
         //load panel files from panels folder
         fileNamesFromDirectory(new File(ctx.plugin.getDataFolder() + File.separator + "panels"));
         ctx.tag = ctx.text.colour(ctx.configHandler.config.getString("config.format.tag")) + " ";
-
-        Bukkit.getScheduler().runTask(ctx.plugin, () -> {
-            // register custom commands
-            ctx.openCommands.registerCommands();
-        });
     }
 
     //look through all files in all folders
