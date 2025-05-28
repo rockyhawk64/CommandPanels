@@ -73,7 +73,7 @@ public class OpenCommands {
         });
     }
 
-    protected CommandMap getCommandMap() {
+    private CommandMap getCommandMap() {
         try {
             final Class<? extends Server> serverClass = Bukkit.getServer().getClass();
             final Field commandMapField = serverClass.getDeclaredField("commandMap");
