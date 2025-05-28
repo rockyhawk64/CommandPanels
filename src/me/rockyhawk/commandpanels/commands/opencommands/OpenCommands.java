@@ -9,6 +9,7 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -59,10 +60,25 @@ public class OpenCommands {
                 return;
             }
 
-            String commandName = panelCommands.remove(0);
-            Command command = new BaseCommandPanel(ctx, panel, commandName, panelCommands);
+            // Extract the root command (first word of first command)
+            String firstFullCommand = panelCommands.get(0);
+            String commandName = firstFullCommand.split(" ")[0]; // e.g. "home"
 
-            // Forcefully replace command if it was known from another plugin
+            // Collect all subcommand patterns (without root)
+            List<String> subcommandPatterns = new ArrayList<>();
+            for (String cmd : panelCommands) {
+                String[] parts = cmd.split(" ", 2);
+                if (parts.length == 2) {
+                    subcommandPatterns.add(parts[1]); // e.g. "help", "%player%"
+                } else {
+                    subcommandPatterns.add(""); // no subcommand, just root
+                }
+            }
+
+            // Pass subcommandPatterns to BaseCommandPanel constructor
+            Command command = new BaseCommandPanel(ctx, panel, commandName, subcommandPatterns);
+
+            // Unregister old
             Command existing = knownCommands.remove(commandName);
             if (existing != null) {
                 command.unregister(commandMap);

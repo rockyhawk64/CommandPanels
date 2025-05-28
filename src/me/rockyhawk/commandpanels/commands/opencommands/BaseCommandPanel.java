@@ -16,47 +16,67 @@ public class BaseCommandPanel extends Command {
 
     private final Context ctx;
     private final Panel panel;
+    private final List<String> subcommandPatterns;
 
-    public BaseCommandPanel(Context ctx, Panel panel, String name, List<String> aliases) {
+    public BaseCommandPanel(Context ctx, Panel panel, String name, List<String> subcommandPatterns) {
         super(name);
         this.ctx = ctx;
         this.panel = panel;
-        setAliases(aliases);
+        this.subcommandPatterns = subcommandPatterns;
     }
 
     @Override
-    public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage("This command can only be used by players.");
+    public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("This command can only be used by players.");
             return true;
         }
+        Player player = (Player) sender;
 
-        Player player = (Player) commandSender;
-
-        if (strings.length == 0) {
+        // If no args and empty pattern allowed
+        if (args.length == 0 && subcommandPatterns.contains("")) {
             panel.copy().open(player, PanelPosition.Top);
             return true;
         }
 
-        List<String> args = Arrays.asList(strings);
-        List<String[]> placeholders = new ArrayList<>();
-        String[] phEnds = ctx.placeholders.getPlaceholderEnds(panel,true);
+        String[] phEnds = ctx.placeholders.getPlaceholderEnds(panel, true);
 
-        for(int i = 0; i < args.size(); i++){
-            if(args.get(i).startsWith(phEnds[0])){
-                placeholders.add(new String[]{args.get(i).replace(phEnds[0],"").replace(phEnds[1],""), args.get(i+1)});
-                i++;
-            }else if(!args.get(i).equals(args.get(i+1))){
-                return false;
+        // Try to match each subcommand pattern
+        for (String pattern : subcommandPatterns) {
+            if (pattern.isEmpty() && args.length == 0) {
+                panel.copy().open(player, PanelPosition.Top);
+                return true;
+            }
+
+            String[] patternParts = pattern.split(" ");
+            if (patternParts.length != args.length) {
+                continue; // length mismatch
+            }
+
+            Panel openPanel = panel.copy();
+            boolean matched = true;
+
+            for (int i = 0; i < patternParts.length; i++) {
+                String expected = patternParts[i];
+                String actual = args[i];
+
+                if (expected.startsWith(phEnds[0]) && expected.endsWith(phEnds[1])) {
+                    // Placeholder found: extract key without phEnds
+                    String key = expected.substring(phEnds[0].length(), expected.length() - phEnds[1].length());
+                    openPanel.placeholders.addPlaceholder(key, actual);
+                } else if (!expected.equalsIgnoreCase(actual)) {
+                    matched = false;
+                    break;
+                }
+            }
+
+            if (matched) {
+                openPanel.open(player, PanelPosition.Top);
+                return true;
             }
         }
 
-        Panel openPanel = panel.copy();
-        for(String[] placeholder : placeholders){
-            openPanel.placeholders.addPlaceholder(placeholder[0],placeholder[1]);
-        }
-
-        openPanel.open(player,PanelPosition.Top);
-        return true;
+        // No pattern matched
+        return false;
     }
 }
