@@ -48,14 +48,6 @@ public class VersionChecker {
             return false;
         }
 
-       // TODO Remove when merged into main. Also change POM and plugin.yml back to normal version numbers.
-        if (currentVersion.contains("FOLIA-BETA")) {
-            if (sendMessages) {
-                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Running a Folia beta version - update checks disabled.");
-            }
-            return false;
-        }
-
         boolean update = !updater.cachedLatestVersion.equals(currentVersion);
 
         if (update && sendMessages) {
