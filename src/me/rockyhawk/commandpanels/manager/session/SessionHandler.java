@@ -97,7 +97,7 @@ public class SessionHandler {
         Bukkit.getPluginManager().callEvent(closedEvent);
 
         //Save the data file so changes are updated
-        Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, () -> {
+        ctx.scheduler.runTaskAsynchronously(() -> {
             ctx.panelData.saveDataFile();
         });
 

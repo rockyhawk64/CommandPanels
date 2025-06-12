@@ -23,20 +23,11 @@ public class ImportCommand implements CommandExecutor {
             }
             if (args.length == 2) {
                 //import command
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        ctx.downloader.downloadPanel(sender, args[1], args[0]);
-                        ctx.reloader.reloadPanelFiles();
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                ctx.hotbar.reloadHotbarSlots();
-                            }
-                        }.run();
-
-                    }
-                }.runTaskAsynchronously(ctx.plugin);
+                ctx.scheduler.runTaskAsynchronously(() -> {
+                    ctx.downloader.downloadPanel(sender, args[1], args[0]);
+                    ctx.reloader.reloadPanelFiles();
+                    ctx.hotbar.reloadHotbarSlots();
+                });
                 return true;
             }
         } else {

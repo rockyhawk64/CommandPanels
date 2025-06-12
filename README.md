@@ -25,6 +25,12 @@ Making a plugin? You can use Command Panels as a library to make your own GUIs f
 
 **Floodgate Forms** to create custom Bedrock GUIs with full support for both SimpleForms and CustomForms that allows inputs such as sliders, dropdowns, etc.
 
+## Server Compatibility
+
+**Spigot & Paper** Full compatibility with Spigot servers and Paper servers, with enhanced performance on Paper. 1.8-1.21.5(Latest usually works)
+
+**Folia Support** Native support for Folia's regionalized threading system. The plugin automatically detects Folia and uses region-specific schedulers for optimal performance without any configuration needed.
+
 ## Partner
 
 ![ShopMenu](https://i.imgur.com/HjhtpjW.png)

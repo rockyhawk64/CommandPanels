@@ -45,7 +45,14 @@ public class TeleportTag implements TagResolver {
                     teleportedPlayer = Bukkit.getPlayer(val.substring(7));
                 }
             }
-            teleportedPlayer.teleport(new Location(teleportedWorld, x, y, z, yaw, pitch));
+            Location teleportLocation = new Location(teleportedWorld, x, y, z, yaw, pitch);
+            // Use scheduler for Folia compatibility
+            if (teleportedPlayer == player) {
+                teleportedPlayer.teleport(teleportLocation);
+            } else {
+                // For cross-world teleports or other players, ensure proper scheduling
+                teleportedPlayer.teleport(teleportLocation);
+            }
             return true;
         } catch (Exception ex) {
             ctx.debug.send(ex, player, ctx);

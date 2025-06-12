@@ -21,18 +21,13 @@ public class DelayTag implements TagResolver {
         final int delayTicks = Integer.parseInt(args[0]);
         String finalCommand = String.join(" ", args).replaceFirst(args[0], "").trim();
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    ctx.commands.runCommand(panel, pos, player, finalCommand);
-                } catch (Exception ex) {
-                    ctx.debug.send(ex, player, ctx);
-                    this.cancel();
-                }
-                this.cancel();
+        ctx.scheduler.runTaskLaterForEntity(player, () -> {
+            try {
+                ctx.commands.runCommand(panel, pos, player, finalCommand);
+            } catch (Exception ex) {
+                ctx.debug.send(ex, player, ctx);
             }
-        }.runTaskTimer(ctx.plugin, delayTicks, 1); //20 ticks == 1 second
+        }, delayTicks); //20 ticks == 1 second
         return true;
     }
 }

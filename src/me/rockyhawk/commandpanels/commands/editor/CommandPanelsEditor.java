@@ -107,7 +107,7 @@ public class CommandPanelsEditor implements CommandExecutor {
 
         //get custom editor URL
         String url = "https://firebasestorage.googleapis.com/v0/b/commandpanels-website.appspot.com/o/pastes%2F" + userID + "%2F" + fileName + "?alt=media&token=" + token;
-        Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, () -> {
+                        ctx.scheduler.runTaskAsynchronously(() -> {
             ctx.downloader.downloadPanel(sender, url, fileName);
             future.complete(null);
         });

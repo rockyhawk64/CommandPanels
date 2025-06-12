@@ -25,17 +25,13 @@ public class VersionChecker {
     public void notifyUpdateOnJoin(PlayerJoinEvent e) {
         if (e.getPlayer().hasPermission("commandpanel.update") && ctx.configHandler.isTrue("updater.update-checks")) {
             if (githubNewUpdate(false)) {
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        ctx.text.sendMessage(e.getPlayer(), ChatColor.YELLOW + "A new update is available for download!");
-                        ctx.text.sendString(e.getPlayer(), ChatColor.YELLOW
-                                + "Current version "
-                                + ChatColor.RED + ctx.plugin.getDescription().getVersion() + ChatColor.YELLOW
-                                + " Latest version " + ChatColor.GREEN + updater.cachedLatestVersion);
-                        cancel();
-                    }
-                }.runTaskTimer(ctx.plugin, 30, 1);
+                ctx.scheduler.runTaskLaterForEntity(e.getPlayer(), () -> {
+                    ctx.text.sendMessage(e.getPlayer(), ChatColor.YELLOW + "A new update is available for download!");
+                    ctx.text.sendString(e.getPlayer(), ChatColor.YELLOW
+                            + "Current version "
+                            + ChatColor.RED + ctx.plugin.getDescription().getVersion() + ChatColor.YELLOW
+                            + " Latest version " + ChatColor.GREEN + updater.cachedLatestVersion);
+                }, 30L);
             }
         }
     }
@@ -48,6 +44,14 @@ public class VersionChecker {
         if (currentVersion.contains("SNAPSHOT")) {
             if (sendMessages) {
                 Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Running a custom version.");
+            }
+            return false;
+        }
+
+       // TODO Remove when merged into main. Also change POM and plugin.yml back to normal version numbers.
+        if (currentVersion.contains("FOLIA-BETA")) {
+            if (sendMessages) {
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.GREEN + " Running a Folia beta version - update checks disabled.");
             }
             return false;
         }
@@ -70,21 +74,18 @@ public class VersionChecker {
             updater.cachedLatestVersion = ctx.plugin.getDescription().getVersion();
         }
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    HttpURLConnection connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/rockyhawk64/CommandPanels/latest/resource/plugin.yml").openConnection();
-                    connection.setConnectTimeout(5000);
-                    connection.setReadTimeout(5000);
-                    connection.connect();
-                    updater.cachedLatestVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine().split("\\s")[1];
-                    connection.disconnect();
-                } catch (IOException ignored) {
-                    Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Could not access github.");
-                }
+        ctx.scheduler.runTaskAsynchronously(() -> {
+            try {
+                HttpURLConnection connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/rockyhawk64/CommandPanels/latest/resource/plugin.yml").openConnection();
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(5000);
+                connection.connect();
+                updater.cachedLatestVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine().split("\\s")[1];
+                connection.disconnect();
+            } catch (IOException ignored) {
+                Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Could not access github.");
             }
-        }.runTaskAsynchronously(ctx.plugin);
+        });
 
         if (updater.cachedLatestVersion.contains("-") && sendMessages) {
             Bukkit.getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Cannot check for update.");
