@@ -30,7 +30,7 @@ public class PlayerInputUtils implements Listener {
             if(e.getMessage().equalsIgnoreCase(ctx.configHandler.config.getString("input.input-cancel"))){
                 if(playerInput.get(e.getPlayer()).cancelCommands != null){
                     final PlayerInput taskInput = playerInput.remove(e.getPlayer());
-                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, new Runnable() {
+                    ctx.scheduler.runTaskForEntity(e.getPlayer(), new Runnable() {
                         public void run() {
                             if(taskInput.cancelCommands != null){
                                 ctx.commands.runCommands(taskInput.panel, PanelPosition.Top,e.getPlayer(), taskInput.cancelCommands,taskInput.click); //Have to do this to run regular Bukkit voids in an ASYNC Event
@@ -60,7 +60,7 @@ public class PlayerInputUtils implements Listener {
             }
 
             final PlayerInput taskInput = playerInput.remove(e.getPlayer());
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, new Runnable() {
+            ctx.scheduler.runTaskForEntity(e.getPlayer(), new Runnable() {
                 public void run() {
                     ctx.commands.runCommands(taskInput.panel, PanelPosition.Top,e.getPlayer(), taskInput.commands,taskInput.click); //I have to do this to run regular Bukkit voids in an ASYNC Event
                 }

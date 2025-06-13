@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class RefreshTask extends BukkitRunnable {
+public class RefreshTask implements Runnable {
     private final Context ctx;
     private final PanelOpenedEvent event;
     private final Panel panel;
@@ -20,6 +20,7 @@ public class RefreshTask extends BukkitRunnable {
     private int tickCounter = 0;
     private int animateCounter = 0;
     private final PanelBuilder builder;
+    private org.bukkit.scheduler.BukkitTask task;
 
     public RefreshTask(Context ctx, PanelOpenedEvent event, Panel panel, Player player, int refreshDelay, int animateValue) {
         this.ctx = ctx;
@@ -53,7 +54,7 @@ public class RefreshTask extends BukkitRunnable {
             } catch (Exception e) {
                 player.closeInventory();
                 ctx.openPanels.closePanelForLoader(player.getName(), event.getPosition());
-                this.cancel();
+                this.stop();
             }
         }
     }
@@ -70,7 +71,7 @@ public class RefreshTask extends BukkitRunnable {
 
         player.updateInventory();
         removeCommandPanelsItems();
-        this.cancel();
+        this.stop();
     }
 
     private void removeCommandPanelsItems() {
@@ -80,6 +81,16 @@ public class RefreshTask extends BukkitRunnable {
                     player.getInventory().remove(item);
                 }
             }
+        }
+    }
+    
+    public void start() {
+        this.task = ctx.scheduler.runTaskTimerForEntity(player, this, 1, 1);
+    }
+    
+    public void stop() {
+        if (task != null) {
+            task.cancel();
         }
     }
 }

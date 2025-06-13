@@ -150,12 +150,23 @@
             <version>13.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        
+        <!-- Paper API for better Folia support -->
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.20.6-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- Fallback to Spigot API if Paper isn't available -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.20.6-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>

@@ -30,6 +30,7 @@ public class PanelRefresher implements Listener {
         int refreshDelay = refreshUtils.getRefreshDelay(panel, ctx);
         int animateValue = refreshUtils.getAnimateValue(panel);
 
-        new RefreshTask(ctx, e, panel, player, refreshDelay, animateValue).runTaskTimer(ctx.plugin, 1, 1);
+        RefreshTask refreshTask = new RefreshTask(ctx, e, panel, player, refreshDelay, animateValue);
+        refreshTask.start();
     }
 }

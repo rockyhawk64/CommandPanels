@@ -122,8 +122,10 @@ public class HasSections {
             if(player != null){
                 return player.hasPermission(compare) == outputValue;
             }
-        }else if(value.endsWith(" ISGREATER")) {
-            return (new BigDecimal(compare).compareTo(new BigDecimal(value.substring(0, value.length()-10).replace(",",""))) <= 0 == outputValue);
+        }else if (value.endsWith(" ISGREATER")) {
+            String numericPart = value.replaceAll("[^0-9.\\-]", ""); // allows negative and decimal numbers
+            BigDecimal target = new BigDecimal(numericPart.replace(",", ""));
+            return (new BigDecimal(compare).compareTo(target) <= 0) == outputValue;
         }else{
             return compare.equals(value) == outputValue;
         }
