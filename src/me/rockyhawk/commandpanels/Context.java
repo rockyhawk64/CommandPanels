@@ -48,7 +48,7 @@ import me.rockyhawk.commandpanels.inventory.InventorySaver;
 import me.rockyhawk.commandpanels.inventory.ItemStackSerializer;
 import me.rockyhawk.commandpanels.inventory.pickupevent.EntityPickupEvent;
 import me.rockyhawk.commandpanels.inventory.pickupevent.LegacyPlayerEvent;
-import me.rockyhawk.commandpanels.scheduler.SchedulerAdapter;
+import me.rockyhawk.commandpanels.manager.refresh.SchedulerAdapter;
 import me.rockyhawk.commandpanels.updater.Updater;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;

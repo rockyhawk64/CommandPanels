@@ -1,4 +1,4 @@
-package me.rockyhawk.commandpanels.scheduler;
+package me.rockyhawk.commandpanels.manager.refresh;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
