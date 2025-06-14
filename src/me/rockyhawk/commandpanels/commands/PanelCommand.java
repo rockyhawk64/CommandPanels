@@ -19,6 +19,11 @@ public class PanelCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        //Check for blanket permission
+        if(!sender.hasPermission("commandpanel.panel")){
+            sender.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
+            return true;
+        }
         //below is going to go through the files and find the right one
         Panel panel = null;
         if (args.length != 0) { //check to make sure the person hasn't just left it empty
