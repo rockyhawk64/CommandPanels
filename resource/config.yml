@@ -16,6 +16,9 @@ config:
   disabled-world-message: true
   panel-snooper: false
   enable-import-command: false
+  autosave:
+    enabled: false
+    interval: '30m'  # Supports: s (seconds), m (minutes), h (hours), d (days)
   format:
     tag: '&6[&bCommandPanels&6]'
     perms: '&cNo permission.'
