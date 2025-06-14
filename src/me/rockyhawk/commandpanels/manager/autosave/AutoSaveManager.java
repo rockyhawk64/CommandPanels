@@ -2,14 +2,14 @@ package me.rockyhawk.commandpanels.manager.autosave;
 
 import me.rockyhawk.commandpanels.Context;
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AutoSaveManager {
     private final Context ctx;
-    private int taskId = -1;
+    private BukkitTask task = null;
     private boolean enabled = false;
     private long intervalTicks = 0;
 
@@ -54,17 +54,21 @@ public class AutoSaveManager {
             return;
         }
 
-        taskId = ctx.scheduler.runTaskTimerAsynchronously(() -> {
-            try {
-                // Save data files (not inventory files as requested)
-                if (ctx.panelData != null) {
-                    ctx.panelData.saveDataFile();
-                    Bukkit.getLogger().info("[CommandPanels] Autosave: Data file saved successfully");
+        // Use runTaskTimer for repeating tasks, then run the actual save asynchronously
+        task = ctx.scheduler.runTaskTimer(() -> {
+            // Run the actual save operation asynchronously to avoid blocking
+            ctx.scheduler.runTaskAsynchronously(() -> {
+                try {
+                    // Save data files (not inventory files as requested)
+                    if (ctx.panelData != null) {
+                        ctx.panelData.saveDataFile();
+                        Bukkit.getLogger().info("[CommandPanels] Autosave: Data file saved successfully");
+                    }
+                } catch (Exception e) {
+                    Bukkit.getLogger().severe("[CommandPanels] Autosave failed: " + e.getMessage());
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                Bukkit.getLogger().severe("[CommandPanels] Autosave failed: " + e.getMessage());
-                e.printStackTrace();
-            }
+            });
         }, intervalTicks, intervalTicks);
     }
 
@@ -72,9 +76,9 @@ public class AutoSaveManager {
      * Stop the autosave task
      */
     public void stop() {
-        if (taskId != -1) {
-            ctx.scheduler.cancelTask(taskId);
-            taskId = -1;
+        if (task != null) {
+            task.cancel();
+            task = null;
         }
     }
 
