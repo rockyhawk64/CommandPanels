@@ -12,6 +12,11 @@ public class BungeeTag implements TagResolver {
 
     @Override
     public boolean handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command) {
+        // Only handle server= and force-server= commands
+        if (!command.startsWith("server=") && !command.startsWith("force-server=")) {
+            return false;
+        }
+        
         String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");
 
         if (args.length <= 1) {
