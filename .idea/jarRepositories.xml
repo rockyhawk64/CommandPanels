@@ -87,6 +87,11 @@
       <option name="url" value="https://hub.spigotmc.org/nexus/content/repositories/snapshots/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="skript-releases" />
+      <option name="name" value="Skript Repository" />
+      <option name="url" value="https://repo.skriptlang.org/releases" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="jeff-media-public" />
       <option name="name" value="jeff-media-public" />
       <option name="url" value="https://repo.jeff-media.com/public/" />
