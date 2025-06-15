@@ -28,7 +28,6 @@ import me.rockyhawk.commandpanels.builder.floodgate.OpenFloodgateGUI;
 import me.rockyhawk.commandpanels.generate.GenerateCommand;
 import me.rockyhawk.commandpanels.generate.GenUtils;
 import me.rockyhawk.commandpanels.generate.GenTabComplete;
-import me.rockyhawk.commandpanels.manager.autosave.AutoSaveManager;
 import me.rockyhawk.commandpanels.manager.refresh.PanelRefresher;
 import me.rockyhawk.commandpanels.manager.PlayerJoinEvent;
 import me.rockyhawk.commandpanels.interaction.input.PlayerInputUtils;
@@ -96,7 +95,6 @@ public class Context {
     public ItemStackSerializer itemSerializer;
     public PlayerInputUtils inputUtils;
     public SchedulerAdapter scheduler;
-    public AutoSaveManager autoSave;
 
     public Context(CommandPanels pl) {
         plugin = pl;
@@ -151,9 +149,6 @@ public class Context {
         generator = new GenUtils(this);
         itemSerializer = new ItemStackSerializer(this);
         inputUtils = new PlayerInputUtils(this);
-
-        // Initialize autosave manager
-        autoSave = new AutoSaveManager(this);
 
         //setup class files
         setupEconomy();
