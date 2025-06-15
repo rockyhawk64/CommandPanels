@@ -73,6 +73,11 @@ public class ConfigHandler {
             }
         }
         saveExamplePanels();
+        
+        // Initialize autosave system after config is loaded
+        if (ctx.autoSave != null) {
+            ctx.autoSave.initialize();
+        }
     }
 
     private void saveExamplePanels(){

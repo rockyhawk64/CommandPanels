@@ -48,6 +48,11 @@ public class CommandPanels extends JavaPlugin{
         }
 
         try {
+            //stop autosave system
+            if (ctx.autoSave != null) {
+                ctx.autoSave.stop();
+            }
+            
             //close all the panels
             if (ctx.openPanels != null && ctx.openPanels.openPanels != null) {
                 for(String name : ctx.openPanels.openPanels.keySet()){
