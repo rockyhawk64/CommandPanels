@@ -14,6 +14,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
@@ -33,6 +34,28 @@ public class HotbarEvents implements Listener {
             return;
         }
         Player p = (Player)e.getWhoClicked();
+        
+        // Handle number key clicks specifically to prevent hotbar items from moving
+        if (e.getClick() == ClickType.NUMBER_KEY) {
+            int hotbarSlot = e.getHotbarButton(); // Number key pressed (0-8)
+            ItemStack hotbarItem = p.getInventory().getItem(hotbarSlot);
+            
+            // Check if the hotbar item is a CommandPanels item that should stay stationary
+            if (hotbarItem != null && ctx.hotbar.itemCheckExecute(hotbarItem, p, false, false)) {
+                e.setCancelled(true);
+                
+                // Trigger panel opening logic for the hotbar item
+                if (ctx.hotbar.stationaryExecute(hotbarSlot, p, e.getClick(), true)) {
+                    // Panel was opened or command was executed
+                    p.updateInventory();
+                }
+                
+                // Force refresh the hotbar slot to prevent visual desync
+                p.getInventory().setItem(hotbarSlot, hotbarItem);
+                return;
+            }
+        }
+        
         //get the item clicked, then loop through panel names after action isn't nothing
         if(e.getAction() == InventoryAction.NOTHING){return;}
         if(e.getSlot() == -999){return;}
