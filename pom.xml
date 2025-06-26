@@ -136,7 +136,7 @@
         <dependency>
             <groupId>de.tr7zw</groupId>
             <artifactId>item-nbt-api</artifactId>
-            <version>2.14.2-SNAPSHOT</version>
+            <version>2.15.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

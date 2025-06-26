@@ -45,9 +45,8 @@ public class OpenPanel {
         if (!permission.hasPermission(sender, p, panel, position, openForOtherUser)) return;
 
         // Check open requirements before allowing panel to open
-        if (!requirementsValidator.canOpenPanel(panel, p, position)) {
-            String failMessage = requirementsValidator.getOpenRequirementFailMessage(panel);
-            sender.sendMessage(ctx.text.colour(ctx.tag + failMessage));
+        if (!requirementsValidator.canOpenPanel(panel, p)) {
+            sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "No permission."));
             return;
         }
 
