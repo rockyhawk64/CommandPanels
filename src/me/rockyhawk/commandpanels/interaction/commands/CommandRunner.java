@@ -100,6 +100,7 @@ public class CommandRunner {
         tags.add(new GiveItemTag());
         tags.add(new MiniMessageTag());
         tags.add(new OpenTag());
+        tags.add(new NaturalPanelTag());
         tags.add(new PlaceholderTag());
         tags.add(new RefreshTag());
         tags.add(new SetCustomDataTag());
