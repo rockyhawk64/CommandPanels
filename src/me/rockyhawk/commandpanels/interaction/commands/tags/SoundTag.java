@@ -14,9 +14,29 @@ public class SoundTag implements TagResolver {
         if (command.startsWith("sound=")) {
             try {
                 if (args.length == 4) {
-                    player.playSound(player.getLocation(), Sound.valueOf(args[1]), Float.parseFloat(args[2]), Float.parseFloat(args[3]));
+                    String soundName = args[1];
+                    float volume, pitch;
+
+                    try {
+                        volume = Float.parseFloat(args[2]);
+                        pitch = Float.parseFloat(args[3]);
+                    } catch (NumberFormatException e) {
+                        player.sendMessage("§cInvalid number format for volume or pitch.");
+                        return false;
+                    }
+
+                    try {
+                        player.playSound(player.getLocation(), Sound.valueOf(soundName.toUpperCase()), volume, pitch);
+                    } catch (IllegalArgumentException e) {
+                        player.playSound(player.getLocation(), soundName, volume, pitch);
+                    }
                 } else {
-                    player.playSound(player.getLocation(), Sound.valueOf(args[1]), 1F, 1F);
+                    try {
+                        Sound sound = Sound.valueOf(args[1].toUpperCase());
+                        player.playSound(player.getLocation(), sound, 1F, 1F);
+                    } catch (IllegalArgumentException e) {
+                        player.playSound(player.getLocation(), args[1], 1F, 1F);
+                    }
                 }
             } catch (Exception s) {
                 ctx.debug.send(s, player, ctx);
