@@ -25,7 +25,7 @@ public class SchedulerAdapter {
     private boolean isFoliaServer() {
         try {
             Class.forName("io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler");
-            return true;
+            return false; // Force folia feature disabled until bugs fixed
         } catch (ClassNotFoundException e) {
             return false;
         }
