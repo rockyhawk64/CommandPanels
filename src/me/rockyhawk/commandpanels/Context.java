@@ -148,6 +148,7 @@ public class Context {
         //setup class files
         setupEconomy();
         Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
+        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "velocity:main");
         plugin.getCommand("commandpanel").setExecutor(new PanelCommand(this));
         plugin.getCommand("commandpanel").setTabCompleter(new PanelTabComplete(this));
 

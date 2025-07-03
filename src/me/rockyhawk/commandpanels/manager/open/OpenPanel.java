@@ -18,6 +18,7 @@ public class OpenPanel {
     private final PanelCommandExecutor commandExecutor;
     private final SoundHandler soundPlayer;
     private final PreLoadCommands preloader;
+    private final OpenRequirements requirementsValidator;
 
     public OpenPanel(Context ctx) {
         this.ctx = ctx;
@@ -25,6 +26,7 @@ public class OpenPanel {
         this.commandExecutor = new PanelCommandExecutor(ctx);
         this.soundPlayer = new SoundHandler(ctx);
         this.preloader = new PreLoadCommands(ctx);
+        this.requirementsValidator = new OpenRequirements(ctx);
     }
 
     public void open(CommandSender sender, Player p, Panel panel, PanelPosition position) {
@@ -41,6 +43,12 @@ public class OpenPanel {
         boolean openForOtherUser = !(sender instanceof Player && sender == p);
 
         if (!permission.hasPermission(sender, p, panel, position, openForOtherUser)) return;
+
+        // Check open requirements before allowing panel to open
+        if (!requirementsValidator.canOpenPanel(panel, p)) {
+            sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "No permission."));
+            return;
+        }
 
         if (position != PanelPosition.Top && !ctx.openPanels.hasPanelOpen(p.getName(), PanelPosition.Top)) {
             sender.sendMessage(ctx.text.colour(ctx.tag + ChatColor.RED + "Cannot open a panel without a panel at the top already."));

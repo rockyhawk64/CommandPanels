@@ -1,10 +1,10 @@
-version: 3.22.5
+version: 3.23.2
 main: me.rockyhawk.commandpanels.CommandPanels
 name: CommandPanels
 author: RockyHawk
 api-version: '1.13'
 description: Fully Custom GUIs. Make your Server Professional.
-softdepend: [Essentials, PlaceholderAPI, Vault, HeadDatabase, TokenManager, VotingPlugin, MMOItems, ChestSort, floodgate]
+softdepend: [Essentials, PlaceholderAPI, Vault, HeadDatabase, TokenManager, VotingPlugin, MMOItems, ChestSort, floodgate, Skript]
 commands:
    commandpanel:
       description: Open a command panel.

@@ -1,6 +1,6 @@
-![TitleLogo](https://i.imgur.com/hyxyjQU.png)
+![TitleLogo](https://commandpanels.net/resource_images/main_logo.png)
 
-![ShopMenu](https://i.imgur.com/w8UaAP2.png)
+![ShopMenu](https://commandpanels.net/resource_images/example_screenshot.png)
 
 <h2 align="center">
   <a href="https://commandpanels.net/wiki">Wiki</a> |
@@ -25,9 +25,15 @@ Making a plugin? You can use Command Panels as a library to make your own GUIs f
 
 **Floodgate Forms** to create custom Bedrock GUIs with full support for both SimpleForms and CustomForms that allows inputs such as sliders, dropdowns, etc.
 
+## Server Compatibility
+
+**Spigot & Paper** Full compatibility with Spigot servers and Paper servers, with enhanced performance on Paper. 1.8-1.21.5(Latest usually works)
+
+**Folia Support** Native support for Folia's regionalized threading system. The plugin automatically detects Folia and uses region-specific schedulers for optimal performance without any configuration needed.
+
 ## Partner
 
-![ShopMenu](https://i.imgur.com/HjhtpjW.png)
+![ParterLogo](https://commandpanels.net/resource_images/partner_logo.png)
 
 We have proudly partnered with [ReviveNode](http://billing.revivenode.com/aff.php?aff=379)!  
 CommandPanels users have been offered 15% off on the first month by using the Promocode: **PANELS**

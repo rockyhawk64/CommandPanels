@@ -104,6 +104,7 @@ public class CommandRunner {
         tags.add(new RefreshTag());
         tags.add(new SetCustomDataTag());
         tags.add(new SetItemTag());
+        tags.add(new SkriptTag());
         tags.add(new SoundTag());
         tags.add(new TeleportTag());
         tags.add(new TitleTag());

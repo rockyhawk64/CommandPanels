@@ -21,6 +21,7 @@ public class PanelTabComplete implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+        if(!sender.hasPermission("commandpanel.panel.default")) return null;
         if (sender instanceof Player && args.length >= 1)
             if (label.equalsIgnoreCase("cp") || label.equalsIgnoreCase("cpanel") || label.equalsIgnoreCase("commandpanel")) {
                 Player p = ((Player) sender).getPlayer();

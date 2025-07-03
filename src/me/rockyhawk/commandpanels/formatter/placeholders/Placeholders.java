@@ -7,6 +7,8 @@ import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Placeholders {
     private final Context ctx;
@@ -49,18 +51,35 @@ public class Placeholders {
     // Parse placeholders in a string with this
     public String setPlaceholders(Panel panel, PanelPosition position, org.bukkit.entity.Player p, String str, boolean primary) {
         String[] HOLDERS = getPlaceholderEnds(panel, primary);
-        while (str.contains(HOLDERS[0] + "cp-")) {
-            try {
-                int start = str.indexOf(HOLDERS[0] + "cp-");
-                int end = str.indexOf(HOLDERS[1], start + 1);
-                String identifier = str.substring(start, end).replace(HOLDERS[0] + "cp-", "").replace(HOLDERS[1], "");
-                String value = resolvePlaceholder(panel, position, p, identifier);
-                str = str.replace(str.substring(start, end) + HOLDERS[1], value);
-            } catch (Exception ex) {
-                ctx.debug.send(ex, p, ctx);
-                break;
+        if (HOLDERS[0] == null || HOLDERS[1] == null) return str;
+
+        // Escape the start/end symbols for regex
+        String start = Pattern.quote(HOLDERS[0]);
+        String end = Pattern.quote(HOLDERS[1]);
+        Pattern pattern = Pattern.compile(start + "cp-([a-zA-Z0-9_\\-]+)" + end);
+
+        int maxPasses = 255;
+        int count = 0;
+
+        String previous;
+        do {
+            previous = str;
+            StringBuffer sb = new StringBuffer();
+            Matcher matcher = pattern.matcher(str);
+
+            while (matcher.find()) {
+                String identifier = matcher.group(1);
+                String replacement = resolvePlaceholder(panel, position, p, identifier);
+                if (replacement == null) replacement = "";
+                matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
             }
-        }
+
+            matcher.appendTail(sb);
+            str = sb.toString();
+            count++;
+
+        } while (!str.equals(previous) && count < maxPasses);
+
         return str;
     }
 

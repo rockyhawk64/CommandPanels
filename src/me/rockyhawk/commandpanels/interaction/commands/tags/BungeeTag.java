@@ -9,37 +9,56 @@ import me.rockyhawk.commandpanels.manager.session.PanelPosition;
 import org.bukkit.entity.Player;
 
 public class BungeeTag implements TagResolver {
+
     @Override
     public boolean handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command) {
-        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");  // Arguments are space-separated
-        if(command.startsWith("force-server=")){
-            //this contacts bungee and tells it to send the server change command without checking permissions
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("Connect");
-            out.writeUTF(args[1]);
-            player.sendPluginMessage(ctx.plugin, "BungeeCord", out.toByteArray());
-            return true;
-        } else if(command.startsWith("server=")){
-            if(args.length >= 3){
-                //This uses custom permission: server= servername permission
-                if(player.hasPermission(args[2])){
-                    //this contacts bungee and tells it to send the server change command whilst checking for CUSTOM permissions
-                    ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                    out.writeUTF("Connect");
-                    out.writeUTF(args[1]);
-                    player.sendPluginMessage(ctx.plugin, "BungeeCord", out.toByteArray());
-                }
-            }else if (player.hasPermission("bungeecord.command.server." + args[1].toLowerCase())) {
-                //this contacts bungee and tells it to send the server change command whilst checking for permissions
-                ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                out.writeUTF("Connect");
-                out.writeUTF(args[1]);
-                player.sendPluginMessage(ctx.plugin, "BungeeCord", out.toByteArray());
-            }else{
-                player.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
-            }
+        // Only handle server= and force-server= commands
+        if (!command.startsWith("server=") && !command.startsWith("force-server=")) {
+            return false;
+        }
+        
+        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");
+
+        if (args.length <= 1) {
+            player.sendMessage(ctx.text.colour(ctx.tag + "No server was given."));
             return true;
         }
-        return false;
+
+        // Defaults
+        String serverName = args[1];
+        String proxyType = "bungeecord";
+        String permission = "bungeecord.command.server." + serverName.toLowerCase();
+
+        // Parse optional args
+        for (String arg : args) {
+            if (arg.startsWith("perm:")) {
+                permission = arg.substring("perm:".length()).toLowerCase();
+            } else if (arg.startsWith("type:")) {
+                String type = arg.substring("type:".length()).toLowerCase();
+                if (type.equals("velocity") || type.equals("bungeecord")) {
+                    proxyType = type;
+                } else {
+                    proxyType = "bungeecord"; // fallback
+                }
+            }
+        }
+
+        boolean force = command.startsWith("force-server=");
+        boolean hasPermission = player.hasPermission(permission);
+
+        if (!force && !hasPermission) {
+            player.sendMessage(ctx.text.colour(ctx.tag + ctx.configHandler.config.getString("config.format.perms")));
+            return true;
+        }
+
+        // Send plugin message
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Connect");
+        out.writeUTF(serverName);
+
+        String channel = proxyType.equals("velocity") ? "velocity:main" : "BungeeCord";
+        player.sendPluginMessage(ctx.plugin, channel, out.toByteArray());
+
+        return true;
     }
 }
