@@ -16,9 +16,7 @@ public class DroppedItemHandler implements Listener {
 
     @EventHandler
     public void panelCloseItemsDrop(PanelClosedEvent e){
-        new BukkitRunnable(){
-            @Override
-            public void run(){
+        ctx.scheduler.runTask(() -> {
                 for(String item : e.getPanel().getConfig().getConfigurationSection("item").getKeys(false)){
                     if(e.getPanel().getConfig().isSet("item." + item + ".itemType")){
                         //either the panel will drop the item or it will return to the inventory, no option to do both obviously
@@ -46,7 +44,6 @@ public class DroppedItemHandler implements Listener {
                         }
                     }
                 }
-            }
-        }.run();
+        });
     }
 }

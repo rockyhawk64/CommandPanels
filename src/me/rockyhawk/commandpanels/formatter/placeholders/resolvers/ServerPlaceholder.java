@@ -35,7 +35,7 @@ public class ServerPlaceholder implements PlaceholderResolver {
             // First time checking this server, launch async ping
             if (!inProgress.containsKey(ipPort)) {
                 inProgress.put(ipPort, true);
-                Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, () -> {
+                ctx.scheduler.runTaskAsynchronously(() -> {
                     boolean result = pingServer(ipPort);
                     cachedStatus.put(ipPort, result);
                     inProgress.remove(ipPort);

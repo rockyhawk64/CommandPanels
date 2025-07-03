@@ -42,7 +42,7 @@ public class SessionUtils implements Listener {
         //check for panelType unclosable (unclosable is Top only)
         if(ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).getConfig().contains("panelType")){
             if(ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top).getConfig().getStringList("panelType").contains("unclosable")){
-                ctx.plugin.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, new Runnable() {
+                ctx.scheduler.runTaskForEntity((Player) e.getPlayer(), new Runnable() {
                     public void run() {
                         //end the old panel session and copy a new one
                         if(ctx.openPanels.getOpenPanel(playerName,PanelPosition.Top) == null){

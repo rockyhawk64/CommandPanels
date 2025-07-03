@@ -10,7 +10,7 @@ config:
   panel-blocks: true
   hotbar-items: true
   custom-commands: true
-  auto-register-commands: false
+  auto-register-commands: true
   auto-update-panels: false
   stop-sound: true
   disabled-world-message: true

@@ -31,11 +31,11 @@ public class ReloadCommand implements CommandExecutor {
             }
 
             // Run async for file and data loading
-            Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, () -> {
+            ctx.scheduler.runTaskAsynchronously(() -> {
                 reloadPanelFiles(); // heavy file I/O
 
                 // Switch back to main thread for Bukkit API usage
-                Bukkit.getScheduler().runTask(ctx.plugin, () -> {
+                ctx.scheduler.runTask(() -> {
                     // Close all open panels
                     for (String name : ctx.openPanels.openPanels.keySet()) {
                         ctx.openPanels.closePanelForLoader(name, PanelPosition.Top);
@@ -53,7 +53,7 @@ public class ReloadCommand implements CommandExecutor {
                     // reloadHotbarSlots
                     ctx.hotbar.reloadHotbarSlots();
 
-                    // register custom commands
+                    // register custom commands (does not run on plugin load as PriorityHandler will do that)
                     if (ctx.configHandler.isTrue("config.auto-register-commands")) {
                         ctx.openCommands.registerCommands();
                     }
@@ -110,7 +110,7 @@ public class ReloadCommand implements CommandExecutor {
                     }
                 }else{
                     //error in the file, was not a valid commandpanels file and/or could not be converted
-                    Bukkit.getScheduler().runTask(ctx.plugin, () -> {
+                    ctx.scheduler.runTask(() -> {
                         ctx.plugin.getServer().getConsoleSender().sendMessage("[CommandPanels]" + ChatColor.RED + " Error in: " + fileName);
                     });
                 }

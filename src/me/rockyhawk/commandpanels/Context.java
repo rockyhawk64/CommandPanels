@@ -48,6 +48,7 @@ import me.rockyhawk.commandpanels.inventory.InventorySaver;
 import me.rockyhawk.commandpanels.inventory.ItemStackSerializer;
 import me.rockyhawk.commandpanels.inventory.pickupevent.EntityPickupEvent;
 import me.rockyhawk.commandpanels.inventory.pickupevent.LegacyPlayerEvent;
+import me.rockyhawk.commandpanels.manager.refresh.SchedulerAdapter;
 import me.rockyhawk.commandpanels.updater.Updater;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -93,6 +94,7 @@ public class Context {
     public InventorySaver inventorySaver;
     public ItemStackSerializer itemSerializer;
     public PlayerInputUtils inputUtils;
+    public SchedulerAdapter scheduler;
 
     public Context(CommandPanels pl) {
         plugin = pl;
@@ -125,6 +127,10 @@ public class Context {
         configHandler = new ConfigHandler(this);
         econ = null;
 
+        // Initialize scheduler early as other components depend on it
+        scheduler = new SchedulerAdapter(plugin);
+
+        openCommands = new OpenCommands(this);
         reloader = new ReloadCommand(this);
         commands = new CommandRunner(this);
 
@@ -136,7 +142,6 @@ public class Context {
         potion_1_8 = new Potion_1_8();
         potion_1_20_4 = new Potion_1_20_4();
 
-        openCommands = new OpenCommands(this);
         openPanels = new SessionHandler(this);
         hotbar = new HotbarItemLoader(this);
         nbt = new NBTManager(this);
@@ -196,9 +201,6 @@ public class Context {
         }
         if(configHandler.isTrue("config.refresh-panels")){
             Bukkit.getServer().getPluginManager().registerEvents(new PanelRefresher(this), plugin);
-        }
-        if(configHandler.isTrue("config.custom-commands")){
-            Bukkit.getServer().getPluginManager().registerEvents(openCommands, plugin);
         }
         if(configHandler.isTrue("config.hotbar-items")){
             Bukkit.getServer().getPluginManager().registerEvents(new HotbarEvents(this), plugin);

@@ -23,20 +23,15 @@ public class EvalDelayTag implements TagResolver {
         final String parsedValue = ctx.text.placeholders(panel, pos, player, args[1].trim());
         String finalCommand = String.join(" ", args).replaceFirst(args[0], "").replaceFirst(args[1], "").trim();
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    if (ctx.text.placeholders(panel, pos, player, staticValue.trim()).equals(parsedValue)) {
-                        ctx.commands.runCommand(panel, pos, player, finalCommand);
-                    }
-                } catch (Exception ex) {
-                    ctx.debug.send(ex, player, ctx);
-                    this.cancel();
+        ctx.scheduler.runTaskLaterForEntity(player, () -> {
+            try {
+                if (ctx.text.placeholders(panel, pos, player, staticValue.trim()).equals(parsedValue)) {
+                    ctx.commands.runCommand(panel, pos, player, finalCommand);
                 }
-                this.cancel();
+            } catch (Exception ex) {
+                ctx.debug.send(ex, player, ctx);
             }
-        }.runTaskTimer(ctx.plugin, delayTicks, 1);
+        }, delayTicks);
         return true;
     }
 }

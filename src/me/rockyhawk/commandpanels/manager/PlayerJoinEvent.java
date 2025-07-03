@@ -16,12 +16,12 @@ public class PlayerJoinEvent implements Listener {
     @EventHandler
     public void onWorldLogin(org.bukkit.event.player.PlayerJoinEvent e){
         if (!e.getPlayer().hasPlayedBefore() && ctx.configHandler.config.contains("open-on-first-login")) {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ctx.plugin, () ->
+            ctx.scheduler.runTaskLaterForEntity(e.getPlayer(), () ->
                     openOnJoin(e.getPlayer(), "open-on-first-login"), 40L);  // 2 seconds delay
             return;
         }
         //only opens when the player logs into the server
-        Bukkit.getScheduler().scheduleSyncDelayedTask(ctx.plugin, () ->
+        ctx.scheduler.runTaskLaterForEntity(e.getPlayer(), () ->
                 openOnJoin(e.getPlayer(),"open-on-login"), 20L);  // 1 seconds delay
     }
 
