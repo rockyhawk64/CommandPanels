@@ -3,7 +3,7 @@
 ![ShopMenu](https://commandpanels.net/resource_images/example_screenshot.png)
 
 <h2 align="center">
-  <a href="https://commandpanels.net/wiki">Wiki</a> |
+  <a href="https://commandpanels.net/wiki">Docs</a> |
   <a href="https://commandpanels.net/editor">Editor</a> |
   <a href="https://discord.gg/WFQMTZxa53">Discord</a>
 </h2>
