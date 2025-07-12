@@ -1,0 +1,60 @@
+# |------------------------------------------------------------------------
+# |                   CommandPanels Custom Floodgate File
+# |                          Official Panel v2.0
+# | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
+# |------------------------------------------------------------------------
+conditions: "%player_name% $HASPERM example.permission"
+title: 'Template Panel'
+type: floodgate           # inventory, floodgate, dialog
+commands:                 # Runs when the panel has been opened
+  - '[msg] panel has been opened'
+
+floodgate-type: custom   # Supports Floodgate Form (simple, custom)
+
+layout:
+  0:    # Executes logic from top to bottom items in the slot until conditions are met
+    - dropdown_gamemode
+  1:
+    - inputexample
+  2:
+    - sliderexample
+  3:
+    - toggle_example
+
+items:  # These are the components, separated from the order for flexibility and eliminates nesting
+
+  dropdown_gamemode:
+    type: dropdown
+    name: 'Set your gamemode!'
+    condition: '%player_name% $HASPERM gamemode.creative'
+    options:
+      - survival
+      - creative
+
+  inputexample:
+    type: input
+    name: 'Type something'
+    placeholder: 'Type here'
+    default: ''
+    actions:
+      commands:
+        - '[msg] You said: %commandpanels_session_inputexample%'
+
+  sliderexample:
+    type: slider
+    name: 'Slide the Slider'
+    min: 1
+    max: 10
+    step: 1
+    default: 5
+    actions:
+      commands:
+        - '[msg] You chose: %commandpanels_session_sliderexample%'
+
+  toggle_example:
+    type: toggle
+    name: 'Do you like cats?'
+    default: true
+    actions:
+      commands:
+        - '[msg] Your cats choice: %commandpanels_session_toggle_example%'

@@ -1,0 +1,40 @@
+# |------------------------------------------------------------------------
+# |                   CommandPanels Simple Floodgate File
+# |                          Official Panel v2.0
+# | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
+# |------------------------------------------------------------------------
+conditions: "%player_name% $HASPERM example.permission"
+title: 'Template Panel'
+type: floodgate           # inventory, floodgate, dialog
+commands:                 # Runs when the panel has been opened
+  - '[msg] panel has been opened'
+
+floodgate-type: simple   # Supports Floodgate Form (simple, custom)
+
+layout:
+  0:    # Executes logic from top to bottom items in the slot until conditions are met
+    - example_button1
+    - example_button2
+  1:
+    - example_button2
+
+items:  # These are the components, separated from the order for flexibility and eliminates nesting
+
+  example_button1:
+    name: 'Button condition has been met'
+    condition: '%player_name% %EQUALS RockyHawk'
+    actions:
+      commands:
+        - '[msg] &dColour Works'
+    icon:
+      type: PATH #Some resource pack paths can be used for icons
+      texture: 'textures/items/redstone_dust.png'
+
+  example_button2:
+    name: 'Click me to display a message'
+    actions:
+      commands:
+        - '[msg] &dColour Works'
+    icon:
+      type: URL #URLs can be used for icons
+      texture: 'https://example.com/image.jpg'

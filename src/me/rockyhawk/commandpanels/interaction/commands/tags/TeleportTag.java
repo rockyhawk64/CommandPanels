@@ -1,24 +1,23 @@
 package me.rockyhawk.commandpanels.interaction.commands.tags;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.interaction.commands.TagResolver;
-import me.rockyhawk.commandpanels.manager.session.PanelPosition;
+import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
+import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-
-public class TeleportTag implements TagResolver {
+public class TeleportTag implements CommandTagResolver {
 
     @Override
-    public boolean handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command) {
-        if (!command.startsWith("teleport=")) return false;
+    public boolean isCorrectTag(String tag) {
+        return tag.startsWith("[teleport]");
+    }
 
-        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+");
-        args = Arrays.copyOfRange(args, 1, args.length); // Remove the tag name
+    @Override
+    public void handle(Context ctx, Panel panel, Player player, String command) {
+        String[] args = ctx.text.parseTextToString(player, command).split("\\s+");
 
         float x, y, z, yaw = 0, pitch = 0;
         Player teleportedPlayer = player;
@@ -29,34 +28,26 @@ public class TeleportTag implements TagResolver {
             y = Float.parseFloat(args[1]);
             z = Float.parseFloat(args[2]);
             for (String val : args) {
-                if (val.startsWith("world:")) {
+                if (val.startsWith("world=")) {
                     teleportedWorld = Bukkit.getWorld(val.substring(6));
                     continue;
                 }
-                if (val.startsWith("yaw:")) {
+                if (val.startsWith("yaw=")) {
                     yaw = Float.parseFloat(val.substring(4));
                     continue;
                 }
-                if (val.startsWith("pitch:")) {
+                if (val.startsWith("pitch=")) {
                     pitch = Float.parseFloat(val.substring(6));
                     continue;
                 }
-                if (val.startsWith("player:")) {
+                if (val.startsWith("player=")) {
                     teleportedPlayer = Bukkit.getPlayer(val.substring(7));
                 }
             }
             Location teleportLocation = new Location(teleportedWorld, x, y, z, yaw, pitch);
-            // Use scheduler for Folia compatibility
-            if (teleportedPlayer == player) {
-                teleportedPlayer.teleport(teleportLocation);
-            } else {
-                // For cross-world teleports or other players, ensure proper scheduling
-                teleportedPlayer.teleport(teleportLocation);
-            }
-            return true;
+            teleportedPlayer.teleport(teleportLocation);
         } catch (Exception ex) {
-            ctx.debug.send(ex, player, ctx);
+            ctx.text.sendError(player, "Error with teleport tag");
         }
-        return false;
     }
 }

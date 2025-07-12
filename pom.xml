@@ -4,12 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>groupId</groupId>
+    <groupId>org.example</groupId>
     <artifactId>CommandPanels</artifactId>
     <version>SNAPSHOT</version>
 
     <properties>
-        <java.version>1.8</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <src.dir>src</src.dir>
     </properties>
@@ -20,15 +21,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <release>8</release>
+                    <release>21</release>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -37,18 +38,11 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <minimizeJar>true</minimizeJar>
                             <relocations>
-                                <relocation>
-                                    <pattern>org.bukkit.craftbukkit.libs.org.apache.commons.io</pattern>
-                                    <shadedPattern>org.apache.commons.io</shadedPattern>
-                                </relocation>
                                 <relocation>
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>me.rockyhawk.commandpanels.libs.bstats</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>de.tr7zw.changeme.nbtapi</pattern>
-                                    <shadedPattern>me.rockyhawk.commandpanels.libs.nbtapi</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -61,34 +55,28 @@
                 <directory>resource</directory>
             </resource>
             <resource>
-                <directory>resource_editor</directory>
-            </resource>
-            <resource>
-                <directory>resource_example</directory>
+                <directory>panels</directory>
             </resource>
         </resources>
     </build>
 
     <repositories>
+        <!-- Paper -->
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-        <repository>
-            <id>io.papermc</id>
+            <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+
+        <!-- Placeholder API -->
         <repository>
-            <id>minecraft-repo</id>
-            <url>https://libraries.minecraft.net/</url>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
+
+        <!-- Floodgate -->
         <repository>
-            <id>sonatype</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>jeff-media-public</id>
-            <url>https://repo.jeff-media.com/public/</url>
+            <id>opencollab-snapshot</id>
+            <url>https://repo.opencollab.dev/main/</url>
         </repository>
 
         <!-- Nexo -->
@@ -98,117 +86,93 @@
             <url>https://repo.nexomc.com/releases</url>
         </repository>
 
+        <!-- ItemsAdder -->
         <repository>
-            <id>ess-repo</id>
-            <url>https://repo.essentialsx.net/releases/</url>
+            <id>matteodev</id>
+            <url>https://maven.devs.beer/</url>
         </repository>
-        <repository>
-            <id>placeholderapi</id>
-            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-        </repository>
+
+        <!-- MMOItems -->
         <repository>
             <id>phoenix</id>
             <url>https://nexus.phoenixdevt.fr/repository/maven-public/</url>
         </repository>
+
+        <!-- Vault API -->
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
-        <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.io/repository/maven-public/</url>
-            <layout>default</layout>
-        </repository>
-        <repository>
-            <id>opencollab-snapshot</id>
-            <url>https://repo.opencollab.dev/main/</url>
-        </repository>
-        
-        <!-- Skript Repository -->
-        <repository>
-            <id>skript-releases</id>
-            <name>Skript Repository</name>
-            <url>https://repo.skriptlang.org/releases</url>
-        </repository>
+
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>de.tr7zw</groupId>
-            <artifactId>item-nbt-api</artifactId>
-            <version>2.15.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-            <version>3.0.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>adventure-text-minimessage</artifactId>
-            <version>4.19.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>de.jeff_media</groupId>
-            <artifactId>ChestSortAPI</artifactId>
-            <version>13.0.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <!-- Paper API for better Folia support -->
+        <!-- Paper -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.20.6-R0.1-SNAPSHOT</version>
+            <version>1.21.7-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        
-        <!-- Fallback to Spigot API if Paper isn't available -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.20.6-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.mojang</groupId>
-            <artifactId>authlib</artifactId>
-            <version>3.11.50</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.14.0</version>
-        </dependency>
+
+        <!-- Placeholder API -->
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
             <version>2.11.6</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Adventure API -->
         <dependency>
-            <groupId>com.github.MilkBowl</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.7.1</version>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-api</artifactId>
+            <version>4.23.0</version>
+        </dependency>
+
+        <!-- MiniMessage -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-minimessage</artifactId>
+            <version>4.23.0</version>
+        </dependency>
+
+        <!-- Floodgate -->
+        <dependency>
+            <groupId>org.geysermc.floodgate</groupId>
+            <artifactId>api</artifactId>
+            <version>2.2.4-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
         <!-- MMOItems -->
         <dependency>
-            <groupId>net.Indyuce</groupId>
-            <artifactId>MMOItems-API</artifactId>
-            <version>6.10-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>MythicLib-dist</artifactId>
             <version>1.6.2-SNAPSHOT</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>net.Indyuce</groupId>
+            <artifactId>MMOItems-API</artifactId>
+            <version>6.9.5-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- HeadDatabase-API -->
+        <dependency>
+            <groupId>com.arcaniax</groupId>
+            <artifactId>HeadDatabase-API</artifactId>
+            <version>1.3.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ItemsAdder -->
+        <dependency>
+            <groupId>dev.lone</groupId>
+            <artifactId>api-itemsadder</artifactId>
+            <version>4.0.10</version>
             <scope>provided</scope>
         </dependency>
 
@@ -227,42 +191,21 @@
             </exclusions>
         </dependency>
 
+        <!-- Vault API -->
         <dependency>
-            <groupId>com.arcaniax</groupId>
-            <artifactId>HeadDatabase-API</artifactId>
-            <version>1.3.1</version>
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7.1</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- bstats -->
         <dependency>
-            <groupId>com.github.LoneDev6</groupId>
-            <artifactId>api-itemsadder</artifactId>
-            <version>3.6.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.papermc</groupId>
-            <artifactId>paperlib</artifactId>
-            <version>1.0.8</version>
-        </dependency>
-        <dependency>
-            <groupId>net.essentialsx</groupId>
-            <artifactId>EssentialsX</artifactId>
-            <version>2.20.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.geysermc.floodgate</groupId>
-            <artifactId>api</artifactId>
-            <version>2.2.2-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <!-- Skript -->
-        <dependency>
-            <groupId>com.github.SkriptLang</groupId>
-            <artifactId>Skript</artifactId>
-            <version>2.8.5</version>
-            <scope>provided</scope>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.2</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
+
 </project>

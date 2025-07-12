@@ -1,87 +1,32 @@
-version: 3.23.3
+version: 4.0.0-ALPHA
 main: me.rockyhawk.commandpanels.CommandPanels
 name: CommandPanels
 author: RockyHawk
 api-version: '1.13'
+folia-supported: false
 description: Fully Custom GUIs. Make your Server Professional.
-softdepend: [Essentials, PlaceholderAPI, Vault, HeadDatabase, TokenManager, VotingPlugin, MMOItems, ChestSort, floodgate, Skript]
+softdepend: [PlaceholderAPI, Vault, HeadDatabase, MMOItems, floodgate, Skript]
 commands:
-   commandpanel:
-      description: Open a command panel.
-      usage: /commandpanel <panel> [player:item] [player]
-      aliases: [cp, cpanel]
-   commandpanelreload:
-      description: Reloads plugin config.
-      usage: /commandpanelreload
-      aliases: [cpr, cpanelr]
-   commandpaneldata:
-      description: Change data values for players
-      usage: /commandpaneldata
-      aliases: [cpdata]
-   commandpanelupdate:
-      description: Refresh/update panel/s for player
-      usage: /commandpanelupdate
-      aliases: [ cpu, cpanelu ]
-   commandpaneldebug:
-      description: Enable and Disable debug mode globally
-      usage: /commandpaneldebug
-      aliases: [cpd, cpaneld]
-   commandpanelblock:
-      description: Add or remove panels from blocks being looked at.
-      usage: /commandpanelblock
-      aliases: [cpb, cpanelb]
-   commandpanelgenerate:
-      description: Generate GUI.
-      usage: /commandpanelgenerate
-      aliases: [cpg, cpanelg]
-   commandpanelversion:
-      description: Display the current version.
-      usage: /commandpanelversion
-      aliases: [cpv, cpanelv]
-   commandpaneledit:
-      description: Edit panels ingame.
-      usage: /commandpaneledit <panel>
-      aliases: [cpe, cpanele]
-   commandpanellist:
-      description: Lists the currently loaded panels.
-      usage: /commandpanellist
-      aliases: [cpl, cpanell]
-   commandpanelimport:
-      description: Import raw text panels from online.
-      usage: /commandpanelimport
-      aliases: [cpi, cpaneli]
+   panels:
+      description: Main plugin command.
+      usage: /panels <command> [arguments]
+      aliases: [pa]
 permissions:
-   commandpanel.panel.default:
+   commandpanels.default:
       default: true
-   commandpanel.other:
-      default: op
-   commandpanel.panel.*:
-      default: op
-   commandpanel.item.*:
-      default: op
-   commandpanel.reload:
-      default: op
-   commandpanel.debug:
-      default: op
-   commandpanel.block.add:
-      default: op
-   commandpanel.block.remove:
-      default: op
-   commandpanel.block.list:
-      default: op
-   commandpanel.generate:
-      default: op
-   commandpanel.version:
+   commandpanels.command:
       default: true
-   commandpanel.update:
+   commandpanels.command.reload:
       default: op
-   commandpanel.data:
+   commandpanels.command.generate:
       default: op
-   commandpanel.refresh:
+   commandpanels.command.version:
+      default: true
+   commandpanels.command.data:
       default: op
-   commandpanel.edit:
+   commandpanels.command.open:
+      default: true
+   commandpanels.command.open.other:
       default: op
-   commandpanel.list:
-      default: op
-   commandpanel.import:
-      default: op
+   commandpanels.command.help:
+      default: true

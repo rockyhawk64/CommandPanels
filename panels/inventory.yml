@@ -1,0 +1,65 @@
+# |------------------------------------------------------------------------
+# |                       CommandPanels Inventory File
+# |                          Official Panel v2.0
+# | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
+# |------------------------------------------------------------------------
+conditions: "%player_name% $HASPERM example.permission"
+title: 'Inventory Panel %commandpanels_session_player%'
+type: inventory           # inventory, floodgate, dialog
+command: example player  # command that can be used to open the panel. Args used for data, eg value of arg in the command at player -> %commandpanels_data_player%
+commands:                 # Runs when the panel has been opened
+  - '[data] set example custom_value'
+
+floodgate: floodgate_simple    # Optional open a floodgate panel type if the player is a bedrock player
+update-delay: 20          # How many ticks between each time panel is updated, 0 for no update. Updates do not parse logic
+rows: 1
+
+layout:
+  fill: # Same as empty but allows for logic by being here
+    - example_empty_item
+  4:    # Executes logic from top to bottom items in the slot until conditions are met
+    - survival_item
+    - creative_item
+
+items:  # These are the items, separated from slots for flexibility and eliminates nesting
+  example_empty_item:
+    material: BLACK_STAINED_GLASS_PANE
+
+  survival_item:
+    material: REDSTONE
+    name: "Your gamemode is Survival"
+    conditions: "%player_gamemode% $EQUALS SURVIVAL"
+    animate: item_frame_1
+    left-click:
+      requirements:
+        - '[vault] 1000'
+      commands:
+        - '[console] give %player_name% netherite_ingot 1'
+      fail:
+        - '[msg] &cYou need $1000.'
+    # If this item was chosen based on logic when opening the panel,
+    # commands will still execute from this item even with animations
+
+  creative_item:
+    material: LIME_WOOL
+    name: "Your gamemode is not Survival"
+    animate: frame_1
+    left-click:
+      commands:
+        - '[msg] Left clicked the item'
+    right-click:
+      commands:
+        - '[msg] Right clicked the item'
+
+  frame_1:
+    material: YELLOW_WOOL
+    name: "Your gamemode is not Survival"
+    animate: frame_2
+  frame_2:
+    material: ORANGE_WOOL
+    name: "Your gamemode is not Survival"
+    animate: frame_3
+  frame_3:
+    material: RED_WOOL
+    name: "Your gamemode is not Survival"
+    # Last frame of animations do not need animate value as it knows to go back to original item

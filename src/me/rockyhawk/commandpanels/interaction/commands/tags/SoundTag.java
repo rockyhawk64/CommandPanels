@@ -1,57 +1,61 @@
 package me.rockyhawk.commandpanels.interaction.commands.tags;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.interaction.commands.TagResolver;
-import me.rockyhawk.commandpanels.manager.session.PanelPosition;
+import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
+import me.rockyhawk.commandpanels.session.Panel;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
-public class SoundTag implements TagResolver {
+public class SoundTag implements CommandTagResolver {
+
     @Override
-    public boolean handle(Context ctx, Panel panel, PanelPosition pos, Player player, String command) {
-        String[] args = ctx.text.attachPlaceholders(panel, pos, player, command).split("\\s+"); // Arguments are space-separated
-        if (command.startsWith("sound=")) {
-            try {
-                if (args.length == 4) {
-                    String soundName = args[1];
-                    float volume, pitch;
+    public boolean isCorrectTag(String tag) {
+        return tag.equalsIgnoreCase("[sound]");
+    }
 
-                    try {
-                        volume = Float.parseFloat(args[2]);
-                        pitch = Float.parseFloat(args[3]);
-                    } catch (NumberFormatException e) {
-                        player.sendMessage("§cInvalid number format for volume or pitch.");
-                        return false;
-                    }
+    @Override
+    public void handle(Context ctx, Panel panel, Player player, String command) {
+        String[] args = ctx.text.parseTextToString(player, command).split("\\s+");
 
-                    try {
-                        player.playSound(player.getLocation(), Sound.valueOf(soundName.toUpperCase()), volume, pitch);
-                    } catch (IllegalArgumentException e) {
-                        player.playSound(player.getLocation(), soundName, volume, pitch);
-                    }
-                } else {
-                    try {
-                        Sound sound = Sound.valueOf(args[1].toUpperCase());
-                        player.playSound(player.getLocation(), sound, 1F, 1F);
-                    } catch (IllegalArgumentException e) {
-                        player.playSound(player.getLocation(), args[1], 1F, 1F);
-                    }
-                }
-            } catch (Exception s) {
-                ctx.debug.send(s, player, ctx);
-                ctx.text.sendMessage(player, ctx.configHandler.config.getString("config.format.error") + " " + "commands: " + command);
-            }
-            return true;
-        } else if (command.startsWith("stopsound=")) {
-            try {
-                player.stopSound(Sound.valueOf(args[1]));
-            } catch (Exception ss) {
-                ctx.debug.send(ss, player, ctx);
-                ctx.text.sendMessage(player, ctx.configHandler.config.getString("config.format.error") + " " + "commands: " + command);
-            }
-            return true;
+        if (args.length == 0) {
+            ctx.text.sendError(player, "No sound arguments provided.");
+            return;
         }
-        return false;
+
+        try {
+            NamespacedKey key = parseKey(args[0].toLowerCase());
+            float volume = 1f;
+            float pitch = 1f;
+            SoundCategory category = SoundCategory.MASTER;
+
+            for (String arg : args) {
+                if (arg.startsWith("volume=")) {
+                    volume = Float.parseFloat(arg.substring(7));
+                } else if (arg.startsWith("pitch=")) {
+                    pitch = Float.parseFloat(arg.substring(6));
+                } else if (arg.startsWith("category=")) {
+                    try {
+                        category = SoundCategory.valueOf(arg.substring(9).toUpperCase());
+                    } catch (IllegalArgumentException ignored) {}
+                }
+            }
+
+            Sound sound = Registry.SOUNDS.get(key);
+            if (sound == null) {
+                player.playSound(player.getLocation(), key.getKey(), category, volume, pitch);
+            } else {
+                player.playSound(player.getLocation(), sound, category, volume, pitch);
+            }
+
+        } catch (Exception e) {
+            ctx.text.sendError(player, "Failed to play sound.");
+        }
+    }
+
+    private NamespacedKey parseKey(String key) {
+        return key.contains(":") ? NamespacedKey.fromString(key) : NamespacedKey.minecraft(key);
     }
 }

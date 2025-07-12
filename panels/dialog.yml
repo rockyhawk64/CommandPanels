@@ -1,0 +1,99 @@
+# |------------------------------------------------------------------------
+# |                       CommandPanels Dialog File
+# |                          Official Panel v2.0
+# | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
+# |------------------------------------------------------------------------
+conditions: "%player_name% $HASPERM example.permission"
+title: 'Template Dialog Panel'
+type: dialog           # inventory, floodgate, dialog
+
+floodgate: floodgate_custom    # Optional open a floodgate panel type if the player is a bedrock player
+has-exit-button: false
+escapable: true
+columns: 1                # Amount of columns components will span across
+
+# Dialogs will display text & items first, then inputs, then buttons.
+# If your order is button1 input1 button2, it will output input1, button1, button2
+layout:
+  0:
+    - welcome
+  1:
+    - explain
+  2:
+    - item1
+  3:
+    - input_gamemode
+  4:
+    - inp1
+  5:
+    - inp2
+  6:
+    - inp3
+  11:
+    - btn1
+  12:
+    - btn2
+
+items:  # These are the components, separated from the order for flexibility and eliminates nesting
+  welcome:
+    type: text
+    name: '&6Welcome to the CommandPanels Dialog'
+
+  explain:
+    type: text
+    name: 'Items are made in Dialogs using the robust Inventory Panel item system'
+
+  item1:
+    type: item
+    text: 'This is an item'
+    material: IRON_PICKAXE
+    name: "&aMighty Pickaxe"
+    enchantments:
+      - KNOCKBACK 2
+
+  input_gamemode:
+    type: option
+    name: 'Gamemode'
+    initial: '%player_gamemode%'
+    options:
+      - Creative
+      - Survival
+      - Adventure
+      - Spectator
+
+  inp1:
+    type: input
+    name: 'This one does nothing at the moment'
+    initial: '%player_gamemode%'
+    options:
+      - Creative
+      - Survival
+      - Adventure
+      - Spectator
+
+  inp2:
+    type: range
+    name: 'Custom Slider'
+    start: 0
+    end: 100
+
+  inp3:
+    type: boolean
+    name: 'True or False'
+
+  btn1:
+    type: button
+    width: 200
+    name: 'Okay'
+    tooltip: 'Hello'
+    actions:
+      commands:
+        - '[console] gamemode %commandpanels_session_inp0% %player_name%'
+        - '[msg] The text output: %commandpanels_session_inp1%'
+
+  btn2:
+    type: button
+    width: 200
+    name: 'Open a Link'
+    url: 'https://commandpanels.net/'
+    tooltip: 'World!'

@@ -1,147 +1,61 @@
 package me.rockyhawk.commandpanels.interaction.commands;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.interaction.commands.paywalls.*;
-import me.rockyhawk.commandpanels.interaction.commands.paywalls.itempaywall.ItemPaywall;
 import me.rockyhawk.commandpanels.interaction.commands.tags.*;
-import me.rockyhawk.commandpanels.interaction.commands.tags.BasicTags;
-import me.rockyhawk.commandpanels.manager.session.PanelPosition;
-import org.bukkit.Bukkit;
+import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommandRunner {
-
     private final Context ctx;
+    private final List<CommandTagResolver> resolvers = new ArrayList<>();
 
-    private final List<PaywallResolver> paywalls = new ArrayList<>();
-    private final List<TagResolver> tags = new ArrayList<>();
-
-    public CommandRunner(Context ctx) {
-        this.ctx = ctx;
-        registerBuiltInTags();
+    public CommandRunner(Context pl) {
+        this.ctx = pl;
+        registerResolvers();
     }
 
-    public void runCommands(Panel panel, PanelPosition position, Player p, List<String> commands, ClickType click) {
-        for (String command : commands) {
-            if (click != null) {
-                command = hasCorrectClick(command, click);
-                if (command.equals("")) continue;
-            }
+    private void registerResolvers() {
+        resolvers.add(new OpenPanelTag());
+        resolvers.add(new RefreshPanelTag());
+        resolvers.add(new PreviousPanelTag());
+        resolvers.add(new ClosePanelTag());
+        resolvers.add(new ConsoleCmdTag());
+        resolvers.add(new SessionTag());
+        resolvers.add(new DataTag());
+        resolvers.add(new ChatTag());
+        resolvers.add(new ServerTag());
+        resolvers.add(new MessageTag());
+        resolvers.add(new GiveTag());
+        resolvers.add(new ItemActionTag());
+        resolvers.add(new SoundTag());
+        resolvers.add(new StopSoundTag());
+        resolvers.add(new TeleportTag());
 
-            PaywallOutput output = runPaywalls(panel, position, p, command, true);
-            if (output == PaywallOutput.Blocked) {
-                break;
-            }else if(output == PaywallOutput.NotApplicable){
-                //Run the command as this is not a paywall
-                runCommand(panel, position, p, command);
-            }
+    }
+
+    public void runCommands(Panel panel, Player player, List<String> commands){
+        for(String command : commands){
+            runCommand(panel, player, command);
         }
     }
 
-    public void runCommand(Panel panel, PanelPosition position, Player p, String commandRaw) {
-        for (TagResolver tag : tags) {
-            if (tag.handle(ctx, panel, position, p, commandRaw)) {
+    public void runCommand(Panel panel, Player player, String command) {
+        for (CommandTagResolver resolver : resolvers) {
+            command = ctx.text.parseTextToString(player, command.trim());
+            if (command.isEmpty()) return;
+
+            String[] parts = command.split("\\s+", 2); // Split into 2 parts: tag and rest
+
+            String tag = parts[0];
+            String args = (parts.length > 1) ? parts[1].trim() : "";
+
+            if (resolver.isCorrectTag(tag)) {
+                resolver.handle(ctx, panel, player, args);
                 return;
             }
-        }
-
-        Bukkit.dispatchCommand(p, ctx.text.attachPlaceholders(panel, position, p, commandRaw.trim()));
-    }
-
-    public boolean runMultiPaywall(Panel panel, PanelPosition position, Player p, List<String> paywalls, List<String> commands, ClickType click) {
-        List<String> allCommands = new ArrayList<>(paywalls);
-        allCommands.addAll(commands);
-
-        for (String command : allCommands) {
-            if (runPaywalls(panel, position, p, command, false) == PaywallOutput.Blocked) {
-                return false;
-            }
-        }
-
-        runCommands(panel, position, p, allCommands, click);
-        return true;
-    }
-
-    // Other plugins can hook and add their own tags and paywalls
-    public void addTag(TagResolver tag){
-        tags.add(tag);
-    }
-    public void addPaywall(PaywallResolver paywall){
-        paywalls.add(paywall);
-    }
-
-    private void registerBuiltInTags() {
-        // Paywalls
-        paywalls.add(new Paywall());
-        paywalls.add(new TokenPaywall());
-        paywalls.add(new ItemPaywall());
-        paywalls.add(new HasPerm());
-        paywalls.add(new XpPaywall());
-        paywalls.add(new DataPaywall());
-
-        // Tags
-        tags.add(new AddPlaceholderTag());
-        tags.add(new BasicTags());
-        tags.add(new BungeeTag());
-        tags.add(new ClosePanelTag());
-        tags.add(new CloseTag());
-        tags.add(new DataAddTag());
-        tags.add(new DataClearTag());
-        tags.add(new DataDelTag());
-        tags.add(new DataMathTag());
-        tags.add(new DataSetTag());
-        tags.add(new DelayTag());
-        tags.add(new EnchantTag());
-        tags.add(new EvalDelayTag());
-        tags.add(new GiveItemTag());
-        tags.add(new MiniMessageTag());
-        tags.add(new OpenTag());
-        tags.add(new PlaceholderTag());
-        tags.add(new RefreshTag());
-        tags.add(new SetCustomDataTag());
-        tags.add(new SetItemTag());
-        tags.add(new SkriptTag());
-        tags.add(new SoundTag());
-        tags.add(new TeleportTag());
-        tags.add(new TitleTag());
-    }
-
-    private PaywallOutput runPaywalls(Panel panel, PanelPosition position, Player p, String command, boolean performOperation) {
-        for (PaywallResolver paywall : paywalls) {
-            PaywallOutput result = paywall.handle(ctx, panel, position, p, command, performOperation);
-            if (result != PaywallOutput.NotApplicable) {
-                return result;
-            }
-        }
-        return PaywallOutput.NotApplicable;
-    }
-
-    public String hasCorrectClick(String command, ClickType click) {
-        try {
-            String[] parts = command.split("\\s", 2);
-            String prefix = parts[0];
-            String rest = parts.length > 1 ? parts[1] : "";
-
-            switch (prefix) {
-                case "right=":
-                    return click == ClickType.RIGHT ? rest : "";
-                case "rightshift=":
-                    return click == ClickType.SHIFT_RIGHT ? rest : "";
-                case "left=":
-                    return click == ClickType.LEFT ? rest : "";
-                case "leftshift=":
-                    return click == ClickType.SHIFT_LEFT ? rest : "";
-                case "middle=":
-                    return click == ClickType.MIDDLE ? rest : "";
-                default:
-                    return command;
-            }
-        } catch (Exception e) {
-            return "";
         }
     }
 }

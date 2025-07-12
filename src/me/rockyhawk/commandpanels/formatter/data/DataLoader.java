@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.formatter.data;
 
 import me.rockyhawk.commandpanels.Context;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -11,11 +12,11 @@ public class DataLoader {
     Context ctx;
     public DataLoader(Context pl) {
         this.ctx = pl;
+        this.dataConfig = YamlConfiguration.loadConfiguration(new File(ctx.plugin.getDataFolder(), "data.yml"));
     }
 
     public YamlConfiguration dataConfig;
     public DataManager dataPlayers = new DataManager(this);
-    public DataFileConverter dataFileConverter = new DataFileConverter(this);
 
     public String getUserData(String playerName, String dataPoint){
         return dataConfig.getString(dataPlayers.getDataProfile(playerName) + ".data." + dataPoint);
@@ -40,13 +41,17 @@ public class DataLoader {
         dataConfig.set(profile, null);
     }
 
-    public void saveDataFile(){
+    public void saveDataFileSync() {
         try {
-            dataConfig.save(ctx.plugin.getDataFolder() + File.separator + "data.yml");
-        } catch (IOException s) {
-            s.printStackTrace();
-            ctx.debug.send(s,null, ctx);
+            File file = new File(ctx.plugin.getDataFolder(), "data.yml");
+            dataConfig.save(file);
+        } catch (IOException e) {
+            Bukkit.getScheduler().runTask(ctx.plugin, () ->
+                    ctx.text.sendError(Bukkit.getConsoleSender(), "Could not save data file."));
         }
+    }
+    public void saveDataFileAsync() {
+        Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, this::saveDataFileSync);
     }
 
     public void doDataMath(String playerName, String dataPoint, String dataValue){
@@ -56,7 +61,6 @@ public class DataLoader {
         try {
             originalValue = new BigDecimal(dataConfig.getString(profile + ".data." + dataPoint));
         }catch(Exception ex){
-            ctx.debug.send(ex,null, ctx);
             originalValue = new BigDecimal("1");
         }
 
@@ -82,14 +86,12 @@ public class DataLoader {
                 try {
                     output = originalValue.divide(newValue);
                 }catch (ArithmeticException ex){
-                    ctx.debug.send(ex,null, ctx);
                     output = originalValue;
                 }
                 break;
             }
             default:{
-                newValue = new BigDecimal(dataValue);
-                output = newValue;
+                output = originalValue;
             }
         }
 
