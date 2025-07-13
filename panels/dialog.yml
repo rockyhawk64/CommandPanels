@@ -6,7 +6,7 @@
 conditions: '%player_name% $HASPERM example.permission'
 title: '&6Welcome to Our Server!'
 type: dialog
-has-exit-button: true
+has-exit-button: false
 escapable: true
 columns: 1
 
