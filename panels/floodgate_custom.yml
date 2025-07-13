@@ -3,58 +3,78 @@
 # |                          Official Panel v2.0
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
 # |------------------------------------------------------------------------
-conditions: "%player_name% $HASPERM example.permission"
-title: 'Template Panel'
-type: floodgate           # inventory, floodgate, dialog
-commands:                 # Runs when the panel has been opened
-  - '[msg] panel has been opened'
+conditions: '%player_name% $HASPERM example.permission'
+title: 'Player Settings'
+type: floodgate
+floodgate-type: custom
 
-floodgate-type: custom   # Supports Floodgate Form (simple, custom)
+commands:
+  - '[msg] &aSettings panel opened!'
 
 layout:
-  0:    # Executes logic from top to bottom items in the slot until conditions are met
-    - dropdown_gamemode
-  1:
-    - inputexample
-  2:
-    - sliderexample
-  3:
-    - toggle_example
+  '0':
+    - dropdown_language
+  '1':
+    - input_status
+  '2':
+    - slider_brightness
+  '3':
+    - toggle_notifications
+  '4':
+    - stepslider_graphics
 
-items:  # These are the components, separated from the order for flexibility and eliminates nesting
-
-  dropdown_gamemode:
+items:
+  dropdown_language:
     type: dropdown
-    name: 'Set your gamemode!'
-    condition: '%player_name% $HASPERM gamemode.creative'
+    name: '&bSelect Language'
     options:
-      - survival
-      - creative
+      - English
+      - Spanish
+      - French
+      - German
+      - Japanese
+    default: English
+    actions:
+      commands:
+        - '[msg] &aLanguage set to: %commandpanels_session_dropdown_language%'
 
-  inputexample:
+  input_status:
     type: input
-    name: 'Type something'
-    placeholder: 'Type here'
+    name: '&aSet Your Status Message'
+    placeholder: 'Type your status here...'
     default: ''
     actions:
       commands:
-        - '[msg] You said: %commandpanels_session_inputexample%'
+        - '[msg] &aStatus updated: %commandpanels_session_input_status%'
 
-  sliderexample:
+  slider_brightness:
     type: slider
-    name: 'Slide the Slider'
+    name: '&eScreen Brightness'
     min: 1
     max: 10
     step: 1
     default: 5
     actions:
       commands:
-        - '[msg] You chose: %commandpanels_session_sliderexample%'
+        - '[msg] &eBrightness set to: %commandpanels_session_slider_brightness%'
 
-  toggle_example:
+  toggle_notifications:
     type: toggle
-    name: 'Do you like cats?'
+    name: '&dEnable Notifications'
     default: true
     actions:
       commands:
-        - '[msg] Your cats choice: %commandpanels_session_toggle_example%'
+        - '[msg] &dNotifications: %commandpanels_session_toggle_notifications%'
+
+  stepslider_graphics:
+    type: step-slider
+    name: '&6Graphics Quality'
+    steps:
+      - Low
+      - Medium
+      - High
+      - Ultra
+    default: Medium
+    actions:
+      commands:
+        - '[msg] &6Graphics set to: %commandpanels_session_stepslider_graphics%'

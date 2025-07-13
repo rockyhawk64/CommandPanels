@@ -3,97 +3,66 @@
 # |                          Official Panel v2.0
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
 # |------------------------------------------------------------------------
-conditions: "%player_name% $HASPERM example.permission"
-title: 'Template Dialog Panel'
-type: dialog           # inventory, floodgate, dialog
-
-floodgate: floodgate_custom    # Optional open a floodgate panel type if the player is a bedrock player
-has-exit-button: false
+conditions: '%player_name% $HASPERM example.permission'
+title: '&6Welcome to Our Server!'
+type: dialog
+has-exit-button: true
 escapable: true
-columns: 1                # Amount of columns components will span across
+columns: 1
 
-# Dialogs will display text & items first, then inputs, then buttons.
-# If your order is button1 input1 button2, it will output input1, button1, button2
 layout:
-  0:
-    - welcome
-  1:
-    - explain
-  2:
-    - item1
-  3:
-    - input_gamemode
-  4:
-    - inp1
-  5:
-    - inp2
-  6:
-    - inp3
-  11:
-    - btn1
-  12:
-    - btn2
+  '0':
+    - welcome_text
+  '1':
+    - info_text
+  '3':
+    - welcome_item
+  '5':
+    - input_nickname
+  '7':
+    - btn_confirm
+  '8':
+    - btn_website
 
-items:  # These are the components, separated from the order for flexibility and eliminates nesting
-  welcome:
+items:
+  welcome_text:
     type: text
-    name: '&6Welcome to the CommandPanels Dialog'
+    name: '&eHello, &6%player_name%&e!'
+    lore:
+      - '&7We are glad to have you here.'
+      - '&7Please enter a nickname to use on the server.'
 
-  explain:
+  info_text:
     type: text
-    name: 'Items are made in Dialogs using the robust Inventory Panel item system'
+    name: '&fYour nickname will be shown to others.'
+    lore:
+      - '&7You can change it anytime in this dialog.'
 
-  item1:
+  welcome_item:
     type: item
-    text: 'This is an item'
-    material: IRON_PICKAXE
-    name: "&aMighty Pickaxe"
-    enchantments:
-      - KNOCKBACK 2
+    material: NAME_TAG
+    name: '&bNickname Tag'
+    text: 'Use this tag to set your nickname.'
 
-  input_gamemode:
-    type: option
-    name: 'Gamemode'
-    initial: '%player_gamemode%'
-    options:
-      - Creative
-      - Survival
-      - Adventure
-      - Spectator
-
-  inp1:
+  input_nickname:
     type: input
-    name: 'This one does nothing at the moment'
-    initial: '%player_gamemode%'
-    options:
-      - Creative
-      - Survival
-      - Adventure
-      - Spectator
+    name: '&aEnter your new nickname'
+    initial: '%player_name%'
+    placeholder: 'Type your nickname here...'
 
-  inp2:
-    type: range
-    name: 'Custom Slider'
-    start: 0
-    end: 100
-
-  inp3:
-    type: boolean
-    name: 'True or False'
-
-  btn1:
+  btn_confirm:
     type: button
     width: 200
-    name: 'Okay'
-    tooltip: 'Hello'
+    name: '&aConfirm Nickname'
+    tooltip: 'Save your new nickname'
     actions:
       commands:
-        - '[console] gamemode %commandpanels_session_inp0% %player_name%'
-        - '[msg] The text output: %commandpanels_session_inp1%'
+        - '[console] nick %player_name% %commandpanels_session_input_nickname%'
+        - '[msg] &aYour nickname has been set to &6%commandpanels_session_input_nickname%&a.'
 
-  btn2:
+  btn_website:
     type: button
     width: 200
-    name: 'Open a Link'
+    name: '&bVisit Website'
     url: 'https://commandpanels.net/'
-    tooltip: 'World!'
+    tooltip: 'Click to visit our website'
