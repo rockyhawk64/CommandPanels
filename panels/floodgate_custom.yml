@@ -8,9 +8,6 @@ title: 'Player Settings'
 type: floodgate
 floodgate-type: custom
 
-commands:
-  - '[msg] &aSettings panel opened!'
-
 layout:
   '0':
     - dropdown_language

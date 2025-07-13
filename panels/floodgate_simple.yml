@@ -4,35 +4,86 @@
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
 # |------------------------------------------------------------------------
 conditions: "%player_name% $HASPERM example.permission"
-title: 'Template Panel'
-type: floodgate           # inventory, floodgate, dialog
-commands:                 # Runs when the panel has been opened
-  - '[msg] panel has been opened'
+title: 'Server Selector'
+type: floodgate
 
-floodgate-type: simple   # Supports Floodgate Form (simple, custom)
+floodgate-type: simple
 
 layout:
-  0:    # Executes logic from top to bottom items in the slot until conditions are met
-    - example_button1
-    - example_button2
+  0:
+    - hub_button
   1:
-    - example_button2
+    - survival_button
+  2:
+    - skyblock_button
+  3:
+    - factions_button
+  4:
+    - minigames_button
+  5:
+    - comingsoon_button
 
-items:  # These are the components, separated from the order for flexibility and eliminates nesting
+items:
 
-  example_button1:
-    name: 'Button condition has been met'
-    condition: '%player_name% %EQUALS RockyHawk'
+  hub_button:
+    name: '&a&lHub'
+    lore:
+      - '&7Return to the main lobby.'
+      - '&eClick to go to the Hub!'
     actions:
       commands:
-        - '[msg] &dColour Works'
-    icon-type: PATH #Some resource pack paths can be used for icons
-    icon-texture: 'textures/items/redstone_dust.png'
+        - '[msg] &aConnecting to Hub...'
+    icon-type: PATH
+    icon-texture: 'textures/items/emerald.png'
 
-  example_button2:
-    name: 'Click me to display a message'
+  survival_button:
+    name: '&2&lSurvival'
+    lore:
+      - '&7Explore the wilderness.'
+      - '&eClick to join Survival!'
     actions:
       commands:
-        - '[msg] &dColour Works'
-    icon-type: URL #URLs can be used for icons
-    icon-texture: 'https://example.com/image.jpg'
+        - '[msg] &2Connecting to Survival...'
+    icon-type: PATH
+    icon-texture: 'textures/items/iron_pickaxe.png'
+
+  skyblock_button:
+    name: '&b&lSkyblock'
+    lore:
+      - '&7Your own floating island.'
+      - '&eClick to join Skyblock!'
+    actions:
+      commands:
+        - '[msg] &bConnecting to Skyblock...'
+    icon-type: PATH
+    icon-texture: 'textures/items/apple.png'
+
+  factions_button:
+    name: '&c&lFactions'
+    lore:
+      - '&7Form alliances and battle.'
+      - '&eClick to join Factions!'
+    actions:
+      commands:
+        - '[msg] &cConnecting to Factions...'
+    icon-type: PATH
+    icon-texture: 'textures/items/diamond_sword.png'
+
+  minigames_button:
+    name: '&e&lMinigames'
+    lore:
+      - '&7Play fun mini challenges.'
+      - '&eClick to join Minigames!'
+    actions:
+      commands:
+        - '[msg] &eConnecting to Minigames...'
+    icon-type: PATH
+    icon-texture: 'textures/items/ender_pearl.png'
+
+  comingsoon_button:
+    name: '&8&lComing Soon'
+    lore:
+      - '&7New content arriving shortly.'
+    actions:
+      commands:
+        - '[msg] &7Coming soon...'
