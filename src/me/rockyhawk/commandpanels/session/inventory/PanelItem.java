@@ -16,6 +16,7 @@ public record PanelItem(
         String tooltip,
         String animate,
         String conditions,
+        ClickActions actions,
         ClickActions leftClick,
         ClickActions rightClick,
         ClickActions middleClick,
@@ -41,6 +42,7 @@ public record PanelItem(
             String tooltip,
             String animate,
             String conditions,
+            ClickActions actions,
             ClickActions leftClick,
             ClickActions rightClick,
             ClickActions middleClick,
@@ -65,6 +67,7 @@ public record PanelItem(
         this.tooltip = tooltip;
         this.animate = animate;
         this.conditions = conditions;
+        this.actions = actions;
         this.leftClick = leftClick;
         this.rightClick = rightClick;
         this.middleClick = middleClick;
@@ -91,6 +94,7 @@ public record PanelItem(
         String animate = section.getString("animate", "");
         String conditions = section.getString("conditions", "");
 
+        ClickActions actions = ClickActions.fromSection(section.getConfigurationSection("actions"));
         ClickActions leftClick = ClickActions.fromSection(section.getConfigurationSection("left-click"));
         ClickActions rightClick = ClickActions.fromSection(section.getConfigurationSection("right-click"));
         ClickActions middleClick = ClickActions.fromSection(section.getConfigurationSection("middle-click"));
@@ -118,6 +122,7 @@ public record PanelItem(
                 tooltip,
                 animate,
                 conditions,
+                actions,
                 leftClick,
                 rightClick,
                 middleClick,
@@ -136,6 +141,7 @@ public record PanelItem(
     }
 
     public ClickActions getClickActions(ClickType clickType) {
+        if(!actions.requirements().isEmpty() || !actions.commands().isEmpty()) return actions;
         // LEFT case defaults
         return switch (clickType) {
             case RIGHT -> rightClick;

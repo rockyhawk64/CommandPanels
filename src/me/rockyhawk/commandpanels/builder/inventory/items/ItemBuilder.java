@@ -89,7 +89,6 @@ public class ItemBuilder {
         // Fallback check for a vanilla material if a material tag could not be found
         if (baseItem == null) {
             baseItem = new MinecraftComponent().createItem(ctx, material, player, item);
-            ;
             if (baseItem == null) return new ItemStack(Material.AIR);
         }
 

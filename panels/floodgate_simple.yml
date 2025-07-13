@@ -26,15 +26,13 @@ items:  # These are the components, separated from the order for flexibility and
     actions:
       commands:
         - '[msg] &dColour Works'
-    icon:
-      type: PATH #Some resource pack paths can be used for icons
-      texture: 'textures/items/redstone_dust.png'
+    icon-type: PATH #Some resource pack paths can be used for icons
+    icon-texture: 'textures/items/redstone_dust.png'
 
   example_button2:
     name: 'Click me to display a message'
     actions:
       commands:
         - '[msg] &dColour Works'
-    icon:
-      type: URL #URLs can be used for icons
-      texture: 'https://example.com/image.jpg'
+    icon-type: URL #URLs can be used for icons
+    icon-texture: 'https://example.com/image.jpg'
