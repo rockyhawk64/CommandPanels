@@ -8,6 +8,7 @@ title: 'Server Selector'
 type: floodgate
 
 floodgate-type: simple
+subtitle: 'Welcome to the lobby!\nThis is your gateway to exciting gameplay.'
 
 layout:
   0:

@@ -23,7 +23,7 @@ layout:
 items:
   dropdown_language:
     type: dropdown
-    name: '&bSelect Language'
+    name: 'Select Language'
     options:
       - English
       - Spanish
@@ -37,7 +37,7 @@ items:
 
   input_status:
     type: input
-    name: '&aSet Your Status Message'
+    name: 'Set Your Status Message'
     placeholder: 'Type your status here...'
     default: ''
     actions:
@@ -46,7 +46,7 @@ items:
 
   slider_brightness:
     type: slider
-    name: '&eScreen Brightness'
+    name: 'Screen Brightness'
     min: 1
     max: 10
     step: 1
@@ -57,7 +57,7 @@ items:
 
   toggle_notifications:
     type: toggle
-    name: '&dEnable Notifications'
+    name: 'Enable Notifications'
     default: true
     actions:
       commands:
@@ -65,7 +65,7 @@ items:
 
   stepslider_graphics:
     type: step-slider
-    name: '&6Graphics Quality'
+    name: 'Graphics Quality'
     steps:
       - Low
       - Medium
