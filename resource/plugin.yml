@@ -25,8 +25,10 @@ permissions:
    commandpanels.command.data:
       default: op
    commandpanels.command.open:
-      default: true
+      default: op
    commandpanels.command.open.other:
       default: op
    commandpanels.command.help:
+      default: true
+   commandpanels.command.convert:
       default: true

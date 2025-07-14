@@ -12,107 +12,86 @@ import org.bukkit.profile.PlayerTextures;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
 
 public class CustomHeads {
-    //cached itemstacks stored for access
-    public HashMap<String, ItemStack> savedCustomHeads = new HashMap<>();
 
-    //Using the PlayerProfile API for getting custom heads
+    // Static to remember saved heads across different instances
+    private static final Map<String, ItemStack> savedCustomHeads = new HashMap<>();
+
     public ItemStack getCustomHead(String base64Texture) {
-        //check for any saved heads
-        if(savedCustomHeads.containsKey(base64Texture)) {
+        if (savedCustomHeads.containsKey(base64Texture)) {
             return savedCustomHeads.get(base64Texture);
         }
 
-        //clear cached textures list until length limit is reached
-        Iterator<Map.Entry<String, ItemStack>> iterator = savedCustomHeads.entrySet().iterator();
-        while (savedCustomHeads.size() > 2000 && iterator.hasNext()) {
-            iterator.next(); // Move to next entry
-            iterator.remove(); // Remove the entry
-        }
+        trimCacheIfNeeded();
 
-        // Create a new player head ItemStack
-        ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
-        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
-
-        // Create a new PlayerProfile
-        UUID uuid = UUID.randomUUID();  // Unique ID for the profile
-        PlayerProfile profile = Bukkit.createPlayerProfile(uuid);
-
-        // Decode the base64 texture and extract the texture URL
         String decodedTexture = extractSkinUrlFromBase64(base64Texture);
+        if (decodedTexture == null) return new ItemStack(Material.PLAYER_HEAD);
 
-        // Set the skin URL using PlayerTextures
+        ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
+        if (!(skull.getItemMeta() instanceof SkullMeta skullMeta)) return skull;
+
+        PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
         PlayerTextures textures = profile.getTextures();
+
         try {
-            // Using a URL object for the texture
             textures.setSkin(new URL(decodedTexture));
-        } catch (MalformedURLException ignore) {} // Base64 has no URL, ignore
+        } catch (MalformedURLException ignore) {}
 
-        // Apply the textures to the profile
         profile.setTextures(textures);
-
-        // Apply the PlayerProfile to the SkullMeta
         skullMeta.setOwnerProfile(profile);
-
-        // Set the modified SkullMeta back to the ItemStack
         skull.setItemMeta(skullMeta);
 
         savedCustomHeads.put(base64Texture, skull);
         return skull;
     }
 
-    // New method to get a player head by player name
     public ItemStack getPlayerHead(String playerName) {
-        //check for any saved heads
-        if(savedCustomHeads.containsKey(playerName)) {
+        if (savedCustomHeads.containsKey(playerName)) {
             return savedCustomHeads.get(playerName);
         }
 
-        //clear cached textures list until length limit is reached
-        Iterator<Map.Entry<String, ItemStack>> iterator = savedCustomHeads.entrySet().iterator();
-        while (savedCustomHeads.size() > 2000 && iterator.hasNext()) {
-            iterator.next(); // Move to next entry
-            iterator.remove(); // Remove the entry
-        }
+        trimCacheIfNeeded();
 
-        // Create a new player head ItemStack
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
-        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+        if (!(skull.getItemMeta() instanceof SkullMeta skullMeta)) return skull;
 
-        // Get the OfflinePlayer object for the provided player name
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+        PlayerProfile profile = Bukkit.createPlayerProfile(offlinePlayer.getUniqueId());
 
-        // Create a PlayerProfile from the player's UUID
-        UUID playerUUID = offlinePlayer.getUniqueId();
-        PlayerProfile profile = Bukkit.createPlayerProfile(playerUUID);
-
-        // Apply the PlayerProfile to the SkullMeta
         skullMeta.setOwnerProfile(profile);
-
-        // Set the modified SkullMeta back to the ItemStack
         skull.setItemMeta(skullMeta);
 
         savedCustomHeads.put(playerName, skull);
         return skull;
     }
 
-    // Helper method to extract the skin URL from the base64 texture
-    private String extractSkinUrlFromBase64(String base64Texture) {
-        // Decode the base64 string
-        byte[] decodedBytes = Base64.getDecoder().decode(base64Texture);
-        String decodedString = new String(decodedBytes);
-
-        // Parse the decoded string as JSON
-        JsonObject jsonObject = JsonParser.parseString(decodedString).getAsJsonObject();
-
-        // Navigate to "textures" -> "SKIN" -> "url"
-        JsonObject textures = jsonObject.getAsJsonObject("textures");
-        JsonObject skin = textures.getAsJsonObject("SKIN");
-
-        // Return the URL if it exists
-        return skin.has("url") ? skin.get("url").getAsString() : null;
+    private void trimCacheIfNeeded() {
+        int CACHE_LIMIT = 2000;
+        if (savedCustomHeads.size() <= CACHE_LIMIT) return;
+        Iterator<Map.Entry<String, ItemStack>> iterator = savedCustomHeads.entrySet().iterator();
+        while (iterator.hasNext() && savedCustomHeads.size() > CACHE_LIMIT) {
+            iterator.next();
+            iterator.remove();
+        }
     }
 
+    private String extractSkinUrlFromBase64(String base64Texture) {
+        try {
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Texture);
+            String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
+            JsonObject jsonObject = JsonParser.parseString(decodedString).getAsJsonObject();
+            JsonObject textures = jsonObject.getAsJsonObject("textures");
+            JsonObject skin = textures.getAsJsonObject("SKIN");
+            return skin.has("url") ? skin.get("url").getAsString() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

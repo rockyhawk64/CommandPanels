@@ -6,6 +6,7 @@ import me.rockyhawk.commandpanels.session.Panel;
 import me.rockyhawk.commandpanels.session.SessionManager;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 public class InventoryPanelBuilder extends PanelBuilder {
 
@@ -21,7 +22,12 @@ public class InventoryPanelBuilder extends PanelBuilder {
         if (!(panel instanceof InventoryPanel)) {
             throw new IllegalArgumentException("Expected InventoryPanel, got " + panel.getClass());
         }
-        this.getPlayer().openInventory(panelFactory.createInventory((InventoryPanel) panel, this.getPlayer()));
+        Inventory panelInv = panelFactory.createInventory((InventoryPanel) panel, this.getPlayer());
+        if(panelInv.isEmpty()) {
+            ctx.text.sendError(this.getPlayer(), "Panel must contain at least one item.");
+            return;
+        }
+        this.getPlayer().openInventory(panelInv);
         ctx.session.updateSession(this.getPlayer(), panel, openType);
     }
 }

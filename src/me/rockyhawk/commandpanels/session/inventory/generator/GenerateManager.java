@@ -1,7 +1,7 @@
 package me.rockyhawk.commandpanels.session.inventory.generator;
 
 import me.rockyhawk.commandpanels.Context;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import me.rockyhawk.commandpanels.session.inventory.generator.resolvers.*;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -21,9 +20,17 @@ public class GenerateManager implements Listener {
 
     private final Context ctx;
     private final Set<UUID> generatingPlayers = new HashSet<>();
-    private final LegacyComponentSerializer legacy = LegacyComponentSerializer.builder()
-            .character('&')
-            .build();
+
+    private final List<ItemResolver> resolvers = List.of(
+            new DisplayNameResolver(),
+            new ItemModelResolver(),
+            new LoreResolver(),
+            new EnchantmentsResolver(),
+            new PotionResolver(),
+            new DamageResolver(),
+            new CustomHeadResolver(),
+            new ArmorColorResolver()
+    );
 
     public GenerateManager(Context ctx) {
         this.ctx = ctx;
@@ -35,17 +42,14 @@ public class GenerateManager implements Listener {
 
         if (isInGenerateMode(player) && e.getInventory().getHolder() instanceof BlockState) {
             handleInventoryOpen(player, e.getInventory());
+            e.setCancelled(true);
         }
     }
 
-    /**
-     * Put player into generate mode for 10 seconds
-     */
     public void startGenerateMode(Player player) {
         generatingPlayers.add(player.getUniqueId());
         ctx.text.sendInfo(player, "Generate mode enabled.");
 
-        // Schedule a timeout to remove generate mode after 10 seconds
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -53,27 +57,18 @@ public class GenerateManager implements Listener {
                     ctx.text.sendInfo(player, "Generate mode expired.");
                 }
             }
-        }.runTaskLater(ctx.plugin, 20L * 10); // 20 ticks * 10 = 10 seconds
+        }.runTaskLater(ctx.plugin, 20L * 10);
     }
 
-    /**
-     * Check if a player is in generate mode.
-     */
     public boolean isInGenerateMode(Player player) {
         return generatingPlayers.contains(player.getUniqueId());
     }
 
-    /**
-     * Called when player opens an inventory.
-     * Generates the YAML and removes player from generate mode.
-     */
-    @SuppressWarnings("ConstantConditions")
 
     public void handleInventoryOpen(Player player, Inventory inv) {
         if (!isInGenerateMode(player)) return;
 
         generatingPlayers.remove(player.getUniqueId());
-
         String panelName = findAvailablePanelName();
 
         // Prepare YAML configuration
@@ -85,6 +80,7 @@ public class GenerateManager implements Listener {
         Map<String, List<String>> layout = new LinkedHashMap<>();
         Map<String, Object> items = new LinkedHashMap<>();
 
+        // Loop through items
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack item = inv.getItem(i);
             if (item == null || item.getType() == Material.AIR) continue;
@@ -92,29 +88,14 @@ public class GenerateManager implements Listener {
             String key = ("item_" + item.getType() + "_" + i).toLowerCase();
             layout.put(String.valueOf(i), Collections.singletonList(key));
 
+            // Create item data for generated file and basic options
             Map<String, Object> itemData = new LinkedHashMap<>();
             itemData.put("material", item.getType().name());
             itemData.put("stack", item.getAmount());
 
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null) {
-                if (meta.hasDisplayName()) itemData.put("name", legacy.serialize(meta.displayName()));
-                if (meta.hasItemModel()) itemData.put("item-model", meta.getItemModel().toString());
-                if (meta.hasLore()) {
-                    List<String> serializedLore = meta.lore().stream()
-                            .map(legacy::serialize)
-                            .toList();
-                    itemData.put("lore", serializedLore);
-                }
-                if (meta.hasEnchants()) {
-                    List<String> enchantList = new ArrayList<>();
-                    for (var entry : meta.getEnchants().entrySet()) {
-                        String name = entry.getKey().getKey().getKey();
-                        int level = entry.getValue();
-                        enchantList.add(name + " " + level);
-                    }
-                    itemData.put("enchantments", enchantList);
-                }
+            // Run resolvers for custom item decorations
+            for (ItemResolver resolver : resolvers) {
+                resolver.resolve(item, itemData);
             }
 
             items.put(key, itemData);
@@ -144,6 +125,6 @@ public class GenerateManager implements Listener {
                 return panelName;
             }
         }
-        return "panel_1"; // fallback, theoretically unreachable
+        return "panel_1";
     }
 }

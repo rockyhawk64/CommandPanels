@@ -72,6 +72,11 @@
       <option name="url" value="https://repo.oraxen.com/releases" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="papermc" />
+      <option name="name" value="papermc" />
+      <option name="url" value="https://repo.papermc.io/repository/maven-public/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="jitpack-repo" />
       <option name="name" value="jitpack-repo" />
       <option name="url" value="https://jitpack.io" />
@@ -105,6 +110,11 @@
       <option name="id" value="jboss.community" />
       <option name="name" value="JBoss Community repository" />
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="matteodev" />
+      <option name="name" value="matteodev" />
+      <option name="url" value="https://maven.devs.beer/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="minecraft-repo" />
