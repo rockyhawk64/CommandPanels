@@ -3,8 +3,6 @@
 ## Online Editor
 The online editor includes support for all three panel types. This means you can visually create and edit Dialog, Inventory, and Floodgate panels with ease, previews are not 1:1 but will significantly speed up development and testing.
 
----
-
 ![ExampleScreenshot](https://commandpanels.net/resource_images/example_editor.png)
 
 ## Useful Links
@@ -13,15 +11,11 @@ The online editor includes support for all three panel types. This means you can
 ### [🛠️ Online Editor](https://commandpanels.net/editor)
 ### [💬 Join Discord](https://discord.gg/WFQMTZxa53)
 
----
-
 ## GUI Types
 
 - ### Dialogs
 - ### Inventory
 - ### Floodgate
-
----
 
 ## About
 Minecraft servers use graphical interfaces (GUIs) for a wide range of features,
@@ -37,13 +31,9 @@ CommandPanels supports three distinct panel types, each with unique capabilities
 - Dialog Panels are perfect for creating structured, menu-based conversations and navigation systems, ideal for quests or guided menus.
 - Floodgate Panels enable full GUI support for Bedrock Edition players through Geyser and Floodgate, ensuring cross-platform compatibility.
 
----
-
 ## Server Compatibility
 
 This plugin is a **Paper** plugin, it will only work on Paper and its forks.
-
----
 
 ## Our Partner
 
