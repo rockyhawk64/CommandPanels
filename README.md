@@ -1,41 +1,56 @@
 ![TitleLogo](https://commandpanels.net/resource_images/main_logo.png)
 
-![ShopMenu](https://commandpanels.net/resource_images/example_screenshot.png)
+## Online Editor
+The online editor includes support for all three panel types. This means you can visually create and edit Dialog, Inventory, and Floodgate panels with ease, previews are not 1:1 but will significantly speed up development and testing.
 
-<h2 align="center">
-  <a href="https://docs.commandpanels.net">Docs</a> |
-  <a href="https://commandpanels.net/editor">Editor</a> |
-  <a href="https://discord.gg/WFQMTZxa53">Discord</a>
-</h2>
+---
+
+![ExampleScreenshot](https://commandpanels.net/resource_images/example_editor.png)
+
+## Useful Links
+
+### [📘 Documentation](https://docs.commandpanels.net)
+### [🛠️ Online Editor](https://commandpanels.net/editor)
+### [💬 Join Discord](https://discord.gg/WFQMTZxa53)
+
+---
+
+## GUI Types
+
+- ### Dialogs
+- ### Inventory
+- ### Floodgate
+
+---
 
 ## About
-Minecraft Servers use GUIs for many different tasks from lobbies to shops. Command Panels takes a simple approach to YAML scripting to create a powerful yet simple design. Use variables, data, placeholders and other powerful tools to fully customize your GUIs.
+Minecraft servers use graphical interfaces (GUIs) for a wide range of features,
+from server lobbies and player shops to quests and custom tools. CommandPanels provides a
+streamlined YAML scripting format designed to make GUI creation both accessible and highly customizable.
 
-Command Panels treats the inventory as three different sections, you have the Top, Middle and Bottom. Which are the Chest, Player and Hotbar locations. You can have three GUIs running simultaneously, by simply choosing which location you want a panel to open!
+With built-in support for variables, persistent data, placeholders,
+conditions, and more, you can design interactive menus tailored to your server's needs without complex programming.
 
-Making a plugin? You can use Command Panels as a library to make your own GUIs for your plugins. It's as simple as making a panel, adding the panel YAML file to your plugin and adding one line of code to open the panel.
+CommandPanels supports three distinct panel types, each with unique capabilities:
 
-## Main Features
+- Inventory Panels allow you to build item-based interfaces where players can interact with and manipulate items directly.
+- Dialog Panels are perfect for creating structured, menu-based conversations and navigation systems, ideal for quests or guided menus.
+- Floodgate Panels enable full GUI support for Bedrock Edition players through Geyser and Floodgate, ensuring cross-platform compatibility.
 
-**Online Editor** Offers simple GUI creation, the layout and logic has been simplified for easier usage.
-
-**Animations, Logic, Data** are some of the powerful YAML tools that can be used in your GUIs!
-
-**Player Inventory** allows you to extend the GUI into the player's inventory area underneath, to make advanced menu experiences!
-
-**Floodgate Forms** to create custom Bedrock GUIs with full support for both SimpleForms and CustomForms that allows inputs such as sliders, dropdowns, etc.
+---
 
 ## Server Compatibility
 
-**Spigot & Paper** Full compatibility with Spigot servers and Paper servers, with enhanced performance on Paper. 1.8-1.21.5(Latest usually works)
+This plugin is a **Paper** plugin, it will only work on Paper and its forks.
 
-**Folia Support** Native support for Folia's regionalized threading system. The plugin automatically detects Folia and uses region-specific schedulers for optimal performance without any configuration needed.
+---
 
-## Partner
+## Our Partner
 
 ![ParterLogo](https://commandpanels.net/resource_images/partner_logo.png)
 
 We have proudly partnered with [ReviveNode](http://billing.revivenode.com/aff.php?aff=379)!  
 CommandPanels users have been offered 15% off on the first month by using the Promocode: **PANELS**
 
-ReviveNode is a leading Minecraft hosting provider that offers affordable and high-quality server hosting solutions. Their focus on performance, reliability, and customer support makes them the perfect partner for CommandPanels.
+ReviveNode is a leading Minecraft hosting provider that offers affordable and high-quality server hosting solutions.
+Their focus on performance, reliability, and customer support makes them the perfect partner for CommandPanels.
