@@ -16,19 +16,19 @@ public class XpTag implements RequirementTagResolver {
     public boolean check(Context ctx, Panel panel, Player player, String args) {
         String[] split = args.trim().split(" ");
         if (split.length != 2) {
-            ctx.text.sendError(player, "Invalid XP requirement. Use: [xp] <amount> <levels|points>");
+            ctx.text.sendError(player, "Invalid XP requirement. Use: [xp] <levels|points> <amount>");
             return false;
         }
 
         int amount;
         try {
-            amount = Integer.parseInt(split[0]);
+            amount = Integer.parseInt(split[1]);
         } catch (NumberFormatException e) {
             ctx.text.sendError(player, "Invalid XP amount.");
             return false;
         }
 
-        String type = split[1].toLowerCase();
+        String type = split[0].toLowerCase();
 
         return switch (type) {
             case "levels" -> player.getLevel() >= amount;
@@ -47,12 +47,12 @@ public class XpTag implements RequirementTagResolver {
 
         int amount;
         try {
-            amount = Integer.parseInt(split[0]);
+            amount = Integer.parseInt(split[1]);
         } catch (NumberFormatException e) {
             return;
         }
 
-        String type = split[1].toLowerCase();
+        String type = split[0].toLowerCase();
 
         switch (type) {
             case "levels" -> player.setLevel(player.getLevel() - amount);

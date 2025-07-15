@@ -22,6 +22,7 @@ public class Converter {
     public void convertPanels(CommandSender sender) {
         File oldPanelsDir = new File(ctx.plugin.getDataFolder(), "old_panels"); // e.g. plugins/CommandPanels/old_panels
         if (!oldPanelsDir.exists()) {
+            ctx.text.sendError(sender, "Converts v3 -> v4 Panel config layouts");
             ctx.text.sendError(sender, "Old panels directory not found: " + oldPanelsDir.getPath());
             return;
         }
@@ -113,7 +114,8 @@ public class Converter {
                         Map<String, Object> leftClick = new HashMap<>();
                         List<String> cmdList = new ArrayList<>();
                         for (String cmd : cmds) {
-                            cmdList.add("[msg] " + cmd);
+                            // Do command tag convert attempts
+                            cmdList.add(commandTagConverter(cmd));
                         }
                         leftClick.put("commands", cmdList);
                         convertedItem.put("actions", leftClick);
@@ -139,6 +141,10 @@ public class Converter {
                     layout.put(slotKey, new ArrayList<>(Collections.singletonList(itemId)));
                 }
             }
+        }
+        if(oldPanel.contains("empty")){
+            layout.put("fill", new ArrayList<>(Collections.singletonList("empty_item")));
+            items.put("empty_item.material", oldPanel.getString("empty"));
         }
 
         newPanel.put("layout", layout);
@@ -177,6 +183,18 @@ public class Converter {
         }
 
         return item;
+    }
+
+    private String commandTagConverter(String command){
+        command = command.replace("server=", "[server]");
+        command = command.replace("open=", "[open]");
+        command = command.replace("cpc", "[close]");
+        command = command.replace("console=", "[console]");
+        command = command.replace("refresh", "[refresh]");
+        command = command.replace("data=", "[data]");
+        command = command.replace("msg=", "[msg]");
+        command = command.replace("teleport=", "[teleport]");
+        return command;
     }
 
     private boolean hasNestedConditions(ConfigurationSection itemConfig) {
