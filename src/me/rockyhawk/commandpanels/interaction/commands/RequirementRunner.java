@@ -54,7 +54,7 @@ public class RequirementRunner {
             }
 
             if (!matched) {
-                ctx.text.sendError(player, "Unknown requirement tag: " + tag);
+                ctx.text.sendError(player, "Unknown requirement tag.");
                 return false;
             }
         }

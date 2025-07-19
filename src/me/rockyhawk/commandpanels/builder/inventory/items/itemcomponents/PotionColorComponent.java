@@ -1,12 +1,13 @@
 package me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.PotionContents;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.inventory.items.ItemComponent;
 import me.rockyhawk.commandpanels.session.inventory.PanelItem;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.PotionMeta;
 
 public class PotionColorComponent implements ItemComponent {
 
@@ -15,11 +16,13 @@ public class PotionColorComponent implements ItemComponent {
         if(item.potionColor() == null) return itemStack;
 
         String[] rgb = ctx.text.parseTextToString(player, item.potionColor()).split(",");
-        Color color = Color.fromRGB(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
-        PotionMeta potionMeta = (PotionMeta) itemStack.getItemMeta();
+        Color colour = Color.fromRGB(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
 
-        potionMeta.setColor(color);
-        itemStack.setItemMeta(potionMeta);
+        itemStack.setData(
+                DataComponentTypes.POTION_CONTENTS,
+                PotionContents.potionContents().customColor(colour)
+        );
+
         return itemStack;
     }
 }

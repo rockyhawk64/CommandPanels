@@ -14,9 +14,8 @@ public class ItemsAdderComponent implements MaterialComponent {
     }
 
     @Override
-    public ItemStack createItem(Context ctx, String tag, Player player, PanelItem item) {
-        String namespaceID = tag.split("\\s")[1];
-        CustomStack stack = CustomStack.getInstance(namespaceID);
+    public ItemStack createItem(Context ctx, String itemID, Player player, PanelItem item) {
+        CustomStack stack = CustomStack.getInstance(itemID);
         return stack.getItemStack().clone();
     }
 }

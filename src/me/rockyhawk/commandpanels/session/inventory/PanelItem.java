@@ -24,7 +24,8 @@ public record PanelItem(
         ClickActions shiftRightClick,
         String damage,
         String itemModel,
-        String leatherArmor,
+        String customModelData,
+        String leatherColor,
         String armorTrim,
         String potionColor,
         String potion,
@@ -50,7 +51,8 @@ public record PanelItem(
             ClickActions shiftRightClick,
             String damage,
             String itemModel,
-            String leatherArmor,
+            String customModelData,
+            String leatherColor,
             String armorTrim,
             String potionColor,
             String potion,
@@ -75,7 +77,8 @@ public record PanelItem(
         this.shiftRightClick = shiftRightClick;
         this.damage = damage;
         this.itemModel = itemModel;
-        this.leatherArmor = leatherArmor;
+        this.customModelData = customModelData;
+        this.leatherColor = leatherColor;
         this.armorTrim = armorTrim;
         this.potionColor = potionColor;
         this.potion = potion;
@@ -103,7 +106,8 @@ public record PanelItem(
 
         String damage = section.getString("damage", "0");
         String itemModel = section.getString("item-model", null);
-        String leatherArmor = section.getString("leather-armor", null);
+        String customModelData = section.getString("custom-model-data", null);
+        String leatherColor = section.getString("leather-color", null);
         String armorTrim = section.getString("armor-trim", null);
         String potionColor = section.getString("potion-color", null);
         String potion = section.getString("potion", null);
@@ -130,7 +134,8 @@ public record PanelItem(
                 shiftRightClick,
                 damage,
                 itemModel,
-                leatherArmor,
+                customModelData,
+                leatherColor,
                 armorTrim,
                 potionColor,
                 potion,

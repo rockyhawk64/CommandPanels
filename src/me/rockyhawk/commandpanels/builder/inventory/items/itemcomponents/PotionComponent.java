@@ -16,17 +16,14 @@ public class PotionComponent implements ItemComponent {
 
         //if the item is a potion, give it an effect
         String[] effectType = ctx.text.parseTextToString(player,item.potion()).split("\\s");
-        try {
-            PotionMeta potionMeta = (PotionMeta) itemStack.getItemMeta();
-            assert potionMeta != null;
-            PotionType newData = PotionType.valueOf(effectType[0].toUpperCase());
-            //set meta
-            potionMeta.setBasePotionType(newData);
-            itemStack.setItemMeta(potionMeta);
-        } catch (Exception er) {
-            //don't add the effect
-            ctx.text.sendError(player, "Error with Potion for item: " + item.id());
-        }
+
+        PotionMeta potionMeta = (PotionMeta) itemStack.getItemMeta();
+        assert potionMeta != null;
+        PotionType newData = PotionType.valueOf(effectType[0].toUpperCase());
+
+        //set meta
+        potionMeta.setBasePotionType(newData);
+        itemStack.setItemMeta(potionMeta);
 
         return itemStack;
     }

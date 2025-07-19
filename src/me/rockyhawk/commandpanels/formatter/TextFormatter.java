@@ -12,6 +12,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
 
 public class TextFormatter {
@@ -58,6 +59,7 @@ public class TextFormatter {
         return deserializeAppropriately(input);
     }
 
+    @Subst("")
     @NotNull
     public String parseTextToString(Player player, String input) {
         Component component = parseTextToComponent(player, input);
@@ -75,8 +77,8 @@ public class TextFormatter {
     private Component deserializeAppropriately(String input) {
         try {
             Component component;
-            if (containsLegacyColorCodes(input)) {
-                component = legacySerializer.deserialize(input.replace('&', '§'));
+            if (containsLegacyCodes(input)) {
+                component = legacySerializer.deserialize(input.replaceAll("(?i)&([0-9a-fk-or])", "§$1"));
             } else {
                 component = miniMessage.deserialize(input);
             }
@@ -94,9 +96,9 @@ public class TextFormatter {
         }
     }
 
-    private boolean containsLegacyColorCodes(String input) {
-        // Simple check for common legacy indicators
-        return input.contains("&") || input.contains("§");
+    // Check for legacy codes with regex
+    private boolean containsLegacyCodes(String input) {
+        return input.matches(".*&[0-9a-fk-or].*");
     }
 
     public TextComponent getTag() {

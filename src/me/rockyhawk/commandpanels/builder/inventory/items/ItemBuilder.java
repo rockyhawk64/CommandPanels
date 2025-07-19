@@ -2,20 +2,15 @@ package me.rockyhawk.commandpanels.builder.inventory.items;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.PanelBuilder;
-import me.rockyhawk.commandpanels.builder.inventory.InventoryPanelBuilder;
 import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.*;
 import me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents.*;
 import me.rockyhawk.commandpanels.builder.inventory.items.utils.NameHandler;
-import me.rockyhawk.commandpanels.builder.logic.ConditionNode;
-import me.rockyhawk.commandpanels.builder.logic.ConditionParser;
 import me.rockyhawk.commandpanels.session.Panel;
-import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import me.rockyhawk.commandpanels.session.inventory.PanelItem;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,14 +46,12 @@ public class ItemBuilder {
         }
 
         // Use PersistentDataContainer for item recognition
-        ItemMeta meta = itemStack.getItemMeta();
         NamespacedKey itemId = new NamespacedKey(ctx.plugin, "item_id");
         NamespacedKey baseItemId = new NamespacedKey(ctx.plugin, "base_item_id");
         NamespacedKey panelId = new NamespacedKey(ctx.plugin, "panel_id");
-        meta.getPersistentDataContainer().set(itemId, PersistentDataType.STRING, item.id());
-        meta.getPersistentDataContainer().set(panelId, PersistentDataType.STRING, panel.getName());
-        meta.getPersistentDataContainer().set(baseItemId, PersistentDataType.STRING, item.id());
-        itemStack.setItemMeta(meta);
+        itemStack.editPersistentDataContainer(c -> c.set(itemId, PersistentDataType.STRING, item.id()));
+        itemStack.editPersistentDataContainer(c -> c.set(panelId, PersistentDataType.STRING, panel.getName()));
+        itemStack.editPersistentDataContainer(c -> c.set(baseItemId, PersistentDataType.STRING, item.id()));
 
         // Set item to the slot
         return itemStack;
@@ -119,9 +112,10 @@ public class ItemBuilder {
         // Add Item Components
         this.itemComponents.add(new EnchantedComponent());
         this.itemComponents.add(new ItemModelComponent());
+        this.itemComponents.add(new CustomModelDataComponent());
         this.itemComponents.add(new TooltipComponent());
         this.itemComponents.add(new BannerComponent());
-        this.itemComponents.add(new LeatherArmorComponent());
+        this.itemComponents.add(new LeatherColorComponent());
         this.itemComponents.add(new PotionComponent());
         this.itemComponents.add(new PotionColorComponent());
         this.itemComponents.add(new DamageComponent());

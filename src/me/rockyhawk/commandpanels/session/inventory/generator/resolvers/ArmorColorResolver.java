@@ -14,6 +14,6 @@ public class ArmorColorResolver implements ItemResolver {
         if (!(item.getItemMeta() instanceof LeatherArmorMeta meta)) return;
 
         Color color = meta.getColor();
-        itemData.put("leather-armor", color.getRed() + "," + color.getGreen() + "," + color.getBlue());
+        itemData.put("leather-color", color.getRed() + "," + color.getGreen() + "," + color.getBlue());
     }
 }

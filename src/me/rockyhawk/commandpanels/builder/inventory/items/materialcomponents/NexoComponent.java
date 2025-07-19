@@ -16,13 +16,9 @@ public class NexoComponent implements MaterialComponent {
 
     @Override
     public ItemStack createItem(Context ctx, String itemID, Player player, PanelItem item) {
-        try {
-            ItemBuilder builder = NexoItems.itemFromId(itemID);
-            if (builder != null) {
-                return builder.build();
-            }
-        } catch (Exception e) {
-            ctx.text.sendError(player, "Error with Nexo Material Tag: " + itemID);
+        ItemBuilder builder = NexoItems.itemFromId(itemID);
+        if (builder != null) {
+            return builder.build();
         }
         return null;
     }

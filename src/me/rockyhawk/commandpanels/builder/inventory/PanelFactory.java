@@ -1,5 +1,7 @@
 package me.rockyhawk.commandpanels.builder.inventory;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.inventory.items.ItemBuilder;
 import me.rockyhawk.commandpanels.builder.logic.ConditionNode;
@@ -14,10 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-
-import java.util.List;
 
 public class PanelFactory {
     protected final Context ctx;
@@ -87,15 +86,12 @@ public class PanelFactory {
 
         // Fill empty slots if necessary
         if(fill != null) {
-            ItemMeta meta = fill.getItemMeta();
-            if(meta != null) {
-                // Hide the tooltip for filler items
-                meta.setHideTooltip(true);
-                // Assign data so that the updater will skip over filler items
-                NamespacedKey filler = new NamespacedKey(ctx.plugin, "fill_item");
-                meta.getPersistentDataContainer().set(filler, PersistentDataType.STRING, "true");
-                fill.setItemMeta(meta);
-            }
+            // Hide the tooltip for filler items
+            TooltipDisplay tooltipHidden = TooltipDisplay.tooltipDisplay().hideTooltip(true).build();
+            fill.setData(DataComponentTypes.TOOLTIP_DISPLAY, tooltipHidden);
+            // Assign data so that the updater will skip over filler items
+            NamespacedKey filler = new NamespacedKey(ctx.plugin, "fill_item");
+            fill.editPersistentDataContainer(c -> c.set(filler, PersistentDataType.STRING, "true"));
             for (int i = 0; i < inv.getSize(); i++) {
                 ItemStack current = inv.getItem(i);
                 if (current == null || current.getType() == Material.AIR) {

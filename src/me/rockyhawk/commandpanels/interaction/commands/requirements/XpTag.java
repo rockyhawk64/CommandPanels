@@ -14,7 +14,7 @@ public class XpTag implements RequirementTagResolver {
 
     @Override
     public boolean check(Context ctx, Panel panel, Player player, String args) {
-        String[] split = args.trim().split(" ");
+        String[] split = args.trim().split("\\s");
         if (split.length != 2) {
             ctx.text.sendError(player, "Invalid XP requirement. Use: [xp] <levels|points> <amount>");
             return false;

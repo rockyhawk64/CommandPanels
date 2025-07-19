@@ -19,7 +19,6 @@ public class HeadDatabaseComponent implements MaterialComponent {
         if (Bukkit.getServer().getPluginManager().isPluginEnabled("HeadDatabase")) {
             HeadDatabaseAPI api;
             api = new HeadDatabaseAPI();
-
             return api.getItemHead(head);
         } else {
             ctx.text.sendWarn(player, "Download the HeadDatabase plugin to use this feature!");

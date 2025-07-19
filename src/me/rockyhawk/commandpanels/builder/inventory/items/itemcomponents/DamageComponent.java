@@ -1,12 +1,11 @@
 package me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.inventory.items.ItemComponent;
 import me.rockyhawk.commandpanels.session.inventory.PanelItem;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class DamageComponent implements ItemComponent {
 
@@ -17,18 +16,15 @@ public class DamageComponent implements ItemComponent {
         //change the damage amount (placeholders accepted)
         //if the damage is not unbreakable and should be a value
         if(item.damage().equals("-1")){
-            //if the player wants the item to be unbreakable. Only works in non legacy versions
-            ItemMeta unbreak = itemStack.getItemMeta();
-            unbreak.setUnbreakable(true);
-            itemStack.setItemMeta(unbreak);
+            //if the player wants the item to be unbreakable
+            itemStack.setData(
+                    DataComponentTypes.UNBREAKABLE
+            );
         }else {
-            try {
-                Damageable itemDamage = (Damageable) itemStack.getItemMeta();
-                itemDamage.setDamage(Integer.parseInt(ctx.text.parseTextToString(player, item.damage())));
-                itemStack.setItemMeta(itemDamage);
-            } catch (Exception e) {
-                ctx.text.sendError(player, "Error with Item Damage for: " + item.id());
-            }
+            itemStack.setData(
+                    DataComponentTypes.DAMAGE,
+                    Integer.parseInt(ctx.text.parseTextToString(player, item.damage()))
+            );
         }
 
         return itemStack;

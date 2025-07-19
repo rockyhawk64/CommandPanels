@@ -35,7 +35,7 @@ public class SimpleForm {
         List<FloodgateButton> buttonList = new ArrayList<>();
         for (int i = 0; i < panel.getOrder().size(); i++) {
             if(!panel.getOrder().containsKey(String.valueOf(i))){
-                ctx.text.sendError(p,"Panel order is missing a number");
+                ctx.text.sendError(p,"Panel layout is missing/skipping a number.");
                 return;
             }
 

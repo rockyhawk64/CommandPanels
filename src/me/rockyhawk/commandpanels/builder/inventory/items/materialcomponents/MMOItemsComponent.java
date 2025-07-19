@@ -19,13 +19,9 @@ public class MMOItemsComponent implements MaterialComponent {
         String itemType = tag.split("\\s")[1];
         String itemID = tag.split("\\s")[2];
 
-        try {
-            MMOItem mmoitem = MMOItems.plugin.getMMOItem(MMOItems.plugin.getTypes().get(itemType), itemID);
-            if(mmoitem != null){
-                return mmoitem.newBuilder().build();
-            }
-        } catch (Exception e) {
-            ctx.text.sendError(player, "Error with MMOItems Material Tag: " + itemID);
+        MMOItem mmoitem = MMOItems.plugin.getMMOItem(MMOItems.plugin.getTypes().get(itemType), itemID);
+        if(mmoitem != null){
+            return mmoitem.newBuilder().build();
         }
         return null;
     }

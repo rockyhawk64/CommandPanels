@@ -2,7 +2,6 @@ package me.rockyhawk.commandpanels;
 
 import me.rockyhawk.commandpanels.commands.MainCommand;
 import me.rockyhawk.commandpanels.commands.TabComplete;
-import me.rockyhawk.commandpanels.commands.subcommands.GenerateCommand;
 import me.rockyhawk.commandpanels.formatter.Placeholders;
 import me.rockyhawk.commandpanels.formatter.TextFormatter;
 import me.rockyhawk.commandpanels.formatter.data.DataLoader;

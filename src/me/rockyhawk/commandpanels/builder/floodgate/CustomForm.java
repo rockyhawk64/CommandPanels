@@ -35,7 +35,7 @@ public class CustomForm {
         // Build the form inputs in order
         for (int i = 0; i < panel.getOrder().size(); i++) {
             if (!panel.getOrder().containsKey(String.valueOf(i))) {
-                ctx.text.sendError(player, "Panel order is missing a number");
+                ctx.text.sendError(player, "Panel layout is missing/skipping a number.");
                 return;
             }
 
