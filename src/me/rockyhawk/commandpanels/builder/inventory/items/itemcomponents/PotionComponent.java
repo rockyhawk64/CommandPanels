@@ -1,11 +1,12 @@
 package me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.PotionContents;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.inventory.items.ItemComponent;
 import me.rockyhawk.commandpanels.session.inventory.PanelItem;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionType;
 
 public class PotionComponent implements ItemComponent {
@@ -16,14 +17,11 @@ public class PotionComponent implements ItemComponent {
 
         //if the item is a potion, give it an effect
         String[] effectType = ctx.text.parseTextToString(player,item.potion()).split("\\s");
-
-        PotionMeta potionMeta = (PotionMeta) itemStack.getItemMeta();
-        assert potionMeta != null;
         PotionType newData = PotionType.valueOf(effectType[0].toUpperCase());
 
         //set meta
-        potionMeta.setBasePotionType(newData);
-        itemStack.setItemMeta(potionMeta);
+        itemStack.setData(DataComponentTypes.POTION_CONTENTS,
+                PotionContents.potionContents().addCustomEffect(newData.getPotionEffects().get(0)));
 
         return itemStack;
     }

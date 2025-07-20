@@ -13,73 +13,55 @@ import org.bukkit.profile.PlayerTextures;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class CustomHeads {
 
-    // Static to remember saved heads across different instances
-    private static final Map<String, ItemStack> savedCustomHeads = new HashMap<>();
+    private static final Map<String, PlayerProfile> profileCache = new HashMap<>();
 
     public ItemStack getCustomHead(String base64Texture) {
-        if (savedCustomHeads.containsKey(base64Texture)) {
-            return savedCustomHeads.get(base64Texture);
-        }
-
-        trimCacheIfNeeded();
-
-        String decodedTexture = extractSkinUrlFromBase64(base64Texture);
-        if (decodedTexture == null) return new ItemStack(Material.PLAYER_HEAD);
+        PlayerProfile profile = getOrCreateProfile(base64Texture);
+        if (profile == null) return new ItemStack(Material.PLAYER_HEAD);
 
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
         if (!(skull.getItemMeta() instanceof SkullMeta skullMeta)) return skull;
 
-        PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
-        PlayerTextures textures = profile.getTextures();
-
-        try {
-            textures.setSkin(new URL(decodedTexture));
-        } catch (MalformedURLException ignore) {}
-
-        profile.setTextures(textures);
         skullMeta.setOwnerProfile(profile);
         skull.setItemMeta(skullMeta);
 
-        savedCustomHeads.put(base64Texture, skull);
-        return skull;
+        return skull; // New item each time, only shares profile (skin)
     }
 
     public ItemStack getPlayerHead(String playerName) {
-        if (savedCustomHeads.containsKey(playerName)) {
-            return savedCustomHeads.get(playerName);
-        }
-
-        trimCacheIfNeeded();
+        PlayerProfile profile = profileCache.computeIfAbsent(playerName, key -> {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+            return Bukkit.createPlayerProfile(offlinePlayer.getUniqueId());
+        });
 
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
         if (!(skull.getItemMeta() instanceof SkullMeta skullMeta)) return skull;
 
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-        PlayerProfile profile = Bukkit.createPlayerProfile(offlinePlayer.getUniqueId());
-
         skullMeta.setOwnerProfile(profile);
         skull.setItemMeta(skullMeta);
 
-        savedCustomHeads.put(playerName, skull);
         return skull;
     }
 
-    private void trimCacheIfNeeded() {
-        int CACHE_LIMIT = 2000;
-        if (savedCustomHeads.size() <= CACHE_LIMIT) return;
-        Iterator<Map.Entry<String, ItemStack>> iterator = savedCustomHeads.entrySet().iterator();
-        while (iterator.hasNext() && savedCustomHeads.size() > CACHE_LIMIT) {
-            iterator.next();
-            iterator.remove();
-        }
+    private PlayerProfile getOrCreateProfile(String base64Texture) {
+        return profileCache.computeIfAbsent(base64Texture, key -> {
+            String skinUrl = extractSkinUrlFromBase64(base64Texture);
+            if (skinUrl == null) return null;
+
+            try {
+                PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
+                PlayerTextures textures = profile.getTextures();
+                textures.setSkin(new URL(skinUrl));
+                profile.setTextures(textures);
+                return profile;
+            } catch (MalformedURLException e) {
+                return null;
+            }
+        });
     }
 
     private String extractSkinUrlFromBase64(String base64Texture) {

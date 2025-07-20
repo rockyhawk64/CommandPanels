@@ -32,16 +32,12 @@ public class SessionManager implements Listener {
 
         panelSessions.compute(uuid, (key, session) -> {
             // Start a new session no panel open, or switch panel
-            if (session == null || openType == PanelOpenType.EXTERNAL) {
+            if (session == null) {
                 session = new PanelSession(panel, player);
-                if(panelSnooper && panel != null) ctx.text.sendInfo(Bukkit.getConsoleSender(), String.format("%s opened %s, new session has been started.", player.getName(), panel.getName()));
-            } else if(openType == PanelOpenType.CUSTOM) {
+            } else {
                 session.setPanel(panel);
-                if(panelSnooper) ctx.text.sendInfo(Bukkit.getConsoleSender(), String.format("%s opened %s, new session has been started.", player.getName(), panel.getName()));
-            } else if(openType == PanelOpenType.INTERNAL){
-                session.setPanel(panel);
-                if(panelSnooper) ctx.text.sendInfo(Bukkit.getConsoleSender(), String.format("%s opened %s, continuing existing session.", player.getName(), panel.getName()));
             }
+            if(panelSnooper && panel != null) ctx.text.sendInfo(Bukkit.getConsoleSender(), String.format("%s opened %s.", player.getName(), panel.getName()));
 
             // Update data file when sessions are started
             ctx.dataLoader.saveDataFileAsync();
@@ -72,7 +68,6 @@ public class SessionManager implements Listener {
 
     public enum PanelOpenType {
         EXTERNAL,  // Opened via external action
-        CUSTOM, // External but don't clear data
         INTERNAL,  // Opened via in-panel navigation
         REFRESH // Internal and refresh only
     }

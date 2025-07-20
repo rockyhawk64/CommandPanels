@@ -13,7 +13,7 @@ public class DataTag implements RequirementTagResolver {
     }
 
     @Override
-    public boolean check(Context ctx, Panel panel, Player player, String args) {
+    public boolean check(Context ctx, Panel panel, Player player, String raw, String args) {
         String[] split = args.trim().split("\\s");
         if (split.length != 2) {
             ctx.text.sendError(player, "Invalid data requirement. Use: [data] <key> <amount>");
@@ -42,7 +42,7 @@ public class DataTag implements RequirementTagResolver {
     }
 
     @Override
-    public void execute(Context ctx, Panel panel, Player player, String args) {
+    public void execute(Context ctx, Panel panel, Player player, String raw, String args) {
         String[] split = args.trim().split("\\s");
         if (split.length != 2) return;
 

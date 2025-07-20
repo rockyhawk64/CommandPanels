@@ -16,7 +16,7 @@ public class StopSoundTag implements CommandTagResolver {
     }
 
     @Override
-    public void handle(Context ctx, Panel panel, Player player, String command) {
+    public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
         String[] args = ctx.text.parseTextToString(player, command).split("\\s+");
 
         if (args.length == 0) {

@@ -31,24 +31,27 @@ public class RequirementRunner {
     public boolean processRequirements(Panel panel, Player player, List<String> requirements) {
         List<RequirementTagResolver> toExecute = new ArrayList<>();
         List<String> argsList = new ArrayList<>();
+        List<String> argsParsedList = new ArrayList<>();
 
         for (String requirement : requirements) {
-            requirement = ctx.text.parseTextToString(player, requirement.trim());
             if (requirement.isEmpty()) continue;
 
             String[] parts = requirement.split("\\s+", 2);
             String tag = parts[0];
+
             String args = (parts.length > 1) ? parts[1].trim() : "";
+            String argsParsed = ctx.text.parseTextToString(player, args);
 
             boolean matched = false;
             for (RequirementTagResolver resolver : resolvers) {
                 if (resolver.isCorrectTag(tag)) {
                     matched = true;
-                    if (!resolver.check(ctx, panel, player, args)) {
+                    if (!resolver.check(ctx, panel, player, args, argsParsed)) {
                         return false; // Fail early
                     }
                     toExecute.add(resolver);
                     argsList.add(args);
+                    argsParsedList.add(argsParsed);
                     break;
                 }
             }
@@ -61,7 +64,7 @@ public class RequirementRunner {
 
         // All passed, now execute
         for (int i = 0; i < toExecute.size(); i++) {
-            toExecute.get(i).execute(ctx, panel, player, argsList.get(i));
+            toExecute.get(i).execute(ctx, panel, player, argsList.get(i), argsParsedList.get(i));
         }
 
         return true;

@@ -6,6 +6,6 @@ import org.bukkit.entity.Player;
 
 public interface RequirementTagResolver {
     boolean isCorrectTag(String tag);
-    boolean check(Context ctx, Panel panel, Player player, String args);
-    void execute(Context ctx, Panel panel, Player player, String args);
+    boolean check(Context ctx, Panel panel, Player player, String raw, String args);
+    void execute(Context ctx, Panel panel, Player player, String raw, String args);
 }

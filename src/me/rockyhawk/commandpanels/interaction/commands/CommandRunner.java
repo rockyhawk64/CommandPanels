@@ -44,16 +44,17 @@ public class CommandRunner {
 
     public void runCommand(Panel panel, Player player, String command) {
         for (CommandTagResolver resolver : resolvers) {
-            command = ctx.text.parseTextToString(player, command.trim());
             if (command.isEmpty()) return;
 
             String[] parts = command.split("\\s+", 2); // Split into 2 parts: tag and rest
 
             String tag = parts[0];
+
             String args = (parts.length > 1) ? parts[1].trim() : "";
+            String argsParsed = ctx.text.parseTextToString(player, args);
 
             if (resolver.isCorrectTag(tag)) {
-                resolver.handle(ctx, panel, player, args);
+                resolver.handle(ctx, panel, player, args, argsParsed);
                 return;
             }
         }

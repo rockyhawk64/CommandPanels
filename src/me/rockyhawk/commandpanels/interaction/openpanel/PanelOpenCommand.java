@@ -55,15 +55,13 @@ public class PanelOpenCommand implements Listener {
         }
 
         // If there are args add data and open panel
-        // Clear data and use internal for EXTERNAL equivalent but no data flush after panel open
-        ctx.session.getPlayerSession(e.getPlayer()).clearData();
         for (int i = 0; i < args.length; i++) {
             String key = pnlCmdArgs[i];
             String value = args[i];
             ctx.session.getPlayerSession(e.getPlayer()).setData(key, value);
         }
         Bukkit.getScheduler().runTask(ctx.plugin, () -> {
-            panel.open(ctx, e.getPlayer(), SessionManager.PanelOpenType.CUSTOM);
+            panel.open(ctx, e.getPlayer(), SessionManager.PanelOpenType.EXTERNAL);
         });
     }
 

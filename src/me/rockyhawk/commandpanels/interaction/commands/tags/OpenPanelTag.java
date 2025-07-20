@@ -14,7 +14,7 @@ public class OpenPanelTag implements CommandTagResolver {
     }
 
     @Override
-    public void handle(Context ctx, Panel panel, Player player, String command) {
+    public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
         if (ctx.plugin.panels.get(command) == null) {
             return;
         }

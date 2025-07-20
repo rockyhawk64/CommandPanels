@@ -13,8 +13,9 @@ public class SessionTag implements CommandTagResolver {
     }
 
     @Override
-    public void handle(Context ctx, Panel panel, Player player, String command) {
-        String[] args = command.split("\\s");
+    public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
+        // Use raw placeholder parsing
+        String[] args = ctx.text.applyPlaceholders(player, raw).split("\\s");
 
         if (args.length < 1) return;
 

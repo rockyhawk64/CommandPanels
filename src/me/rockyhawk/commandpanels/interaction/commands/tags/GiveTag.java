@@ -18,7 +18,7 @@ public class GiveTag implements CommandTagResolver {
     }
 
     @Override
-    public void handle(Context ctx, Panel panel, Player player, String command) {
+    public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
         Bukkit.getScheduler().runTask(ctx.plugin, () -> {
             // Example: [give] DIAMOND 3
             // Basic give tag that gives normal items and drops them if inventory is full

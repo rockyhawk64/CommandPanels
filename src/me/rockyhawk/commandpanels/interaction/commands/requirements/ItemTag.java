@@ -24,14 +24,14 @@ public class ItemTag implements RequirementTagResolver {
     }
 
     @Override
-    public boolean check(Context ctx, Panel panel, Player player, String args) {
+    public boolean check(Context ctx, Panel panel, Player player, String raw, String args) {
         ParsedItemRequirement req = parseArgs(ctx, player, args);
         if (req == null) return false;
         return hasMatchingItems(ctx, player, req);
     }
 
     @Override
-    public void execute(Context ctx, Panel panel, Player player, String args) {
+    public void execute(Context ctx, Panel panel, Player player, String raw, String args) {
         ParsedItemRequirement req = parseArgs(ctx, player, args);
         if (req == null) return;
         if(req.remove) removeMatchingItems(ctx, player, req);

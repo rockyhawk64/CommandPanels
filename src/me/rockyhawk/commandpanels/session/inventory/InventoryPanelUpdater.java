@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.session.inventory;
 
+import io.papermc.paper.persistence.PersistentDataContainerView;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.inventory.InventoryPanelBuilder;
 import me.rockyhawk.commandpanels.builder.inventory.items.ItemBuilder;
@@ -8,8 +9,6 @@ import me.rockyhawk.commandpanels.session.PanelSession;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -51,10 +50,7 @@ public class InventoryPanelUpdater implements PanelUpdater {
                     ItemStack item = inv.getItem(slot);
                     if (item == null || item.getType().isAir()) continue;
 
-                    ItemMeta meta = item.getItemMeta();
-                    if (meta == null) continue;
-
-                    PersistentDataContainer container = meta.getPersistentDataContainer();
+                    PersistentDataContainerView container = item.getPersistentDataContainer();
                     if (!container.has(itemIdKey, PersistentDataType.STRING) ||
                             container.has(fillItem, PersistentDataType.STRING)) continue;
                     String itemId = container.get(itemIdKey, PersistentDataType.STRING);
@@ -76,9 +72,7 @@ public class InventoryPanelUpdater implements PanelUpdater {
                     ItemStack newItem = builder.buildItem(panel, panelItem);
 
                     // Update base item to original base item
-                    ItemMeta newMeta = newItem.getItemMeta();
-                    newMeta.getPersistentDataContainer().set(baseIdKey, PersistentDataType.STRING, baseItemId);
-                    newItem.setItemMeta(newMeta);
+                    newItem.editPersistentDataContainer(c -> c.set(baseIdKey, PersistentDataType.STRING, baseItemId));
 
                     inv.setItem(slot, newItem);
                 }

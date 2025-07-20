@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.builder.logic;
 
 import me.rockyhawk.commandpanels.Context;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -20,8 +21,15 @@ public class ComparisonNode implements ConditionNode {
 
     @Override
     public boolean evaluate(Player player, Context ctx) {
-        String parsedLeft = ctx.text.parseTextToString(player, left);  // e.g., %player_balance% → "600"
-        String parsedRight = ctx.text.parseTextToString(player, right); // Just in case right has variables
+        String parsedLeftRaw = ctx.text.parseTextToString(player, left);  // e.g., %player_balance% → "600"
+        String parsedRightRaw = ctx.text.parseTextToString(player, right);
+
+        /*
+        parseTextToString will parse colour and placeholders
+        After parsing strip colour, parsing and stripping will remove colour formatting
+        */
+        String parsedLeft = LegacyComponentSerializer.legacySection().deserialize(parsedLeftRaw).content();
+        String parsedRight = LegacyComponentSerializer.legacySection().deserialize(parsedRightRaw).content();
 
         switch (operator) {
             case "$EQUALS":

@@ -46,7 +46,7 @@ public class NameHandler {
 
         String name = panelItem.displayName();
         if (!name.isEmpty()) {
-            item.setData(DataComponentTypes.ITEM_NAME,
+            item.setData(DataComponentTypes.CUSTOM_NAME,
                     ctx.text.parseTextToComponent(player, name));
         }
 

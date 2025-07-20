@@ -66,7 +66,7 @@ public class TextFormatter {
         return LegacyComponentSerializer.legacySection().serialize(component);
     }
 
-    private String applyPlaceholders(Player player, String input) {
+    public String applyPlaceholders(Player player, String input) {
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             OfflinePlayer offp = Bukkit.getOfflinePlayer(player.getUniqueId());
             return PlaceholderAPI.setPlaceholders(offp, input);
@@ -76,29 +76,25 @@ public class TextFormatter {
 
     private Component deserializeAppropriately(String input) {
         try {
-            Component component;
-            if (containsLegacyCodes(input)) {
-                component = legacySerializer.deserialize(input.replaceAll("(?i)&([0-9a-fk-or])", "§$1"));
-            } else {
-                component = miniMessage.deserialize(input);
+            Component mmComponent = miniMessage.deserialize(input);
+            Component plain = Component.text(input);
+
+            // If MiniMessage result is just plain text, it did nothing useful. fallback to legacy
+            if (mmComponent.equals(plain)) {
+                return legacySerializer.deserialize(input.replaceAll("(?i)&([0-9a-fk-or])", "§$1"))
+                        .decoration(TextDecoration.ITALIC, false);
             }
 
-            // Apply non-italic to root only if not already specified
-            // By default Minecraft items are ITALIC
-            if (component.decoration(TextDecoration.ITALIC) == TextDecoration.State.NOT_SET) {
-                component = component.decoration(TextDecoration.ITALIC, false);
+            // Otherwise, MiniMessage worked. ensure non-italic if not explicitly set.
+            if (mmComponent.decoration(TextDecoration.ITALIC) == TextDecoration.State.NOT_SET) {
+                mmComponent = mmComponent.decoration(TextDecoration.ITALIC, false);
             }
 
-            return component;
+            return mmComponent;
         } catch (Exception e) {
-            // Fallback plain non-italic text
+            // Totally broken input, fallback to plain non-italic
             return Component.text(input).decoration(TextDecoration.ITALIC, false);
         }
-    }
-
-    // Check for legacy codes with regex
-    private boolean containsLegacyCodes(String input) {
-        return input.matches(".*&[0-9a-fk-or].*");
     }
 
     public TextComponent getTag() {

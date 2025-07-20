@@ -26,6 +26,8 @@ public class PanelSession {
     }
 
     public void setPanel(Panel panel) {
+        // First panel since session start
+        if(this.panel == null) return;
         // Update previous panel if new panel is different
         if(!panel.getName().equals(this.panel.getName()))
             this.previous = this.panel;

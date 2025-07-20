@@ -14,7 +14,7 @@ public class RefreshPanelTag implements CommandTagResolver {
     }
 
     @Override
-    public void handle(Context ctx, Panel panel, Player player, String command) {
+    public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
         // Reopen the current panel to refresh it
         panel.open(ctx, player, SessionManager.PanelOpenType.REFRESH);
     }

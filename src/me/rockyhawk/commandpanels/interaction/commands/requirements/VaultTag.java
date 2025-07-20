@@ -33,7 +33,7 @@ public class VaultTag implements RequirementTagResolver {
     }
 
     @Override
-    public boolean check(Context ctx, Panel panel, Player player, String args) {
+    public boolean check(Context ctx, Panel panel, Player player, String raw, String args) {
         if (economy == null) return false;
 
         Double amount = parseAmount(ctx, player, args);
@@ -41,7 +41,7 @@ public class VaultTag implements RequirementTagResolver {
     }
 
     @Override
-    public void execute(Context ctx, Panel panel, Player player, String args) {
+    public void execute(Context ctx, Panel panel, Player player, String raw, String args) {
         if (economy == null) return;
 
         Double amount = parseAmount(ctx, player, args);

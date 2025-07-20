@@ -15,7 +15,7 @@ public class PreviousPanelTag implements CommandTagResolver {
     }
 
     @Override
-    public void handle(Context ctx, Panel panel, Player player, String command) {
+    public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
         // Open the previous panel
         PanelSession session = ctx.session.getPlayerSession(player);
         if(ctx.session.getPlayerSession(player) != null){

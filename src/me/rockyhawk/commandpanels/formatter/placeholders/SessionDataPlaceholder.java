@@ -21,8 +21,7 @@ public class SessionDataPlaceholder implements PlaceholderResolver {
         if(session == null) return "no_session_found";
 
         // Get the data from session
-        String data = session.getData(ctx.text.parseTextToString((Player) player, key));
 
-        return ctx.text.parseTextToString((Player) player, data);
+        return session.getData(key);
     }
 }

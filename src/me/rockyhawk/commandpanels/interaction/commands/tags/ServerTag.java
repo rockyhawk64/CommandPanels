@@ -15,7 +15,7 @@ public class ServerTag implements CommandTagResolver {
     }
 
     @Override
-    public void handle(Context ctx, Panel panel, Player player, String command) {
+    public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
         // Remove the tag prefix and parse placeholders
         String parsedCmd = ctx.text.parseTextToString(player, command);
         String[] args = parsedCmd.split("\\s+");

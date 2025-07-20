@@ -14,7 +14,7 @@ public class MessageTag implements CommandTagResolver {
     }
 
     @Override
-    public void handle(Context ctx, Panel panel, Player player, String command) {
+    public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
         Bukkit.getScheduler().runTask(ctx.plugin, () -> {
             player.sendMessage(command);
         });
