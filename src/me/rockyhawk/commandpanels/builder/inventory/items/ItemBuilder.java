@@ -90,7 +90,7 @@ public class ItemBuilder {
             try {
                 baseItem = ic.apply(ctx, baseItem, player, item);
             } catch (Exception e) {
-                ctx.text.sendError(player, "Failed to add item details to " +
+                ctx.text.sendError(player, "Failed to add item decoration to " +
                         item.id() + " issue with " +
                         ic.getClass().getSimpleName());
             }
