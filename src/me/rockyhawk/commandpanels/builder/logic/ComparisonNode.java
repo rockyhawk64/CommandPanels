@@ -1,7 +1,10 @@
 package me.rockyhawk.commandpanels.builder.logic;
 
 import me.rockyhawk.commandpanels.Context;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -28,8 +31,8 @@ public class ComparisonNode implements ConditionNode {
         parseTextToString will parse colour and placeholders
         After parsing strip colour, parsing and stripping will remove colour formatting
         */
-        String parsedLeft = LegacyComponentSerializer.legacySection().deserialize(parsedLeftRaw).content();
-        String parsedRight = LegacyComponentSerializer.legacySection().deserialize(parsedRightRaw).content();
+        String parsedLeft = toPlainText(parsedLeftRaw);
+        String parsedRight = toPlainText(parsedRightRaw);
 
         switch (operator) {
             case "$EQUALS":
@@ -46,6 +49,20 @@ public class ComparisonNode implements ConditionNode {
             default:
                 return false;
         }
+    }
+
+    public static String toPlainText(String input) {
+        try {
+            if (input.contains("§")) {
+                Component legacyComp = LegacyComponentSerializer.legacySection().deserialize(input);
+                return PlainTextComponentSerializer.plainText().serialize(legacyComp);
+            } else {
+                Component miniComp = MiniMessage.miniMessage().deserialize(input);
+                return PlainTextComponentSerializer.plainText().serialize(miniComp);
+            }
+        } catch (Exception ignored) {}
+
+        return input; // Fallback: return raw
     }
 
     private Double extractNumber(String input) {

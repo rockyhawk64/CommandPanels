@@ -112,6 +112,7 @@ public class ItemBuilder {
         // Add Item Components
         this.itemComponents.add(new EnchantedComponent());
         this.itemComponents.add(new ItemModelComponent());
+        this.itemComponents.add(new CustomModelDataComponent());
         this.itemComponents.add(new TooltipComponent());
         this.itemComponents.add(new BannerComponent());
         this.itemComponents.add(new LeatherColorComponent());
