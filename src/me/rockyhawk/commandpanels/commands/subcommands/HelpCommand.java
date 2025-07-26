@@ -52,6 +52,12 @@ public class HelpCommand implements SubCommand {
                     .append(Component.text("Shows this help menu", NamedTextColor.WHITE)));
         }
 
+        // REMOVE AFTER CONVERTER IS REMOVED
+        if (sender.hasPermission("commandpanels.command.convert")) {
+            sender.sendMessage(Component.text("/pa convert ", NamedTextColor.GOLD)
+                    .append(Component.text("Converts basic layout from v3 to v4 panels (not plug and play)", NamedTextColor.WHITE)));
+        }
+
         return true;
     }
 }

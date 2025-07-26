@@ -44,6 +44,7 @@ public class TabComplete implements TabCompleter {
             if (sender.hasPermission("commandpanels.command.data")) {
                 output.add("data");
             }
+            // REMOVE AFTER CONVERTER IS REMOVED
             if (sender.hasPermission("commandpanels.command.convert")) {
                 output.add("convert");
             }
