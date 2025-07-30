@@ -42,6 +42,10 @@ public class Context {
         Bukkit.getServer().getPluginManager().registerEvents(new ClickEvents(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(generator, plugin);
 
+        // Register proxy channels
+        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "velocity:main");
+        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
+
         // Register PlaceholderAPI in run task to ensure initialisation is complete
         Bukkit.getScheduler().runTask(plugin, () -> {
             if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
