@@ -18,32 +18,14 @@ public class ServerTag implements CommandTagResolver {
     public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
         // Remove the tag prefix and parse placeholders
         String parsedCmd = ctx.text.parseTextToString(player, command);
-        String[] args = parsedCmd.split("\\s+");
-
-        if (args.length == 0 || args[0].isEmpty()) {
-            ctx.text.sendError(player, "No server was specified.");
-            return;
-        }
-
-        String serverName = args[0];
-        String proxyType = "bungeecord";  // default proxy type
-
-        // Check for optional args (perm ignored since always forced, type supported)
-        for (String arg : args) {
-            if (arg.startsWith("type=")) {
-                String type = arg.substring(5).toLowerCase();
-                if (type.equals("velocity") || type.equals("bungeecord")) {
-                    proxyType = type;
-                }
-            }
-        }
 
         // Prepare and send plugin message to proxy without permission checks
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Connect");
-        out.writeUTF(serverName);
+        out.writeUTF(parsedCmd);
 
-        String channel = proxyType.equals("velocity") ? "velocity:main" : "BungeeCord";
+        // Velocity and BungeeCord both can use this message
+        String channel = "BungeeCord";
         player.sendPluginMessage(ctx.plugin, channel, out.toByteArray());
     }
 }
