@@ -32,8 +32,9 @@ public class PanelSession {
             return;
         }
         // Update previous panel if new panel is different
-        if(!panel.getName().equals(this.panel.getName()))
+        if(!panel.getName().equals(this.panel.getName())) {
             this.previous = this.panel;
+        }
         this.panel = panel;
     }
 
