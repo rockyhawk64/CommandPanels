@@ -1,15 +1,16 @@
 package me.rockyhawk.commandpanels.commands;
 
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commands.subcommands.*;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.jspecify.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainCommand implements CommandExecutor {
+public class MainCommand implements BasicCommand {
     private final Context ctx;
     private final Map<String, SubCommand> subCommands = new HashMap<>();
 
@@ -33,31 +34,41 @@ public class MainCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!sender.hasPermission("commandpanels.command")) {
-            ctx.text.sendError(sender, "No permission.");
-            return true;
+    public void execute(CommandSourceStack cmdStack, String[] args){
+        if (!cmdStack.getSender().hasPermission("commandpanels.command")) {
+            ctx.text.sendError(cmdStack.getSender(), "No permission.");
+            return;
         }
 
         if (args.length == 0) {
-            ctx.text.sendError(sender, "Use /pa help for a list of subcommands.");
-            return true;
+            ctx.text.sendError(cmdStack.getSender(), "Use /pa help for a list of subcommands.");
+            return;
         }
 
         SubCommand subCommand = subCommands.get(args[0].toLowerCase());
         if (subCommand == null) {
-            ctx.text.sendError(sender, "Unknown subcommand. Use /pa help.");
-            return true;
+            ctx.text.sendError(cmdStack.getSender(), "Unknown subcommand. Use /pa help.");
+            return;
         }
 
-        if (subCommand.getPermission() != null && !subCommand.getPermission().isEmpty() && !sender.hasPermission(subCommand.getPermission())) {
-            ctx.text.sendError(sender, "No permission.");
-            return true;
+        if (subCommand.getPermission() != null && !subCommand.getPermission().isEmpty() && !cmdStack.getSender().hasPermission(subCommand.getPermission())) {
+            ctx.text.sendError(cmdStack.getSender(), "No permission.");
+            return;
         }
 
         // Pass the remaining args after the subcommand name
         String[] subArgs = args.length > 1 ? java.util.Arrays.copyOfRange(args, 1, args.length) : new String[0];
+        subCommand.execute(ctx, cmdStack.getSender(), subArgs);
+    }
 
-        return subCommand.execute(ctx, sender, subArgs);
+    @Override
+    public @Nullable String permission() {
+        return "commandpanels.command";
+    }
+
+    @Override
+    public Collection<String> suggest(CommandSourceStack commandSourceStack, String[] args) {
+        TabComplete suggestions = new TabComplete(ctx);
+        return suggestions.onTabComplete(commandSourceStack.getSender(), args);
     }
 }

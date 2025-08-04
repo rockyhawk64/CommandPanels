@@ -4,6 +4,8 @@ import me.rockyhawk.commandpanels.session.Panel;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -19,6 +21,9 @@ public class CommandPanels extends JavaPlugin{
         Bukkit.getConsoleSender().sendMessage("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loading...");
 
         try {
+            // Register plugin default permissions
+            registerPermissions();
+
             //Initialise plugin context
             ctx = new Context(this);
 
@@ -53,5 +58,25 @@ public class CommandPanels extends JavaPlugin{
         }
 
         Bukkit.getConsoleSender().sendMessage("[CommandPanels] RockyHawk's CommandPanels Plugin Disabled, aww man.");
+    }
+
+    // Plugin registration methods
+    private void registerPermissions() {
+        addPermission("commandpanels.command", PermissionDefault.TRUE);
+        addPermission("commandpanels.command.reload", PermissionDefault.OP);
+        addPermission("commandpanels.command.generate", PermissionDefault.OP);
+        addPermission("commandpanels.command.version", PermissionDefault.TRUE);
+        addPermission("commandpanels.command.data", PermissionDefault.OP);
+        addPermission("commandpanels.command.open", PermissionDefault.OP);
+        addPermission("commandpanels.command.open.other", PermissionDefault.OP);
+        addPermission("commandpanels.command.help", PermissionDefault.TRUE);
+        // REMOVE AFTER CONVERTER IS REMOVED
+        addPermission("commandpanels.command.convert", PermissionDefault.OP);
+    }
+    private void addPermission(String name, PermissionDefault defaultValue) {
+        Permission permission = new Permission(name, defaultValue);
+        if (getServer().getPluginManager().getPermission(name) == null) {
+            getServer().getPluginManager().addPermission(permission);
+        }
     }
 }

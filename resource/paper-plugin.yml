@@ -1,0 +1,25 @@
+name: CommandPanels
+version: '4.0.6'
+api-version: '1.21.8'
+
+main: me.rockyhawk.commandpanels.CommandPanels
+description: Fully Custom Interactive GUIs with Animations and Logic.
+folia-supported: false
+
+dependencies:
+   server:
+      PlaceholderAPI:
+         load: AFTER
+         required: false
+      Vault:
+         load: AFTER
+         required: false
+      HeadDatabase:
+         load: AFTER
+         required: false
+      MMOItems:
+         load: AFTER
+         required: false
+      floodgate:
+         load: AFTER
+         required: false

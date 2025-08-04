@@ -1,7 +1,6 @@
 package me.rockyhawk.commandpanels;
 
 import me.rockyhawk.commandpanels.commands.MainCommand;
-import me.rockyhawk.commandpanels.commands.TabComplete;
 import me.rockyhawk.commandpanels.formatter.Placeholders;
 import me.rockyhawk.commandpanels.formatter.TextFormatter;
 import me.rockyhawk.commandpanels.formatter.data.DataLoader;
@@ -34,8 +33,11 @@ public class Context {
         session = new SessionManager(this);
         generator = new GenerateManager(this);
 
-        plugin.getCommand("panels").setExecutor(new MainCommand(this));
-        plugin.getCommand("panels").setTabCompleter(new TabComplete(this));
+        // Register plugin command
+        plugin.registerCommand("panels", new MainCommand(this));
+        plugin.registerCommand("pa", new MainCommand(this));
+
+        // Register events
         Bukkit.getServer().getPluginManager().registerEvents(session, plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new InventoryEvents(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(panelCommand, plugin);

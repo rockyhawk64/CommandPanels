@@ -3,29 +3,26 @@ package me.rockyhawk.commandpanels.commands;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
-public class TabComplete implements TabCompleter {
+public class TabComplete {
     private final Context ctx;
 
     public TabComplete(Context ctx) {
         this.ctx = ctx;
     }
 
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+    public Collection<String> onTabComplete(CommandSender sender, String[] args) {
         if (!sender.hasPermission("commandpanels.command")) return null;
 
-        ArrayList<String> output = new ArrayList<>();
+        Collection<String> output = new ArrayList<>();
 
-        if (args.length == 1) {
+        if (args.length < 2) {
             if (sender.hasPermission("commandpanels.command.open")) {
                 output.add("open");
             }
