@@ -14,6 +14,12 @@ dependencies:
       Vault:
          load: AFTER
          required: false
+      ItemsAdder:
+         load: AFTER
+         required: false
+      Nexo:
+         load: AFTER
+         required: false
       HeadDatabase:
          load: AFTER
          required: false
