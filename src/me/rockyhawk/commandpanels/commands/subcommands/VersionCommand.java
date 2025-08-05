@@ -21,7 +21,9 @@ public class VersionCommand implements SubCommand {
     @Override
     public boolean execute(Context ctx, CommandSender sender, String[] args) {
         ctx.text.sendInfo(sender, "");
-        sender.sendMessage(Component.text("Version ", NamedTextColor.DARK_GREEN)
+        sender.sendMessage(Component.text("Developer ", NamedTextColor.DARK_AQUA)
+                .append(Component.text("RockyHawk", NamedTextColor.WHITE)));
+        sender.sendMessage(Component.text("Version ", NamedTextColor.DARK_AQUA)
                     .append(Component.text(ctx.plugin.getDescription().getVersion(), NamedTextColor.WHITE)));
         return true;
     }
