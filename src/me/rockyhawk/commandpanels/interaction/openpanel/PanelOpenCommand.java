@@ -69,13 +69,24 @@ public class PanelOpenCommand implements Listener {
         // Populate the base commands list with new commands e.g. punish player -> punish
         commands.clear();
         for (Panel panel : ctx.plugin.panels.values()){
+            // Add the panel command
             String command = panel.getCommand().split("\\s")[0].toLowerCase();
             if(command.isEmpty()) continue;
             commands.put(command, panel);
 
             // Do not register if registration is disabled in config
-            if(ctx.fileHandler.config.getBoolean("custom-commands")){
+            if(ctx.fileHandler.config.getBoolean("custom-commands"))
                 commandRegister.registerPanelCommand(command);
+
+            // Add aliases, the aliases use the same args as main command (strip any extra words)
+            if(!panel.getAliases().isEmpty()){
+                for(String alias : panel.getAliases()){
+                    alias = alias.split("\\s+")[0];
+                    commands.put(alias, panel);
+                    // Do not register if registration is disabled in config
+                    if(ctx.fileHandler.config.getBoolean("custom-commands"))
+                        commandRegister.registerPanelCommand(alias);
+                }
             }
         }
     }
