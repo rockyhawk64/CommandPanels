@@ -7,11 +7,9 @@ body:
     attributes:
       label: Terms
       options:
-        - label: "Have you checked the [wiki](https://rockyhawk99.gitbook.io/rockyhawk-wiki/commandpanels/wiki) page to see if the solution for your problem is there?"
+        - label: "Have you checked the wiki page to see if the solution for your problem is there?"
           required: true
-        - label: "Have you checked the [Current bugs project](https://github.com/rockyhawk64/CommandPanels/projects/6) to see if your issue is a duplicate and your problem already has been solved?"
-          required: true
-        - label: "Have you asked for help in the [Discord Server](https://discord.com/invite/eUWBWh7)? (Or got redirected to a Github issue here)"
+        - label: "Have you asked for help in the Discord server? (Or got redirected to a Github issue here)"
           required: true
   - type: dropdown
     id: server_version
