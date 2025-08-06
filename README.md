@@ -25,15 +25,4 @@ Making a plugin? You can use Command Panels as a library to make your own GUIs f
 
 ## Server Compatibility
 
-**Spigot & Paper** Full compatibility with Spigot servers and Paper servers, with enhanced performance on Paper. 1.8-1.21.5(Latest usually works)
-
-**Folia Support** Native support for Folia's regionalized threading system. The plugin automatically detects Folia and uses region-specific schedulers for optimal performance without any configuration needed.
-
-## Partner
-
-![ParterLogo](https://commandpanels.net/resource_images/partner_logo.png)
-
-We have proudly partnered with [ReviveNode](http://billing.revivenode.com/aff.php?aff=379)!  
-CommandPanels users have been offered 15% off on the first month by using the Promocode: **PANELS**
-
-ReviveNode is a leading Minecraft hosting provider that offers affordable and high-quality server hosting solutions. Their focus on performance, reliability, and customer support makes them the perfect partner for CommandPanels.
+**Spigot & Paper** Full compatibility with Spigot servers and Paper servers, with enhanced performance on Paper. 1.8-1.21.5(Latest usually works
