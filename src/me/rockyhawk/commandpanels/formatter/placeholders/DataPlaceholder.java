@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.formatter.placeholders;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.formatter.PlaceholderResolver;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 public class DataPlaceholder implements PlaceholderResolver {
 
@@ -11,17 +10,29 @@ public class DataPlaceholder implements PlaceholderResolver {
     public String resolve(OfflinePlayer player, String identifier, Context ctx) {
         // Only handle placeholders starting with "data_"
         if (!identifier.startsWith("data_")) return null;
-        if (!player.isOnline()) return null;
-
-        Player p = (Player) player;
-        String playerName = p.getName();
 
         // Remove "data_" prefix
-        String key = identifier.substring("data_".length());
+        String dataPart = identifier.substring("data_".length());
 
-        // %commandpanels_data_key%
-        // Gets the value stored under "key"
-        String value = ctx.dataLoader.getUserData(playerName, key);
+        // Find the last comma
+        int lastCommaIndex = dataPart.lastIndexOf(',');
+
+        String key;
+        String targetName;
+
+        if (lastCommaIndex == -1) {
+            // No comma found, use entire string as key and current player
+            key = dataPart;
+            targetName = player.getName();
+        } else {
+            // Split into key and targetName by last comma
+            key = dataPart.substring(0, lastCommaIndex);
+            targetName = dataPart.substring(lastCommaIndex + 1);
+        }
+
+        // Load the data
+        String value = ctx.dataLoader.getUserData(targetName, key);
         return value != null ? value : "null";
     }
+
 }
