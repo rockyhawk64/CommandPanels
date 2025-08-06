@@ -1,7 +1,5 @@
 ![TitleLogo](https://commandpanels.net/resource_images/main_logo.png)
 
-![ShopMenu](https://commandpanels.net/resource_images/example_screenshot.png)
-
 <h2 align="center">
   <a href="https://commandpanels.net/wiki">Docs</a> |
   <a href="https://commandpanels.net/editor">Editor</a> |
