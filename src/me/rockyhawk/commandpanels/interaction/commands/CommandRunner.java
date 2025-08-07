@@ -26,6 +26,7 @@ public class CommandRunner {
         resolvers.add(new SessionTag());
         resolvers.add(new DataTag());
         resolvers.add(new ChatTag());
+        resolvers.add(new GrantTag());
         resolvers.add(new ServerTag());
         resolvers.add(new MessageTag());
         resolvers.add(new GiveTag());
