@@ -32,7 +32,8 @@ public class NameHandler {
                             DataComponentTypes.ATTRIBUTE_MODIFIERS,
                             DataComponentTypes.DYED_COLOR,
                             DataComponentTypes.TRIM,
-                            DataComponentTypes.BANNER_PATTERNS
+                            DataComponentTypes.BANNER_PATTERNS,
+                            DataComponentTypes.FIREWORKS
                     ).build();
             item.setData(DataComponentTypes.TOOLTIP_DISPLAY, hideAttributes);
         }
