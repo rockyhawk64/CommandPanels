@@ -76,7 +76,10 @@ public class ConditionParser {
 
     private Token nextToken() {
         if (index >= tokens.size()) {
-            throw new IllegalStateException("Unexpected end of tokens");
+            throw new IllegalStateException("Condition parsing failed. " +
+                            "This usually means your condition syntax is incomplete or malformed. " +
+                            "Check the panel configuration file."
+            );
         }
         return tokens.get(index++);
     }
