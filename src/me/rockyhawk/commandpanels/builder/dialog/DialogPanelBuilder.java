@@ -69,30 +69,31 @@ public class DialogPanelBuilder extends PanelBuilder {
                 // Add the component to the dialog
                 if (panel.getComponents().get(id) instanceof DialogButton button){
                     buttons.add(buttonBuilder.buildButton(button, panel));
-                    continue;
+                    break;
                 }
                 if (panel.getComponents().get(id) instanceof DialogItem item){
                     bodies.add(bodyBuilder.createItem(item, panel));
-                    continue;
+                    break;
                 }
                 if (panel.getComponents().get(id) instanceof DialogBodyText text){
                     bodies.add(bodyBuilder.createText(text, panel));
-                    continue;
+                    break;
                 }
                 if (panel.getComponents().get(id) instanceof DialogInputBool bool){
                     inputs.add(inputBuilder.createBool(bool));
-                    continue;
+                    break;
                 }
                 if (panel.getComponents().get(id) instanceof DialogInputRange range){
                     inputs.add(inputBuilder.createRange(range));
-                    continue;
+                    break;
                 }
                 if (panel.getComponents().get(id) instanceof DialogInputOption option){
                     inputs.add(inputBuilder.createOption(option));
-                    continue;
+                    break;
                 }
                 if (panel.getComponents().get(id) instanceof DialogInputText inputText){
                     inputs.add(inputBuilder.createText(inputText));
+                    break;
                 }
             }
         }

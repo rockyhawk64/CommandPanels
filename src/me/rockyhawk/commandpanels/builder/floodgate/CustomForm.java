@@ -102,9 +102,7 @@ public class CustomForm {
                         inputOrder.add(stepSlider);
                     }
                     // unknown component, skip
-                    default -> {
-                        continue;
-                    }
+                    default -> {}
                 }
 
                 // Only one component per order slot
