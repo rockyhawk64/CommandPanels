@@ -4,11 +4,13 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.session.inventory.generator.resolvers.*;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -40,7 +42,8 @@ public class GenerateManager implements Listener {
     public void onInventoryOpen(InventoryOpenEvent e) {
         if (!(e.getPlayer() instanceof Player player)) return;
 
-        if (isInGenerateMode(player) && e.getInventory().getHolder() instanceof BlockState) {
+        InventoryHolder holder = e.getInventory().getHolder();
+        if (isInGenerateMode(player) && (holder instanceof BlockState || holder instanceof DoubleChest)) {
             handleInventoryOpen(player, e.getInventory());
             e.setCancelled(true);
         }
