@@ -21,10 +21,6 @@ public class VaultTag implements RequirementTagResolver {
                 .getServicesManager()
                 .getRegistration(Economy.class);
         this.economy = (rsp != null) ? rsp.getProvider() : null;
-
-        if (economy == null) {
-            Bukkit.getConsoleSender().sendMessage("[CommandPanels] VaultTag failed to load Economy.");
-        }
     }
 
     @Override

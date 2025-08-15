@@ -8,24 +8,18 @@ folia-supported: false
 
 dependencies:
    server:
-      PlaceholderAPI:
-         load: AFTER
-         required: false
-      Vault:
-         load: AFTER
-         required: false
       ItemsAdder:
          load: AFTER
          required: false
       Nexo:
-         load: AFTER
          required: false
       HeadDatabase:
-         load: AFTER
-         required: false
-      MMOItems:
-         load: AFTER
          required: false
       floodgate:
-         load: AFTER
+         required: false
+      PlaceholderAPI:
+         required: false
+      MMOItems:
+         required: false
+      Vault:
          required: false

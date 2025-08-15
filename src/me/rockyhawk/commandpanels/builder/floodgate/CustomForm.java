@@ -9,6 +9,7 @@ import me.rockyhawk.commandpanels.session.floodgate.FloodgateComponent;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgatePanel;
 import me.rockyhawk.commandpanels.session.floodgate.components.*;
 import org.bukkit.entity.Player;
+import org.geysermc.cumulus.component.LabelComponent;
 import org.geysermc.cumulus.response.CustomFormResponse;
 import org.geysermc.floodgate.api.FloodgateApi;
 
@@ -53,6 +54,12 @@ public class CustomForm {
 
                 // Create the component
                 switch (comp) {
+                    case FloodgateLabel input -> {
+                        form.label(
+                                parseText(input.getName().replaceAll("\\\\n", "\n"))
+                        );
+                        inputOrder.add(input);
+                    }
                     case FloodgateInput input -> {
                         form.input(
                                 parseText(input.getName()),
@@ -143,7 +150,7 @@ public class CustomForm {
             }
         });
 
-        FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
+        FloodgateApi.getInstance().sendForm(player.getUniqueId(), form.build());
     }
 
     // Placeholder key will be the ID of the component and make session data from result string

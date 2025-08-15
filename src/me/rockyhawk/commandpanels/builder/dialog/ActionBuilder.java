@@ -56,10 +56,10 @@ public class ActionBuilder implements Listener {
                         // Use the first non-null value
                         if (text != null) {
                             ctx.session.getPlayerSession((Player) audience).setData(id, text);
-                        } else if (bool != null) {
-                            ctx.session.getPlayerSession((Player) audience).setData(id, String.valueOf(bool));
                         } else if (number != null) {
                             ctx.session.getPlayerSession((Player) audience).setData(id, String.valueOf(number));
+                        } else if (bool != null) {
+                            ctx.session.getPlayerSession((Player) audience).setData(id, String.valueOf(bool));
                         }
                     }
 
@@ -76,11 +76,13 @@ public class ActionBuilder implements Listener {
         // Bottom of the list is prioritised over the top
         if (!button.getClipboard().isEmpty()) {
             action = DialogAction.staticAction(
-                    ClickEvent.copyToClipboard(button.getClipboard()));
+                    ClickEvent.copyToClipboard(
+                            ctx.text.parseTextToString(player, button.getClipboard())));
         }
         if (!button.getUrl().isEmpty()) {
             action = DialogAction.staticAction(
-                    ClickEvent.openUrl(button.getUrl()));
+                    ClickEvent.openUrl(
+                            ctx.text.parseTextToString(player, button.getUrl())));
         }
 
         return ActionButton.builder(name)

@@ -24,6 +24,7 @@ public abstract class FloodgateComponent {
 
         return switch (type.toLowerCase()) {
             case "button" -> new FloodgateButton(id, section);
+            case "label" -> new FloodgateLabel(id, section);
             case "dropdown" -> new FloodgateDropdown(id, section);
             case "input" -> new FloodgateInput(id, section);
             case "slider" -> new FloodgateSlider(id, section);
