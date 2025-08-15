@@ -15,9 +15,9 @@ public class MMOItemsComponent implements MaterialComponent {
     }
 
     @Override
-    public ItemStack createItem(Context ctx, String tag, Player player, PanelItem item) {
-        String itemType = tag.split("\\s")[1];
-        String itemID = tag.split("\\s")[2];
+    public ItemStack createItem(Context ctx, String value, Player player, PanelItem item) {
+        String itemType = value.split("\\s")[0];
+        String itemID = value.split("\\s")[1];
 
         MMOItem mmoitem = MMOItems.plugin.getMMOItem(MMOItems.plugin.getTypes().get(itemType), itemID);
         if(mmoitem != null){

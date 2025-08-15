@@ -24,8 +24,12 @@ public class ComparisonNode implements ConditionNode {
 
     @Override
     public boolean evaluate(Player player, Context ctx) {
-        String parsedLeftRaw = ctx.text.parseTextToString(player, left);  // e.g., %player_balance% → "600"
-        String parsedRightRaw = ctx.text.parseTextToString(player, right);
+        /*
+        Do not parse placeholders of conditions before using this it will be handled internally
+        Remove spaces from placeholders before parsing, so they can be compared with no spaces correctly
+         */
+        String parsedLeftRaw = ctx.text.parseTextToString(player, left).replaceAll("\\s+", "_");  // e.g., %player_balance% → "600"
+        String parsedRightRaw = ctx.text.parseTextToString(player, right).replaceAll("\\s+", "_");
 
         /*
         parseTextToString will parse colour and placeholders

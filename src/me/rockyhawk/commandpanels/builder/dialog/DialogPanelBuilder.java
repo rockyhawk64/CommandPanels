@@ -60,8 +60,8 @@ public class DialogPanelBuilder extends PanelBuilder {
 
                 // Check conditions for which component to use
                 String conditions = ctx.text.parseTextToString(player, comp.getConditions());
-                if (!conditions.trim().isEmpty()) {
-                    ConditionNode conditionNode = new ConditionParser().parse(conditions);
+                if (!comp.getConditions().trim().isEmpty()) {
+                    ConditionNode conditionNode = new ConditionParser().parse(comp.getConditions());
                     boolean result = conditionNode.evaluate(player, ctx);
                     if (!result) continue;
                 }
