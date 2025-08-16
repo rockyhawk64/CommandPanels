@@ -35,8 +35,6 @@ public class ComparisonNode implements ConditionNode {
         parseTextToString will parse colour and placeholders
         After parsing strip colour, parsing and stripping will remove colour formatting
         */
-        player.sendMessage("l:"+parsedLeftRaw);
-        player.sendMessage("r:"+parsedRightRaw);
         String parsedLeft = toPlainText(parsedLeftRaw);
         String parsedRight = toPlainText(parsedRightRaw);
 
