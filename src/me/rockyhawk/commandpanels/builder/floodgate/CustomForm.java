@@ -46,9 +46,8 @@ public class CustomForm {
                 if (comp == null) continue;
 
                 // Evaluate conditions
-                String conditions = ctx.text.parseTextToString(player, comp.getConditions());
-                if (!conditions.trim().isEmpty()) {
-                    ConditionNode conditionNode = new ConditionParser().parse(conditions);
+                if (!comp.getConditions().trim().isEmpty()) {
+                    ConditionNode conditionNode = new ConditionParser().parse(comp.getConditions());
                     if (!conditionNode.evaluate(player, ctx)) continue;
                 }
 

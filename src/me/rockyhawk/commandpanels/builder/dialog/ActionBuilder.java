@@ -29,10 +29,9 @@ public class ActionBuilder implements Listener {
 
     public ActionButton buildButton(DialogButton button, DialogPanel panel) {
         Player player = builder.getPlayer();
-        String conditions = ctx.text.parseTextToString(player, button.getConditions());
 
-        if (!conditions.trim().isEmpty()) {
-            ConditionNode conditionNode = new ConditionParser().parse(conditions);
+        if (!button.getConditions().trim().isEmpty()) {
+            ConditionNode conditionNode = new ConditionParser().parse(button.getConditions());
             if (!conditionNode.evaluate(player, ctx)) return null;
         }
 

@@ -29,10 +29,9 @@ public abstract class Panel {
 
     public boolean canOpen(Player player, Context ctx) {
         // Check the panel condition
-        String conditions = ctx.text.parseTextToString(player, this.conditions);
-        if (conditions.trim().isEmpty()) return true;
+        if (this.conditions.trim().isEmpty()) return true;
         try {
-            ConditionNode node = new ConditionParser().parse(conditions);
+            ConditionNode node = new ConditionParser().parse(this.conditions);
             return node.evaluate(player, ctx);
         } catch (Exception e) {
             return false;

@@ -60,9 +60,8 @@ public class PanelFactory {
                 if(item == null) continue;
 
                 // Check conditions for which item to use in the slot
-                String conditions = ctx.text.parseTextToString(p, item.conditions());
-                if (!conditions.trim().isEmpty()) {
-                    ConditionNode conditionNode = new ConditionParser().parse(conditions);
+                if (!item.conditions().trim().isEmpty()) {
+                    ConditionNode conditionNode = new ConditionParser().parse(item.conditions());
                     boolean result = conditionNode.evaluate(p, ctx);
                     if (!result) continue;
                 }

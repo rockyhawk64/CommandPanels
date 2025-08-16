@@ -45,9 +45,8 @@ public class SimpleForm {
                 if(!(panel.getComponents().get(key) instanceof FloodgateButton button)) continue;
 
                 // Check conditions for which button to use in the slot
-                String conditions = ctx.text.parseTextToString(p, button.getConditions());
-                if (!conditions.trim().isEmpty()) {
-                    ConditionNode conditionNode = new ConditionParser().parse(conditions);
+                if (!button.getConditions().trim().isEmpty()) {
+                    ConditionNode conditionNode = new ConditionParser().parse(button.getConditions());
                     boolean result = conditionNode.evaluate(p, ctx);
                     if (!result) continue;
                 }
