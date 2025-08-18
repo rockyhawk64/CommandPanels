@@ -13,9 +13,12 @@ The online editor includes support for all three panel types. This means you can
 
 ## GUI Types
 
-- ### Dialogs
-- ### Inventory
-- ### Floodgate
+### Inventory Panels *(can be used for complex GUI creation)*
+![RawInventory](https://commandpanels.net/resource_images/raw_inventory.webp)
+### Dialog Panels *(can be used for custom interfaces and requesting player input)*
+![RawDialog](https://commandpanels.net/resource_images/raw_dialog.webp)
+### Floodgate Panels *(can be used for Bedrock players on your server)*
+![RawFloodgate](https://commandpanels.net/resource_images/raw_floodgate.webp)
 
 ## About
 Minecraft servers use graphical interfaces (GUIs) for a wide range of features,
