@@ -9,7 +9,6 @@ From shops and quests to server tools, you can design custom GUIs with YAML or t
 - 🖼️ Online editor for faster menu building
 - 🌍 Cross-platform support (Java + Bedrock)
 - 📘 Full docs and community Discord
-- 🇦🇺 Made in Australia
 
 ## Useful Links
 
@@ -44,6 +43,8 @@ CommandPanels supports three distinct panel types, each with unique capabilities
 - Inventory Panels allow you to build item-based interfaces where players can interact with and manipulate items directly.
 - Dialog Panels are perfect for creating structured, menu-based conversations and navigation systems, ideal for quests or guided menus.
 - Floodgate Panels enable full GUI support for Bedrock Edition players through Geyser and Floodgate, ensuring cross-platform compatibility.
+
+Developed in Australia 🇦🇺
 
 ## Server Compatibility
 
