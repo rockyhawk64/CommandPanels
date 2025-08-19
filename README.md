@@ -1,6 +1,15 @@
 ![TitleLogo](https://commandpanels.net/resource_images/main_logo.png)
 
-## Trusted GUI plugin for Minecraft servers: simple, secure, and feature-rich since 2019
+## Trusted GUI Plugin since 2019
+
+CommandPanels makes it easy to create interactive menus without coding.  
+From shops and quests to server tools, you can design custom GUIs with YAML or the online editor.
+
+- ✅ Actively maintained for 6+ years
+- 🖼️ Online editor for faster menu building
+- 🌍 Cross-platform support (Java + Bedrock)
+- 📘 Full docs and community Discord
+- 🇦🇺 Made in Australia
 
 ## Useful Links
 
