@@ -1,15 +1,17 @@
 ![TitleLogo](https://commandpanels.net/resource_images/main_logo.png)
 
-## Online Editor
-The online editor includes support for all three panel types. This means you can visually create and edit Dialog, Inventory, and Floodgate panels with ease, previews are not 1:1 but will significantly speed up development and testing.
-
-![ExampleScreenshot](https://commandpanels.net/resource_images/example_editor.png)
+## Trusted GUI plugin for Minecraft servers: simple, secure, and feature-rich since 2019
 
 ## Useful Links
 
 ### [📘 Documentation](https://docs.commandpanels.net)
 ### [🛠️ Online Editor](https://commandpanels.net/editor)
 ### [💬 Join Discord](https://discord.gg/WFQMTZxa53)
+
+## Online Editor
+The online editor includes support for all three panel types. This means you can visually create and edit Dialog, Inventory, and Floodgate panels with ease, previews are not 1:1 but will significantly speed up development and testing.
+
+![ExampleScreenshot](https://commandpanels.net/resource_images/example_editor.png)
 
 ## GUI Types
 
