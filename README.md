@@ -1,6 +1,7 @@
 ![TitleLogo](https://commandpanels.net/resource_images/main_logo.png)
 
-## Trusted GUI plugin for Minecraft servers: simple, secure, and feature-rich since 2019
+## Trusted GUI plugin for Minecraft servers
+### Simple, secure, and feature-rich since 2019
 
 ## Useful Links
 
