@@ -15,7 +15,7 @@ public class PanelOpenCommand implements Listener {
     CommandRegister commandRegister;
 
     // List of all the base custom commands and the panel they open
-    private final HashMap<String, Panel> commands = new HashMap<>();
+    private final HashMap<String, List<Panel>> commands = new HashMap<>();
 
     public PanelOpenCommand(Context pl) {
         this.ctx = pl;
@@ -26,43 +26,48 @@ public class PanelOpenCommand implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e) {
         String raw = e.getMessage().substring(1); // remove leading slash
-        String[] parts = raw.split("\\s");
+        String[] parts = raw.split("\\s+");
 
-        String label = parts[0].toLowerCase(); // Just the command (e.g. "shop")
+        String label = parts[0].toLowerCase(Locale.ROOT); // Just the command (e.g. "shop")
         String[] args = Arrays.copyOfRange(parts, 1, parts.length); // just the arguments
 
-        // Match base command
-        Panel panel = commands.get(label);
-        if(panel == null) return;
-        if(!panel.canOpen(e.getPlayer(), ctx)){
-            ctx.text.sendError(e.getPlayer(), "No permission.");
-            return;
-        };
+        // Match base command to a panels list
+        List<Panel> panels = commands.get(label);
+        if (panels == null || panels.isEmpty()) return;
+        boolean hadMatch = false;
 
-        // Get panel command args
-        String[] pnlParts = panel.getCommand().split("\\s");
-        String[] pnlCmdArgs = Arrays.copyOfRange(pnlParts, 1, pnlParts.length); // arguments for the panel command
+        // Iterate over panels that share the same base command until one can be opened
+        for(Panel panel : panels) {
+            if (panel == null) continue;
 
-        if (args.length != pnlCmdArgs.length) return;
-        e.setCancelled(true);
+            // Get panel command args
+            String[] pnlParts = panel.getCommand().split("\\s+");
+            String[] pnlCmdArgs = Arrays.copyOfRange(pnlParts, 1, pnlParts.length); // arguments for the panel command
+            if (args.length != pnlCmdArgs.length) continue;
+            hadMatch = true;
 
-        // If no args open panel
-        if (pnlCmdArgs.length == 0) {
+            // If there are any args add the data
+            // Check and add before checking conditions
+            for (int i = 0; i < args.length; i++) {
+                String key = pnlCmdArgs[i];
+                String value = args[i];
+                ctx.session.getPlayerSession(e.getPlayer()).setData(key, value);
+            }
+
+            // Stop and do not open panel if conditions are false
+            if (!panel.canOpen(e.getPlayer(), ctx)) {
+                continue;
+            }
+
+            e.setCancelled(true);
             Bukkit.getScheduler().runTask(ctx.plugin, () -> {
                 panel.open(ctx, e.getPlayer(), SessionManager.PanelOpenType.EXTERNAL);
             });
             return;
         }
 
-        // If there are args add data and open panel
-        for (int i = 0; i < args.length; i++) {
-            String key = pnlCmdArgs[i];
-            String value = args[i];
-            ctx.session.getPlayerSession(e.getPlayer()).setData(key, value);
-        }
-        Bukkit.getScheduler().runTask(ctx.plugin, () -> {
-            panel.open(ctx, e.getPlayer(), SessionManager.PanelOpenType.EXTERNAL);
-        });
+        // No panel was found that could be opened
+        if(hadMatch) ctx.text.sendError(e.getPlayer(), "No permission.");
     }
 
     public void populateCommands() {
@@ -70,9 +75,9 @@ public class PanelOpenCommand implements Listener {
         commands.clear();
         for (Panel panel : ctx.plugin.panels.values()){
             // Add the panel command
-            String command = panel.getCommand().split("\\s")[0].toLowerCase();
+            String command = panel.getCommand().split("\\s+")[0].toLowerCase(Locale.ROOT);
             if(command.isEmpty()) continue;
-            commands.put(command, panel);
+            commands.computeIfAbsent(command, k -> new ArrayList<>()).add(panel);
 
             // Do not register if registration is disabled in config
             if(ctx.fileHandler.config.getBoolean("custom-commands"))
@@ -81,8 +86,8 @@ public class PanelOpenCommand implements Listener {
             // Add aliases, the aliases use the same args as main command (strip any extra words)
             if(!panel.getAliases().isEmpty()){
                 for(String alias : panel.getAliases()){
-                    alias = alias.split("\\s+")[0];
-                    commands.put(alias, panel);
+                    alias = alias.split("\\s+")[0].toLowerCase(Locale.ROOT);
+                    commands.computeIfAbsent(alias, k -> new ArrayList<>()).add(panel);
                     // Do not register if registration is disabled in config
                     if(ctx.fileHandler.config.getBoolean("custom-commands"))
                         commandRegister.registerPanelCommand(alias);
