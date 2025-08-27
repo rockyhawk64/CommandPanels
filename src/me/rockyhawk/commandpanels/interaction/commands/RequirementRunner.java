@@ -1,10 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.interaction.commands.requirements.DataTag;
-import me.rockyhawk.commandpanels.interaction.commands.requirements.ItemTag;
-import me.rockyhawk.commandpanels.interaction.commands.requirements.VaultTag;
-import me.rockyhawk.commandpanels.interaction.commands.requirements.XpTag;
+import me.rockyhawk.commandpanels.interaction.commands.requirements.*;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.entity.Player;
 
@@ -21,6 +18,7 @@ public class RequirementRunner {
     }
 
     private void registerResolvers() {
+        resolvers.add(new ConditionTag());
         resolvers.add(new VaultTag());
         resolvers.add(new ItemTag());
         resolvers.add(new DataTag());
