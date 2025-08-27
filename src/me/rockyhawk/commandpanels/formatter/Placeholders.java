@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.formatter;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.formatter.placeholders.DataPlaceholder;
@@ -48,6 +49,7 @@ public class Placeholders extends PlaceholderExpansion {
     @Override
     public String onRequest(OfflinePlayer player, String params) {
         if (player == null) return "";
+        params = PlaceholderAPI.setBracketPlaceholders(player, params);
 
         for (PlaceholderResolver resolver : resolvers) {
             try {
