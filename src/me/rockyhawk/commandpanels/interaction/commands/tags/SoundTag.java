@@ -4,8 +4,6 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
-import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
@@ -42,13 +40,7 @@ public class SoundTag implements CommandTagResolver {
                     } catch (IllegalArgumentException ignored) {}
                 }
             }
-
-            Sound sound = Registry.SOUNDS.get(key);
-            if (sound == null) {
-                player.playSound(player.getLocation(), key.toString(), category, volume, pitch);
-            } else {
-                player.playSound(player.getLocation(), sound, category, volume, pitch);
-            }
+            player.playSound(player.getLocation(), key.toString(), category, volume, pitch);
 
         } catch (Exception e) {
             ctx.text.sendError(player, "Failed to play sound.");
