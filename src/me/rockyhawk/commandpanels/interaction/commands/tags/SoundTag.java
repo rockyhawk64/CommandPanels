@@ -45,7 +45,7 @@ public class SoundTag implements CommandTagResolver {
 
             Sound sound = Registry.SOUNDS.get(key);
             if (sound == null) {
-                player.playSound(player.getLocation(), key.getKey(), category, volume, pitch);
+                player.playSound(player.getLocation(), key.toString(), category, volume, pitch);
             } else {
                 player.playSound(player.getLocation(), sound, category, volume, pitch);
             }
