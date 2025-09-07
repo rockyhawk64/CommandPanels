@@ -33,7 +33,8 @@ public class NameHandler {
                             DataComponentTypes.DYED_COLOR,
                             DataComponentTypes.TRIM,
                             DataComponentTypes.BANNER_PATTERNS,
-                            DataComponentTypes.FIREWORKS
+                            DataComponentTypes.FIREWORKS,
+                            DataComponentTypes.JUKEBOX_PLAYABLE
                     ).build();
             item.setData(DataComponentTypes.TOOLTIP_DISPLAY, hideAttributes);
         }
