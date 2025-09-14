@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.formatter.data;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -47,7 +48,7 @@ public class DataLoader {
             dataConfig.save(file);
         } catch (IOException e) {
             Bukkit.getScheduler().runTask(ctx.plugin, () ->
-                    ctx.text.sendError(Bukkit.getConsoleSender(), "Could not save data file."));
+                    ctx.text.sendError(Bukkit.getConsoleSender(), Message.FILE_SAVE_DATA_FAIL));
         }
     }
     public void saveDataFileAsync() {

@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels;
 
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,14 +23,14 @@ public class Converter {
     public void convertPanels(CommandSender sender) {
         File oldPanelsDir = new File(ctx.plugin.getDataFolder(), "old_panels"); // e.g. plugins/CommandPanels/old_panels
         if (!oldPanelsDir.exists()) {
-            ctx.text.sendError(sender, "Converts v3 -> v4 Panel config layouts");
-            ctx.text.sendError(sender, "Old panels directory not found: " + oldPanelsDir.getPath());
+            ctx.text.sendError(sender, Message.CONVERT_PANEL_CONFIG);
+            ctx.text.sendError(sender, Message.CONVERT_OLD_DIR_NOT_FOUND, oldPanelsDir.getPath());
             return;
         }
 
         File[] files = oldPanelsDir.listFiles((dir, name) -> name.endsWith(".yml"));
         if (files == null || files.length == 0) {
-            ctx.text.sendInfo(sender, "No old panel files found.");
+            ctx.text.sendInfo(sender, Message.CONVERT_NO_OLD_FILES);
             return;
         }
 
@@ -39,7 +40,7 @@ public class Converter {
                 ConfigurationSection panelsSection = oldConfig.getConfigurationSection("panels");
 
                 if (panelsSection == null) {
-                    ctx.text.sendError(sender, "No panels section in file: " + file.getName());
+                    ctx.text.sendError(sender, Message.CONVERT_NO_PANELS_SECTION, file.getName());
                     continue;
                 }
 
@@ -56,15 +57,14 @@ public class Converter {
                     }
                     newYaml.save(outFile);
 
-                    ctx.text.sendInfo(sender, "Converted panel: " + panelName + " -> " + outFile.getName());
+                    ctx.text.sendInfo(sender, Message.CONVERT_SUCCESS, panelName, outFile.getName());
                 }
             } catch (IOException ex) {
-                ctx.text.sendError(sender, "Failed to convert file: " + file.getName());
+                ctx.text.sendError(sender, Message.CONVERT_FILE_FAILED, file.getName());
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
     private Map<String, Object> convertPanel(String panelName, ConfigurationSection oldPanel) {
         Map<String, Object> newPanel = new LinkedHashMap<>();
 
@@ -78,7 +78,7 @@ public class Converter {
         String newOpenCommand = null;
 
         if (!baseCommands.isEmpty()) {
-            newOpenCommand = baseCommands.get(0); // Only use the first base command
+            newOpenCommand = baseCommands.getFirst(); // Only use the first base command
         }
 
         List<String> newOpenCommands = new ArrayList<>(openCommands); // Add commands
@@ -93,8 +93,10 @@ public class Converter {
         // Add custom items (named reusable entries)
         if (oldPanel.isConfigurationSection("custom-item")) {
             ConfigurationSection customItems = oldPanel.getConfigurationSection("custom-item");
-            for (String itemKey : customItems.getKeys(false)) {
-                items.put(itemKey, convertItem(customItems.getConfigurationSection(itemKey)));
+            if (customItems != null) {
+                for (String itemKey : customItems.getKeys(false)) {
+                    items.put(itemKey, convertItem(customItems.getConfigurationSection(itemKey)));
+                }
             }
         }
 
@@ -107,7 +109,7 @@ public class Converter {
                 String itemId = panelName + "_slot_" + slotKey;
                 Map<String, Object> convertedItem = convertItem(itemConfig);
 
-                if (itemConfig.contains("commands") || hasNestedConditions(itemConfig)) {
+                if (itemConfig != null && (itemConfig.contains("commands") || hasNestedConditions(itemConfig))) {
                     // Move commands into 'actions'
                     List<String> cmds = itemConfig.getStringList("commands");
                     if (!cmds.isEmpty()) {
@@ -133,7 +135,7 @@ public class Converter {
                     for (Map<String, Object> variant : logicVariants) {
                         String variantId = itemId + "_cond_" + i;
                         items.put(variantId, variant);
-                        layout.get(slotKey).add(0, variantId); // priority first
+                        layout.get(slotKey).addFirst(variantId); // priority first
                         i++;
                     }
                 } else {

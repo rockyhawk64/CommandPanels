@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands.tags;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.NamespacedKey;
@@ -19,7 +20,7 @@ public class SoundTag implements CommandTagResolver {
         String[] args = ctx.text.parseTextToString(player, command).split("\\s+");
 
         if (args.length == 0) {
-            ctx.text.sendError(player, "No sound arguments provided.");
+            ctx.text.sendError(player, Message.SOUND_NO_ARGS);
             return;
         }
 
@@ -43,7 +44,7 @@ public class SoundTag implements CommandTagResolver {
             player.playSound(player.getLocation(), key.toString(), category, volume, pitch);
 
         } catch (Exception e) {
-            ctx.text.sendError(player, "Failed to play sound.");
+            ctx.text.sendError(player, Message.SOUND_PLAY_FAIL);
         }
     }
 

@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands.tags;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.Bukkit;
@@ -45,9 +46,11 @@ public class TeleportTag implements CommandTagResolver {
                 }
             }
             Location teleportLocation = new Location(teleportedWorld, x, y, z, yaw, pitch);
-            teleportedPlayer.teleport(teleportLocation);
+            if (teleportedPlayer != null) {
+                teleportedPlayer.teleport(teleportLocation);
+            }
         } catch (Exception ex) {
-            ctx.text.sendError(player, "Error with teleport tag");
+            ctx.text.sendError(player, Message.TELEPORT_ERROR);
         }
     }
 }

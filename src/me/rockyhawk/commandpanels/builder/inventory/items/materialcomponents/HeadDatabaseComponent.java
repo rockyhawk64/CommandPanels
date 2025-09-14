@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.inventory.items.MaterialComponent;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.inventory.PanelItem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,7 +22,7 @@ public class HeadDatabaseComponent implements MaterialComponent {
             api = new HeadDatabaseAPI();
             return api.getItemHead(head);
         } else {
-            ctx.text.sendWarn(player, "Download the HeadDatabase plugin to use this feature!");
+            ctx.text.sendWarn(player, Message.REQUIRE_HEADDATABASE);
         }
         return null;
     }

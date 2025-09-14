@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands.tags;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.NamespacedKey;
@@ -20,7 +21,7 @@ public class StopSoundTag implements CommandTagResolver {
         String[] args = ctx.text.parseTextToString(player, command).split("\\s+");
 
         if (args.length == 0) {
-            ctx.text.sendError(player, "No sound arguments provided.");
+            ctx.text.sendError(player, Message.SOUND_NO_ARGS);
             return;
         }
 
@@ -33,7 +34,7 @@ public class StopSoundTag implements CommandTagResolver {
                 player.stopSound(key.getKey());
             }
         } catch (Exception e) {
-            ctx.text.sendError(player, "Failed to stop sound.");
+            ctx.text.sendError(player, Message.SOUND_STOP_FAIL);
         }
     }
 

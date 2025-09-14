@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.session;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanelUpdater;
 import org.bukkit.Bukkit;
@@ -37,7 +38,8 @@ public class SessionManager implements Listener {
             } else {
                 session.setPanel(panel);
             }
-            if(panelSnooper && panel != null) ctx.text.sendInfo(Bukkit.getConsoleSender(), String.format("%s opened %s.", player.getName(), panel.getName()));
+            if (panelSnooper && panel != null)
+                ctx.text.sendInfo(Bukkit.getConsoleSender(), Message.PANEL_OPEN_LOG, player.getName(), panel.getName());
 
             // Update data file when sessions are started
             ctx.dataLoader.saveDataFileAsync();
@@ -56,12 +58,13 @@ public class SessionManager implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e){
+    public void onPlayerJoin(PlayerJoinEvent e) {
         // Start session with no panel to allow data to be added
         ctx.session.updateSession(e.getPlayer(), null, PanelOpenType.EXTERNAL);
     }
+
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent e){
+    public void onPlayerQuit(PlayerQuitEvent e) {
         // Always remove session once player leaves
         ctx.session.removeSession(e.getPlayer());
     }

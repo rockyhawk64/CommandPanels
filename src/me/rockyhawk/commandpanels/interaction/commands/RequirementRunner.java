@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.requirements.*;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.entity.Player;
@@ -55,7 +56,7 @@ public class RequirementRunner {
             }
 
             if (!matched) {
-                ctx.text.sendError(player, "Unknown requirement tag.");
+                ctx.text.sendError(player, Message.REQUIREMENT_UNKNOWN_TAG);
                 return false;
             }
         }

@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.commands.subcommands;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commands.SubCommand;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,7 +23,7 @@ public class GenerateCommand implements SubCommand {
         if(sender instanceof Player p) {
             ctx.generator.startGenerateMode(p);
         }else{
-            ctx.text.sendError(sender, "You must be a player.");
+            ctx.text.sendError(sender, Message.DATA_PLAYER_REQUIRED);
         }
 
 

@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.commands.subcommands;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commands.SubCommand;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -24,9 +25,7 @@ public class ReloadCommand implements SubCommand {
             ctx.fileHandler.updateConfigFiles();
             ctx.fileHandler.reloadPanels();
             ctx.panelCommand.populateCommands();
-            Bukkit.getScheduler().runTask(ctx.plugin, () -> {
-                ctx.text.sendInfo(sender, "Plugin Reloaded.");
-            });
+            Bukkit.getScheduler().runTask(ctx.plugin, () -> ctx.text.sendInfo(sender, Message.PLUGIN_RELOADED));
         });
         return true;
     }

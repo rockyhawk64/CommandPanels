@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands.requirements;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
 import net.milkbowl.vault.economy.Economy;
@@ -50,7 +51,7 @@ public class VaultTag implements RequirementTagResolver {
         try {
             return Double.parseDouble(args);
         } catch (NumberFormatException e) {
-            ctx.text.sendError(player, "Invalid economy value: " + args);
+            ctx.text.sendError(player, Message.REQUIREMENT_ECONOMY_INVALID, args);
             return null;
         }
     }

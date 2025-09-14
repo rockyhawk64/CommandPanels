@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands.tags;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.Bukkit;
@@ -29,7 +30,7 @@ public class GiveTag implements CommandTagResolver {
             try {
                 Material material = Material.matchMaterial(parts[0].toUpperCase());
                 if (material == null || !material.isItem()) {
-                    ctx.text.sendError(player, "Invalid item.");
+                    ctx.text.sendError(player, Message.REQUIREMENT_ITEM_INVALID);
                     return;
                 }
 
@@ -47,7 +48,7 @@ public class GiveTag implements CommandTagResolver {
                 }
 
             } catch (Exception e) {
-                ctx.text.sendError(player, "Error giving item.");
+                ctx.text.sendError(player, Message.ITEM_GIVE_ERROR);
             }
         });
     }

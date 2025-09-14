@@ -2,8 +2,7 @@ package me.rockyhawk.commandpanels.commands.subcommands;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commands.SubCommand;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import org.bukkit.command.CommandSender;
 
 public class HelpCommand implements SubCommand {
@@ -20,42 +19,35 @@ public class HelpCommand implements SubCommand {
 
     @Override
     public boolean execute(Context ctx, CommandSender sender, String[] args) {
-        ctx.text.sendInfo(sender, "Plugin Commands:");
+        ctx.text.sendInfo(sender, Message.PLUGIN_COMMANDS);
 
         if (sender.hasPermission("commandpanels.command.open")) {
-            sender.sendMessage(Component.text("/pa open <panel> [player] ", NamedTextColor.GOLD)
-                    .append(Component.text("Opens a panel", NamedTextColor.WHITE)));
+            ctx.text.sendHelp(sender, Message.HELP_OPEN_COMMAND, Message.HELP_OPEN_DESCRIPTION);
         }
 
         if (sender.hasPermission("commandpanels.command.reload")) {
-            sender.sendMessage(Component.text("/pa reload ", NamedTextColor.GOLD)
-                    .append(Component.text("Reloads all config and panel files", NamedTextColor.WHITE)));
+            ctx.text.sendHelp(sender, Message.HELP_RELOAD_COMMAND, Message.HELP_RELOAD_DESCRIPTION);
         }
 
         if (sender.hasPermission("commandpanels.command.generate")) {
-            sender.sendMessage(Component.text("/pa generate ", NamedTextColor.GOLD)
-                    .append(Component.text("Enter generate mode to generate panels", NamedTextColor.WHITE)));
+            ctx.text.sendHelp(sender, Message.HELP_GENERATE_COMMAND, Message.HELP_GENERATE_DESCRIPTION);
         }
 
         if (sender.hasPermission("commandpanels.command.data")) {
-            sender.sendMessage(Component.text("/pa data ", NamedTextColor.GOLD)
-                    .append(Component.text("Modify data for players", NamedTextColor.WHITE)));
+            ctx.text.sendHelp(sender, Message.HELP_DATA_COMMAND, Message.HELP_DATA_DESCRIPTION);
         }
 
         if (sender.hasPermission("commandpanels.command.version")) {
-            sender.sendMessage(Component.text("/pa version ", NamedTextColor.GOLD)
-                    .append(Component.text("Gets the plugin version", NamedTextColor.WHITE)));
+            ctx.text.sendHelp(sender, Message.HELP_VERSION_COMMAND, Message.HELP_VERSION_DESCRIPTION);
         }
 
         if (sender.hasPermission("commandpanels.command.help")) {
-            sender.sendMessage(Component.text("/pa help ", NamedTextColor.GOLD)
-                    .append(Component.text("Shows this help menu", NamedTextColor.WHITE)));
+            ctx.text.sendHelp(sender, Message.HELP_HELP_COMMAND, Message.HELP_HELP_DESCRIPTION);
         }
 
         // REMOVE AFTER CONVERTER IS REMOVED
         if (sender.hasPermission("commandpanels.command.convert")) {
-            sender.sendMessage(Component.text("/pa convert ", NamedTextColor.GOLD)
-                    .append(Component.text("Converts basic layout from v3 to v4 panels (not plug and play)", NamedTextColor.WHITE)));
+            ctx.text.sendHelp(sender, Message.HELP_CONVERT_COMMAND, Message.HELP_CONVERT_DESCRIPTION);
         }
 
         return true;

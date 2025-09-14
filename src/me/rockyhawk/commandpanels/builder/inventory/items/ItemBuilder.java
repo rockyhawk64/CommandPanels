@@ -5,6 +5,7 @@ import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.*;
 import me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents.*;
 import me.rockyhawk.commandpanels.builder.inventory.items.utils.NameHandler;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.Panel;
 import me.rockyhawk.commandpanels.session.inventory.PanelItem;
 import org.bukkit.Material;
@@ -72,9 +73,7 @@ public class ItemBuilder {
                     baseItem = mc.createItem(ctx, args, player, item);
                     break;
                 } catch (Exception e) {
-                    ctx.text.sendError(player, "Failed to create item " +
-                            item.id() + " issue with " +
-                            mc.getClass().getSimpleName());
+                    ctx.text.sendError(player, Message.ITEM_CREATE_FAIL, item.id(), mc.getClass().getSimpleName());
                 }
             }
         }
@@ -90,9 +89,7 @@ public class ItemBuilder {
             try {
                 baseItem = ic.apply(ctx, baseItem, player, item);
             } catch (Exception e) {
-                ctx.text.sendError(player, "Failed to add item decoration to " +
-                        item.id() + " issue with " +
-                        ic.getClass().getSimpleName());
+                ctx.text.sendError(player, Message.ITEM_DECORATION_FAIL, item.id(), ic.getClass().getSimpleName());
             }
         }
 

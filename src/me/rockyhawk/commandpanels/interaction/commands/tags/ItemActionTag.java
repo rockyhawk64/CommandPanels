@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands.tags;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
@@ -25,7 +26,7 @@ public class ItemActionTag implements CommandTagResolver {
         try {
             String[] args = ctx.text.parseTextToString(player, command).split("\\s+");
             if (args.length < 2) {
-                ctx.text.sendError(player, "Invalid item action syntax. Usage: slot action [params]");
+                ctx.text.sendError(player, Message.ITEM_ACTION_SYNTAX_INVALID);
                 return;
             }
 
@@ -45,20 +46,20 @@ public class ItemActionTag implements CommandTagResolver {
                 case "repair" -> repairItem(item);
                 case "amount" -> item.setAmount(Integer.parseInt(args[2]));
                 case "remove" -> gui.setItem(slot, null);
-                default -> ctx.text.sendError(player, "Unknown item action");
+                default -> ctx.text.sendError(player, Message.ITEM_ACTION_UNKNOWN);
             }
 
             // Update the item with changes unless item was removed
             if (!action.equals("remove")) gui.setItem(slot, item);
 
         } catch (Exception e) {
-            ctx.text.sendError(player, "An error occurred while executing item action.");
+            ctx.text.sendError(player, Message.ITEM_ACTION_EXECUTE_FAIL);
         }
     }
 
     private void handleEnchant(ItemStack item, String[] args, Context ctx, Player player) {
         if (args.length < 3) {
-            ctx.text.sendError(player, "Improper usage.");
+            ctx.text.sendError(player, Message.ITEM_ACTION_USAGE_IMPROPER);
             return;
         }
 
@@ -67,7 +68,7 @@ public class ItemActionTag implements CommandTagResolver {
         switch (sub) {
             case "add" -> {
                 if (args.length < 5) {
-                    ctx.text.sendError(player, "Missing enchantment name or level.");
+                    ctx.text.sendError(player, Message.ITEM_ENCHANT_MISSING_ARGS);
                     return;
                 }
                 NamespacedKey key = args[3].contains(":") ?
@@ -76,11 +77,11 @@ public class ItemActionTag implements CommandTagResolver {
                 Enchantment enchant = Registry.ENCHANTMENT.get(key);
                 int level = Integer.parseInt(args[4]);
                 if (enchant != null) item.addUnsafeEnchantment(enchant, level);
-                else ctx.text.sendError(player, "Invalid enchantment");
+                else ctx.text.sendError(player, Message.ITEM_ENCHANT_INVALID);
             }
             case "remove" -> {
                 if (args.length < 4) {
-                    ctx.text.sendError(player, "Missing enchantment to remove.");
+                    ctx.text.sendError(player, Message.ITEM_ENCHANT_REMOVE_MISSING);
                     return;
                 }
                 NamespacedKey key = args[3].contains(":") ?
@@ -88,10 +89,10 @@ public class ItemActionTag implements CommandTagResolver {
                         NamespacedKey.minecraft(args[3].toLowerCase());
                 Enchantment enchant = Registry.ENCHANTMENT.get(key);
                 if (enchant != null) item.removeEnchantment(enchant);
-                else ctx.text.sendError(player, "Invalid enchantment.");
+                else ctx.text.sendError(player, Message.ITEM_ENCHANT_INVALID);
             }
             case "clear" -> item.getEnchantments().keySet().forEach(item::removeEnchantment);
-            default -> ctx.text.sendError(player, "Unknown enchant action.");
+            default -> ctx.text.sendError(player, Message.ITEM_ENCHANT_ACTION_UNKNOWN);
         }
     }
 

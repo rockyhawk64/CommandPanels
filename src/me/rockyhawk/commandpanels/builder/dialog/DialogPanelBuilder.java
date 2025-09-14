@@ -10,6 +10,7 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.builder.logic.ConditionNode;
 import me.rockyhawk.commandpanels.builder.logic.ConditionParser;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.Panel;
 import me.rockyhawk.commandpanels.session.SessionManager;
 import me.rockyhawk.commandpanels.session.dialog.DialogComponent;
@@ -55,7 +56,7 @@ public class DialogPanelBuilder extends PanelBuilder {
         for (String key : sortedOrder) {
             for (String id : panel.getOrder().get(key)) {
 
-                if(!panel.getComponents().containsKey(id)) continue;
+                if (!panel.getComponents().containsKey(id)) continue;
                 DialogComponent comp = panel.getComponents().get(id);
 
                 // Check conditions for which component to use
@@ -66,31 +67,31 @@ public class DialogPanelBuilder extends PanelBuilder {
                 }
 
                 // Add the component to the dialog
-                if (panel.getComponents().get(id) instanceof DialogButton button){
+                if (panel.getComponents().get(id) instanceof DialogButton button) {
                     buttons.add(buttonBuilder.buildButton(button, panel));
                     break;
                 }
-                if (panel.getComponents().get(id) instanceof DialogItem item){
+                if (panel.getComponents().get(id) instanceof DialogItem item) {
                     bodies.add(bodyBuilder.createItem(item, panel));
                     break;
                 }
-                if (panel.getComponents().get(id) instanceof DialogBodyText text){
+                if (panel.getComponents().get(id) instanceof DialogBodyText text) {
                     bodies.add(bodyBuilder.createText(text, panel));
                     break;
                 }
-                if (panel.getComponents().get(id) instanceof DialogInputBool bool){
+                if (panel.getComponents().get(id) instanceof DialogInputBool bool) {
                     inputs.add(inputBuilder.createBool(bool));
                     break;
                 }
-                if (panel.getComponents().get(id) instanceof DialogInputRange range){
+                if (panel.getComponents().get(id) instanceof DialogInputRange range) {
                     inputs.add(inputBuilder.createRange(range));
                     break;
                 }
-                if (panel.getComponents().get(id) instanceof DialogInputOption option){
+                if (panel.getComponents().get(id) instanceof DialogInputOption option) {
                     inputs.add(inputBuilder.createOption(option));
                     break;
                 }
-                if (panel.getComponents().get(id) instanceof DialogInputText inputText){
+                if (panel.getComponents().get(id) instanceof DialogInputText inputText) {
                     inputs.add(inputBuilder.createText(inputText));
                     break;
                 }
@@ -100,15 +101,15 @@ public class DialogPanelBuilder extends PanelBuilder {
         // Check for exit action button
         final ActionButton exitAction;
         boolean hasExitButton = Boolean.parseBoolean(ctx.text.parseTextToString(player, panel.getExitButton()));
-        if(!buttons.isEmpty() && hasExitButton){
+        if (!buttons.isEmpty() && hasExitButton) {
             exitAction = buttons.removeLast();
         } else {
             exitAction = null;
         }
 
         // Make sure there is at least one button
-        if(buttons.isEmpty()){
-            ctx.text.sendError(player, "Dialog needs at least one button");
+        if (buttons.isEmpty()) {
+            ctx.text.sendError(player, Message.DIALOG_NO_BUTTONS);
             return;
         }
 
@@ -146,6 +147,7 @@ public class DialogPanelBuilder extends PanelBuilder {
         }
         return 0.0f;
     }
+
     public int parseInt(String raw) {
         String parsed = ctx.text.parseTextToString(this.getPlayer(), raw);
         Matcher matcher = SIMPLE_INT_PATTERN.matcher(parsed);

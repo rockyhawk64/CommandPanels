@@ -6,6 +6,7 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.inventory.items.ItemBuilder;
 import me.rockyhawk.commandpanels.builder.logic.ConditionNode;
 import me.rockyhawk.commandpanels.builder.logic.ConditionParser;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import me.rockyhawk.commandpanels.session.inventory.PanelItem;
 import net.kyori.adventure.text.Component;
@@ -42,7 +43,7 @@ public class PanelFactory {
             try {
                 inv = Bukkit.createInventory(p, InventoryType.valueOf(rows.toUpperCase()), title);
             } catch (IllegalArgumentException e) {
-                ctx.text.sendError(p, "Invalid inventory type.");
+                ctx.text.sendError(p, Message.PANEL_INVALID_TYPE);
                 inv = Bukkit.createInventory(p, 9, title); // fallback to 1 row
             }
         }

@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.interaction.commands.requirements;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.Material;
@@ -52,11 +53,11 @@ public class ItemTag implements RequirementTagResolver {
             try {
                 material = Material.valueOf(map.get("material").toUpperCase());
             } catch (IllegalArgumentException e) {
-                ctx.text.sendError(player, "Invalid material.");
+                ctx.text.sendError(player, Message.REQUIREMENT_MATERIAL_INVALID);
                 return null;
             }
         } else {
-            ctx.text.sendError(player, "Material is required for item requirement.");
+            ctx.text.sendError(player, Message.REQUIREMENT_MATERIAL_REQUIRED);
             return null;
         }
 
@@ -68,7 +69,7 @@ public class ItemTag implements RequirementTagResolver {
             try {
                 amount = Integer.parseInt(map.get("amount"));
             } catch (NumberFormatException e) {
-                ctx.text.sendError(player, "Invalid amount.");
+                ctx.text.sendError(player, Message.REQUIREMENT_AMOUNT_INVALID);
                 return null;
             }
         }
@@ -77,7 +78,7 @@ public class ItemTag implements RequirementTagResolver {
             String raw = map.get("model");
             model = NamespacedKey.fromString(raw);
             if (model == null) {
-                ctx.text.sendError(player, "Invalid Item Model format. Must be namespace:key.");
+                ctx.text.sendError(player, Message.ITEM_MODEL_INVALID);
                 return null;
             }
         }
@@ -85,7 +86,7 @@ public class ItemTag implements RequirementTagResolver {
         if (map.containsKey("custom")) {
             custom = map.get("custom");
             if (custom.isEmpty()) {
-                ctx.text.sendError(player, "Invalid Custom Model Data. Must not be empty.");
+                ctx.text.sendError(player, Message.ITEM_CUSTOM_MODEL_INVALID);
                 return null;
             }
         }
@@ -93,7 +94,7 @@ public class ItemTag implements RequirementTagResolver {
         if (map.containsKey("source")) {
             String s = map.get("source").toLowerCase();
             if (!s.equals("player") && !s.equals("panel")) {
-                ctx.text.sendError(player, "Invalid source. Must be player or panel.");
+                ctx.text.sendError(player, Message.REQUIREMENT_SOURCE_INVALID);
                 return null;
             }
             source = s;

@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands.requirements;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.entity.Player;
@@ -16,7 +17,7 @@ public class XpTag implements RequirementTagResolver {
     public boolean check(Context ctx, Panel panel, Player player, String raw, String args) {
         String[] split = args.trim().split("\\s");
         if (split.length != 2) {
-            ctx.text.sendError(player, "Invalid XP requirement. Use: [xp] <levels|points> <amount>");
+            ctx.text.sendError(player, Message.REQUIREMENT_XP_INVALID);
             return false;
         }
 
@@ -24,7 +25,7 @@ public class XpTag implements RequirementTagResolver {
         try {
             amount = Integer.parseInt(split[1]);
         } catch (NumberFormatException e) {
-            ctx.text.sendError(player, "Invalid XP amount.");
+            ctx.text.sendError(player, Message.REQUIREMENT_XP_AMOUNT_INVALID);
             return false;
         }
 
@@ -34,7 +35,7 @@ public class XpTag implements RequirementTagResolver {
             case "levels" -> player.getLevel() >= amount;
             case "points" -> getPlayerExp(player) >= amount;
             default -> {
-                ctx.text.sendError(player, "Invalid XP type.");
+                ctx.text.sendError(player, Message.REQUIREMENT_XP_TYPE_INVALID);
                 yield false;
             }
         };

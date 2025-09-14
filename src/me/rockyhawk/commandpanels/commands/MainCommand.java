@@ -4,6 +4,7 @@ import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commands.subcommands.*;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
@@ -36,23 +37,23 @@ public class MainCommand implements BasicCommand {
     @Override
     public void execute(CommandSourceStack cmdStack, String[] args){
         if (!cmdStack.getSender().hasPermission("commandpanels.command")) {
-            ctx.text.sendError(cmdStack.getSender(), "No permission.");
+            ctx.text.sendError(cmdStack.getSender(), Message.COMMAND_NO_PERMISSION);
             return;
         }
 
         if (args.length == 0) {
-            ctx.text.sendError(cmdStack.getSender(), "Use /pa help for a list of subcommands.");
+            ctx.text.sendError(cmdStack.getSender(), Message.COMMAND_SUBCOMMAND_HELP);
             return;
         }
 
         SubCommand subCommand = subCommands.get(args[0].toLowerCase());
         if (subCommand == null) {
-            ctx.text.sendError(cmdStack.getSender(), "Unknown subcommand. Use /pa help.");
+            ctx.text.sendError(cmdStack.getSender(), Message.COMMAND_UNKNOWN_SUBCOMMAND);
             return;
         }
 
         if (subCommand.getPermission() != null && !subCommand.getPermission().isEmpty() && !cmdStack.getSender().hasPermission(subCommand.getPermission())) {
-            ctx.text.sendError(cmdStack.getSender(), "No permission.");
+            ctx.text.sendError(cmdStack.getSender(), Message.COMMAND_NO_PERMISSION);
             return;
         }
 

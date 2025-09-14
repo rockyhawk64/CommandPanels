@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.commands.subcommands;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commands.SubCommand;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import org.bukkit.command.CommandSender;
 
 public class DataCommand implements SubCommand {
@@ -19,7 +20,7 @@ public class DataCommand implements SubCommand {
     @Override
     public boolean execute(Context ctx, CommandSender sender, String[] args) {
         if (args.length < 2) {
-            ctx.text.sendError(sender, "Usage: /pa data <action> <player> [key] [value]");
+            ctx.text.sendError(sender, Message.DATA_USAGE);
             return true;
         }
 
@@ -37,70 +38,70 @@ public class DataCommand implements SubCommand {
         switch (action) {
             case "get": {
                 if (args.length < 3) {
-                    ctx.text.sendError(sender, "Missing key.");
+                    ctx.text.sendError(sender, Message.DATA_MISSING_KEY);
                     return true;
                 }
                 String key = args[2];
                 String value = ctx.dataLoader.getUserData(playerName, key);
-                if (!isSilent) ctx.text.sendInfo(sender, "Value: " + (value != null ? value : "null"));
+                if (!isSilent) ctx.text.sendInfo(sender, Message.DATA_VALUE, (value != null ? value : "null"));
                 return true;
             }
 
             case "set": {
                 if (args.length < 4) {
-                    ctx.text.sendError(sender, "Missing key or value.");
+                    ctx.text.sendError(sender, Message.DATA_MISSING_KEY_OR_VALUE);
                     return true;
                 }
                 String key = args[2];
                 String value = args[3];
                 ctx.dataLoader.setUserData(playerName, key, value, false);
-                if (!isSilent) ctx.text.sendInfo(sender, "Set key '" + key + "' to '" + value + "' (if not existing).");
+                if (!isSilent) ctx.text.sendInfo(sender, Message.DATA_SET, key, value);
                 return true;
             }
 
             case "overwrite": {
                 if (args.length < 4) {
-                    ctx.text.sendError(sender, "Missing key or value.");
+                    ctx.text.sendError(sender, Message.DATA_MISSING_KEY_OR_VALUE);
                     return true;
                 }
                 String key = args[2];
                 String value = args[3];
                 ctx.dataLoader.setUserData(playerName, key, value, true);
-                if (!isSilent) ctx.text.sendInfo(sender, "Overwrote key '" + key + "' with '" + value + "'.");
+                if (!isSilent) ctx.text.sendInfo(sender, Message.DATA_OVERWRITE, key, value);
                 return true;
             }
 
             case "math": {
                 if (args.length < 4) {
-                    ctx.text.sendError(sender, "Missing key or expression.");
+                    ctx.text.sendError(sender, Message.DATA_MISSING_KEY_OR_EXPRESSION);
                     return true;
                 }
                 String key = args[2];
                 String expression = args[3];
                 ctx.dataLoader.doDataMath(playerName, key, expression);
-                if (!isSilent) ctx.text.sendInfo(sender, "Performed math '" + expression + "' on key '" + key + "'.");
+                if (!isSilent) ctx.text.sendInfo(sender, Message.DATA_MATH, expression, key);
                 return true;
             }
 
             case "del": {
                 if (args.length < 3) {
-                    ctx.text.sendError(sender, "Missing key.");
+                    ctx.text.sendError(sender, Message.DATA_MISSING_KEY);
                     return true;
                 }
                 String key = args[2];
                 ctx.dataLoader.delUserData(playerName, key);
-                if (!isSilent) ctx.text.sendInfo(sender, "Deleted key '" + key + "'.");
+                if (!isSilent) ctx.text.sendInfo(sender, Message.DATA_DELETE, key);
                 return true;
             }
 
             case "clear": {
                 ctx.dataLoader.clearData(playerName);
-                if (!isSilent) ctx.text.sendInfo(sender, "Cleared all data for '" + playerName + "'.");
+                if (!isSilent) ctx.text.sendInfo(sender, Message.DATA_CLEAR, playerName);
                 return true;
             }
 
             default: {
-                ctx.text.sendError(sender, "Unknown action.");
+                ctx.text.sendError(sender, Message.DATA_UNKNOWN_ACTION);
                 return true;
             }
         }

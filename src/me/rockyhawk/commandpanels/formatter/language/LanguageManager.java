@@ -1,4 +1,4 @@
-package me.rockyhawk.commandpanels.formatter;
+package me.rockyhawk.commandpanels.formatter.language;
 
 import me.rockyhawk.commandpanels.Context;
 import net.kyori.adventure.text.Component;
@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class LanguageManager {
     private final Map<String, String> translations = new HashMap<>();
-    private Context ctx;
+    private final Context ctx;
 
     public LanguageManager(Context ctx) {
         this.ctx = ctx;
@@ -22,7 +22,7 @@ public class LanguageManager {
     // Use translations from the languages file and translate matches.
     // Keys or the English side of translations should have periods omitted as it breaks YAML
     // The plugin will ensure they are still detected without it
-    public void reloadTranslations(){
+    public void reloadTranslations() {
         translations.clear();
         try {
             YamlConfiguration langFile = YamlConfiguration.loadConfiguration(new File(ctx.plugin.getDataFolder(), "lang.yml"));
@@ -32,15 +32,24 @@ public class LanguageManager {
         }catch (IllegalArgumentException e){
             // Send raw message as text class will not be initialised here
             Bukkit.getConsoleSender().sendMessage(Component.text(
-                    "[CommandPanels] Language file could not be loaded, periods should not be in language keys.",
-                    NamedTextColor.RED));
+                    "[CommandPanels] Language file could not be loaded, periods should not be in language keys.", NamedTextColor.RED));
         }
     }
 
-    public String translate(String message) {
-        if (message == null) return "";
-        // Normalize: lowercase, remove non-alphabetic characters, trim
-        String key = message.toLowerCase().replaceAll("[^a-z]", "").trim();
-        return translations.getOrDefault(key, message);
+    public String translate(Message message, Object... args) {
+        String normalizedKey = message.name().toLowerCase();
+        String translated = translations.get(normalizedKey);
+        if (translated != null) {
+            return formatWithPlaceholders(translated, args);
+        }
+        return message.format(args);
+    }
+
+    private String formatWithPlaceholders(String message, Object... args) {
+        String result = message;
+        for (int i = 0; i < args.length; i++) {
+            result = result.replace("{" + i + "}", String.valueOf(args[i] != null ? args[i] : "null"));
+        }
+        return result;
     }
 }

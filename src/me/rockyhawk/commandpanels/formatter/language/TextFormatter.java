@@ -1,4 +1,4 @@
-package me.rockyhawk.commandpanels.formatter;
+package me.rockyhawk.commandpanels.formatter.language;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.rockyhawk.commandpanels.Context;
@@ -15,37 +15,68 @@ import org.bukkit.entity.Player;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class TextFormatter {
     public final LanguageManager lang;
-    private final TextComponent tag;
+    public final TextComponent prefix;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacySection();
 
     // On plugin load the tag can use a custom name from the language file
     public TextFormatter(Context ctx) {
         this.lang = new LanguageManager(ctx);
-        this.tag = Component.text("[", NamedTextColor.GOLD)
-                .append(Component.text(lang.translate("CommandPanels"), NamedTextColor.YELLOW))
-                .append(Component.text("] ", NamedTextColor.GOLD));
+        String translatedPrefix = lang.translate(Message.PREFIX);
+        if (Objects.equals(translatedPrefix, "[CommandPanels] ")) {
+            this.prefix = Component.text("[", NamedTextColor.GOLD)
+                    .append(Component.text("CommandPanels", NamedTextColor.YELLOW))
+                    .append(Component.text("] ", NamedTextColor.GOLD));
+        } else {
+            this.prefix = Component.text()
+                    .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedPrefix))
+                    .build();
+        }
     }
 
     // Messaging helpers, support translation from the language file
-    public void sendError(Audience audience, String msg) {
-        audience.sendMessage(tag.append(
-                Component.text(
-                        lang.translate(msg), NamedTextColor.RED)));
+    public void sendError(Audience audience, Message message, Object... args) {
+        String translatedMessage = lang.translate(message, args);
+        Component formattedMessage = Component.text()
+                .color(NamedTextColor.RED)
+                .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedMessage))
+                .build();
+        audience.sendMessage(prefix.append(formattedMessage));
     }
 
-    public void sendInfo(Audience audience, String msg) {
-        audience.sendMessage(tag.append(
-                Component.text(
-                        lang.translate(msg), NamedTextColor.WHITE)));
+    public void sendInfo(Audience audience, Message message, Object... args) {
+        String translatedMessage = lang.translate(message, args);
+        Component formattedMessage = Component.text()
+                .color(NamedTextColor.WHITE)
+                .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedMessage))
+                .build();
+        audience.sendMessage(prefix.append(formattedMessage));
     }
 
-    public void sendWarn(Audience audience, String msg) {
-        audience.sendMessage(tag.append(
-                Component.text(
-                        lang.translate(msg), NamedTextColor.YELLOW)));
+    public void sendWarn(Audience audience, Message message, Object... args) {
+        String translatedMessage = lang.translate(message, args);
+        Component formattedMessage = Component.text()
+                .color(NamedTextColor.YELLOW)
+                .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedMessage))
+                .build();
+        audience.sendMessage(prefix.append(formattedMessage));
+    }
+
+    public void sendHelp(Audience audience, Message command, Message description, Object... args) {
+        String translatedCommand = lang.translate(command, args);
+        String translatedDescription = lang.translate(description, args);
+        Component formattedMessage = Component.text()
+                .color(NamedTextColor.GOLD)
+                .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedCommand))
+                .append(Component.text()
+                        .color(NamedTextColor.WHITE)
+                        .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedDescription)))
+                .build();
+        audience.sendMessage(formattedMessage);
     }
 
     // Custom text parsers, does not support language translation
@@ -68,8 +99,8 @@ public class TextFormatter {
 
     public String applyPlaceholders(Player player, String input) {
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            OfflinePlayer offp = Bukkit.getOfflinePlayer(player.getUniqueId());
-            return PlaceholderAPI.setPlaceholders(offp, input);
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player.getUniqueId());
+            return PlaceholderAPI.setPlaceholders(offlinePlayer, input);
         }
         return input;
     }
@@ -95,9 +126,5 @@ public class TextFormatter {
             // Totally broken input, fallback to plain non-italic
             return Component.text(input).decoration(TextDecoration.ITALIC, false);
         }
-    }
-
-    public TextComponent getTag() {
-        return tag;
     }
 }

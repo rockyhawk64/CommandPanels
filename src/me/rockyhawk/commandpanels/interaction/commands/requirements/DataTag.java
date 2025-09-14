@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands.requirements;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.entity.Player;
@@ -16,7 +17,7 @@ public class DataTag implements RequirementTagResolver {
     public boolean check(Context ctx, Panel panel, Player player, String raw, String args) {
         String[] split = args.trim().split("\\s");
         if (split.length != 2) {
-            ctx.text.sendError(player, "Invalid data requirement. Use: [data] <key> <amount>");
+            ctx.text.sendError(player, Message.REQUIREMENT_DATA_INVALID);
             return false;
         }
 
@@ -25,7 +26,7 @@ public class DataTag implements RequirementTagResolver {
         try {
             requiredAmount = Double.parseDouble(split[1]);
         } catch (NumberFormatException e) {
-            ctx.text.sendError(player, "Invalid amount.");
+            ctx.text.sendError(player, Message.REQUIREMENT_AMOUNT_INVALID);
             return false;
         }
 
@@ -34,7 +35,7 @@ public class DataTag implements RequirementTagResolver {
             String valueStr = ctx.dataLoader.getUserData(player.getName(), dataKey);
             currentAmount = Double.parseDouble(valueStr);
         } catch (Exception e) {
-            ctx.text.sendError(player, "Could not read data.");
+            ctx.text.sendError(player, Message.REQUIREMENT_DATA_READ_FAIL);
             return false;
         }
 

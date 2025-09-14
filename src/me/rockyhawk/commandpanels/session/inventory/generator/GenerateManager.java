@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.session.inventory.generator;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.inventory.generator.resolvers.*;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -51,13 +52,13 @@ public class GenerateManager implements Listener {
 
     public void startGenerateMode(Player player) {
         generatingPlayers.add(player.getUniqueId());
-        ctx.text.sendInfo(player, "Generate mode enabled.");
+        ctx.text.sendInfo(player, Message.GENERATE_MODE_ENABLED);
 
         new BukkitRunnable() {
             @Override
             public void run() {
                 if (generatingPlayers.remove(player.getUniqueId())) {
-                    ctx.text.sendInfo(player, "Generate mode expired.");
+                    ctx.text.sendInfo(player, Message.GENERATE_MODE_EXPIRED);
                 }
             }
         }.runTaskLater(ctx.plugin, 20L * 10);
@@ -111,9 +112,9 @@ public class GenerateManager implements Listener {
         try {
             yamlData.save(new File(ctx.plugin.folder, panelName + ".yml"));
             ctx.fileHandler.reloadPanels();
-            ctx.text.sendInfo(player, "Generated a new panel file.");
+            ctx.text.sendInfo(player, Message.GENERATE_PANEL_CREATED);
         } catch (IOException e) {
-            ctx.text.sendError(player, "Could not save new panel file.");
+            ctx.text.sendError(player, Message.FILE_SAVE_PANEL_FAIL);
         }
     }
 

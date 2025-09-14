@@ -3,13 +3,13 @@ package me.rockyhawk.commandpanels.builder.floodgate;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.logic.ConditionNode;
 import me.rockyhawk.commandpanels.builder.logic.ConditionParser;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgateComponent;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgatePanel;
 import me.rockyhawk.commandpanels.session.floodgate.components.*;
 import org.bukkit.entity.Player;
-import org.geysermc.cumulus.component.LabelComponent;
 import org.geysermc.cumulus.response.CustomFormResponse;
 import org.geysermc.floodgate.api.FloodgateApi;
 
@@ -36,7 +36,7 @@ public class CustomForm {
         // Build the form inputs in order
         for (int i = 0; i < panel.getOrder().size(); i++) {
             if (!panel.getOrder().containsKey(String.valueOf(i))) {
-                ctx.text.sendError(player, "Panel layout is missing/skipping a number.");
+                ctx.text.sendError(player, Message.PANEL_LAYOUT_NUMBER_MISSING);
                 return;
             }
 

@@ -2,7 +2,7 @@ package me.rockyhawk.commandpanels;
 
 import me.rockyhawk.commandpanels.commands.MainCommand;
 import me.rockyhawk.commandpanels.formatter.Placeholders;
-import me.rockyhawk.commandpanels.formatter.TextFormatter;
+import me.rockyhawk.commandpanels.formatter.language.TextFormatter;
 import me.rockyhawk.commandpanels.formatter.data.DataLoader;
 import me.rockyhawk.commandpanels.interaction.openpanel.PanelOpenCommand;
 import me.rockyhawk.commandpanels.session.SessionManager;

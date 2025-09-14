@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.builder.inventory;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.PanelBuilder;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.Panel;
 import me.rockyhawk.commandpanels.session.SessionManager;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
@@ -24,7 +25,7 @@ public class InventoryPanelBuilder extends PanelBuilder {
         }
         Inventory panelInv = panelFactory.createInventory((InventoryPanel) panel, this.getPlayer());
         if(panelInv.isEmpty()) {
-            ctx.text.sendError(this.getPlayer(), "Panel must contain at least one item.");
+            ctx.text.sendError(this.getPlayer(), Message.PANEL_NO_ITEMS);
             return;
         }
         this.getPlayer().openInventory(panelInv);

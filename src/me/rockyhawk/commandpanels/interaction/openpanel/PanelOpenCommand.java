@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.openpanel;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.Panel;
 import me.rockyhawk.commandpanels.session.SessionManager;
 import org.bukkit.Bukkit;
@@ -60,14 +61,12 @@ public class PanelOpenCommand implements Listener {
             }
 
             e.setCancelled(true);
-            Bukkit.getScheduler().runTask(ctx.plugin, () -> {
-                panel.open(ctx, e.getPlayer(), SessionManager.PanelOpenType.EXTERNAL);
-            });
+            Bukkit.getScheduler().runTask(ctx.plugin, () -> panel.open(ctx, e.getPlayer(), SessionManager.PanelOpenType.EXTERNAL));
             return;
         }
 
         // No panel was found that could be opened
-        if(hadMatch) ctx.text.sendError(e.getPlayer(), "No permission.");
+        if(hadMatch) ctx.text.sendError(e.getPlayer(), Message.COMMAND_NO_PERMISSION);
     }
 
     public void populateCommands() {

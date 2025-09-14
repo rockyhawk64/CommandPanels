@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands.tags;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.Bukkit;
@@ -21,7 +22,7 @@ public class GrantTag implements CommandTagResolver {
             String[] parts = command.split("\\s+", 2);
 
             if (parts.length < 2) {
-                ctx.text.sendError(player, "Invalid syntax. Usage: [grant] permission command");
+                ctx.text.sendError(player, Message.ITEM_GRANT_SYNTAX_INVALID);
                 return;
             }
 

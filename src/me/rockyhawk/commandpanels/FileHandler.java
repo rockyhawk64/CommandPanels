@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels;
 
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.Panel;
 import me.rockyhawk.commandpanels.session.dialog.DialogPanel;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgatePanel;
@@ -39,9 +40,7 @@ public class FileHandler {
         // Create panels folder and add example panels if not there
         if (!ctx.plugin.folder.exists()) {
             if (!ctx.plugin.folder.mkdirs()) {
-                Bukkit.getScheduler().runTask(ctx.plugin, () -> {
-                    ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), "Failed to create panels folder!");
-                });
+                Bukkit.getScheduler().runTask(ctx.plugin, () -> ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_CREATE_PANELS_FAIL));
                 return;
             }
             createExamplePanels();
@@ -120,9 +119,7 @@ public class FileHandler {
             FileConfiguration floodgateCustomFile = YamlConfiguration.loadConfiguration(getReaderFromStream(ctx.plugin.getResource("floodgate_custom.yml")));
             floodgateCustomFile.save(new File(ctx.plugin.folder, "floodgate_custom.yml"));
         } catch (IOException | NullPointerException e) {
-            Bukkit.getScheduler().runTask(ctx.plugin, () -> {
-                ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), "Could not create example panels!");
-            });
+            Bukkit.getScheduler().runTask(ctx.plugin, () -> ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_CREATE_EXAMPLE_FAIL));
         }
     }
 
@@ -139,9 +136,7 @@ public class FileHandler {
                 configFileConfiguration.save(configFile);
                 config = YamlConfiguration.loadConfiguration(new File(ctx.plugin.getDataFolder(), "config.yml"));
             } catch (IOException var11) {
-                Bukkit.getScheduler().runTask(ctx.plugin, () -> {
-                    ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), "Could not create the config file!");
-                });
+                Bukkit.getScheduler().runTask(ctx.plugin, () -> ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_CREATE_CONFIG_FAIL));
             }
         }else{
             // Check if the config file has any missing elements
@@ -151,9 +146,7 @@ public class FileHandler {
                 config.options().copyDefaults(true);
                 config.save(new File(ctx.plugin.getDataFolder() + File.separator + "config.yml"));
             } catch (IOException var10) {
-                Bukkit.getScheduler().runTask(ctx.plugin, () -> {
-                    ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), "Could not update the config file!");
-                });
+                Bukkit.getScheduler().runTask(ctx.plugin, () -> ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_UPDATE_CONFIG_FAIL));
             }
         }
     }
