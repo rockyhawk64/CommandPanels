@@ -23,10 +23,7 @@ public class VersionCommand implements SubCommand {
 
     @Override
     public boolean execute(Context ctx, CommandSender sender, String[] args) {
-        TextComponent prefix = Component.text("[", NamedTextColor.GOLD)
-                .append(Component.text("CommandPanels", NamedTextColor.YELLOW))
-                .append(Component.text("] ", NamedTextColor.GOLD));
-        sender.sendMessage(prefix);
+        sender.sendMessage(ctx.text.getPrefix());
 
         String translatedDeveloper = ctx.text.lang.translate(Message.PLUGIN_DEVELOPER);
         String translatedVersion = ctx.text.lang.translate(Message.PLUGIN_VERSION);

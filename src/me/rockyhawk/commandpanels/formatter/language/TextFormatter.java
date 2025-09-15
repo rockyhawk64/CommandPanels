@@ -19,20 +19,22 @@ import java.util.Objects;
 
 public class TextFormatter {
     public final LanguageManager lang;
-    public final TextComponent prefix;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacySection();
 
     // On plugin load the tag can use a custom name from the language file
     public TextFormatter(Context ctx) {
         this.lang = new LanguageManager(ctx);
+    }
+
+    public TextComponent getPrefix() {
         String translatedPrefix = lang.translate(Message.PREFIX);
         if (Objects.equals(translatedPrefix, "[CommandPanels] ")) {
-            this.prefix = Component.text("[", NamedTextColor.GOLD)
+            return Component.text("[", NamedTextColor.GOLD)
                     .append(Component.text("CommandPanels", NamedTextColor.YELLOW))
                     .append(Component.text("] ", NamedTextColor.GOLD));
         } else {
-            this.prefix = Component.text()
+            return Component.text()
                     .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedPrefix))
                     .build();
         }
@@ -45,7 +47,7 @@ public class TextFormatter {
                 .color(NamedTextColor.RED)
                 .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedMessage))
                 .build();
-        audience.sendMessage(prefix.append(formattedMessage));
+        audience.sendMessage(getPrefix().append(formattedMessage));
     }
 
     public void sendInfo(Audience audience, Message message, Object... args) {
@@ -54,7 +56,7 @@ public class TextFormatter {
                 .color(NamedTextColor.WHITE)
                 .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedMessage))
                 .build();
-        audience.sendMessage(prefix.append(formattedMessage));
+        audience.sendMessage(getPrefix().append(formattedMessage));
     }
 
     public void sendWarn(Audience audience, Message message, Object... args) {
@@ -63,7 +65,7 @@ public class TextFormatter {
                 .color(NamedTextColor.YELLOW)
                 .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedMessage))
                 .build();
-        audience.sendMessage(prefix.append(formattedMessage));
+        audience.sendMessage(getPrefix().append(formattedMessage));
     }
 
     public void sendHelp(Audience audience, Message command, Message description, Object... args) {
