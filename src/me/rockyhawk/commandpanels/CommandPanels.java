@@ -7,18 +7,22 @@ import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
 
-public class CommandPanels extends JavaPlugin{
+public class CommandPanels extends JavaPlugin {
     public File folder = new File(this.getDataFolder() + File.separator + "panels");
     public HashMap<String, Panel> panels = new HashMap<>(); // String is for an index by panel name
 
     public Context ctx;
 
+    private static final Logger logger = LoggerFactory.getLogger(CommandPanels.class);
+
     public void onEnable() {
-        Bukkit.getConsoleSender().sendMessage("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loading...");
+        Bukkit.getConsoleSender().sendMessage("[CommandPanels] RockyHawk's CommandPanels v" + this.getPluginMeta().getVersion() + " Plugin Loading...");
 
         try {
             // Register plugin default permissions
@@ -34,10 +38,10 @@ public class CommandPanels extends JavaPlugin{
                 return panels.size();
             }));
 
-            Bukkit.getConsoleSender().sendMessage("[CommandPanels] RockyHawk's CommandPanels v" + this.getDescription().getVersion() + " Plugin Loaded!");
+            Bukkit.getConsoleSender().sendMessage("[CommandPanels] RockyHawk's CommandPanels v" + this.getPluginMeta().getVersion() + " Plugin Loaded!");
         } catch (Exception e) {
             Bukkit.getConsoleSender().sendMessage("[CommandPanels] Failed to load plugin: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Plugin loading failed with exception", e);
             // Set context to null to prevent issues in onDisable
             ctx = null;
         }
@@ -73,6 +77,7 @@ public class CommandPanels extends JavaPlugin{
         // REMOVE AFTER CONVERTER IS REMOVED
         addPermission("commandpanels.command.convert", PermissionDefault.OP);
     }
+
     private void addPermission(String name, PermissionDefault defaultValue) {
         Permission permission = new Permission(name, defaultValue);
         if (getServer().getPluginManager().getPermission(name) == null) {
