@@ -1,5 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands.tags;
 
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
@@ -7,7 +9,6 @@ import me.rockyhawk.commandpanels.session.Panel;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -74,7 +75,7 @@ public class ItemActionTag implements CommandTagResolver {
                 NamespacedKey key = args[3].contains(":") ?
                         NamespacedKey.fromString(args[3].toLowerCase()) :
                         NamespacedKey.minecraft(args[3].toLowerCase());
-                Enchantment enchant = Registry.ENCHANTMENT.get(key);
+                Enchantment enchant = registryEnchant(key);
                 int level = Integer.parseInt(args[4]);
                 if (enchant != null) item.addUnsafeEnchantment(enchant, level);
                 else ctx.text.sendError(player, Message.ITEM_ENCHANT_INVALID);
@@ -87,7 +88,7 @@ public class ItemActionTag implements CommandTagResolver {
                 NamespacedKey key = args[3].contains(":") ?
                         NamespacedKey.fromString(args[3].toLowerCase()) :
                         NamespacedKey.minecraft(args[3].toLowerCase());
-                Enchantment enchant = Registry.ENCHANTMENT.get(key);
+                Enchantment enchant = registryEnchant(key);
                 if (enchant != null) item.removeEnchantment(enchant);
                 else ctx.text.sendError(player, Message.ITEM_ENCHANT_INVALID);
             }
@@ -101,5 +102,13 @@ public class ItemActionTag implements CommandTagResolver {
             damageable.setDamage(0);
             item.setItemMeta(damageable);
         }
+    }
+
+    private Enchantment registryEnchant(NamespacedKey key) {
+        RegistryAccess registryAccess = RegistryAccess.registryAccess();
+        if (key != null) {
+            return registryAccess.getRegistry(RegistryKey.ENCHANTMENT).get(key);
+        }
+        return null;
     }
 }
