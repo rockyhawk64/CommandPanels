@@ -105,9 +105,8 @@ public class ItemActionTag implements CommandTagResolver {
     }
 
     private Enchantment registryEnchant(NamespacedKey key) {
-        RegistryAccess registryAccess = RegistryAccess.registryAccess();
         if (key != null) {
-            return registryAccess.getRegistry(RegistryKey.ENCHANTMENT).get(key);
+            return RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(key);
         }
         return null;
     }
