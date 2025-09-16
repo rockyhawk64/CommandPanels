@@ -1,7 +1,9 @@
 package me.rockyhawk.commandpanels.formatter.language;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
 public enum Message {
-    PREFIX("[CommandPanels] "),
+    PREFIX("[CommandPanels]"),
 
     // Command
     COMMAND_NO_PERMISSION("No permission."),
@@ -19,6 +21,7 @@ public enum Message {
     // FileHandler / DataLoader / GenerateManager
     FILE_CREATE_PANELS_FAIL("Failed to create panels folder!"),
     FILE_CREATE_EXAMPLE_FAIL("Could not create example panels!"),
+    FILE_CREATE_LANG_FAIL("Failed to create language file!"),
     FILE_CREATE_CONFIG_FAIL("Could not create the config file!"),
     FILE_UPDATE_CONFIG_FAIL("Could not update the config file!"),
     FILE_SAVE_DATA_FAIL("Could not save data file."),
@@ -102,19 +105,19 @@ public enum Message {
     PLUGIN_VERSION("Version {0}"),
 
     // HelpCommand
-    HELP_OPEN_COMMAND("/pa open <panel> [player] "),
+    HELP_OPEN_COMMAND("/pa open <panel> [player]"),
     HELP_OPEN_DESCRIPTION("Opens a panel"),
-    HELP_RELOAD_COMMAND("/pa reload "),
+    HELP_RELOAD_COMMAND("/pa reload"),
     HELP_RELOAD_DESCRIPTION("Reloads all config and panel files"),
-    HELP_GENERATE_COMMAND("/pa generate "),
+    HELP_GENERATE_COMMAND("/pa generate"),
     HELP_GENERATE_DESCRIPTION("Enter generate mode to generate panels"),
-    HELP_DATA_COMMAND("/pa data "),
+    HELP_DATA_COMMAND("/pa data"),
     HELP_DATA_DESCRIPTION("Modify data for players"),
-    HELP_VERSION_COMMAND("/pa version "),
+    HELP_VERSION_COMMAND("/pa version"),
     HELP_VERSION_DESCRIPTION("Gets the plugin version"),
-    HELP_HELP_COMMAND("/pa help "),
+    HELP_HELP_COMMAND("/pa help"),
     HELP_HELP_DESCRIPTION("Shows this help menu"),
-    HELP_CONVERT_COMMAND("/pa convert "),
+    HELP_CONVERT_COMMAND("/pa convert"),
     HELP_CONVERT_DESCRIPTION("Converts basic layout from v3 to v4 panels (not plug and play)"),
 
     // Misc
@@ -138,5 +141,19 @@ public enum Message {
             result = result.replace("{" + i + "}", String.valueOf(args[i] != null ? args[i] : "null"));
         }
         return result;
+    }
+
+    public static YamlConfiguration toYaml() {
+        YamlConfiguration yaml = new YamlConfiguration();
+
+        for (Message message : Message.values()) {
+            // Convert enum name to lowercase
+            String key = message.name().toLowerCase();
+
+            // Set value in YAML
+            yaml.set(key, message.getMessage());
+        }
+
+        return yaml;
     }
 }

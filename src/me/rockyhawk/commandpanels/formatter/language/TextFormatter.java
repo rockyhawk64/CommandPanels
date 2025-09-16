@@ -28,57 +28,77 @@ public class TextFormatter {
     }
 
     public TextComponent getPrefix() {
-        String translatedPrefix = lang.translate(Message.PREFIX);
+        String translatedPrefix = lang.translate(Message.PREFIX) + " ";
         if (Objects.equals(translatedPrefix, "[CommandPanels] ")) {
             return Component.text("[", NamedTextColor.GOLD)
                     .append(Component.text("CommandPanels", NamedTextColor.YELLOW))
                     .append(Component.text("] ", NamedTextColor.GOLD));
         } else {
-            return Component.text()
-                    .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedPrefix))
-                    .build();
+            return (TextComponent) deserializeAppropriately(translatedPrefix);
         }
     }
 
-    // Messaging helpers, support translation from the language file
-    public void sendError(Audience audience, Message message, Object... args) {
-        String translatedMessage = lang.translate(message, args);
-        Component formattedMessage = Component.text()
-                .color(NamedTextColor.RED)
-                .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedMessage))
+    /**
+     * Messaging helpers, support translation from the language file
+     * Translate -> apply placeholders -> deserialize -> apply default color as a base.
+     * Keeps inline colours from the message (they will override the base color).
+     */
+    private Component buildLocalizedComponent(Audience audience, String translatedMessage, NamedTextColor defaultColor) {
+        if (translatedMessage == null || translatedMessage.isEmpty()) return Component.empty();
+
+        // Apply placeholders
+        Player player = (audience instanceof Player) ? (Player) audience : null;
+        String withPlaceholders = applyPlaceholders(player, translatedMessage); // your existing method
+
+        // Parse to component
+        Component parsed = deserializeAppropriately(withPlaceholders);
+
+        // Use a base component with the default color and append parsed message.
+        return Component.text()
+                .color(defaultColor)
+                .append(parsed)
                 .build();
-        audience.sendMessage(getPrefix().append(formattedMessage));
     }
 
+    /** Localized helpers using enum Message and the builder above. */
     public void sendInfo(Audience audience, Message message, Object... args) {
-        String translatedMessage = lang.translate(message, args);
-        Component formattedMessage = Component.text()
-                .color(NamedTextColor.WHITE)
-                .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedMessage))
-                .build();
-        audience.sendMessage(getPrefix().append(formattedMessage));
+        String translated = lang.translate(message, args);
+        Component comp = buildLocalizedComponent(audience, translated, NamedTextColor.WHITE);
+        audience.sendMessage(getPrefix().append(comp));
     }
 
     public void sendWarn(Audience audience, Message message, Object... args) {
-        String translatedMessage = lang.translate(message, args);
-        Component formattedMessage = Component.text()
-                .color(NamedTextColor.YELLOW)
-                .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedMessage))
-                .build();
-        audience.sendMessage(getPrefix().append(formattedMessage));
+        String translated = lang.translate(message, args);
+        Component comp = buildLocalizedComponent(audience, translated, NamedTextColor.YELLOW);
+        audience.sendMessage(getPrefix().append(comp));
     }
 
+    public void sendError(Audience audience, Message message, Object... args) {
+        String translated = lang.translate(message, args);
+        Component comp = buildLocalizedComponent(audience, translated, NamedTextColor.RED);
+        audience.sendMessage(getPrefix().append(comp));
+    }
+
+    /**
+     * sendHelp: first part (command) gold, second part (description) white, space in between.
+     */
     public void sendHelp(Audience audience, Message command, Message description, Object... args) {
         String translatedCommand = lang.translate(command, args);
         String translatedDescription = lang.translate(description, args);
-        Component formattedMessage = Component.text()
-                .color(NamedTextColor.GOLD)
-                .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedCommand))
-                .append(Component.text()
-                        .color(NamedTextColor.WHITE)
-                        .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedDescription)))
+
+        Component cmdComp = buildLocalizedComponent(audience, translatedCommand, NamedTextColor.GOLD);
+        Component descComp = buildLocalizedComponent(audience, translatedDescription, NamedTextColor.WHITE);
+
+        // Space between command and description — give it the same color as the description for consistency
+        Component space = Component.text(" ").color(NamedTextColor.WHITE);
+
+        Component helpComp = Component.text()
+                .append(cmdComp)
+                .append(space)
+                .append(descComp)
                 .build();
-        audience.sendMessage(formattedMessage);
+
+        audience.sendMessage(helpComp);
     }
 
     // Custom text parsers, does not support language translation

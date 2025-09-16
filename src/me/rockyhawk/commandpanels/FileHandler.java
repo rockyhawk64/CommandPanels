@@ -21,6 +21,7 @@ public class FileHandler {
         this.ctx = ctx;
         updateConfigFiles();
         reloadPanels();
+        createLangFile();
     }
 
 
@@ -120,6 +121,27 @@ public class FileHandler {
             floodgateCustomFile.save(new File(ctx.plugin.folder, "floodgate_custom.yml"));
         } catch (IOException | NullPointerException e) {
             Bukkit.getScheduler().runTask(ctx.plugin, () -> ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_CREATE_EXAMPLE_FAIL));
+        }
+    }
+
+    // if lang file is missing add it back
+    private void createLangFile() {
+        File messagesFile = new File(ctx.plugin.getDataFolder(), "lang.yml");
+        if (messagesFile.exists()) {
+            // Return, lang file already exists
+            return;
+        }
+
+        YamlConfiguration messagesYaml = Message.toYaml();
+        try {
+            messagesYaml.save(messagesFile);
+        } catch (IOException ex) {
+            Bukkit.getScheduler().runTask(ctx.plugin,
+                    () -> ctx.text.sendError(
+                            ctx.plugin.getServer().getConsoleSender(),
+                            Message.FILE_CREATE_LANG_FAIL
+                    )
+            );
         }
     }
 
