@@ -43,15 +43,11 @@ public class TextFormatter {
      * Translate -> apply placeholders -> deserialize -> apply default color as a base.
      * Keeps inline colours from the message (they will override the base color).
      */
-    private Component buildLocalizedComponent(Audience audience, String translatedMessage, NamedTextColor defaultColor) {
+    private Component buildLocalizedComponent(String translatedMessage, NamedTextColor defaultColor) {
         if (translatedMessage == null || translatedMessage.isEmpty()) return Component.empty();
 
-        // Apply placeholders
-        Player player = (audience instanceof Player) ? (Player) audience : null;
-        String withPlaceholders = applyPlaceholders(player, translatedMessage); // your existing method
-
         // Parse to component
-        Component parsed = deserializeAppropriately(withPlaceholders);
+        Component parsed = deserializeAppropriately(translatedMessage);
 
         // Use a base component with the default color and append parsed message.
         return Component.text()
@@ -63,19 +59,19 @@ public class TextFormatter {
     /** Localized helpers using enum Message and the builder above. */
     public void sendInfo(Audience audience, Message message, Object... args) {
         String translated = lang.translate(message, args);
-        Component comp = buildLocalizedComponent(audience, translated, NamedTextColor.WHITE);
+        Component comp = buildLocalizedComponent(translated, NamedTextColor.WHITE);
         audience.sendMessage(getPrefix().append(comp));
     }
 
     public void sendWarn(Audience audience, Message message, Object... args) {
         String translated = lang.translate(message, args);
-        Component comp = buildLocalizedComponent(audience, translated, NamedTextColor.YELLOW);
+        Component comp = buildLocalizedComponent(translated, NamedTextColor.YELLOW);
         audience.sendMessage(getPrefix().append(comp));
     }
 
     public void sendError(Audience audience, Message message, Object... args) {
         String translated = lang.translate(message, args);
-        Component comp = buildLocalizedComponent(audience, translated, NamedTextColor.RED);
+        Component comp = buildLocalizedComponent(translated, NamedTextColor.RED);
         audience.sendMessage(getPrefix().append(comp));
     }
 
@@ -86,8 +82,8 @@ public class TextFormatter {
         String translatedCommand = lang.translate(command, args);
         String translatedDescription = lang.translate(description, args);
 
-        Component cmdComp = buildLocalizedComponent(audience, translatedCommand, NamedTextColor.GOLD);
-        Component descComp = buildLocalizedComponent(audience, translatedDescription, NamedTextColor.WHITE);
+        Component cmdComp = buildLocalizedComponent(translatedCommand, NamedTextColor.GOLD);
+        Component descComp = buildLocalizedComponent(translatedDescription, NamedTextColor.WHITE);
 
         // Space between command and description — give it the same color as the description for consistency
         Component space = Component.text(" ").color(NamedTextColor.WHITE);
