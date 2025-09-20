@@ -34,7 +34,10 @@ public class NameHandler {
                             DataComponentTypes.TRIM,
                             DataComponentTypes.BANNER_PATTERNS,
                             DataComponentTypes.FIREWORKS,
-                            DataComponentTypes.JUKEBOX_PLAYABLE
+                            DataComponentTypes.JUKEBOX_PLAYABLE,
+                            DataComponentTypes.BUNDLE_CONTENTS,
+                            DataComponentTypes.CONTAINER,
+                            DataComponentTypes.CONTAINER_LOOT
                     ).build();
             item.setData(DataComponentTypes.TOOLTIP_DISPLAY, hideAttributes);
         }
