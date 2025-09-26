@@ -21,12 +21,15 @@ public class BodyBuilder {
                 .description(DialogBody.plainMessage(
                         ctx.text.parseTextToComponent(builder.getPlayer(), item.getText())
                 ))
+                .width(item.getWidth())
+                .height(item.getHeight())
                 .build();
     }
 
     public DialogBody createText(DialogBodyText text, DialogPanel panel) {
         return DialogBody.plainMessage(
-                ctx.text.parseTextToComponent(builder.getPlayer(), text.getName())
+                ctx.text.parseTextToComponent(builder.getPlayer(), text.getName()),
+                text.getWidth()
         );
     }
 }
