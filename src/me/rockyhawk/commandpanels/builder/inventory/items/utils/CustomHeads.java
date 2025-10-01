@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.builder.inventory.items.utils;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
@@ -7,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 
 import java.net.MalformedURLException;
@@ -26,7 +26,7 @@ public class CustomHeads {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
         if (!(skull.getItemMeta() instanceof SkullMeta skullMeta)) return skull;
 
-        skullMeta.setOwnerProfile(profile);
+        skullMeta.setPlayerProfile(profile);
         skull.setItemMeta(skullMeta);
 
         return skull; // New item each time, only shares profile (skin)
@@ -35,13 +35,14 @@ public class CustomHeads {
     public ItemStack getPlayerHead(String playerName) {
         PlayerProfile profile = profileCache.computeIfAbsent(playerName, key -> {
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-            return Bukkit.createPlayerProfile(offlinePlayer.getUniqueId());
+
+            return offlinePlayer.getPlayerProfile();
         });
 
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
         if (!(skull.getItemMeta() instanceof SkullMeta skullMeta)) return skull;
 
-        skullMeta.setOwnerProfile(profile);
+        skullMeta.setPlayerProfile(profile);
         skull.setItemMeta(skullMeta);
 
         return skull;
@@ -53,7 +54,7 @@ public class CustomHeads {
             if (skinUrl == null) return null;
 
             try {
-                PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
+                PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
                 PlayerTextures textures = profile.getTextures();
                 textures.setSkin(new URL(skinUrl));
                 profile.setTextures(textures);
