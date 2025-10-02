@@ -16,13 +16,13 @@ import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TextFormatter {
     public final LanguageManager lang;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
-    private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacySection();
 
-    // On plugin load the tag can use a custom name from the language file
     public TextFormatter(Context ctx) {
         this.lang = new LanguageManager(ctx);
     }
@@ -38,25 +38,17 @@ public class TextFormatter {
         }
     }
 
-    /**
-     * Messaging helpers, support translation from the language file
-     * Translate -> apply placeholders -> deserialize -> apply default color as a base.
-     * Keeps inline colours from the message (they will override the base color).
-     */
     private Component buildLocalizedComponent(String translatedMessage, NamedTextColor defaultColor) {
         if (translatedMessage == null || translatedMessage.isEmpty()) return Component.empty();
 
-        // Parse to component
         Component parsed = deserializeAppropriately(translatedMessage);
 
-        // Use a base component with the default color and append parsed message.
         return Component.text()
                 .color(defaultColor)
                 .append(parsed)
                 .build();
     }
 
-    /** Localized helpers using enum Message and the builder above. */
     public void sendInfo(Audience audience, Message message, Object... args) {
         String translated = lang.translate(message, args);
         Component comp = buildLocalizedComponent(translated, NamedTextColor.WHITE);
@@ -75,9 +67,6 @@ public class TextFormatter {
         audience.sendMessage(getPrefix().append(comp));
     }
 
-    /**
-     * sendHelp: first part (command) gold, second part (description) white, space in between.
-     */
     public void sendHelp(Audience audience, Message command, Message description, Object... args) {
         String translatedCommand = lang.translate(command, args);
         String translatedDescription = lang.translate(description, args);
@@ -85,7 +74,6 @@ public class TextFormatter {
         Component cmdComp = buildLocalizedComponent(translatedCommand, NamedTextColor.GOLD);
         Component descComp = buildLocalizedComponent(translatedDescription, NamedTextColor.WHITE);
 
-        // Space between command and description — give it the same color as the description for consistency
         Component space = Component.text(" ").color(NamedTextColor.WHITE);
 
         Component helpComp = Component.text()
@@ -97,14 +85,11 @@ public class TextFormatter {
         audience.sendMessage(helpComp);
     }
 
-    // Custom text parsers, does not support language translation
     @NotNull
     public Component parseTextToComponent(Player player, String input) {
         if (input == null || input.isEmpty()) return Component.empty();
 
-        // Apply placeholders if PAPI is available
         input = applyPlaceholders(player, input);
-
         return deserializeAppropriately(input);
     }
 
@@ -125,24 +110,79 @@ public class TextFormatter {
 
     private Component deserializeAppropriately(String input) {
         try {
-            Component mmComponent = miniMessage.deserialize(input);
-            Component plain = Component.text(input);
+            String normalized = convertLegacyToMiniMessage(input);
+            Component mmComponent = miniMessage.deserialize(normalized);
 
-            // If MiniMessage result is just plain text, it did nothing useful. fallback to legacy
-            if (mmComponent.equals(plain)) {
-                return legacySerializer.deserialize(input.replaceAll("(?i)&([0-9a-fk-or])", "§$1"))
-                        .decoration(TextDecoration.ITALIC, false);
-            }
-
-            // Otherwise, MiniMessage worked. ensure non-italic if not explicitly set.
+            // If no explicit italic tag was used, disable italics by default
             if (mmComponent.decoration(TextDecoration.ITALIC) == TextDecoration.State.NOT_SET) {
                 mmComponent = mmComponent.decoration(TextDecoration.ITALIC, false);
             }
 
             return mmComponent;
         } catch (Exception e) {
-            // Totally broken input, fallback to plain non-italic
             return Component.text(input).decoration(TextDecoration.ITALIC, false);
         }
     }
+
+    /**
+     * For compatibility with legacy codes
+     * This will convert anything legacy to MiniMessage
+     * Once converted, everything will be parsed as pure MiniMessage text
+     */
+    private String convertLegacyToMiniMessage(String input) {
+        if (input == null) return "";
+
+        // Replace hex colors
+        Matcher hexMatcher = LEGACY_HEX.matcher(input);
+        StringBuffer sb = new StringBuffer();
+        while (hexMatcher.find()) {
+            String hex = hexMatcher.group(1);
+            hexMatcher.appendReplacement(sb, "<#" + hex + ">");
+        }
+        hexMatcher.appendTail(sb);
+
+        String processed = sb.toString();
+
+        // Replace simple codes
+        Matcher simpleMatcher = LEGACY_SIMPLE.matcher(processed);
+        sb = new StringBuffer();
+        while (simpleMatcher.find()) {
+            char code = simpleMatcher.group(1).toLowerCase().charAt(0);
+            String replacement = COLOR_MAP.getOrDefault(code, "reset");
+            simpleMatcher.appendReplacement(sb, "<" + replacement + ">");
+        }
+        simpleMatcher.appendTail(sb);
+
+        return sb.toString();
+    }
+
+    // Patterns for legacy color codes for compatibility
+    private final Pattern LEGACY_HEX = Pattern.compile("(?i)[&§]#([0-9a-f]{6})"); // & or § followed by hex
+    private final Pattern LEGACY_SIMPLE = Pattern.compile("(?i)[&§]([0-9a-fk-or])"); // single-char codes
+
+    // Map of legacy codes for compatibility
+    private final java.util.Map<Character, String> COLOR_MAP = java.util.Map.ofEntries(
+            java.util.Map.entry('0', "black"),
+            java.util.Map.entry('1', "dark_blue"),
+            java.util.Map.entry('2', "dark_green"),
+            java.util.Map.entry('3', "dark_aqua"),
+            java.util.Map.entry('4', "dark_red"),
+            java.util.Map.entry('5', "dark_purple"),
+            java.util.Map.entry('6', "gold"),
+            java.util.Map.entry('7', "gray"),
+            java.util.Map.entry('8', "dark_gray"),
+            java.util.Map.entry('9', "blue"),
+            java.util.Map.entry('a', "green"),
+            java.util.Map.entry('b', "aqua"),
+            java.util.Map.entry('c', "red"),
+            java.util.Map.entry('d', "light_purple"),
+            java.util.Map.entry('e', "yellow"),
+            java.util.Map.entry('f', "white"),
+            java.util.Map.entry('k', "obfuscated"),
+            java.util.Map.entry('l', "bold"),
+            java.util.Map.entry('m', "strikethrough"),
+            java.util.Map.entry('n', "underlined"),
+            java.util.Map.entry('o', "italic"),
+            java.util.Map.entry('r', "reset")
+    );
 }
