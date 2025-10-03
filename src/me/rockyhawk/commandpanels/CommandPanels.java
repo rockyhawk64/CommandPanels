@@ -74,8 +74,6 @@ public class CommandPanels extends JavaPlugin {
         addPermission("commandpanels.command.open", PermissionDefault.OP);
         addPermission("commandpanels.command.open.other", PermissionDefault.OP);
         addPermission("commandpanels.command.help", PermissionDefault.TRUE);
-        // REMOVE AFTER CONVERTER IS REMOVED
-        addPermission("commandpanels.command.convert", PermissionDefault.OP);
     }
 
     private void addPermission(String name, PermissionDefault defaultValue) {

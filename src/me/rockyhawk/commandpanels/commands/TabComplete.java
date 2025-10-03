@@ -41,10 +41,6 @@ public class TabComplete {
             if (sender.hasPermission("commandpanels.command.data")) {
                 output.add("data");
             }
-            // REMOVE AFTER CONVERTER IS REMOVED
-            if (sender.hasPermission("commandpanels.command.convert")) {
-                output.add("convert");
-            }
         }
 
         if (args.length == 2) {

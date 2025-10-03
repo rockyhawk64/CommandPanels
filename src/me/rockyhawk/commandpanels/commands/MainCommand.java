@@ -27,7 +27,6 @@ public class MainCommand implements BasicCommand {
         register(new HelpCommand());
         register(new VersionCommand());
         register(new DataCommand());
-        register(new ConvertCommand());
     }
 
     private void register(SubCommand subCommand) {

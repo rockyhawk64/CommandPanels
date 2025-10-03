@@ -10,14 +10,6 @@ public enum Message {
     COMMAND_UNKNOWN_SUBCOMMAND("Unknown subcommand. Use /pa help."),
     COMMAND_SUBCOMMAND_HELP("Use /pa help for a list of subcommands."),
 
-    // Converter
-    CONVERT_PANEL_CONFIG("Converts v3 -> v4 Panel config layouts"),
-    CONVERT_OLD_DIR_NOT_FOUND("Old panels directory not found: {0}"),
-    CONVERT_NO_PANELS_SECTION("No panels section in file: {0}"),
-    CONVERT_FILE_FAILED("Failed to convert file: {0}"),
-    CONVERT_NO_OLD_FILES("No old panel files found."),
-    CONVERT_SUCCESS("Converted panel: {0} -> {1}"),
-
     // FileHandler / DataLoader / GenerateManager
     FILE_CREATE_PANELS_FAIL("Failed to create panels folder!"),
     FILE_CREATE_EXAMPLE_FAIL("Could not create example panels!"),
@@ -117,8 +109,6 @@ public enum Message {
     HELP_VERSION_DESCRIPTION("Gets the plugin version"),
     HELP_HELP_COMMAND("/pa help"),
     HELP_HELP_DESCRIPTION("Shows this help menu"),
-    HELP_CONVERT_COMMAND("/pa convert"),
-    HELP_CONVERT_DESCRIPTION("Converts basic layout from v3 to v4 panels (not plug and play)"),
 
     // Misc
     DIALOG_NO_BUTTONS("Dialog needs at least one button"),

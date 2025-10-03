@@ -45,11 +45,6 @@ public class HelpCommand implements SubCommand {
             ctx.text.sendHelp(sender, Message.HELP_HELP_COMMAND, Message.HELP_HELP_DESCRIPTION);
         }
 
-        // REMOVE AFTER CONVERTER IS REMOVED
-        if (sender.hasPermission("commandpanels.command.convert")) {
-            ctx.text.sendHelp(sender, Message.HELP_CONVERT_COMMAND, Message.HELP_CONVERT_DESCRIPTION);
-        }
-
         return true;
     }
 }
