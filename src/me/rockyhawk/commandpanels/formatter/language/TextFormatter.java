@@ -97,7 +97,12 @@ public class TextFormatter {
     @NotNull
     public String parseTextToString(Player player, String input) {
         Component component = parseTextToComponent(player, input);
-        return LegacyComponentSerializer.legacySection().serialize(component);
+        // Preserve RGB when serializing to legacy
+        return LegacyComponentSerializer.builder()
+                .hexColors()                              // enable hex serialization
+                .useUnusualXRepeatedCharacterHexFormat()  // §x§R§R§G§G§B§B form
+                .build()
+                .serialize(component);
     }
 
     public String applyPlaceholders(Player player, String input) {
@@ -125,42 +130,75 @@ public class TextFormatter {
     }
 
     /**
-     * For compatibility with legacy codes
-     * This will convert anything legacy to MiniMessage
-     * Once converted, everything will be parsed as pure MiniMessage text
+     * Below includes compatibility with legacy codes
+     * Handles:
+     *  - Mojang RGB form: §x§R§R§G§G§B§B (and &x&R&R&G&G&B&B)
+     *  - Simple hex: &#[0-9a-f]{6} or §#[0-9a-f]{6}
+     *  - Simple legacy codes: &a, §l, etc.
      */
     private String convertLegacyToMiniMessage(String input) {
         if (input == null) return "";
 
-        // Replace hex colors
-        Matcher hexMatcher = LEGACY_HEX.matcher(input);
-        StringBuffer sb = new StringBuffer();
+        String processed = input;
+
+        // Replace Mojang "§x§R§R§G§G§B§B" (or &x...) with MiniMessage <#RRGGBB>
+        Matcher mojangMatcher = MOJANG_HEX.matcher(processed);
+        StringBuilder mmSB = new StringBuilder();
+        while (mojangMatcher.find()) {
+            String hex =
+                    (mojangMatcher.group(1) +
+                            mojangMatcher.group(2) +
+                            mojangMatcher.group(3) +
+                            mojangMatcher.group(4) +
+                            mojangMatcher.group(5) +
+                            mojangMatcher.group(6)).toLowerCase();
+            mojangMatcher.appendReplacement(mmSB, Matcher.quoteReplacement("<#" + hex + ">"));
+        }
+        mojangMatcher.appendTail(mmSB);
+        processed = mmSB.toString();
+
+        // Replace &#[0-9a-f]{6} / §#[0-9a-f]{6} with <#RRGGBB>
+        Matcher hexMatcher = LEGACY_HASH_HEX.matcher(processed);
+        StringBuilder sb1 = new StringBuilder();
         while (hexMatcher.find()) {
-            String hex = hexMatcher.group(1);
-            hexMatcher.appendReplacement(sb, "<#" + hex + ">");
+            String hex = hexMatcher.group(1).toLowerCase();
+            hexMatcher.appendReplacement(sb1, Matcher.quoteReplacement("<#" + hex + ">"));
         }
-        hexMatcher.appendTail(sb);
+        hexMatcher.appendTail(sb1);
+        processed = sb1.toString();
 
-        String processed = sb.toString();
-
-        // Replace simple codes
+        // Replace simple legacy codes (&a, §l, etc.) with MiniMessage tags
         Matcher simpleMatcher = LEGACY_SIMPLE.matcher(processed);
-        sb = new StringBuffer();
+        StringBuilder sb2 = new StringBuilder();
         while (simpleMatcher.find()) {
-            char code = simpleMatcher.group(1).toLowerCase().charAt(0);
+            char code = Character.toLowerCase(simpleMatcher.group(1).charAt(0));
             String replacement = COLOR_MAP.getOrDefault(code, "reset");
-            simpleMatcher.appendReplacement(sb, "<" + replacement + ">");
+            simpleMatcher.appendReplacement(sb2, Matcher.quoteReplacement("<" + replacement + ">"));
         }
-        simpleMatcher.appendTail(sb);
+        simpleMatcher.appendTail(sb2);
 
-        return sb.toString();
+        return sb2.toString();
     }
 
-    // Patterns for legacy color codes for compatibility
-    private final Pattern LEGACY_HEX = Pattern.compile("(?i)[&§]#([0-9a-f]{6})"); // & or § followed by hex
-    private final Pattern LEGACY_SIMPLE = Pattern.compile("(?i)[&§]([0-9a-fk-or])"); // single-char codes
+    // Patterns for legacy color codes
+    // Mojang RGB: §x§R§R§G§G§B§B or &x&R&R&G&G&B&B
+    private final Pattern MOJANG_HEX = Pattern.compile(
+            "(?i)[&§]x" +
+                    "[&§]([0-9a-f])" +
+                    "[&§]([0-9a-f])" +
+                    "[&§]([0-9a-f])" +
+                    "[&§]([0-9a-f])" +
+                    "[&§]([0-9a-f])" +
+                    "[&§]([0-9a-f])"
+    );
 
-    // Map of legacy codes for compatibility
+    // Pattern for legacy simple hex &#[0-9a-f]{6} or §#[0-9a-f]{6}
+    private final Pattern LEGACY_HASH_HEX = Pattern.compile("(?i)[&§]#([0-9a-f]{6})");
+
+    // Single-char legacy codes
+    private final Pattern LEGACY_SIMPLE = Pattern.compile("(?i)[&§]([0-9a-fk-or])");
+
+    // Map of legacy codes -> MiniMessage tags
     private final java.util.Map<Character, String> COLOR_MAP = java.util.Map.ofEntries(
             java.util.Map.entry('0', "black"),
             java.util.Map.entry('1', "dark_blue"),
