@@ -37,11 +37,42 @@ public class CommandRunner {
 
     }
 
-    public void runCommands(Panel panel, Player player, List<String> commands){
-        for(String command : commands){
-            runCommand(panel, player, command);
-        }
+    public void runCommands(Panel panel, Player player, List<String> commands) {
+        runCommands(panel, player, commands, 0);
     }
+
+    private void runCommands(Panel panel, Player player, List<String> commands, int index) {
+        if (index >= commands.size()) return;
+
+        String command = commands.get(index).trim();
+
+        // Handle the delay tag at flow level
+        if (command.startsWith("[delay]")) {
+            String delayStr = ctx.text.applyPlaceholders(
+                    player,
+                    command.replace("[delay]", "").trim());
+
+            int ticks;
+            try {
+                ticks = Integer.parseInt(delayStr);
+            } catch (NumberFormatException e) {
+                ticks = 0;
+            }
+
+            int nextIndex = index + 1;
+            ctx.plugin.getServer().getScheduler().runTaskLater(ctx.plugin,
+                    () -> runCommands(panel, player, commands, nextIndex),
+                    ticks);
+            return;
+        }
+
+        // Run the command
+        runCommand(panel, player, command);
+
+        // Move to the next command
+        runCommands(panel, player, commands, index + 1);
+    }
+
 
     public void runCommand(Panel panel, Player player, String command) {
         for (CommandTagResolver resolver : resolvers) {
