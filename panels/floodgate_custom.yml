@@ -30,7 +30,7 @@ items:
       - French
       - German
       - Japanese
-    default: English
+    default: 3
     actions:
       commands:
         - '[msg] &aLanguage set to: %commandpanels_session_dropdown_language%'

@@ -84,7 +84,8 @@ public class CustomForm {
                         }
                         form.dropdown(
                                 parseText(dropdown.getName()),
-                                parsedOptions
+                                parsedOptions,
+                                parseInt(dropdown.getDefault())
                         );
                         inputOrder.add(dropdown);
                     }
