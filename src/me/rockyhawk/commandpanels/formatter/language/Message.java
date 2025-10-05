@@ -21,7 +21,6 @@ public enum Message {
 
     // PanelBuilder / PanelFactory / OpenCommand
     PANEL_LAYOUT_NUMBER_MISSING("Panel layout is missing/skipping a number."),
-    PANEL_NO_ITEMS("Panel must contain at least one item."),
     PANEL_INVALID_TYPE("Invalid inventory type."),
     PANEL_NOT_FOUND("Panel not found."),
     PANEL_OPEN_TRIGGERED("Panel open triggered for player."),

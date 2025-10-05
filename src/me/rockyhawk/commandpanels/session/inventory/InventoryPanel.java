@@ -11,13 +11,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InventoryPanel extends Panel {
+public class InventoryPanel extends Panel implements InventoryHolder {
     private final String rows;
     private final Map<String, PanelItem> items = new HashMap<>();
     private final Map<String, List<String>> slots = new HashMap<>();
@@ -88,5 +90,11 @@ public class InventoryPanel extends Panel {
 
     public String getUpdateDelay() {
         return updateDelay;
+    }
+
+    // For InventoryHolder implementation
+    @Override
+    public Inventory getInventory() {
+        return null;
     }
 }

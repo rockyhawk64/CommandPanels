@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.session.inventory.listeners;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.session.PanelSession;
+import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,7 +35,7 @@ public class InventoryEvents implements Listener {
 
         // Only remove the session if the player has one
         PanelSession session = ctx.session.getPlayerSession(player);
-        if (isPanelInventory(event.getInventory())) {
+        if (event.getInventory().getHolder() instanceof InventoryPanel) {
             itemSanitiser(player.getInventory());
             itemDropper(player, event.getInventory());
             if(session != null) session.removeUpdateTask();
@@ -58,27 +59,10 @@ public class InventoryEvents implements Listener {
 
     private void closePanels(Player p){
         if (p.getOpenInventory() != null) { // Player has an open inventory
-            if (isPanelInventory(p.getOpenInventory().getTopInventory())) {
+            if (p.getOpenInventory().getTopInventory().getHolder() instanceof InventoryPanel) {
                 p.closeInventory();
             }
         }
-    }
-
-    private boolean isPanelInventory(Inventory inv) {
-        NamespacedKey itemIdKey = new NamespacedKey(ctx.plugin, "item_id");
-
-        for (ItemStack item : inv) {
-            if (item == null) continue;
-            ItemMeta meta = item.getItemMeta();
-            if (meta == null) continue;
-            if (meta.getPersistentDataContainer().has(itemIdKey, PersistentDataType.STRING)) {
-                String val = meta.getPersistentDataContainer().get(itemIdKey, PersistentDataType.STRING);
-                if (val != null) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private void itemSanitiser(PlayerInventory inv) {

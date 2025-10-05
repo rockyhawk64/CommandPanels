@@ -16,6 +16,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -38,13 +39,13 @@ public class PanelFactory {
         if (rows.matches("\\d+")) {
             int rowsNum = Integer.parseInt(rows);
             if(rowsNum > 6) rowsNum = 6;
-            inv = Bukkit.createInventory(p, rowsNum * 9, title);
+            inv = Bukkit.createInventory(panel, rowsNum * 9, title);
         } else {
             try {
-                inv = Bukkit.createInventory(p, InventoryType.valueOf(rows.toUpperCase()), title);
+                inv = Bukkit.createInventory(panel, InventoryType.valueOf(rows.toUpperCase()), title);
             } catch (IllegalArgumentException e) {
                 ctx.text.sendError(p, Message.PANEL_INVALID_TYPE);
-                inv = Bukkit.createInventory(p, 9, title); // fallback to 1 row
+                inv = Bukkit.createInventory(panel, 9, title); // fallback to 1 row
             }
         }
 

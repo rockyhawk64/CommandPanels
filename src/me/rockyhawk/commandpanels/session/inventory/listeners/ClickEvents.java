@@ -35,10 +35,7 @@ public class ClickEvents implements Listener {
     public void onInventoryClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player player)) return;
         if (e.getClickedInventory() == null) return;
-
-        // Only block top inventory interactions
-        Inventory topInventory = e.getView().getTopInventory();
-        if (!e.getClickedInventory().equals(topInventory)) return;
+        if (!(e.getClickedInventory().getHolder() instanceof InventoryPanel)) return;
 
         ItemStack item = e.getCurrentItem();
         if (item == null || !item.hasItemMeta()) return;
@@ -79,12 +76,11 @@ public class ClickEvents implements Listener {
 
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
-
         Inventory topInventory = event.getView().getTopInventory();
-        int topSize = topInventory.getSize();
+        if(!(topInventory.getHolder() instanceof InventoryPanel)) return;
 
         // Only care about drag targets in the top inventory
+        int topSize = topInventory.getSize();
         boolean draggingOverPanelItem = event.getRawSlots().stream()
                 .filter(slot -> slot < topSize) // only slots in the top inventory
                 .anyMatch(slot -> {
