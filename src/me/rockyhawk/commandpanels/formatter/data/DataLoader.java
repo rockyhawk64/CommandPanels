@@ -47,12 +47,12 @@ public class DataLoader {
             File file = new File(ctx.plugin.getDataFolder(), "data.yml");
             dataConfig.save(file);
         } catch (IOException e) {
-            Bukkit.getScheduler().runTask(ctx.plugin, () ->
+            Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task ->
                     ctx.text.sendError(Bukkit.getConsoleSender(), Message.FILE_SAVE_DATA_FAIL));
         }
     }
     public void saveDataFileAsync() {
-        Bukkit.getScheduler().runTaskAsynchronously(ctx.plugin, this::saveDataFileSync);
+        Bukkit.getAsyncScheduler().runNow(ctx.plugin, task -> saveDataFileSync());
     }
 
     public void doDataMath(String playerName, String dataPoint, String dataValue){
