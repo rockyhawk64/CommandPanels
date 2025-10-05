@@ -49,9 +49,7 @@ public class ItemBuilder {
         // Use PersistentDataContainer for item recognition
         NamespacedKey itemId = new NamespacedKey(ctx.plugin, "item_id");
         NamespacedKey baseItemId = new NamespacedKey(ctx.plugin, "base_item_id");
-        NamespacedKey panelId = new NamespacedKey(ctx.plugin, "panel_id");
         itemStack.editPersistentDataContainer(c -> c.set(itemId, PersistentDataType.STRING, item.id()));
-        itemStack.editPersistentDataContainer(c -> c.set(panelId, PersistentDataType.STRING, panel.getName()));
         itemStack.editPersistentDataContainer(c -> c.set(baseItemId, PersistentDataType.STRING, item.id()));
 
         // Set item to the slot

@@ -35,7 +35,7 @@ public class ClickEvents implements Listener {
     public void onInventoryClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player player)) return;
         if (e.getClickedInventory() == null) return;
-        if (!(e.getClickedInventory().getHolder() instanceof InventoryPanel)) return;
+        if (!(e.getClickedInventory().getHolder() instanceof InventoryPanel panel)) return;
 
         ItemStack item = e.getCurrentItem();
         if (item == null || !item.hasItemMeta()) return;
@@ -44,18 +44,14 @@ public class ClickEvents implements Listener {
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
         NamespacedKey baseIdKey = new NamespacedKey(ctx.plugin, "base_item_id");
-        NamespacedKey panelIdKey = new NamespacedKey(ctx.plugin, "panel_id");
 
-        if (!container.has(baseIdKey, PersistentDataType.STRING) ||
-                !container.has(panelIdKey, PersistentDataType.STRING)) return;
+        if (!container.has(baseIdKey, PersistentDataType.STRING)) return;
 
         // Cancel interaction and prevent taking the item
         e.setCancelled(true);
         e.setResult(Event.Result.DENY);
 
         String itemId = container.get(baseIdKey, PersistentDataType.STRING);
-        String panelId = container.get(panelIdKey, PersistentDataType.STRING);
-        InventoryPanel panel = (InventoryPanel) ctx.plugin.panels.get(panelId);
 
         // Check valid interaction types
         switch (e.getClick()) {

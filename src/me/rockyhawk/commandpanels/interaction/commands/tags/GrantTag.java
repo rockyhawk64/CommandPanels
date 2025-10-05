@@ -17,33 +17,31 @@ public class GrantTag implements CommandTagResolver {
 
     @Override
     public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
-        Bukkit.getScheduler().runTask(ctx.plugin, () -> {
-            // Split arguments
-            String[] parts = command.split("\\s+", 2);
+        // Split arguments
+        String[] parts = command.split("\\s+", 2);
 
-            if (parts.length < 2) {
-                ctx.text.sendError(player, Message.ITEM_GRANT_SYNTAX_INVALID);
-                return;
-            }
+        if (parts.length < 2) {
+            ctx.text.sendError(player, Message.ITEM_GRANT_SYNTAX_INVALID);
+            return;
+        }
 
-            String permission = parts[0];
-            String commandToExecute = parts[1];
+        String permission = parts[0];
+        String commandToExecute = parts[1];
 
-            boolean hadPermission = player.hasPermission(permission) || player.isOp();
-            PermissionAttachment attachment = null;
+        boolean hadPermission = player.hasPermission(permission) || player.isOp();
+        PermissionAttachment attachment = null;
 
-            if (!hadPermission) {
-                attachment = player.addAttachment(ctx.plugin);
-                attachment.setPermission(permission, true);
-            }
+        if (!hadPermission) {
+            attachment = player.addAttachment(ctx.plugin);
+            attachment.setPermission(permission, true);
+        }
 
-            // Perform chat operation with the permission attached
-            player.chat(commandToExecute);
+        // Perform chat operation with the permission attached
+        player.chat(commandToExecute);
 
-            // Cleanup: remove permission only if it was not already granted
-            if (attachment != null) {
-                player.removeAttachment(attachment);
-            }
-        });
+        // Cleanup: remove permission only if it was not already granted
+        if (attachment != null) {
+            player.removeAttachment(attachment);
+        }
     }
 }
