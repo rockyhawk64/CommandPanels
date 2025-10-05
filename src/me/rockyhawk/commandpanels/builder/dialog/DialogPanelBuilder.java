@@ -12,7 +12,6 @@ import me.rockyhawk.commandpanels.builder.logic.ConditionNode;
 import me.rockyhawk.commandpanels.builder.logic.ConditionParser;
 import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.Panel;
-import me.rockyhawk.commandpanels.session.SessionManager;
 import me.rockyhawk.commandpanels.session.dialog.DialogComponent;
 import me.rockyhawk.commandpanels.session.dialog.DialogPanel;
 import me.rockyhawk.commandpanels.session.dialog.components.*;
@@ -37,7 +36,7 @@ public class DialogPanelBuilder extends PanelBuilder {
     }
 
     @Override
-    public void open(Panel openPanel, SessionManager.PanelOpenType openType) {
+    public void open(Panel openPanel) {
         if (!(openPanel instanceof DialogPanel panel)) {
             throw new IllegalArgumentException("Expected DialogPanel, got " + openPanel.getClass());
         }
@@ -132,7 +131,6 @@ public class DialogPanelBuilder extends PanelBuilder {
 
         // Show the dialog to player and create session
         player.showDialog(dialog);
-        ctx.session.updateSession(this.getPlayer(), panel, openType);
     }
 
     public float parseFloat(String raw) {

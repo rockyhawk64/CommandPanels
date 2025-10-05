@@ -3,7 +3,10 @@ package me.rockyhawk.commandpanels.interaction.commands.tags;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 public class SessionTag implements CommandTagResolver {
 
@@ -28,7 +31,9 @@ public class SessionTag implements CommandTagResolver {
                 if (args.length < 3) return;
                 String key = args[1];
                 String value = joinArgs(args, 2);
-                ctx.session.getPlayerSession(player).setData(key, value);
+                player.getPersistentDataContainer()
+                        .set(new NamespacedKey(ctx.plugin, key),
+                                PersistentDataType.STRING, value);
                 break;
             }
 
@@ -36,7 +41,8 @@ public class SessionTag implements CommandTagResolver {
                 // [session] del key
                 if (args.length < 2) return;
                 String key = args[1];
-                ctx.session.getPlayerSession(player).removeData(key);
+                player.getPersistentDataContainer()
+                        .remove(new NamespacedKey(ctx.plugin, key));
                 break;
             }
 

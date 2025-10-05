@@ -5,26 +5,24 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.inventory.InventoryPanelBuilder;
 import me.rockyhawk.commandpanels.builder.inventory.items.ItemBuilder;
-import me.rockyhawk.commandpanels.session.PanelUpdater;
-import me.rockyhawk.commandpanels.session.PanelSession;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.joml.Random;
 
-public class InventoryPanelUpdater implements PanelUpdater {
+public class InventoryPanelUpdater {
 
     private ScheduledTask task;
 
-    @Override
-    public void start(Context ctx, PanelSession session) {
-        if (!(session.getPanel() instanceof InventoryPanel panel)) return;
-
+    public void start(Context ctx, Player p, InventoryPanel panel) {
         // If restarted, stop current event
         stop();
 
-        InventoryPanelBuilder panelBuilder = new InventoryPanelBuilder(ctx, session.getPlayer());
+        InventoryPanelBuilder panelBuilder = new InventoryPanelBuilder(ctx, p);
         ItemBuilder builder = new ItemBuilder(ctx, panelBuilder);
 
         int updateDelay = 20;
@@ -42,9 +40,17 @@ public class InventoryPanelUpdater implements PanelUpdater {
         // Schedule repeating GUI update task on the player's region
         this.task = Bukkit.getRegionScheduler().runAtFixedRate(
                 ctx.plugin,
-                session.getPlayer().getLocation(),
+                p.getLocation(),
                 (scheduledTask) -> {
-                    Inventory inv = session.getPlayer().getOpenInventory().getTopInventory();
+                    Inventory inv = p.getOpenInventory().getTopInventory();
+
+                    InventoryHolder holder = inv.getHolder();
+                    if (!(holder instanceof InventoryPanel) || holder != panel) {
+                        stop();
+                        return;
+                    }
+                    p.sendMessage(panel.getName() + " " + Random.newSeed());
+
                     NamespacedKey itemIdKey = new NamespacedKey(ctx.plugin, "item_id");
                     NamespacedKey baseIdKey = new NamespacedKey(ctx.plugin, "base_item_id");
                     NamespacedKey fillItem = new NamespacedKey(ctx.plugin, "fill_item");
@@ -86,7 +92,6 @@ public class InventoryPanelUpdater implements PanelUpdater {
         );
     }
 
-    @Override
     public void stop() {
         if (task != null) {
             task.cancel();

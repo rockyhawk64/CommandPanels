@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.builder.floodgate;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.session.Panel;
-import me.rockyhawk.commandpanels.session.SessionManager;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgatePanel;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,7 +20,7 @@ public class FloodgatePanelBuilder extends PanelBuilder {
     }
 
     @Override
-    public void open(Panel openPanel, SessionManager.PanelOpenType openType){
+    public void open(Panel openPanel){
         if (!(openPanel instanceof FloodgatePanel panel)) {
             throw new IllegalArgumentException("Expected FloodgatePanel, got " + openPanel.getClass());
         }
@@ -35,6 +34,5 @@ public class FloodgatePanelBuilder extends PanelBuilder {
             case "simple" -> this.simpleBuilder.sendForm(panel);
             case "custom" -> this.customBuilder.sendForm(panel);
         }
-        ctx.session.updateSession(this.getPlayer(), panel, openType);
     }
 }

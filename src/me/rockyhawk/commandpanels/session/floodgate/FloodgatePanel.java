@@ -5,7 +5,6 @@ import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.builder.floodgate.FloodgatePanelBuilder;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.session.Panel;
-import me.rockyhawk.commandpanels.session.SessionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -49,20 +48,23 @@ public class FloodgatePanel extends Panel {
     }
 
     @Override
-    public void open(Context ctx, Player player, SessionManager.PanelOpenType openType){
+    public void open(Context ctx, Player player, boolean isNewPanelSession){
         if (Bukkit.getPluginManager().getPlugin("floodgate") == null) {
             return;
         }
 
-        // Run panel commands
-        if(openType != SessionManager.PanelOpenType.REFRESH) {
+        if(isNewPanelSession) {
+            // Update panel data values
+            updatePanelData(ctx, player);
+
+            // Run panel commands
             CommandRunner runner = new CommandRunner(ctx);
             runner.runCommands(this, player, this.getCommands());
         }
 
         // Build and open panel
         PanelBuilder builder = new FloodgatePanelBuilder(ctx, player);
-        builder.open(this, openType);
+        builder.open(this);
     }
     public String getSubtitle() { return simpleSubtitle; }
     public String getFloodgateType() { return floodgateType; }

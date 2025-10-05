@@ -14,8 +14,10 @@ import me.rockyhawk.commandpanels.session.dialog.components.DialogButton;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickCallback;
 import net.kyori.adventure.text.event.ClickEvent;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.persistence.PersistentDataType;
 
 public class ActionBuilder implements Listener {
     private final Context ctx;
@@ -53,11 +55,17 @@ public class ActionBuilder implements Listener {
 
                         // Use the first non-null value
                         if (text != null) {
-                            ctx.session.getPlayerSession((Player) audience).setData(id, text);
+                            player.getPersistentDataContainer()
+                                    .set(new NamespacedKey(ctx.plugin, id),
+                                            PersistentDataType.STRING, text);
                         } else if (number != null) {
-                            ctx.session.getPlayerSession((Player) audience).setData(id, String.valueOf(number));
+                            player.getPersistentDataContainer()
+                                    .set(new NamespacedKey(ctx.plugin, id),
+                                            PersistentDataType.STRING, String.valueOf(number));
                         } else if (bool != null) {
-                            ctx.session.getPlayerSession((Player) audience).setData(id, String.valueOf(bool));
+                            player.getPersistentDataContainer()
+                                    .set(new NamespacedKey(ctx.plugin, id),
+                                            PersistentDataType.STRING, String.valueOf(bool));
                         }
                     }
 

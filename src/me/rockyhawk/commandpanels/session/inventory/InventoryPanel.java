@@ -5,14 +5,16 @@ import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.builder.inventory.InventoryPanelBuilder;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.session.Panel;
-import me.rockyhawk.commandpanels.session.SessionManager;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgatePanel;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.util.HashMap;
@@ -54,26 +56,45 @@ public class InventoryPanel extends Panel implements InventoryHolder {
     }
 
     @Override
-    public void open(Context ctx, Player player, SessionManager.PanelOpenType openType) {
+    public void open(Context ctx, Player player, boolean isNewPanelSession) {
         // Check for floodgate panel if bedrock player
         Panel panel = ctx.plugin.panels.get(floodgate);
         if (Bukkit.getPluginManager().getPlugin("floodgate") != null) {
             if (panel instanceof FloodgatePanel floodgatePanel &&
                     FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) {
-                floodgatePanel.open(ctx, player, openType);
+                floodgatePanel.open(ctx, player, true);
                 return;
             }
         }
 
-        // Run panel commands
-        if(openType != SessionManager.PanelOpenType.REFRESH) {
+
+        if(isNewPanelSession) {
+            // Don't open same panel if its already open
+            if(checkCurrentPanel(player)){
+                return;
+            }
+            updatePanelData(ctx, player);
+
+            // Run panel commands
             CommandRunner runner = new CommandRunner(ctx);
             runner.runCommands(this, player, this.getCommands());
+
+            // Start a panel updater
+            InventoryPanelUpdater updater = new InventoryPanelUpdater();
+            updater.start(ctx, player, this);
         }
 
         // Build and open the panel
         PanelBuilder builder = new InventoryPanelBuilder(ctx, player);
-        builder.open(this, openType);
+        builder.open(this);
+    }
+
+    // Do not open the same panel again if its already open
+    private boolean checkCurrentPanel(Player p) {
+        if(p.getOpenInventory().getTopInventory().getHolder() instanceof InventoryPanel panel){
+            return panel.getName().equals(getName());
+        }
+        return false;
     }
 
     public String getRows() {

@@ -4,7 +4,6 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commands.SubCommand;
 import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.Panel;
-import me.rockyhawk.commandpanels.session.SessionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -61,7 +60,7 @@ public class OpenCommand implements SubCommand {
             ctx.text.sendInfo(sender, Message.PANEL_OPEN_TRIGGERED);
         }
 
-        panel.open(ctx, target, SessionManager.PanelOpenType.EXTERNAL);
+        panel.open(ctx, target, true);
         return true;
     }
 }

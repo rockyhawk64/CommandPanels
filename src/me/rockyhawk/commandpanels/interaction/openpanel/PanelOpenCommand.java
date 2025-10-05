@@ -3,11 +3,12 @@ package me.rockyhawk.commandpanels.interaction.openpanel;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.Panel;
-import me.rockyhawk.commandpanels.session.SessionManager;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
@@ -52,7 +53,9 @@ public class PanelOpenCommand implements Listener {
             for (int i = 0; i < args.length; i++) {
                 String key = pnlCmdArgs[i];
                 String value = args[i];
-                ctx.session.getPlayerSession(e.getPlayer()).setData(key, value);
+                e.getPlayer().getPersistentDataContainer()
+                        .set(new NamespacedKey(ctx.plugin, key),
+                                PersistentDataType.STRING, value);
             }
 
             // Stop and do not open panel if conditions are false
@@ -61,7 +64,7 @@ public class PanelOpenCommand implements Listener {
             }
 
             e.setCancelled(true);
-            Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task -> panel.open(ctx, e.getPlayer(), SessionManager.PanelOpenType.EXTERNAL));
+            Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task -> panel.open(ctx, e.getPlayer(), true));
             return;
         }
 

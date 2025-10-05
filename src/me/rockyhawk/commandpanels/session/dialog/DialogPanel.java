@@ -5,8 +5,8 @@ import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.builder.dialog.DialogPanelBuilder;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.session.Panel;
-import me.rockyhawk.commandpanels.session.SessionManager;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgatePanel;
+import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -53,26 +53,29 @@ public class DialogPanel extends Panel {
     }
 
     @Override
-    public void open(Context ctx, Player player, SessionManager.PanelOpenType openType){
+    public void open(Context ctx, Player player, boolean isNewPanelSession){
         // Check for floodgate panel if bedrock player
         Panel panel = ctx.plugin.panels.get(floodgate);
         if (Bukkit.getPluginManager().getPlugin("floodgate") != null) {
             if (panel instanceof FloodgatePanel floodgatePanel &&
                     FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) {
-                floodgatePanel.open(ctx, player, openType);
+                floodgatePanel.open(ctx, player, true);
                 return;
             }
         }
 
-        // Run panel commands
-        if(openType != SessionManager.PanelOpenType.REFRESH) {
+        if(isNewPanelSession) {
+            // Update panel data values
+            updatePanelData(ctx, player);
+
+            // Run panel commands
             CommandRunner runner = new CommandRunner(ctx);
             runner.runCommands(this, player, this.getCommands());
         }
 
         // Build and open panel
         PanelBuilder builder = new DialogPanelBuilder(ctx, player);
-        builder.open(this, openType);
+        builder.open(this);
     }
 
     public Map<String, DialogComponent> getComponents() { return components; }

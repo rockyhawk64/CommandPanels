@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.interaction.commands.tags;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
-import me.rockyhawk.commandpanels.session.SessionManager;
 import org.bukkit.entity.Player;
 
 public class OpenPanelTag implements CommandTagResolver {
@@ -21,7 +20,7 @@ public class OpenPanelTag implements CommandTagResolver {
 
         // Open panel tag will gracefully move from one panel to the next within the same session
         Panel openPanel = ctx.plugin.panels.get(command);
-        openPanel.open(ctx, player, SessionManager.PanelOpenType.INTERNAL);
+        openPanel.open(ctx, player, true);
     }
 }
 

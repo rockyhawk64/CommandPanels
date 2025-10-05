@@ -9,7 +9,9 @@ import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgateComponent;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgatePanel;
 import me.rockyhawk.commandpanels.session.floodgate.components.*;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 import org.geysermc.cumulus.response.CustomFormResponse;
 import org.geysermc.floodgate.api.FloodgateApi;
 
@@ -156,7 +158,9 @@ public class CustomForm {
     // Placeholder key will be the ID of the component and make session data from result string
     // Eg first button at the top will be index 0 %commandpanels_session_exampleslider%
     private void createSessionData(String key, String output) {
-        ctx.session.getPlayerSession(builder.getPlayer()).setData(key, output);
+        builder.getPlayer().getPersistentDataContainer()
+                .set(new NamespacedKey(ctx.plugin, key),
+                        PersistentDataType.STRING, output);
     }
 
     private String parseText(String raw) {

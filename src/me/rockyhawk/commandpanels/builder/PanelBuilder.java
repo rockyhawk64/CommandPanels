@@ -2,7 +2,6 @@ package me.rockyhawk.commandpanels.builder;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.session.Panel;
-import me.rockyhawk.commandpanels.session.SessionManager;
 import org.bukkit.entity.Player;
 
 public abstract class PanelBuilder {
@@ -14,7 +13,7 @@ public abstract class PanelBuilder {
         this.player = player;
     }
 
-    public abstract void open(Panel panel, SessionManager.PanelOpenType openType);
+    public abstract void open(Panel panel);
 
     public Player getPlayer() {
         return player;

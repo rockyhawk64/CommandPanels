@@ -2,9 +2,9 @@ package me.rockyhawk.commandpanels.formatter.placeholders;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.formatter.PlaceholderResolver;
-import me.rockyhawk.commandpanels.session.PanelSession;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 
 public class SessionDataPlaceholder implements PlaceholderResolver {
     @Override
@@ -16,12 +16,14 @@ public class SessionDataPlaceholder implements PlaceholderResolver {
         // Get data key
         String key = identifier.substring("session_".length());
 
-        // Get session if it exists
-        PanelSession session = ctx.session.getPlayerSession((Player) player);
-        if(session == null) return "no_session_found";
+        // Get session data if it exists
+        String data = player.getPersistentDataContainer()
+                .get(new NamespacedKey(ctx.plugin, key),
+                        PersistentDataType.STRING);
+        if(data == null) return "null";
 
         // Get the data from session
 
-        return session.getData(key);
+        return data;
     }
 }

@@ -1,7 +1,6 @@
 package me.rockyhawk.commandpanels.session.inventory.listeners;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.session.PanelSession;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -34,11 +33,9 @@ public class InventoryEvents implements Listener {
         if (!(event.getPlayer() instanceof Player player)) return;
 
         // Only remove the session if the player has one
-        PanelSession session = ctx.session.getPlayerSession(player);
         if (event.getInventory().getHolder() instanceof InventoryPanel) {
             itemSanitiser(player.getInventory());
             itemDropper(player, event.getInventory());
-            if(session != null) session.removeUpdateTask();
         }
     }
 
