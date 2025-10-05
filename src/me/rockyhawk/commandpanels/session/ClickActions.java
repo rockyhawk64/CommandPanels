@@ -4,7 +4,6 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
 
-// In session as it is reused for every type of Panel
 public record ClickActions(
         List<String> requirements,
         List<String> commands,

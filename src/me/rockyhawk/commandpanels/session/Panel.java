@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.session;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.logic.ConditionNode;
 import me.rockyhawk.commandpanels.builder.logic.ConditionParser;
-import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

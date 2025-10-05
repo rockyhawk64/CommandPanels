@@ -12,7 +12,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.joml.Random;
 
 public class InventoryPanelUpdater {
 
@@ -49,7 +48,6 @@ public class InventoryPanelUpdater {
                         stop();
                         return;
                     }
-                    p.sendMessage(panel.getName() + " " + Random.newSeed());
 
                     NamespacedKey itemIdKey = new NamespacedKey(ctx.plugin, "item_id");
                     NamespacedKey baseIdKey = new NamespacedKey(ctx.plugin, "base_item_id");

@@ -6,7 +6,6 @@ import me.rockyhawk.commandpanels.builder.dialog.DialogPanelBuilder;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.session.Panel;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgatePanel;
-import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
