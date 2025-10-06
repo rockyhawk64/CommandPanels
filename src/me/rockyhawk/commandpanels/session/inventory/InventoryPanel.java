@@ -75,15 +75,17 @@ public class InventoryPanel extends Panel implements InventoryHolder {
             // Run panel commands
             CommandRunner runner = new CommandRunner(ctx);
             runner.runCommands(this, player, this.getCommands());
-
-            // Start a panel updater
-            InventoryPanelUpdater updater = new InventoryPanelUpdater();
-            updater.start(ctx, player, this);
         }
 
         // Build and open the panel
         PanelBuilder builder = new InventoryPanelBuilder(ctx, player);
         builder.open(this);
+
+        if(isNewPanelSession) {
+            // Start a panel updater
+            InventoryPanelUpdater updater = new InventoryPanelUpdater();
+            updater.start(ctx, player, this);
+        }
     }
 
     // Do not open the same panel again if its already open

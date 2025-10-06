@@ -39,9 +39,7 @@ public class CommandRunner {
     }
 
     public void runCommands(Panel panel, Player player, List<String> commands) {
-        // Keep command execution thread safe
-        Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task ->
-                runCommands(panel, player, commands, 0));
+        runCommands(panel, player, commands, 0);
     }
 
     private void runCommands(Panel panel, Player player, List<String> commands, int index) {
