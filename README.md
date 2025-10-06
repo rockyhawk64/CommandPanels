@@ -35,7 +35,7 @@ It’s not just a basic form builder, it’s a **live YAML editor** with structu
 
 ---
 
-## Real Logic. Real Data.
+## Real Logic & Real Data
 
 CommandPanels lets you build menus that **react to players**, not just display static items.
 
