@@ -27,7 +27,7 @@ public class InventoryPanelUpdater {
         // Stop existing tasks if any
         stop();
 
-        // Determine update delay (same as your original logic)
+        // Determine update delay
         int updateDelay = 20;
         if (panel.getUpdateDelay().matches("\\d+")) {
             updateDelay = Integer.parseInt(panel.getUpdateDelay());
@@ -94,7 +94,7 @@ public class InventoryPanelUpdater {
                 updateDelay
         );
 
-        // Fast check task
+        // Fast heartbeat check task, should run frequently
         this.checkTask = Bukkit.getRegionScheduler().runAtFixedRate(
                 ctx.plugin,
                 p.getLocation(),
@@ -106,8 +106,8 @@ public class InventoryPanelUpdater {
                         stop();
                     }
                 },
-                5,
-                5
+                2,
+                2
         );
     }
 

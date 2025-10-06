@@ -8,5 +8,8 @@
 # When disabled, custom commands to open panels will not be registered
 custom-commands: true
 
-# Will make console logs when panels are opened and closed
+# Amount of time in ticks players must wait between opening panels
+cooldown-ticks: 5
+
+# Will make console logs when panels are opened
 panel-snooper: false

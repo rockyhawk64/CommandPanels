@@ -5,6 +5,7 @@ import me.rockyhawk.commandpanels.builder.logic.ConditionNode;
 import me.rockyhawk.commandpanels.builder.logic.ConditionParser;
 import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -49,7 +50,8 @@ public abstract class Panel {
         // Do not open if user is in cooldown period
         NamespacedKey keyTime = new NamespacedKey(ctx.plugin, "last_open_time");
         Long lastOpen = p.getPersistentDataContainer().get(keyTime, PersistentDataType.LONG);
-        if (lastOpen != null && System.currentTimeMillis() - lastOpen < 250) { // 5 ticks
+        long cooldown = ctx.fileHandler.config.getInt("cooldown-ticks") * 50L; // ticks in config, converted to millis
+        if (lastOpen != null && System.currentTimeMillis() - lastOpen < cooldown) {
             ctx.text.sendError(p, Message.COOLDOWN_ERROR);
             return false;
         }
@@ -65,7 +67,7 @@ public abstract class Panel {
         NamespacedKey keyPrevious = new NamespacedKey(ctx.plugin, "previous");
         NamespacedKey keyTime = new NamespacedKey(ctx.plugin, "last_open_time");
         PersistentDataContainer container = p.getPersistentDataContainer();
-        
+
         // Time the player last opened any panel
         container.set(keyTime, PersistentDataType.LONG, System.currentTimeMillis());
 
@@ -76,6 +78,9 @@ public abstract class Panel {
 
         // Set this panel as the new current
         container.set(keyCurrent, PersistentDataType.STRING, this.name);
+        if(ctx.fileHandler.config.getBoolean("panel-snooper")){
+            ctx.text.sendInfo(Bukkit.getConsoleSender(), Message.PANEL_OPEN_LOG, p.getName(), this.name);
+        }
     }
 
 
