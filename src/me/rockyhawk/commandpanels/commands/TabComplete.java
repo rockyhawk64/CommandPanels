@@ -45,15 +45,11 @@ public class TabComplete {
 
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("open") && sender.hasPermission("commandpanels.command.open")) {
-                if (sender instanceof Player player) {
-                    for (String panelName : ctx.plugin.panels.keySet()) {
-                        Panel panel = ctx.plugin.panels.get(panelName);
-                        if (panel.passesConditions(player, ctx)) {
-                            output.add(panelName);
-                        }
+                String prefix = args[1].toLowerCase();
+                for (String panelName : ctx.plugin.panels.keySet()) {
+                    if (panelName.toLowerCase().contains(prefix)) {
+                        output.add(panelName);
                     }
-                } else {
-                    output.addAll(ctx.plugin.panels.keySet());
                 }
             } else if (args[0].equalsIgnoreCase("data") && sender.hasPermission("commandpanels.command.data")) {
                 output.addAll(Arrays.asList("get", "set", "overwrite", "math", "del", "clear"));
