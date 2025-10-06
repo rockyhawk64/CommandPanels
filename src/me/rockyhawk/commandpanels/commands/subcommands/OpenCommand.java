@@ -51,7 +51,7 @@ public class OpenCommand implements SubCommand {
             }
         }
 
-        if(sender instanceof Player && !panel.canOpen((Player) sender, ctx)){
+        if(sender instanceof Player && !panel.passesConditions((Player) sender, ctx)){
             ctx.text.sendError(sender, Message.COMMAND_NO_PERMISSION);
             return true;
         }

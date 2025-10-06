@@ -48,7 +48,7 @@ public class TabComplete {
                 if (sender instanceof Player player) {
                     for (String panelName : ctx.plugin.panels.keySet()) {
                         Panel panel = ctx.plugin.panels.get(panelName);
-                        if (panel.canOpen(player, ctx)) {
+                        if (panel.passesConditions(player, ctx)) {
                             output.add(panelName);
                         }
                     }

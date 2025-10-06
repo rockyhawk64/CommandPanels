@@ -59,7 +59,7 @@ public class PanelOpenCommand implements Listener {
             }
 
             // Stop and do not open panel if conditions are false
-            if (!panel.canOpen(e.getPlayer(), ctx)) {
+            if (!panel.passesConditions(e.getPlayer(), ctx)) {
                 continue;
             }
 

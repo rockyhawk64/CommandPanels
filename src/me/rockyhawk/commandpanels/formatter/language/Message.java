@@ -111,6 +111,7 @@ public enum Message {
 
     // Misc
     DIALOG_NO_BUTTONS("Dialog needs at least one button"),
+    COOLDOWN_ERROR("You're opening panels too quickly"),
     TELEPORT_ERROR("Error with teleport tag"),
     REQUIRE_HEADDATABASE("Download the HeadDatabase plugin to use this feature!");
 

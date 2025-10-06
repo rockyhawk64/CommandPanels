@@ -15,34 +15,39 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class InventoryPanelUpdater {
 
-    private ScheduledTask task;
+    private ScheduledTask checkTask;
+    private ScheduledTask updateTask;
+
+    /**
+     * Panel updater will maintain itself with a checkTask that will end the updater
+     * If it finds the panel has been closed it will end the updater tasks
+     */
 
     public void start(Context ctx, Player p, InventoryPanel panel) {
-        // If restarted, stop current event
+        // Stop existing tasks if any
         stop();
 
-        InventoryPanelBuilder panelBuilder = new InventoryPanelBuilder(ctx, p);
-        ItemBuilder builder = new ItemBuilder(ctx, panelBuilder);
-
+        // Determine update delay (same as your original logic)
         int updateDelay = 20;
         if (panel.getUpdateDelay().matches("\\d+")) {
-            // Update delay value is a number
             updateDelay = Integer.parseInt(panel.getUpdateDelay());
         }
 
         // If update delay is 0 then do not run the updater
         if (updateDelay == 0) {
-            this.task = null;
+            this.updateTask = null;
             return;
         }
 
-        // Schedule repeating GUI update task on the player's region
-        this.task = Bukkit.getRegionScheduler().runAtFixedRate(
+        InventoryPanelBuilder panelBuilder = new InventoryPanelBuilder(ctx, p);
+        ItemBuilder builder = new ItemBuilder(ctx, panelBuilder);
+
+        // Main update task
+        this.updateTask = Bukkit.getRegionScheduler().runAtFixedRate(
                 ctx.plugin,
                 p.getLocation(),
                 (scheduledTask) -> {
                     Inventory inv = p.getOpenInventory().getTopInventory();
-
                     InventoryHolder holder = inv.getHolder();
                     if (!(holder instanceof InventoryPanel) || holder != panel) {
                         stop();
@@ -88,12 +93,32 @@ public class InventoryPanelUpdater {
                 updateDelay,
                 updateDelay
         );
+
+        // Fast check task
+        this.checkTask = Bukkit.getRegionScheduler().runAtFixedRate(
+                ctx.plugin,
+                p.getLocation(),
+                (scheduledTask) -> {
+                    Inventory inv = p.getOpenInventory().getTopInventory();
+                    InventoryHolder holder = inv.getHolder();
+
+                    if (!(holder instanceof InventoryPanel) || holder != panel) {
+                        stop();
+                    }
+                },
+                5,
+                5
+        );
     }
 
     public void stop() {
-        if (task != null) {
-            task.cancel();
-            task = null;
+        if (checkTask != null) {
+            checkTask.cancel();
+            checkTask = null;
+        }
+        if (updateTask != null) {
+            updateTask.cancel();
+            updateTask = null;
         }
     }
 }

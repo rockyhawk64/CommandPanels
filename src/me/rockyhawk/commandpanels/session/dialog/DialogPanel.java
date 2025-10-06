@@ -64,7 +64,10 @@ public class DialogPanel extends Panel {
         }
 
         if(isNewPanelSession) {
-            // Update panel data values
+            // Don't open same panel if its already open
+            if(!canOpen(player, ctx)){
+                return;
+            }
             updatePanelData(ctx, player);
 
             // Run panel commands

@@ -67,7 +67,7 @@ public class InventoryPanel extends Panel implements InventoryHolder {
 
         if(isNewPanelSession) {
             // Don't open same panel if its already open
-            if(checkCurrentPanel(player)){
+            if(!canOpen(player, ctx)){
                 return;
             }
             updatePanelData(ctx, player);
@@ -86,14 +86,6 @@ public class InventoryPanel extends Panel implements InventoryHolder {
             InventoryPanelUpdater updater = new InventoryPanelUpdater();
             updater.start(ctx, player, this);
         }
-    }
-
-    // Do not open the same panel again if its already open
-    private boolean checkCurrentPanel(Player p) {
-        if(p.getOpenInventory().getTopInventory().getHolder() instanceof InventoryPanel panel){
-            return panel.getName().equals(getName());
-        }
-        return false;
     }
 
     public String getRows() {

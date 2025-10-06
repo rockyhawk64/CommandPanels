@@ -3,6 +3,8 @@ package me.rockyhawk.commandpanels.session;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.logic.ConditionNode;
 import me.rockyhawk.commandpanels.builder.logic.ConditionParser;
+import me.rockyhawk.commandpanels.formatter.language.Message;
+import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -30,7 +32,8 @@ public abstract class Panel {
         this.type = config.getString("type", "inventory");
     }
 
-    public boolean canOpen(Player player, Context ctx) {
+    // Check run for permission checks with commands
+    public boolean passesConditions(Player player, Context ctx) {
         // Check the panel condition
         if (this.conditions.trim().isEmpty()) return true;
         try {
@@ -41,11 +44,30 @@ public abstract class Panel {
         }
     }
 
+    // Checks for opening fresh panels
+    public boolean canOpen(Player p, Context ctx) {
+        // Do not open if user is in cooldown period
+        NamespacedKey keyTime = new NamespacedKey(ctx.plugin, "last_open_time");
+        Long lastOpen = p.getPersistentDataContainer().get(keyTime, PersistentDataType.LONG);
+        if (lastOpen != null && System.currentTimeMillis() - lastOpen < 250) { // 5 ticks
+            ctx.text.sendError(p, Message.COOLDOWN_ERROR);
+            return false;
+        }
+
+        // Do not allow the same panel to be opened again if already open
+        return !(p.getOpenInventory().getTopInventory().getHolder() instanceof InventoryPanel panel)
+                || !panel.getName().equals(getName());
+    }
+
     // Updates data to set the current panel and previous panel.
     public void updatePanelData(Context ctx, Player p) {
         NamespacedKey keyCurrent = new NamespacedKey(ctx.plugin, "current");
         NamespacedKey keyPrevious = new NamespacedKey(ctx.plugin, "previous");
+        NamespacedKey keyTime = new NamespacedKey(ctx.plugin, "last_open_time");
         PersistentDataContainer container = p.getPersistentDataContainer();
+        
+        // Time the player last opened any panel
+        container.set(keyTime, PersistentDataType.LONG, System.currentTimeMillis());
 
         // Move current → previous
         String current = container.get(keyCurrent, PersistentDataType.STRING);
