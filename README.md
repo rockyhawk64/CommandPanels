@@ -1,61 +1,114 @@
 ![TitleLogo](https://commandpanels.net/resource_images/main_logo.png)
 
-## Trusted GUI Plugin since 2019
+## 🏆 Trusted GUI Plugin since 2019
 
-CommandPanels makes it easy to create interactive menus without coding.  
-From shops and quests to server tools, you can design custom GUIs with YAML or the online editor.
+CommandPanels isn't like other menu plugins it's a **GUI framework**. it gives you true dynamic control through **logic**, **data**, and **panel variety**.
+From shops and quests to custom tools and admin panels, you can design powerful GUIs using YAML or the online editor.
 
 - ✅ Actively maintained for 6+ years
-- 🖼️ Online editor for faster menu building
-- 🌍 Cross-platform support (Java + Bedrock)
-- 📘 Full docs and community Discord
+- 🖼️ Online editor for rapid menu building
+- 🧠 Advanced logic and data support
+- 🌍 Cross-platform (Java + Bedrock)
+- 📘 Full documentation and community Discord
 
-## Useful Links
+---
 
-### [📘 Documentation](https://docs.commandpanels.net)
-### [🛠️ Online Editor](https://commandpanels.net/editor)
-### [💬 Join Discord](https://discord.gg/WFQMTZxa53)
+## 🌐 Useful Links
+
+- [📘 **Documentation**](https://docs.commandpanels.net)
+- [🛠️ **Online Editor**](https://commandpanels.net/editor)
+- [💬 **Discord**](https://discord.gg/WFQMTZxa53)
+
+---
 
 ## Online Editor
-The online editor includes support for all three panel types. This means you can visually create and edit Dialog, Inventory, and Floodgate panels with ease, previews are not 1:1 but will significantly speed up development and testing.
+
+The online editor includes support for **all three panel types**.  
+It’s not just a basic form builder, it’s a **live YAML editor** with structure checks and visual previews, helping you work faster and avoid YAML errors.
 
 ![ExampleScreenshot](https://commandpanels.net/resource_images/example_editor.png)
 
+- ⚡ Visual layout builder with slot highlighting
+- 🧹 Automatic indentation & structure checks
+- ✅ Works with Inventory, Dialog, and Floodgate panels
+- 🧠 Supports complex panels, not just simple menus
+
+---
+
+## Real Logic. Real Data.
+
+CommandPanels lets you build menus that **react to players**, not just display static items.
+
+- Inline `$AND`, `$OR`, `$NOT` operators and grouping
+- Multiple items in a single slot with logical fallbacks
+- **Persistent** or **session-based data** usable anywhere, even in other plugins via PlaceholderAPI
+
+**Example Condition:**
+~~~
+conditions: "$NOT (%player_name% $EQUALS Steve) $AND %vault_eco_balance% $ATLEAST 5000"
+~~~
+
+This allows for **powerful, dynamic behavior** without scripting.
+
+---
+
 ## GUI Types
 
-### Inventory Panels *(can be used for complex GUI creation)*
+### Inventory Panels
+Create fully interactive GUIs for shops, kits, navigation menus, or custom tools.
+
 ![RawInventory](https://commandpanels.net/resource_images/raw_inventory.webp)
-### Dialog Panels *(can be used for custom interfaces and requesting player input)*
+
+---
+
+### Dialog Panels
+Build structured, custom interfaces that can be used to request custom input.
+
 ![RawDialog](https://commandpanels.net/resource_images/raw_dialog.webp)
-### Floodgate Panels *(can be used for Bedrock players on your server)*
+
+---
+
+### Floodgate Panels
+Bring **full GUI support to Bedrock players** using Geyser and Floodgate.
+CommandPanels is one of the only plugins that natively supports this.
+
 ![RawFloodgate](https://commandpanels.net/resource_images/raw_floodgate.webp)
 
+---
+
 ## About
-Minecraft servers use graphical interfaces (GUIs) for a wide range of features,
-from server lobbies and player shops to quests and custom tools. CommandPanels provides a
-streamlined YAML scripting format designed to make GUI creation both accessible and highly customizable.
 
-With built-in support for variables, persistent data, placeholders,
-conditions, and more, you can design interactive menus tailored to your server's needs without complex programming.
+Minecraft servers rely on GUIs for everything from shops and lobbies to quests and server tools.  
+CommandPanels provides a **streamlined YAML scripting format** designed to make GUI creation both **accessible** and **deeply customizable**.
 
-CommandPanels supports three distinct panel types, each with unique capabilities:
-
-- Inventory Panels allow you to build item-based interfaces where players can interact with and manipulate items directly.
-- Dialog Panels are perfect for creating structured, menu-based conversations and navigation systems, ideal for quests or guided menus.
-- Floodgate Panels enable full GUI support for Bedrock Edition players through Geyser and Floodgate, ensuring cross-platform compatibility.
+- Inline logic & conditions
+- Dynamic placeholders
+- Persistent & session data
+- Full PlaceholderAPI support
+- Modern, clean codebase
 
 Developed in Australia 🇦🇺
 
+---
+
 ## Server Compatibility
 
-This plugin is a **Paper** plugin, it will only work on Paper and its forks.
+CommandPanels is fully compatible with **Paper** and **Folia** servers.
+
+---
 
 ## Our Partner
 
 ![ParterLogo](https://commandpanels.net/resource_images/partner_logo.png)
 
 We have proudly partnered with [ReviveNode](http://billing.revivenode.com/aff.php?aff=379)!  
-CommandPanels users have been offered 15% off on the first month by using the Promocode: **PANELS**
+CommandPanels users get **15% off their first month** with the promo code: **PANELS**
 
-ReviveNode is a leading Minecraft hosting provider that offers affordable and high-quality server hosting solutions.
-Their focus on performance, reliability, and customer support makes them the perfect partner for CommandPanels.
+ReviveNode provides high-performance, reliable Minecraft hosting, making them the perfect partner for CommandPanels.
+
+---
+
+## Trusted by Servers Worldwide
+
+For over 6 years, CommandPanels has powered **thousands of Minecraft servers**.
+Whether you're running survival, MMO, minigames, or custom networks, it can handle it.
