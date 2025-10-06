@@ -13,7 +13,7 @@ From shops and quests to custom tools and admin panels, you can design powerful 
 
 ---
 
-## 🌐 Useful Links
+## Useful Links
 
 - [📘 **Documentation**](https://docs.commandpanels.net)
 - [🛠️ **Online Editor**](https://commandpanels.net/editor)
