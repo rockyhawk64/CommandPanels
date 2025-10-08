@@ -24,8 +24,8 @@ public class VersionCommand implements SubCommand {
     public boolean execute(Context ctx, CommandSender sender, String[] args) {
         sender.sendMessage(ctx.text.getPrefix());
 
-        String translatedDeveloper = ctx.text.lang.translate(Message.PLUGIN_DEVELOPER);
-        String translatedVersion = ctx.text.lang.translate(Message.PLUGIN_VERSION);
+        String translatedDeveloper = ensurePlaceholder(ctx.text.lang.translate(Message.PLUGIN_DEVELOPER));
+        String translatedVersion = ensurePlaceholder(ctx.text.lang.translate(Message.PLUGIN_VERSION));
         sender.sendMessage(Component.text()
                 .color(NamedTextColor.DARK_AQUA)
                 .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedDeveloper))
@@ -42,4 +42,10 @@ public class VersionCommand implements SubCommand {
                         .replacement(Component.text(ctx.plugin.getPluginMeta().getVersion(), NamedTextColor.WHITE))));
         return true;
     }
+
+    // Add version number and credits back if removed from language message
+    private String ensurePlaceholder(String text) {
+        return text.contains("{0}") ? text : text + " {0}";
+    }
+
 }
