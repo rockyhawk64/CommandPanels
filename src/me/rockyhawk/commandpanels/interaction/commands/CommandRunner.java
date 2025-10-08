@@ -2,6 +2,7 @@ package me.rockyhawk.commandpanels.interaction.commands;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
+import me.rockyhawk.commandpanels.formatter.MiniMessage;
 import me.rockyhawk.commandpanels.interaction.commands.paywalls.*;
 import me.rockyhawk.commandpanels.interaction.commands.paywalls.itempaywall.ItemPaywall;
 import me.rockyhawk.commandpanels.interaction.commands.tags.*;
@@ -98,7 +99,16 @@ public class CommandRunner {
         tags.add(new EnchantTag());
         tags.add(new EvalDelayTag());
         tags.add(new GiveItemTag());
-        tags.add(new MiniMessageTag());
+        try {
+            // Check all the minimessage classes exist before loading
+            Class.forName("net.kyori.adventure.text.Component");
+            Class.forName("net.kyori.adventure.text.format.TextDecoration");
+            Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+            Class.forName("net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer");
+            tags.add(new MiniMessageTag());
+        } catch (ClassNotFoundException ignore) {
+            // Do not load minimessage on Spigot
+        }
         tags.add(new OpenTag());
         tags.add(new PlaceholderTag());
         tags.add(new RefreshTag());

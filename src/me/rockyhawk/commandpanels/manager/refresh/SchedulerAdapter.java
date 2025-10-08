@@ -25,7 +25,7 @@ public class SchedulerAdapter {
     private boolean isFoliaServer() {
         try {
             Class.forName("io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler");
-            return false; // Force folia feature disabled until bugs fixed
+            return true;
         } catch (ClassNotFoundException e) {
             return false;
         }
@@ -96,13 +96,13 @@ public class SchedulerAdapter {
     /**
      * Runs a task synchronously for a specific location with a delay
      */
-    public BukkitTask runTaskLaterForLocation(Location location, Runnable task, long delay) {
+    public BukkitTask runRepeatingForLocation(Location location, Runnable task, long delay) {
         if (isFolia) {
             // Folia's RegionScheduler.runDelayed() uses ticks, not milliseconds!
-            Bukkit.getRegionScheduler().runDelayed(plugin, location, scheduledTask -> task.run(), delay);
+            Bukkit.getRegionScheduler().runAtFixedRate(plugin, location, scheduledTask -> task.run(), delay, delay);
             return new DummyBukkitTask();
         } else {
-            return Bukkit.getScheduler().runTaskLater(plugin, task, delay);
+            return Bukkit.getScheduler().runTaskTimer(plugin, task, delay, delay);
         }
     }
     

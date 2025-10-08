@@ -8,7 +8,6 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class RefreshTask implements Runnable {
     private final Context ctx;
@@ -85,7 +84,7 @@ public class RefreshTask implements Runnable {
     }
     
     public void start() {
-        this.task = ctx.scheduler.runTaskTimerForEntity(player, this, 1, 1);
+        this.task = ctx.scheduler.runRepeatingForLocation(player.getLocation(), this, refreshDelay);
     }
     
     public void stop() {

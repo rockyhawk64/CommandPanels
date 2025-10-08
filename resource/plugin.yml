@@ -3,6 +3,7 @@ main: me.rockyhawk.commandpanels.CommandPanels
 name: CommandPanels
 author: RockyHawk
 api-version: '1.13'
+folia-supported: true
 description: Fully Custom GUIs. Make your Server Professional.
 softdepend: [Essentials, PlaceholderAPI, Vault, HeadDatabase, TokenManager, VotingPlugin, MMOItems, ChestSort, floodgate, Skript]
 commands:
