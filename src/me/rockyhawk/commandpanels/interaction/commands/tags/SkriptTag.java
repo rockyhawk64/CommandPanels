@@ -34,7 +34,7 @@ public class SkriptTag implements TagResolver {
             String commandName = args[0];
             String[] commandArgs = args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
             
-            executeSkriptCommand(player, commandName, commandArgs);
+            executeSkriptCommand(ctx, player, commandName, commandArgs);
             
         } catch (Exception ex) {
             player.sendMessage(ctx.tag + ctx.text.colour(ctx.configHandler.config.getString("config.format.error") + " skript=: Error executing Skript command!"));
@@ -45,7 +45,7 @@ public class SkriptTag implements TagResolver {
     }
     
     // Method to execute a Skript command by name
-    private void executeSkriptCommand(Player player, String commandName, String[] args) {
+    private void executeSkriptCommand(Context ctx, Player player, String commandName, String[] args) {
         try {
             // Try to get the Skript command classes
             Class<?> commandsClass = Class.forName("ch.njol.skript.command.Commands");
@@ -84,13 +84,12 @@ public class SkriptTag implements TagResolver {
                 executeSkriptFunction(commandName, new Object[]{player});
             } catch (Exception ex) {
                 // Fallback: dispatch as regular command with skript prefix
-                String fullCommand = commandName;
-                if (args.length > 0) {
-                    fullCommand += " " + String.join(" ", args);
-                }
-                
+                final String fullCommand = args.length > 0
+                        ? commandName + " " + String.join(" ", args)
+                        : commandName;
+
                 // Try to execute as a regular command (in case it's a custom Skript command)
-                Bukkit.dispatchCommand(player, fullCommand);
+                ctx.scheduler.runTask(() -> Bukkit.dispatchCommand(player, fullCommand));
             }
         }
     }

@@ -1,10 +1,10 @@
 package me.rockyhawk.commandpanels.openwithitem.events;
 
-import de.jeff_media.chestsort.api.ChestSortEvent;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
+import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
 
@@ -13,31 +13,36 @@ public class UtilsChestSortEvent implements Listener {
     public UtilsChestSortEvent(Context pl) {
         this.ctx = pl;
     }
-    @EventHandler
-    public void onChestSortEvent(ChestSortEvent e){
-        //if player is null it is not necessary
-        if(e.getPlayer() == null){
-            return;
-        }
-        //cancel if a panel is opened at all
-        if(ctx.openPanels.hasPanelOpen(e.getPlayer().getName(), PanelPosition.Top)){
-            e.setCancelled(true);
-            return;
-        }
-        //hotbar item code below
-        if(!ctx.plugin.openWithItem){
-            //if none of the panels have open-with-item
-            return;
-        }
-        //If the ChestSort plugin triggers an event
+
+    // Called reflectively from Context via a generic EventExecutor to avoid compile-time dependency on ChestSort API
+    public void handleChestSortEvent(Event event){
+        Player debugPlayer = null;
         try {
-            if (e.getInventory().getType() == InventoryType.PLAYER) {
-                for (String slot : ctx.hotbar.stationaryItems.get(e.getPlayer().getUniqueId()).list.keySet()) {
-                    e.setUnmovable(Integer.parseInt(slot));
+            Object playerObj = event.getClass().getMethod("getPlayer").invoke(event);
+            if (playerObj == null) return;
+            if (playerObj instanceof Player) {
+                debugPlayer = (Player) playerObj;
+            }
+            String playerName = (playerObj instanceof HumanEntity) ? ((HumanEntity) playerObj).getName() : null;
+            if (playerName != null && ctx.openPanels.hasPanelOpen(playerName, PanelPosition.Top)) {
+                // e.setCancelled(true)
+                event.getClass().getMethod("setCancelled", boolean.class).invoke(event, true);
+                return;
+            }
+            if (!ctx.plugin.openWithItem) return;
+
+            Object inv = event.getClass().getMethod("getInventory").invoke(event);
+            if (inv != null) {
+                InventoryType type = (InventoryType) inv.getClass().getMethod("getType").invoke(inv);
+                if (type == InventoryType.PLAYER) {
+                    for (String slot : ctx.hotbar.stationaryItems.get(((HumanEntity) playerObj).getUniqueId()).list.keySet()) {
+                        // e.setUnmovable(int)
+                        event.getClass().getMethod("setUnmovable", int.class).invoke(event, Integer.parseInt(slot));
+                    }
                 }
             }
-        }catch(NullPointerException ex){
-            ctx.debug.send(ex, (Player) e.getPlayer(), ctx);
+        } catch (Exception ex) {
+            ctx.debug.send(ex, debugPlayer, ctx);
         }
     }
 }

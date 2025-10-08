@@ -8,6 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 public class RefreshTask implements Runnable {
     private final Context ctx;
@@ -19,7 +20,7 @@ public class RefreshTask implements Runnable {
     private int tickCounter = 0;
     private int animateCounter = 0;
     private final PanelBuilder builder;
-    private org.bukkit.scheduler.BukkitTask task;
+    private BukkitTask task;
 
     public RefreshTask(Context ctx, PanelOpenedEvent event, Panel panel, Player player, int refreshDelay, int animateValue) {
         this.ctx = ctx;
@@ -84,7 +85,7 @@ public class RefreshTask implements Runnable {
     }
     
     public void start() {
-        this.task = ctx.scheduler.runRepeatingForLocation(player.getLocation(), this, refreshDelay);
+        this.task = ctx.scheduler.runTaskTimerForEntity(player, this, 1, 1);
     }
     
     public void stop() {

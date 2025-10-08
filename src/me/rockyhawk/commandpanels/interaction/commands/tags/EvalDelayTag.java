@@ -4,7 +4,6 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
 import me.rockyhawk.commandpanels.interaction.commands.TagResolver;
 import me.rockyhawk.commandpanels.manager.session.PanelPosition;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;

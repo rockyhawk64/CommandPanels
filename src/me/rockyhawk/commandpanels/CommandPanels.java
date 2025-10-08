@@ -48,16 +48,6 @@ public class CommandPanels extends JavaPlugin{
         }
 
         try {
-            //close all the panels
-            if (ctx.openPanels != null && ctx.openPanels.openPanels != null) {
-                for(String name : ctx.openPanels.openPanels.keySet()){
-                    ctx.openPanels.closePanelForLoader(name, PanelPosition.Top);
-                    try {
-                        Bukkit.getPlayer(name).closeInventory();
-                    }catch (Exception ignore){}
-                }
-            }
-
             //save files
             if (ctx.panelData != null) {
                 ctx.panelData.saveDataFile();

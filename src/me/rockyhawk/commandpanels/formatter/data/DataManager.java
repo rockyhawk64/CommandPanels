@@ -15,37 +15,27 @@ public class DataManager implements Listener {
     //will return string for the location in the data config
     //RESOLVED profiles have a UUID and Player Name linked
     //UNRESOLVED profiles had data assigned before they were online to find a UUID
-    public String getDataProfile(String playerName) {
+    public String getDataProfile(String playerName){
         Player player = Bukkit.getPlayer(playerName);
 
-        // If the player has an unresolved profile
+        // If there is an unresolved profile for this player
         boolean hasUnresolvedProfile = containsNoCase(loader.dataConfig, playerName);
 
-        if (player != null) {
-            // Run if player is currently online
+        // Player is not null/exists on the server
+        if(player != null){
+            //Update name and creates resolved profile entry if not already there
             loader.dataConfig.set("player_data.resolved_profiles." + player.getUniqueId() + ".last_known_name", player.getName());
 
-            if (hasUnresolvedProfile) {
+            //Merge unresolved to unresolved if unresolved profile was found
+            if(hasUnresolvedProfile){
                 mergeProfiles(player);
             }
 
             return "player_data.resolved_profiles." + player.getUniqueId();
-        } else {
-            // Try to find a resolved profile by matching last_known_name (case-insensitive)
-            ConfigurationSection resolved = loader.dataConfig.getConfigurationSection("player_data.resolved_profiles");
-            if (resolved != null) {
-                for (String uuidKey : resolved.getKeys(false)) {
-                    String path = "player_data.resolved_profiles." + uuidKey + ".last_known_name";
-                    String lastKnownName = loader.dataConfig.getString(path);
-                    if (lastKnownName != null && lastKnownName.equalsIgnoreCase(playerName)) {
-                        return "player_data.resolved_profiles." + uuidKey;
-                    }
-                }
-            }
-
-            // Fallback to unresolved profile path (creation of section is not necessary until data is written)
-            return "player_data.unresolved_profiles." + playerName;
         }
+
+        // Use unresolved profile if player does not exist (creation of section is not necessary until data is written)
+        return "player_data.unresolved_profiles." + playerName;
     }
 
     //Run on initialisation

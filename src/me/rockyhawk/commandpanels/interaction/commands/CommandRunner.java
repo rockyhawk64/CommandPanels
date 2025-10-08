@@ -2,7 +2,6 @@ package me.rockyhawk.commandpanels.interaction.commands;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Panel;
-import me.rockyhawk.commandpanels.formatter.MiniMessage;
 import me.rockyhawk.commandpanels.interaction.commands.paywalls.*;
 import me.rockyhawk.commandpanels.interaction.commands.paywalls.itempaywall.ItemPaywall;
 import me.rockyhawk.commandpanels.interaction.commands.tags.*;
@@ -50,7 +49,8 @@ public class CommandRunner {
             }
         }
 
-        Bukkit.dispatchCommand(p, ctx.text.attachPlaceholders(panel, position, p, commandRaw.trim()));
+        String finalCommand = ctx.text.attachPlaceholders(panel, position, p, commandRaw.trim());
+        ctx.scheduler.runTask(() -> Bukkit.dispatchCommand(p, finalCommand));
     }
 
     public boolean runMultiPaywall(Panel panel, PanelPosition position, Player p, List<String> paywalls, List<String> commands, ClickType click) {
