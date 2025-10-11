@@ -15,14 +15,20 @@ public class SessionDataUtils implements Listener {
         this.ctx = ctx;
     }
 
+    /**
+     * On player Join and Leave,
+     * Remove Session data and do an async save of the data file
+     */
     @EventHandler
     public void onJoinEvent(PlayerJoinEvent e) {
         removeSessionData(e.getPlayer());
+        ctx.dataLoader.saveDataFileAsync();
     }
 
     @EventHandler
     public void onQuitEvent(PlayerQuitEvent e) {
         removeSessionData(e.getPlayer());
+        ctx.dataLoader.saveDataFileAsync();
     }
 
     private void removeSessionData(Player p){
