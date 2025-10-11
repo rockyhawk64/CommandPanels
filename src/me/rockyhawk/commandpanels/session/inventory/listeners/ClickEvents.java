@@ -1,11 +1,13 @@
 package me.rockyhawk.commandpanels.session.inventory.listeners;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
 import me.rockyhawk.commandpanels.session.ClickActions;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import me.rockyhawk.commandpanels.session.inventory.PanelItem;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -51,6 +53,15 @@ public class ClickEvents implements Listener {
         e.setCancelled(true);
         e.setResult(Event.Result.DENY);
 
+        // Do not run commands if user is in cooldown (item click cooldown should match heartbeat updater speed)
+        NamespacedKey lastClickTick = new NamespacedKey(ctx.plugin, "last_click_tick");
+        Integer lastOpen = player.getPersistentDataContainer().get(lastClickTick, PersistentDataType.INTEGER);
+        int currentTick = Bukkit.getCurrentTick();
+        if (lastOpen != null && currentTick - lastOpen < 2) {
+            return;
+        }
+
+        player.getPersistentDataContainer().set(lastClickTick, PersistentDataType.INTEGER, currentTick);
         String itemId = container.get(baseIdKey, PersistentDataType.STRING);
 
         // Check valid interaction types

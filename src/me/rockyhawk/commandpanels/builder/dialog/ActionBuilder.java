@@ -33,7 +33,7 @@ public class ActionBuilder implements Listener {
 
         if (!button.getConditions().trim().isEmpty()) {
             ConditionNode conditionNode = new ConditionParser().parse(button.getConditions());
-            if (!conditionNode.evaluate(player, ctx)) return null;
+            if (!conditionNode.evaluate(player, panel, ctx)) return null;
         }
 
         Component name = ctx.text.parseTextToComponent(player, button.getName());

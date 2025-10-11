@@ -12,12 +12,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Panel {
     private final String name;
     private final String title;
     private final String conditions;
+
+    private final List<String> observedPerms; // List of permissions used in conditions for a panel
     private final String command; // Command used to open the panel
     private final List<String> aliases; // Aliases for command that opens the panel
     private final List<String> commands; // Commands that run when panel is opened
@@ -31,6 +34,7 @@ public abstract class Panel {
         this.aliases = config.getStringList("aliases");
         this.commands = config.getStringList("commands");
         this.type = config.getString("type", "inventory");
+        this.observedPerms = new ArrayList<>();
     }
 
     // Check run for permission checks with commands
@@ -39,7 +43,7 @@ public abstract class Panel {
         if (this.conditions.trim().isEmpty()) return true;
         try {
             ConditionNode node = new ConditionParser().parse(this.conditions);
-            return node.evaluate(player, ctx);
+            return node.evaluate(player, this, ctx);
         } catch (Exception e) {
             return false;
         }
@@ -48,10 +52,10 @@ public abstract class Panel {
     // Checks for opening fresh panels
     public boolean canOpen(Player p, Context ctx) {
         // Do not open if user is in cooldown period
-        NamespacedKey keyTime = new NamespacedKey(ctx.plugin, "last_open_time");
-        Long lastOpen = p.getPersistentDataContainer().get(keyTime, PersistentDataType.LONG);
-        long cooldown = ctx.fileHandler.config.getInt("cooldown-ticks") * 50L; // ticks in config, converted to millis
-        if (lastOpen != null && System.currentTimeMillis() - lastOpen < cooldown) {
+        NamespacedKey keyTime = new NamespacedKey(ctx.plugin, "last_open_tick");
+        Integer lastOpenTick = p.getPersistentDataContainer().get(keyTime, PersistentDataType.INTEGER);
+        int cooldownTicks = ctx.fileHandler.config.getInt("cooldown-ticks");
+        if (lastOpenTick != null && Bukkit.getCurrentTick() - lastOpenTick < cooldownTicks) {
             ctx.text.sendError(p, Message.COOLDOWN_ERROR);
             return false;
         }
@@ -65,11 +69,11 @@ public abstract class Panel {
     public void updatePanelData(Context ctx, Player p) {
         NamespacedKey keyCurrent = new NamespacedKey(ctx.plugin, "current");
         NamespacedKey keyPrevious = new NamespacedKey(ctx.plugin, "previous");
-        NamespacedKey keyTime = new NamespacedKey(ctx.plugin, "last_open_time");
+        NamespacedKey keyTick = new NamespacedKey(ctx.plugin, "last_open_tick");
         PersistentDataContainer container = p.getPersistentDataContainer();
 
         // Time the player last opened any panel
-        container.set(keyTime, PersistentDataType.LONG, System.currentTimeMillis());
+        container.set(keyTick, PersistentDataType.INTEGER, Bukkit.getCurrentTick());
 
         // Move current → previous
         String current = container.get(keyCurrent, PersistentDataType.STRING);
@@ -105,5 +109,16 @@ public abstract class Panel {
 
     public String getTitle() {
         return title;
+    }
+
+    /**
+     * Observed permissions are permissions that are found from HASPERM in panels
+     * They will allow panels to auto refresh if their state ever changes
+     */
+    public List<String> getObservedPerms() {
+        return observedPerms;
+    }
+    public void addObservedPerm(String node) {
+        observedPerms.add(node);
     }
 }

@@ -17,17 +17,17 @@ public class ConditionTag implements RequirementTagResolver {
 
     @Override
     public boolean check(Context ctx, Panel panel, Player player, String raw, String args) {
-        return parseCondition(ctx, player, args);
+        return parseCondition(ctx, panel, player, args);
     }
 
     @Override
     public void execute(Context ctx, Panel panel, Player player, String raw, String args) {
     }
 
-    private boolean parseCondition(Context ctx, Player player, String args) {
+    private boolean parseCondition(Context ctx, Panel panel, Player player, String args) {
         if (!args.trim().isEmpty()) {
             ConditionNode conditionNode = new ConditionParser().parse(args);
-            return conditionNode.evaluate(player, ctx);
+            return conditionNode.evaluate(player, panel, ctx);
         }
         return false;
     }

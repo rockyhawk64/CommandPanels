@@ -63,7 +63,7 @@ public class PanelFactory {
                 // Check conditions for which item to use in the slot
                 if (!item.conditions().trim().isEmpty()) {
                     ConditionNode conditionNode = new ConditionParser().parse(item.conditions());
-                    boolean result = conditionNode.evaluate(p, ctx);
+                    boolean result = conditionNode.evaluate(p, panel, ctx);
                     if (!result) continue;
                 }
 

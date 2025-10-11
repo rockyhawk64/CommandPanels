@@ -13,10 +13,16 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class InventoryPanelUpdater {
 
     private ScheduledTask checkTask;
     private ScheduledTask updateTask;
+
+    // List of permission states for observed permissions
+    private final Map<String, Boolean> lastObservedPermStates = new HashMap<>();
 
     /**
      * Panel updater will maintain itself with a checkTask that will end the updater
@@ -58,6 +64,7 @@ public class InventoryPanelUpdater {
                     NamespacedKey baseIdKey = new NamespacedKey(ctx.plugin, "base_item_id");
                     NamespacedKey fillItem = new NamespacedKey(ctx.plugin, "fill_item");
 
+                    // Loop through items in the panel and update their state
                     for (int slot = 0; slot < inv.getSize(); slot++) {
                         ItemStack item = inv.getItem(slot);
                         if (item == null || item.getType().isAir()) continue;
@@ -104,6 +111,18 @@ public class InventoryPanelUpdater {
 
                     if (!(holder instanceof InventoryPanel) || holder != panel) {
                         stop();
+                        return;
+                    }
+
+                    // Do a refresh if an observed perms state changes
+                    for (String node : panel.getObservedPerms()) {
+                        boolean currentState = p.hasPermission(node);
+                        Boolean previousState = lastObservedPermStates.get(node);
+                        lastObservedPermStates.put(node, currentState);
+                        if (previousState != null && previousState != currentState) {
+                            panel.open(ctx, p, false);
+                            return;
+                        }
                     }
                 },
                 2,

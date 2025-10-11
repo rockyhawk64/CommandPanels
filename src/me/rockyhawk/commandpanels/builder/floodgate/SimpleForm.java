@@ -48,7 +48,7 @@ public class SimpleForm {
                 // Check conditions for which button to use in the slot
                 if (!button.getConditions().trim().isEmpty()) {
                     ConditionNode conditionNode = new ConditionParser().parse(button.getConditions());
-                    boolean result = conditionNode.evaluate(p, ctx);
+                    boolean result = conditionNode.evaluate(p, panel, ctx);
                     if (!result) continue;
                 }
 

@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.builder.logic;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.entity.Player;
 
 public class NotNode implements ConditionNode {
@@ -11,8 +12,8 @@ public class NotNode implements ConditionNode {
     }
 
     @Override
-    public boolean evaluate(Player player, Context ctx) {
-        return !child.evaluate(player, ctx);
+    public boolean evaluate(Player player, Panel panel, Context ctx) {
+        return !child.evaluate(player, panel, ctx);
     }
 }
 

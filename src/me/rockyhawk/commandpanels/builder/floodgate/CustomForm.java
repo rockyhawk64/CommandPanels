@@ -50,7 +50,7 @@ public class CustomForm {
                 // Evaluate conditions
                 if (!comp.getConditions().trim().isEmpty()) {
                     ConditionNode conditionNode = new ConditionParser().parse(comp.getConditions());
-                    if (!conditionNode.evaluate(player, ctx)) continue;
+                    if (!conditionNode.evaluate(player, panel, ctx)) continue;
                 }
 
                 // Create the component

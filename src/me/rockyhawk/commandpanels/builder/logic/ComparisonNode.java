@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.builder.logic;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.session.Panel;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -23,7 +24,7 @@ public class ComparisonNode implements ConditionNode {
     }
 
     @Override
-    public boolean evaluate(Player player, Context ctx) {
+    public boolean evaluate(Player player, Panel panel, Context ctx) {
         /*
         Do not parse placeholders of conditions before using this it will be handled internally
         Remove spaces from placeholders before parsing, so they can be compared with no spaces correctly
@@ -48,6 +49,7 @@ public class ComparisonNode implements ConditionNode {
                 return leftValue >= rightValue;
             case "$HASPERM":
                 Player p = Bukkit.getPlayer(parsedLeft);
+                panel.addObservedPerm(parsedRight);
                 if (p == null) return false;
                 return p.hasPermission(parsedRight);
             default:

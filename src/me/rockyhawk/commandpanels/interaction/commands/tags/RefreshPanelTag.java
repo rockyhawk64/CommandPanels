@@ -14,8 +14,8 @@ public class RefreshPanelTag implements CommandTagResolver {
     }
 
     /**
-     * Schedules refreshes as they need to happen after
-     * other actions such as permission changes
+     * Schedules refreshes so that it runs in the next tick
+     * other commands have a better chance of running first
      */
     @Override
     public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
