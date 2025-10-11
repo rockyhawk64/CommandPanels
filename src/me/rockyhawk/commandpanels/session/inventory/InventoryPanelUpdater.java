@@ -101,6 +101,8 @@ public class InventoryPanelUpdater {
                 updateDelay
         );
 
+        final boolean isUsingPermObserver = ctx.fileHandler.config.getBoolean("permission-observer");
+
         // Fast heartbeat check task, should run frequently
         this.checkTask = Bukkit.getRegionScheduler().runAtFixedRate(
                 ctx.plugin,
@@ -114,7 +116,8 @@ public class InventoryPanelUpdater {
                         return;
                     }
 
-                    // Do a refresh if an observed perms state changes
+                    // Permission Observer: Refresh if an observed perms state changes
+                    if(!isUsingPermObserver) return; // Skip if disabled
                     for (String node : panel.getObservedPerms()) {
                         boolean currentState = p.hasPermission(node);
                         Boolean previousState = lastObservedPermStates.get(node);

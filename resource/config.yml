@@ -1,6 +1,6 @@
 # |------------------------------------------------------------------------
 # |                       CommandPanels Config File
-# |                           By RockyHawk v7
+# |                           By RockyHawk v8
 # |               https://www.spigotmc.org/resources/67788/
 # |
 # |------------------------------------------------------------------------
@@ -11,5 +11,9 @@ custom-commands: true
 # Amount of time in ticks players must wait between opening panels
 cooldown-ticks: 5
 
-# Will make console logs when panels are opened
+# Logs to console whenever a panel is opened
 panel-snooper: false
+
+# When enabled, panels will automatically refresh if any observed permissions change.
+# Permissions used in HASPERM conditions are considered observed permissions.
+permission-observer: true
