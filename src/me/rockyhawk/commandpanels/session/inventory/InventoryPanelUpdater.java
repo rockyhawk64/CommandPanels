@@ -5,7 +5,6 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.inventory.InventoryPanelBuilder;
 import me.rockyhawk.commandpanels.builder.inventory.items.ItemBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -49,9 +48,8 @@ public class InventoryPanelUpdater {
         ItemBuilder builder = new ItemBuilder(ctx, panelBuilder);
 
         // Main update task
-        this.updateTask = Bukkit.getRegionScheduler().runAtFixedRate(
+        this.updateTask = p.getScheduler().runAtFixedRate(
                 ctx.plugin,
-                p.getLocation(),
                 (scheduledTask) -> {
                     Inventory inv = p.getOpenInventory().getTopInventory();
                     InventoryHolder holder = inv.getHolder();
@@ -97,6 +95,7 @@ public class InventoryPanelUpdater {
                         inv.setItem(slot, newItem);
                     }
                 },
+                null,
                 updateDelay,
                 updateDelay
         );
@@ -104,9 +103,8 @@ public class InventoryPanelUpdater {
         final boolean isUsingPermObserver = ctx.fileHandler.config.getBoolean("permission-observer");
 
         // Fast heartbeat check task, should run frequently
-        this.checkTask = Bukkit.getRegionScheduler().runAtFixedRate(
+        this.checkTask = p.getScheduler().runAtFixedRate(
                 ctx.plugin,
-                p.getLocation(),
                 (scheduledTask) -> {
                     Inventory inv = p.getOpenInventory().getTopInventory();
                     InventoryHolder holder = inv.getHolder();
@@ -128,6 +126,7 @@ public class InventoryPanelUpdater {
                         }
                     }
                 },
+                null,
                 2,
                 2
         );
