@@ -17,52 +17,72 @@ import java.util.Map;
 
 public class InventoryPanelUpdater {
 
-    private ScheduledTask checkTask;
+    private ScheduledTask heartbeatTask;
     private ScheduledTask updateTask;
 
-    // List of permission states for observed permissions
     private final Map<String, Boolean> lastObservedPermStates = new HashMap<>();
 
-    /**
-     * Panel updater will maintain itself with a checkTask that will end the updater
-     * If it finds the panel has been closed it will end the updater tasks
-     */
-
     public void start(Context ctx, Player p, InventoryPanel panel) {
-        // Stop existing tasks if any
-        stop();
+        stop(); // always clean slate
 
-        // Determine update delay
-        int updateDelay = 20;
-        if (panel.getUpdateDelay().matches("\\d+")) {
-            updateDelay = Integer.parseInt(panel.getUpdateDelay());
+        startHeartbeat(ctx, p, panel);
+
+        int updateDelay = parseUpdateDelay(panel.getUpdateDelay());
+        if (updateDelay > 0) {
+            startUpdater(ctx, p, panel, updateDelay);
         }
+    }
 
-        // If update delay is 0 then do not run the updater
-        if (updateDelay == 0) {
-            this.updateTask = null;
-            return;
-        }
+    private void startHeartbeat(Context ctx, Player p, InventoryPanel panel) {
+        final boolean isUsingPermObserver = ctx.fileHandler.config.getBoolean("permission-observer");
 
-        InventoryPanelBuilder panelBuilder = new InventoryPanelBuilder(ctx, p);
-        ItemBuilder builder = new ItemBuilder(ctx, panelBuilder);
-
-        // Main update task
-        this.updateTask = p.getScheduler().runAtFixedRate(
+        heartbeatTask = p.getScheduler().runAtFixedRate(
                 ctx.plugin,
-                (scheduledTask) -> {
+                (task) -> {
                     Inventory inv = p.getOpenInventory().getTopInventory();
                     InventoryHolder holder = inv.getHolder();
+
+                    // Stop everything if the panel is closed
                     if (!(holder instanceof InventoryPanel) || holder != panel) {
                         stop();
                         return;
                     }
 
-                    NamespacedKey itemIdKey = new NamespacedKey(ctx.plugin, "item_id");
-                    NamespacedKey baseIdKey = new NamespacedKey(ctx.plugin, "base_item_id");
-                    NamespacedKey fillItem = new NamespacedKey(ctx.plugin, "fill_item");
+                    // Handle permission observer
+                    if (!isUsingPermObserver) return;
+                    for (String node : panel.getObservedPerms()) {
+                        boolean current = p.hasPermission(node);
+                        Boolean previous = lastObservedPermStates.put(node, current);
+                        if (previous != null && previous != current) {
+                            panel.open(ctx, p, false);
+                            return;
+                        }
+                    }
+                },
+                null,
+                2,
+                2
+        );
+    }
 
-                    // Loop through items in the panel and update their state
+    private void startUpdater(Context ctx, Player p, InventoryPanel panel, int updateDelay) {
+        InventoryPanelBuilder panelBuilder = new InventoryPanelBuilder(ctx, p);
+        ItemBuilder builder = new ItemBuilder(ctx, panelBuilder);
+
+        NamespacedKey itemIdKey = new NamespacedKey(ctx.plugin, "item_id");
+        NamespacedKey baseIdKey = new NamespacedKey(ctx.plugin, "base_item_id");
+        NamespacedKey fillItem = new NamespacedKey(ctx.plugin, "fill_item");
+
+        updateTask = p.getScheduler().runAtFixedRate(
+                ctx.plugin,
+                (task) -> {
+                    Inventory inv = p.getOpenInventory().getTopInventory();
+                    InventoryHolder holder = inv.getHolder();
+                    if (!(holder instanceof InventoryPanel) || holder != panel) {
+                        stopUpdater(); // only stop this task, heartbeat may continue
+                        return;
+                    }
+
                     for (int slot = 0; slot < inv.getSize(); slot++) {
                         ItemStack item = inv.getItem(slot);
                         if (item == null || item.getType().isAir()) continue;
@@ -99,44 +119,28 @@ public class InventoryPanelUpdater {
                 updateDelay,
                 updateDelay
         );
+    }
 
-        final boolean isUsingPermObserver = ctx.fileHandler.config.getBoolean("permission-observer");
-
-        // Fast heartbeat check task, should run frequently
-        this.checkTask = p.getScheduler().runAtFixedRate(
-                ctx.plugin,
-                (scheduledTask) -> {
-                    Inventory inv = p.getOpenInventory().getTopInventory();
-                    InventoryHolder holder = inv.getHolder();
-
-                    if (!(holder instanceof InventoryPanel) || holder != panel) {
-                        stop();
-                        return;
-                    }
-
-                    // Permission Observer: Refresh if an observed perms state changes
-                    if(!isUsingPermObserver) return; // Skip if disabled
-                    for (String node : panel.getObservedPerms()) {
-                        boolean currentState = p.hasPermission(node);
-                        Boolean previousState = lastObservedPermStates.get(node);
-                        lastObservedPermStates.put(node, currentState);
-                        if (previousState != null && previousState != currentState) {
-                            panel.open(ctx, p, false);
-                            return;
-                        }
-                    }
-                },
-                null,
-                2,
-                2
-        );
+    private int parseUpdateDelay(String delayStr) {
+        if (delayStr != null && delayStr.matches("\\d+")) {
+            return Integer.parseInt(delayStr);
+        }
+        return 20; // default
     }
 
     public void stop() {
-        if (checkTask != null) {
-            checkTask.cancel();
-            checkTask = null;
+        stopHeartbeat();
+        stopUpdater();
+    }
+
+    private void stopHeartbeat() {
+        if (heartbeatTask != null) {
+            heartbeatTask.cancel();
+            heartbeatTask = null;
         }
+    }
+
+    private void stopUpdater() {
         if (updateTask != null) {
             updateTask.cancel();
             updateTask = null;
