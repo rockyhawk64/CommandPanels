@@ -47,7 +47,7 @@ public class TeleportTag implements CommandTagResolver {
             }
             Location teleportLocation = new Location(teleportedWorld, x, y, z, yaw, pitch);
             if (teleportedPlayer != null) {
-                teleportedPlayer.teleport(teleportLocation);
+                player.teleportAsync(teleportLocation);
             }
         } catch (Exception ex) {
             ctx.text.sendError(player, Message.TELEPORT_ERROR);

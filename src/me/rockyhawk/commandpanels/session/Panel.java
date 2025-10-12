@@ -52,10 +52,10 @@ public abstract class Panel {
     // Checks for opening fresh panels
     public boolean canOpen(Player p, Context ctx) {
         // Do not open if user is in cooldown period
-        NamespacedKey keyTime = new NamespacedKey(ctx.plugin, "last_open_tick");
-        Integer lastOpenTick = p.getPersistentDataContainer().get(keyTime, PersistentDataType.INTEGER);
-        int cooldownTicks = ctx.fileHandler.config.getInt("cooldown-ticks");
-        if (lastOpenTick != null && Bukkit.getCurrentTick() - lastOpenTick < cooldownTicks) {
+        NamespacedKey keyTime = new NamespacedKey(ctx.plugin, "last_open_time");
+        Long lastOpenTime = p.getPersistentDataContainer().get(keyTime, PersistentDataType.LONG);
+        long cooldownMillis = ctx.fileHandler.config.getLong("cooldown-ticks") * 50L;
+        if (lastOpenTime != null && System.currentTimeMillis() - lastOpenTime < cooldownMillis) {
             ctx.text.sendError(p, Message.COOLDOWN_ERROR);
             return false;
         }
@@ -69,11 +69,11 @@ public abstract class Panel {
     public void updatePanelData(Context ctx, Player p) {
         NamespacedKey keyCurrent = new NamespacedKey(ctx.plugin, "current");
         NamespacedKey keyPrevious = new NamespacedKey(ctx.plugin, "previous");
-        NamespacedKey keyTick = new NamespacedKey(ctx.plugin, "last_open_tick");
+        NamespacedKey keyMillis = new NamespacedKey(ctx.plugin, "last_open_time");
         PersistentDataContainer container = p.getPersistentDataContainer();
 
         // Time the player last opened any panel
-        container.set(keyTick, PersistentDataType.INTEGER, Bukkit.getCurrentTick());
+        container.set(keyMillis, PersistentDataType.LONG, System.currentTimeMillis());
 
         // Move current → previous
         String current = container.get(keyCurrent, PersistentDataType.STRING);

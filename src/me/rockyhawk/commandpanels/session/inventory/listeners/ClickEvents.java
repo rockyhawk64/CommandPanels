@@ -67,14 +67,14 @@ public class ClickEvents implements Listener {
         e.setResult(Event.Result.DENY);
 
         // Do not run commands if user is in cooldown (item click cooldown should match heartbeat updater speed)
-        NamespacedKey lastClickTick = new NamespacedKey(ctx.plugin, "last_click_tick");
-        Integer lastOpen = player.getPersistentDataContainer().get(lastClickTick, PersistentDataType.INTEGER);
-        int currentTick = Bukkit.getCurrentTick();
-        if (lastOpen != null && currentTick - lastOpen < 2) {
+        NamespacedKey lastClick = new NamespacedKey(ctx.plugin, "last_click_time");
+        Long lastOpenMillis = player.getPersistentDataContainer().get(lastClick, PersistentDataType.LONG);
+        long currentMillis = System.currentTimeMillis();
+        if (lastOpenMillis != null && currentMillis - lastOpenMillis < 100L) {
             return;
         }
 
-        player.getPersistentDataContainer().set(lastClickTick, PersistentDataType.INTEGER, currentTick);
+        player.getPersistentDataContainer().set(lastClick, PersistentDataType.LONG, currentMillis);
         String itemId = container.get(baseIdKey, PersistentDataType.STRING);
 
         // Check valid interaction types

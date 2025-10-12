@@ -70,7 +70,10 @@ public class CommandRunner {
         }
 
         // Run the command
-        runCommand(panel, player, command);
+        Bukkit.getGlobalRegionScheduler().run(
+                ctx.plugin,
+                task -> runCommand(panel, player, command)
+        );
 
         // Move to the next command
         runCommands(panel, player, commands, index + 1);
