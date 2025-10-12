@@ -1,7 +1,6 @@
 package me.rockyhawk.commandpanels.session.inventory.listeners;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
 import me.rockyhawk.commandpanels.session.ClickActions;
@@ -31,6 +30,20 @@ public class ClickEvents implements Listener {
         this.ctx = ctx;
         commands = new CommandRunner(ctx);
         requirements = new RequirementRunner(ctx);
+    }
+
+    @EventHandler
+    public void onOutsideInventoryClick(InventoryClickEvent e) {
+        if (!(e.getWhoClicked() instanceof Player player)) return;
+        if (e.getClickedInventory() != null) return;
+        if (!(player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryPanel panel)) return;
+
+        ClickActions actions = panel.getOutsideCommands();
+        if(!requirements.processRequirements(panel, player, actions.requirements())){
+            commands.runCommands(panel, player, actions.fail());
+            return;
+        }
+        commands.runCommands(panel, player, actions.commands());
     }
 
     @EventHandler

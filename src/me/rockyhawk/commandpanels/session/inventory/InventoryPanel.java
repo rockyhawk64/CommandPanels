@@ -4,6 +4,7 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.builder.inventory.InventoryPanelBuilder;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
+import me.rockyhawk.commandpanels.session.ClickActions;
 import me.rockyhawk.commandpanels.session.Panel;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgatePanel;
 import org.bukkit.Bukkit;
@@ -22,6 +23,7 @@ public class InventoryPanel extends Panel implements InventoryHolder {
     private final String rows;
     private final Map<String, PanelItem> items = new HashMap<>();
     private final Map<String, List<String>> slots = new HashMap<>();
+    private final ClickActions outside;
     private final String floodgate;
     private final String updateDelay;
 
@@ -31,6 +33,12 @@ public class InventoryPanel extends Panel implements InventoryHolder {
         this.rows = config.getString("rows", "1");
         this.floodgate = config.getString("floodgate", "");
         this.updateDelay = config.getString("update-delay", "20");
+
+        outside = new ClickActions(
+                config.getStringList("outside.requirements"),
+                config.getStringList("outside.commands"),
+                config.getStringList("outside.fail")
+        );
 
         ConfigurationSection slotSection = config.getConfigurationSection("layout");
         if (slotSection != null) {
@@ -104,9 +112,14 @@ public class InventoryPanel extends Panel implements InventoryHolder {
         return updateDelay;
     }
 
+    public ClickActions getOutsideCommands() {
+        return outside;
+    }
+
     // For InventoryHolder implementation
     @Override
     public Inventory getInventory() {
         return null;
     }
+
 }
