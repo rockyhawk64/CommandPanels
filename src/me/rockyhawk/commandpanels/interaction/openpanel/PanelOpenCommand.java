@@ -68,8 +68,11 @@ public class PanelOpenCommand implements Listener {
             return;
         }
 
-        // No panel was found that could be opened
-        if(hadMatch) ctx.text.sendError(e.getPlayer(), Message.COMMAND_NO_PERMISSION);
+        // Had panel match but no panel had permission, cancel and send no perm message
+        if(hadMatch){
+            ctx.text.sendError(e.getPlayer(), Message.COMMAND_NO_PERMISSION);
+            e.setCancelled(true);
+        }
     }
 
     public void populateCommands() {
