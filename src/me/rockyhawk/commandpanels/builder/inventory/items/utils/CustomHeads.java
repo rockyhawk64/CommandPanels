@@ -3,6 +3,7 @@ package me.rockyhawk.commandpanels.builder.inventory.items.utils;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import me.rockyhawk.commandpanels.Context;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -14,10 +15,26 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CustomHeads {
 
+    private final Context ctx;
     private static final Map<String, PlayerProfile> profileCache = new HashMap<>();
+    private static final Queue<String> lookupQueue = new ConcurrentLinkedQueue<>();
+    private static boolean queueTaskRunning = false;
+
+    /**
+     * This class must have a single instance across the plugin
+     * so that heads are cached and the queue is utilised properly.s
+     */
+    public CustomHeads(Context ctx) {
+        this.ctx = ctx;
+    }
+
+    // ===========================
+    // BASE64 (SYNC ONLY)
+    // ===========================
 
     public ItemStack getCustomHead(String base64Texture) {
         PlayerProfile profile = getOrCreateProfile(base64Texture);
@@ -30,22 +47,6 @@ public class CustomHeads {
         skull.setItemMeta(skullMeta);
 
         return skull; // New item each time, only shares profile (skin)
-    }
-
-    public ItemStack getPlayerHead(String playerName) {
-        PlayerProfile profile = profileCache.computeIfAbsent(playerName, key -> {
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-
-            return offlinePlayer.getPlayerProfile();
-        });
-
-        ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
-        if (!(skull.getItemMeta() instanceof SkullMeta skullMeta)) return skull;
-
-        skullMeta.setPlayerProfile(profile);
-        skull.setItemMeta(skullMeta);
-
-        return skull;
     }
 
     private PlayerProfile getOrCreateProfile(String base64Texture) {
@@ -76,5 +77,79 @@ public class CustomHeads {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    // ===========================
+    // PLAYER HEADS (SYNC + ASYNC)
+    // ===========================
+
+    /**
+     * If head is not cached run the async warmer to cache the head async.
+     */
+    public ItemStack getPlayerHeadSync(String playerName) {
+        ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
+        String key = playerName.toLowerCase();
+
+        if(profileCache.containsKey(key)){
+            // Instantly used cached profile in the item
+            PlayerProfile profile = profileCache.get(key);
+            SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+            skullMeta.setPlayerProfile(profile);
+            skull.setItemMeta(skullMeta);
+        }else{
+            // Add head cache request to the queue
+            enqueuePlayerHead(key);
+        }
+        return skull;
+    }
+
+    /**
+     * Asynchronous cache warmer.
+     * Will resolve and store the PlayerProfile in the cache in the background.
+     * Does not return an ItemStack.
+     */
+    private void cachePlayerHeadAsync(String playerName) {
+        String key = playerName.toLowerCase();
+        if (profileCache.containsKey(key)) return; // already cached
+
+        Bukkit.getAsyncScheduler().runNow(ctx.plugin, (t) -> {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+            PlayerProfile p = offlinePlayer.getPlayerProfile();
+            if (p == null) {
+                UUID offlineUuid = UUID.nameUUIDFromBytes(playerName.getBytes(StandardCharsets.UTF_8));
+                p = Bukkit.createProfile(offlineUuid, playerName);
+            }
+            p.complete(true); // network call
+            profileCache.put(key, p);
+        });
+    }
+
+    /**
+     * Player head async queue code below
+     * queue is used to help avoid timeouts from Mojang
+     */
+    private void enqueuePlayerHead(String key) {
+        if (profileCache.containsKey(key) || lookupQueue.contains(key)) return;
+        lookupQueue.add(key);
+        startQueueProcessor();
+    }
+    private void startQueueProcessor() {
+        if (queueTaskRunning) return;
+        queueTaskRunning = true;
+
+        Bukkit.getGlobalRegionScheduler().runAtFixedRate(ctx.plugin, task -> {
+            int maxPerTick = 3;
+            for (int i = 0; i < maxPerTick; i++) {
+                String next = lookupQueue.poll();
+                if (next == null) {
+                    // no more tasks, stop processor
+                    task.cancel();
+                    queueTaskRunning = false;
+                    return;
+                }
+                // Run the async fetch for this key
+                Bukkit.getAsyncScheduler().runNow(ctx.plugin, t -> cachePlayerHeadAsync(next));
+            }
+        }, 1, 20); // tick interval per head api lookup
     }
 }

@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels;
 
+import me.rockyhawk.commandpanels.builder.inventory.items.utils.CustomHeads;
 import me.rockyhawk.commandpanels.commands.MainCommand;
 import me.rockyhawk.commandpanels.formatter.Placeholders;
 import me.rockyhawk.commandpanels.formatter.language.TextFormatter;
@@ -18,6 +19,7 @@ public class Context {
     public PanelOpenCommand panelCommand;
     public DataLoader dataLoader;
     public GenerateManager generator;
+    public CustomHeads customHeads;
 
     public Context(CommandPanels pl) {
         plugin = pl;
@@ -30,6 +32,7 @@ public class Context {
         panelCommand = new PanelOpenCommand(this);
         dataLoader = new DataLoader(this);
         generator = new GenerateManager(this);
+        customHeads = new CustomHeads(this);
 
         // Register plugin command
         plugin.registerCommand("panels", new MainCommand(this));

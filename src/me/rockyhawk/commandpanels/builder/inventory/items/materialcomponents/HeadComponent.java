@@ -18,13 +18,13 @@ public class HeadComponent implements MaterialComponent {
     public ItemStack createItem(Context ctx, String head, Player player, PanelItem item) {
         try {
             ItemStack s;
-            CustomHeads customHeads = new CustomHeads();
+            String headName = ctx.text.parseTextToString(player, head);
             if (ctx.text.parseTextToString(player,head).length() <= 16) {
                 //if [head] username
-                s = customHeads.getPlayerHead(ctx.text.parseTextToString(player, head));
+                s = ctx.customHeads.getPlayerHeadSync(headName);
             } else {
                 //custom data [head] base64
-                s = customHeads.getCustomHead(ctx.text.parseTextToString(player, head));
+                s = ctx.customHeads.getCustomHead(headName);
             }
             return s;
         } catch (Exception var32) {
