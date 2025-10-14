@@ -47,7 +47,6 @@ public class CommandRunner {
 
         String command = commands.get(index).trim();
 
-        // Handle the delay tag at flow level
         if (command.startsWith("[delay]")) {
             String delayStr = ctx.text.applyPlaceholders(
                     player,
@@ -70,10 +69,7 @@ public class CommandRunner {
         }
 
         // Run the command
-        Bukkit.getGlobalRegionScheduler().run(
-                ctx.plugin,
-                task -> runCommand(panel, player, command)
-        );
+        runCommand(panel, player, command);
 
         // Move to the next command
         runCommands(panel, player, commands, index + 1);

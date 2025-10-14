@@ -15,6 +15,8 @@ public class ConsoleCmdTag implements CommandTagResolver {
 
     @Override
     public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        Bukkit.getGlobalRegionScheduler().run(ctx.plugin,
+                task -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
+        );
     }
 }

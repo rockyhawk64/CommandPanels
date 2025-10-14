@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.interaction.commands.tags;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class ChatTag implements CommandTagResolver {

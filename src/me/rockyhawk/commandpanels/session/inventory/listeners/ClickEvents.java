@@ -6,7 +6,6 @@ import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
 import me.rockyhawk.commandpanels.session.ClickActions;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import me.rockyhawk.commandpanels.session.inventory.PanelItem;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;

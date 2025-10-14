@@ -19,8 +19,8 @@ public class RefreshPanelTag implements CommandTagResolver {
      */
     @Override
     public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
-        Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task -> {
-            panel.open(ctx, player, false);
-        });
+        Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task ->
+                panel.open(ctx, player, false)
+        );
     }
 }
