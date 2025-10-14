@@ -20,7 +20,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class CustomHeads {
 
     private final Context ctx;
-    private static final Map<String, PlayerProfile> profileCache = new HashMap<>();
+    private static final int MAX_CACHE_SIZE = 5000;
+    private static final Map<String, PlayerProfile> profileCache =
+            // Used to define a set limit for how long profileCache can get
+            Collections.synchronizedMap(new LinkedHashMap<>(16, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<String, PlayerProfile> eldest) {
+                    return size() > MAX_CACHE_SIZE;
+                }
+            });
     private static final Queue<String> lookupQueue = new ConcurrentLinkedQueue<>();
     private static boolean queueTaskRunning = false;
 
@@ -87,21 +95,31 @@ public class CustomHeads {
      * If head is not cached run the async warmer to cache the head async.
      */
     public ItemStack getPlayerHeadSync(String playerName) {
-        ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
         String key = playerName.toLowerCase();
 
-        if(profileCache.containsKey(key)){
-            // Instantly used cached profile in the item
-            PlayerProfile profile = profileCache.get(key);
-            SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
-            skullMeta.setPlayerProfile(profile);
-            skull.setItemMeta(skullMeta);
-        }else{
-            // Add head cache request to the queue
+        // Start with a PLAYER_HEAD item and a skull meta
+        ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
+        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+
+        // Try to get a profile from cache first
+        PlayerProfile profile = profileCache.get(key);
+
+        if (profile == null) {
+            // Fallback to offline player profile to show textures when players are already online
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+            profile = offlinePlayer.getPlayerProfile();
+
+            // Enqueue async task to fill cache for next time
             enqueuePlayerHead(key);
         }
+
+        // Put profile on the head
+        skullMeta.setPlayerProfile(profile);
+        skull.setItemMeta(skullMeta);
+
         return skull;
     }
+
 
     /**
      * Asynchronous cache warmer.
@@ -150,6 +168,6 @@ public class CustomHeads {
                 // Run the async fetch for this key
                 Bukkit.getAsyncScheduler().runNow(ctx.plugin, t -> cachePlayerHeadAsync(next));
             }
-        }, 1, 20); // tick interval per head api lookup
+        }, 1, 15); // tick interval per head api lookup
     }
 }
