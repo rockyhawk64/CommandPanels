@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import me.rockyhawk.commandpanels.Context;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerTextures;
@@ -104,14 +104,16 @@ public class CustomHeads {
         // Try to get a profile from cache first
         PlayerProfile profile = profileCache.get(key);
 
-        if (profile == null) {
-            // Fallback to offline player profile to show textures when players are already online
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-            profile = offlinePlayer.getPlayerProfile();
-
-            // Enqueue async task to fill cache for next time
-            enqueuePlayerHead(key);
+        if(profile == null){
+            // Use local texture if player is currently online
+            Player onlinePlayer = Bukkit.getPlayerExact(playerName);
+            if(onlinePlayer != null){
+                profile = onlinePlayer.getPlayerProfile();
+                profileCache.put(key, profile);
+            }
         }
+
+        if (!profileCache.containsKey(key)) enqueuePlayerHead(key);
 
         // Put profile on the head
         skullMeta.setPlayerProfile(profile);
@@ -128,17 +130,16 @@ public class CustomHeads {
      */
     private void cachePlayerHeadAsync(String playerName) {
         String key = playerName.toLowerCase();
-        if (profileCache.containsKey(key)) return; // already cached
 
         Bukkit.getAsyncScheduler().runNow(ctx.plugin, (t) -> {
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-            PlayerProfile p = offlinePlayer.getPlayerProfile();
-            if (p == null) {
-                UUID offlineUuid = UUID.nameUUIDFromBytes(playerName.getBytes(StandardCharsets.UTF_8));
-                p = Bukkit.createProfile(offlineUuid, playerName);
+            PlayerProfile p = Bukkit.createProfile(playerName);
+            p.complete(true); // network calls
+            if(p.isComplete()){
+                profileCache.put(key, p);
+            }else{
+                profileCache.put(key, null);
+                enqueuePlayerHead(key); // allow a second try
             }
-            p.complete(true); // network call
-            profileCache.put(key, p);
         });
     }
 
@@ -168,6 +169,6 @@ public class CustomHeads {
                 // Run the async fetch for this key
                 Bukkit.getAsyncScheduler().runNow(ctx.plugin, t -> cachePlayerHeadAsync(next));
             }
-        }, 1, 15); // tick interval per head api lookup
+        }, 1, 20); // tick interval per head api lookup
     }
 }
