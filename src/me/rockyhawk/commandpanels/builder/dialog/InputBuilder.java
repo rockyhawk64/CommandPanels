@@ -24,7 +24,7 @@ public class InputBuilder {
         Player player = builder.getPlayer();
         TextDialogInput.Builder inputBuilder = DialogInput
                 .text(item.getId(), ctx.text.parseTextToComponent(player, item.getName()))
-                .initial(ctx.text.parseTextToString(player, item.getInitial()))
+                .initial(ctx.text.applyPlaceholders(player, item.getInitial()))
                 .width(builder.parseInt(item.getWidth()))
                 .maxLength(builder.parseInt(item.getMaxLength()));
 

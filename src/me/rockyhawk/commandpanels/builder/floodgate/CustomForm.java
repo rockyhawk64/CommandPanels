@@ -57,7 +57,8 @@ public class CustomForm {
                 switch (comp) {
                     case FloodgateLabel input -> {
                         form.label(
-                                parseText(input.getName().replaceAll("\\\\n", "\n"))
+                                ctx.text.applyPlaceholders(player,
+                                        input.getName().replaceAll("\\\\n", "\n"))
                         );
                         inputOrder.add(input);
                     }
