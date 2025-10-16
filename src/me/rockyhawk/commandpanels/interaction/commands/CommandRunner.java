@@ -85,7 +85,7 @@ public class CommandRunner {
             String tag = parts[0];
 
             String args = (parts.length > 1) ? parts[1].trim() : "";
-            String argsParsed = ctx.text.parseTextToString(player, args);
+            String argsParsed = ctx.text.applyPlaceholders(player, args);
 
             if (resolver.isCorrectTag(tag)) {
                 resolver.handle(ctx, panel, player, args, argsParsed);
