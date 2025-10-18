@@ -32,11 +32,27 @@ public class ClickEvents implements Listener {
     }
 
     @EventHandler
+    public void onPlayerInventoryClick(InventoryClickEvent e) {
+        if (!(e.getWhoClicked() instanceof Player player)) return;
+        if (e.getClickedInventory() == null) return;
+        if (!(player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryPanel panel)) return;
+        if (e.getClickedInventory() != e.getView().getBottomInventory()) return;
+
+        // Cancel player inventory click if locked
+        if (e.getClickedInventory() != null) {
+            boolean isLocked = Boolean.parseBoolean(
+                    ctx.text.parseTextToString(player,panel.getInventoryLock()));
+            if(isLocked) e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onOutsideInventoryClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player player)) return;
         if (e.getClickedInventory() != null) return;
         if (!(player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryPanel panel)) return;
 
+        // Run outside command actions
         ClickActions actions = panel.getOutsideCommands();
         if(!requirements.processRequirements(panel, player, actions.requirements())){
             commands.runCommands(panel, player, actions.fail());
@@ -78,7 +94,7 @@ public class ClickEvents implements Listener {
 
         // Check valid interaction types
         switch (e.getClick()) {
-            case LEFT, RIGHT, MIDDLE, SHIFT_LEFT, SHIFT_RIGHT -> {
+            case LEFT, RIGHT, SHIFT_LEFT, SHIFT_RIGHT -> {
                 PanelItem panelItem = panel.getItems().get(itemId);
                 ClickActions actions = panelItem.getClickActions(e.getClick());
                 if(!requirements.processRequirements(panel, player, actions.requirements())){

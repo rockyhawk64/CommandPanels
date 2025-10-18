@@ -25,6 +25,7 @@ public class InventoryPanel extends Panel implements InventoryHolder {
     private final Map<String, List<String>> slots = new HashMap<>();
     private final ClickActions outside;
     private final String floodgate;
+    private final String inventoryLock;
     private final String updateDelay;
 
     public InventoryPanel(String name, YamlConfiguration config) {
@@ -33,6 +34,7 @@ public class InventoryPanel extends Panel implements InventoryHolder {
         this.rows = config.getString("rows", "1");
         this.floodgate = config.getString("floodgate", "");
         this.updateDelay = config.getString("update-delay", "20");
+        this.inventoryLock = config.getString("inventory-lock", "false");
 
         outside = new ClickActions(
                 config.getStringList("outside.requirements"),
@@ -114,6 +116,10 @@ public class InventoryPanel extends Panel implements InventoryHolder {
 
     public ClickActions getOutsideCommands() {
         return outside;
+    }
+
+    public String getInventoryLock() {
+        return inventoryLock;
     }
 
     // For InventoryHolder implementation

@@ -19,7 +19,6 @@ public record PanelItem(
         ClickActions actions,
         ClickActions leftClick,
         ClickActions rightClick,
-        ClickActions middleClick,
         ClickActions shiftLeftClick,
         ClickActions shiftRightClick,
         String damage,
@@ -46,7 +45,6 @@ public record PanelItem(
             ClickActions actions,
             ClickActions leftClick,
             ClickActions rightClick,
-            ClickActions middleClick,
             ClickActions shiftLeftClick,
             ClickActions shiftRightClick,
             String damage,
@@ -72,7 +70,6 @@ public record PanelItem(
         this.actions = actions;
         this.leftClick = leftClick;
         this.rightClick = rightClick;
-        this.middleClick = middleClick;
         this.shiftLeftClick = shiftLeftClick;
         this.shiftRightClick = shiftRightClick;
         this.damage = damage;
@@ -100,7 +97,6 @@ public record PanelItem(
         ClickActions actions = ClickActions.fromSection(section.getConfigurationSection("actions"));
         ClickActions leftClick = ClickActions.fromSection(section.getConfigurationSection("left-click"));
         ClickActions rightClick = ClickActions.fromSection(section.getConfigurationSection("right-click"));
-        ClickActions middleClick = ClickActions.fromSection(section.getConfigurationSection("middle-click"));
         ClickActions shiftLeftClick = ClickActions.fromSection(section.getConfigurationSection("shift-left-click"));
         ClickActions shiftRightClick = ClickActions.fromSection(section.getConfigurationSection("shift-right-click"));
 
@@ -129,7 +125,6 @@ public record PanelItem(
                 actions,
                 leftClick,
                 rightClick,
-                middleClick,
                 shiftLeftClick,
                 shiftRightClick,
                 damage,
@@ -150,7 +145,6 @@ public record PanelItem(
         // LEFT case defaults
         return switch (clickType) {
             case RIGHT -> rightClick;
-            case MIDDLE -> middleClick;
             case SHIFT_LEFT -> shiftLeftClick;
             case SHIFT_RIGHT -> shiftRightClick;
             default -> leftClick;
