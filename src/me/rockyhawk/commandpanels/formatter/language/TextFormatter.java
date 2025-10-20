@@ -49,20 +49,24 @@ public class TextFormatter {
                 .build();
     }
 
+    // Will not send messages if the message is empty
     public void sendInfo(Audience audience, Message message, Object... args) {
         String translated = lang.translate(message, args);
+        if(translated.isBlank()) return;
         Component comp = buildLocalizedComponent(translated, NamedTextColor.WHITE);
         audience.sendMessage(getPrefix().append(comp));
     }
 
     public void sendWarn(Audience audience, Message message, Object... args) {
         String translated = lang.translate(message, args);
+        if(translated.isBlank()) return;
         Component comp = buildLocalizedComponent(translated, NamedTextColor.YELLOW);
         audience.sendMessage(getPrefix().append(comp));
     }
 
     public void sendError(Audience audience, Message message, Object... args) {
         String translated = lang.translate(message, args);
+        if(translated.isBlank()) return;
         Component comp = buildLocalizedComponent(translated, NamedTextColor.RED);
         audience.sendMessage(getPrefix().append(comp));
     }
