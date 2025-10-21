@@ -23,7 +23,6 @@ public abstract class Panel {
     private final List<String> observedPerms; // List of permissions used in conditions for a panel
     private final String command; // Command used to open the panel
     private final List<String> aliases; // Aliases for command that opens the panel
-    private final List<String> commands; // DEPRECATED OLD COMMANDS LAYOUT
     private final CommandActions open; // Commands that run when panel is opened
     private final String type;
 
@@ -33,7 +32,6 @@ public abstract class Panel {
         this.title = config.getString("title", "Panel");
         this.command = config.getString("command", "");
         this.aliases = config.getStringList("aliases");
-        this.commands = config.getStringList("commands"); // DEPRECATED OLD COMMANDS
         this.type = config.getString("type", "inventory");
         this.observedPerms = new ArrayList<>();
 
@@ -108,11 +106,6 @@ public abstract class Panel {
     }
     public List<String> getAliases() {
         return aliases;
-    }
-
-    // DEPRECATED OLD COMMANDS
-    public List<String> getCommands() {
-        return commands;
     }
 
     public CommandActions getOpenCommands() {

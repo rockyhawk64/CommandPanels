@@ -64,16 +64,6 @@ public class FloodgatePanel extends Panel {
             }
             updatePanelData(ctx, player);
 
-            // RUN DEPRECATED PANEL COMMANDS; WILL BE REMOVED SOON
-            CommandRunner runnerOld = new CommandRunner(ctx);
-            if(!this.getCommands().isEmpty()){
-                if(player.hasPermission("commandpanels.command.reload"))
-                    player.sendMessage(
-                            Component.text("[CommandPanels] Commands is now deprecated, use new layout Open Commands instead.",
-                                    NamedTextColor.RED));
-            }
-            runnerOld.runCommands(this, player, this.getCommands());
-
             // Run panel commands
             RequirementRunner requirements = new RequirementRunner(ctx);
             CommandRunner commands = new CommandRunner(ctx);
