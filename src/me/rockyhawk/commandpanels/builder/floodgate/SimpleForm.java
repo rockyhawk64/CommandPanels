@@ -6,7 +6,7 @@ import me.rockyhawk.commandpanels.builder.logic.ConditionParser;
 import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
-import me.rockyhawk.commandpanels.session.ClickActions;
+import me.rockyhawk.commandpanels.session.CommandActions;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgatePanel;
 import me.rockyhawk.commandpanels.session.floodgate.components.FloodgateButton;
 import org.bukkit.entity.Player;
@@ -72,7 +72,7 @@ public class SimpleForm {
             if (clickedButtonId >= buttonList.size()) return;
 
             // Run commands
-            ClickActions actions = buttonList.get(clickedButtonId).getClickActions();
+            CommandActions actions = buttonList.get(clickedButtonId).getClickActions();
             CommandRunner commands = new CommandRunner(ctx);
             RequirementRunner requirements = new RequirementRunner(ctx);
 

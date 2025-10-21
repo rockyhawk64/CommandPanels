@@ -4,8 +4,12 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.builder.dialog.DialogPanelBuilder;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
+import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
+import me.rockyhawk.commandpanels.session.CommandActions;
 import me.rockyhawk.commandpanels.session.Panel;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgatePanel;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -70,9 +74,25 @@ public class DialogPanel extends Panel {
             }
             updatePanelData(ctx, player);
 
+            // RUN DEPRECATED PANEL COMMANDS; WILL BE REMOVED SOON
+            CommandRunner runnerOld = new CommandRunner(ctx);
+            if(!this.getCommands().isEmpty()){
+                if(player.hasPermission("commandpanels.command.reload"))
+                    player.sendMessage(
+                            Component.text("[CommandPanels] Commands is now deprecated, use new layout Open Commands instead.",
+                                    NamedTextColor.RED));
+            }
+            runnerOld.runCommands(this, player, this.getCommands());
+
             // Run panel commands
-            CommandRunner runner = new CommandRunner(ctx);
-            runner.runCommands(this, player, this.getCommands());
+            RequirementRunner requirements = new RequirementRunner(ctx);
+            CommandRunner commands = new CommandRunner(ctx);
+            CommandActions actions = this.getOpenCommands();
+            if(!requirements.processRequirements(this, player, actions.requirements())){
+                commands.runCommands(this, player, actions.fail());
+                return;
+            }
+            commands.runCommands(this, player, actions.commands());
         }
 
         // Build and open panel

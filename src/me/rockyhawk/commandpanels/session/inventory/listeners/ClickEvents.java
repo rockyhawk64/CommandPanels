@@ -3,7 +3,7 @@ package me.rockyhawk.commandpanels.session.inventory.listeners;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
-import me.rockyhawk.commandpanels.session.ClickActions;
+import me.rockyhawk.commandpanels.session.CommandActions;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import me.rockyhawk.commandpanels.session.inventory.PanelItem;
 import org.bukkit.NamespacedKey;
@@ -53,7 +53,7 @@ public class ClickEvents implements Listener {
         if (!(player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryPanel panel)) return;
 
         // Run outside command actions
-        ClickActions actions = panel.getOutsideCommands();
+        CommandActions actions = panel.getOutsideCommands();
         if(!requirements.processRequirements(panel, player, actions.requirements())){
             commands.runCommands(panel, player, actions.fail());
             return;
@@ -96,7 +96,7 @@ public class ClickEvents implements Listener {
         switch (e.getClick()) {
             case LEFT, RIGHT, SHIFT_LEFT, SHIFT_RIGHT -> {
                 PanelItem panelItem = panel.getItems().get(itemId);
-                ClickActions actions = panelItem.getClickActions(e.getClick());
+                CommandActions actions = panelItem.getClickActions(e.getClick());
                 if(!requirements.processRequirements(panel, player, actions.requirements())){
                     commands.runCommands(panel, player, actions.fail());
                     return;

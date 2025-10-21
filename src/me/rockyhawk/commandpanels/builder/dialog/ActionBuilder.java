@@ -7,7 +7,7 @@ import me.rockyhawk.commandpanels.builder.logic.ConditionNode;
 import me.rockyhawk.commandpanels.builder.logic.ConditionParser;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
-import me.rockyhawk.commandpanels.session.ClickActions;
+import me.rockyhawk.commandpanels.session.CommandActions;
 import me.rockyhawk.commandpanels.session.dialog.DialogComponent;
 import me.rockyhawk.commandpanels.session.dialog.DialogPanel;
 import me.rockyhawk.commandpanels.session.dialog.components.DialogButton;
@@ -40,7 +40,7 @@ public class ActionBuilder implements Listener {
         Component tooltip = ctx.text.parseTextToComponent(player, button.getTooltip());
 
         DialogAction action = DialogAction.customClick((options, audience) -> {
-                    ClickActions actions = button.getClickActions();
+                    CommandActions actions = button.getClickActions();
                     CommandRunner commands = new CommandRunner(ctx);
                     RequirementRunner requirements = new RequirementRunner(ctx);
 

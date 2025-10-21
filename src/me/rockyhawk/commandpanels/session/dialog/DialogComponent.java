@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.session.dialog;
 
-import me.rockyhawk.commandpanels.session.ClickActions;
+import me.rockyhawk.commandpanels.session.CommandActions;
 import me.rockyhawk.commandpanels.session.dialog.components.*;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -9,14 +9,14 @@ public abstract class DialogComponent {
     private final String name;
     private final String conditions;
     private final String type;
-    private final ClickActions actions;
+    private final CommandActions actions;
 
     public DialogComponent(String id, ConfigurationSection config) {
         this.id = id;
         this.conditions = config.getString("conditions", "");
         this.name = config.getString("name", "");
         this.type = config.getString("type", "button");
-        this.actions = ClickActions.fromSection(config.getConfigurationSection("actions"));
+        this.actions = CommandActions.fromSection(config.getConfigurationSection("actions"));
     }
 
     public static DialogComponent fromSection(String id, ConfigurationSection section) {
@@ -48,7 +48,7 @@ public abstract class DialogComponent {
         return id;
     }
 
-    public ClickActions getClickActions() {
+    public CommandActions getClickActions() {
         return actions;
     }
 }

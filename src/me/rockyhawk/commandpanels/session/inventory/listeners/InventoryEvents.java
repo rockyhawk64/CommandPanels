@@ -1,6 +1,9 @@
 package me.rockyhawk.commandpanels.session.inventory.listeners;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
+import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
+import me.rockyhawk.commandpanels.session.CommandActions;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -33,9 +36,19 @@ public class InventoryEvents implements Listener {
         if (!(event.getPlayer() instanceof Player player)) return;
 
         // Only remove the session if the player has one
-        if (event.getInventory().getHolder() instanceof InventoryPanel) {
+        if (event.getInventory().getHolder() instanceof InventoryPanel panel) {
             itemSanitiser(player.getInventory());
             itemDropper(player, event.getInventory());
+
+            // Run close commands
+            RequirementRunner requirements = new RequirementRunner(ctx);
+            CommandRunner commands = new CommandRunner(ctx);
+            CommandActions actions = panel.getCloseCommands();
+            if(!requirements.processRequirements(panel, player, actions.requirements())){
+                commands.runCommands(panel, player, actions.fail());
+                return;
+            }
+            commands.runCommands(panel, player, actions.commands());
         }
     }
 

@@ -1,6 +1,6 @@
 package me.rockyhawk.commandpanels.session.inventory;
 
-import me.rockyhawk.commandpanels.session.ClickActions;
+import me.rockyhawk.commandpanels.session.CommandActions;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.ClickType;
 
@@ -16,11 +16,11 @@ public record PanelItem(
         String tooltip,
         String animate,
         String conditions,
-        ClickActions actions,
-        ClickActions leftClick,
-        ClickActions rightClick,
-        ClickActions shiftLeftClick,
-        ClickActions shiftRightClick,
+        CommandActions actions,
+        CommandActions leftClick,
+        CommandActions rightClick,
+        CommandActions shiftLeftClick,
+        CommandActions shiftRightClick,
         String damage,
         String itemModel,
         String customModelData,
@@ -42,11 +42,11 @@ public record PanelItem(
             String tooltip,
             String animate,
             String conditions,
-            ClickActions actions,
-            ClickActions leftClick,
-            ClickActions rightClick,
-            ClickActions shiftLeftClick,
-            ClickActions shiftRightClick,
+            CommandActions actions,
+            CommandActions leftClick,
+            CommandActions rightClick,
+            CommandActions shiftLeftClick,
+            CommandActions shiftRightClick,
             String damage,
             String itemModel,
             String customModelData,
@@ -94,11 +94,11 @@ public record PanelItem(
         String animate = section.getString("animate", "");
         String conditions = section.getString("conditions", "");
 
-        ClickActions actions = ClickActions.fromSection(section.getConfigurationSection("actions"));
-        ClickActions leftClick = ClickActions.fromSection(section.getConfigurationSection("left-click"));
-        ClickActions rightClick = ClickActions.fromSection(section.getConfigurationSection("right-click"));
-        ClickActions shiftLeftClick = ClickActions.fromSection(section.getConfigurationSection("shift-left-click"));
-        ClickActions shiftRightClick = ClickActions.fromSection(section.getConfigurationSection("shift-right-click"));
+        CommandActions actions = CommandActions.fromSection(section.getConfigurationSection("actions"));
+        CommandActions leftClick = CommandActions.fromSection(section.getConfigurationSection("left-click"));
+        CommandActions rightClick = CommandActions.fromSection(section.getConfigurationSection("right-click"));
+        CommandActions shiftLeftClick = CommandActions.fromSection(section.getConfigurationSection("shift-left-click"));
+        CommandActions shiftRightClick = CommandActions.fromSection(section.getConfigurationSection("shift-right-click"));
 
         String damage = section.getString("damage", "0");
         String itemModel = section.getString("item-model", null);
@@ -140,7 +140,7 @@ public record PanelItem(
         );
     }
 
-    public ClickActions getClickActions(ClickType clickType) {
+    public CommandActions getClickActions(ClickType clickType) {
         if(!actions.requirements().isEmpty() || !actions.commands().isEmpty()) return actions;
         // LEFT case defaults
         return switch (clickType) {

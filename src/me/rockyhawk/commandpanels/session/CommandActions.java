@@ -4,14 +4,14 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
 
-public record ClickActions(
+public record CommandActions(
         List<String> requirements,
         List<String> commands,
         List<String> fail
 ) {
-    public static ClickActions fromSection(ConfigurationSection section) {
-        if (section == null) return new ClickActions(List.of(), List.of(), List.of());
-        return new ClickActions(
+    public static CommandActions fromSection(ConfigurationSection section) {
+        if (section == null) return new CommandActions(List.of(), List.of(), List.of());
+        return new CommandActions(
                 section.getStringList("requirements"),
                 section.getStringList("commands"),
                 section.getStringList("fail")

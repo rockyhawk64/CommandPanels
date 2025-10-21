@@ -4,9 +4,12 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.builder.inventory.InventoryPanelBuilder;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
-import me.rockyhawk.commandpanels.session.ClickActions;
+import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
+import me.rockyhawk.commandpanels.session.CommandActions;
 import me.rockyhawk.commandpanels.session.Panel;
 import me.rockyhawk.commandpanels.session.floodgate.FloodgatePanel;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,7 +26,8 @@ public class InventoryPanel extends Panel implements InventoryHolder {
     private final String rows;
     private final Map<String, PanelItem> items = new HashMap<>();
     private final Map<String, List<String>> slots = new HashMap<>();
-    private final ClickActions outside;
+    private final CommandActions outside;
+    private final CommandActions close;
     private final String floodgate;
     private final String inventoryLock;
     private final String updateDelay;
@@ -36,10 +40,15 @@ public class InventoryPanel extends Panel implements InventoryHolder {
         this.updateDelay = config.getString("update-delay", "20");
         this.inventoryLock = config.getString("inventory-lock", "false");
 
-        outside = new ClickActions(
+        outside = new CommandActions(
                 config.getStringList("outside.requirements"),
                 config.getStringList("outside.commands"),
                 config.getStringList("outside.fail")
+        );
+        close = new CommandActions(
+                config.getStringList("close.requirements"),
+                config.getStringList("close.commands"),
+                config.getStringList("close.fail")
         );
 
         ConfigurationSection slotSection = config.getConfigurationSection("layout");
@@ -82,9 +91,26 @@ public class InventoryPanel extends Panel implements InventoryHolder {
             }
             updatePanelData(ctx, player);
 
+            // RUN DEPRECATED PANEL COMMANDS; WILL BE REMOVED SOON
+            CommandRunner runnerOld = new CommandRunner(ctx);
+            if(!this.getCommands().isEmpty()){
+                if(player.hasPermission("commandpanels.command.reload"))
+                    player.sendMessage(
+                            Component.text("[CommandPanels] Commands is now deprecated, use new layout Open Commands instead.",
+                            NamedTextColor.RED));
+            }
+            runnerOld.runCommands(this, player, this.getCommands());
+
+
             // Run panel commands
-            CommandRunner runner = new CommandRunner(ctx);
-            runner.runCommands(this, player, this.getCommands());
+            RequirementRunner requirements = new RequirementRunner(ctx);
+            CommandRunner commands = new CommandRunner(ctx);
+            CommandActions actions = this.getOpenCommands();
+            if(!requirements.processRequirements(this, player, actions.requirements())){
+                commands.runCommands(this, player, actions.fail());
+                return;
+            }
+            commands.runCommands(this, player, actions.commands());
         }
 
         // Build and open the panel
@@ -114,8 +140,12 @@ public class InventoryPanel extends Panel implements InventoryHolder {
         return updateDelay;
     }
 
-    public ClickActions getOutsideCommands() {
+    public CommandActions getOutsideCommands() {
         return outside;
+    }
+
+    public CommandActions getCloseCommands() {
+        return close;
     }
 
     public String getInventoryLock() {
