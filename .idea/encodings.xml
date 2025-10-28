@@ -3,8 +3,6 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/panels" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/resource" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/resource_editor" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/resource_example" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src" charset="UTF-8" />
   </component>
 </project>

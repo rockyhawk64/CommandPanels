@@ -22,7 +22,7 @@ public class HeadDatabaseComponent implements MaterialComponent {
             api = new HeadDatabaseAPI();
             return api.getItemHead(head);
         } else {
-            ctx.text.sendWarn(player, Message.REQUIRE_HEADDATABASE);
+            ctx.text.sendWarn(player, Message.REQUIRE_HEAD_DATABASE);
         }
         return null;
     }

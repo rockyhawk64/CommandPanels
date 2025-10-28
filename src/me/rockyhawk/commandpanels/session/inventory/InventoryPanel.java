@@ -21,14 +21,15 @@ import java.util.List;
 import java.util.Map;
 
 public class InventoryPanel extends Panel implements InventoryHolder {
-    private final String rows;
     private final Map<String, PanelItem> items = new HashMap<>();
     private final Map<String, List<String>> slots = new HashMap<>();
     private final CommandActions outside;
     private final CommandActions close;
+    private final String rows;
     private final String floodgate;
-    private final String inventoryLock;
     private final String updateDelay;
+    private final String inventoryLock;
+    private final String itemCooldown;
 
     public InventoryPanel(String name, YamlConfiguration config) {
         super(name, config);
@@ -37,6 +38,7 @@ public class InventoryPanel extends Panel implements InventoryHolder {
         this.floodgate = config.getString("floodgate", "");
         this.updateDelay = config.getString("update-delay", "20");
         this.inventoryLock = config.getString("inventory-lock", "false");
+        this.itemCooldown = config.getString("item-cooldown", "0");
 
         outside = new CommandActions(
                 config.getStringList("outside.requirements"),
@@ -81,10 +83,9 @@ public class InventoryPanel extends Panel implements InventoryHolder {
             }
         }
 
-
-        if(isNewPanelSession) {
+        if (isNewPanelSession) {
             // Don't open same panel if its already open
-            if(!canOpen(player, ctx)){
+            if (!canOpen(player, ctx)) {
                 return;
             }
             updatePanelData(ctx, player);
@@ -93,7 +94,7 @@ public class InventoryPanel extends Panel implements InventoryHolder {
             RequirementRunner requirements = new RequirementRunner(ctx);
             CommandRunner commands = new CommandRunner(ctx);
             CommandActions actions = this.getOpenCommands();
-            if(!requirements.processRequirements(this, player, actions.requirements())){
+            if (!requirements.processRequirements(this, player, actions.requirements())) {
                 commands.runCommands(this, player, actions.fail());
                 return;
             }
@@ -104,15 +105,11 @@ public class InventoryPanel extends Panel implements InventoryHolder {
         PanelBuilder builder = new InventoryPanelBuilder(ctx, player);
         builder.open(this);
 
-        if(isNewPanelSession) {
+        if (isNewPanelSession) {
             // Start a panel updater
             InventoryPanelUpdater updater = new InventoryPanelUpdater();
             updater.start(ctx, player, this);
         }
-    }
-
-    public String getRows() {
-        return rows;
     }
 
     public Map<String, PanelItem> getItems() {
@@ -123,10 +120,6 @@ public class InventoryPanel extends Panel implements InventoryHolder {
         return slots;
     }
 
-    public String getUpdateDelay() {
-        return updateDelay;
-    }
-
     public CommandActions getOutsideCommands() {
         return outside;
     }
@@ -135,8 +128,20 @@ public class InventoryPanel extends Panel implements InventoryHolder {
         return close;
     }
 
+    public String getRows() {
+        return rows;
+    }
+
+    public String getUpdateDelay() {
+        return updateDelay;
+    }
+
     public String getInventoryLock() {
         return inventoryLock;
+    }
+
+    public String getItemCooldown() {
+        return itemCooldown;
     }
 
     // For InventoryHolder implementation
@@ -144,5 +149,4 @@ public class InventoryPanel extends Panel implements InventoryHolder {
     public Inventory getInventory() {
         return null;
     }
-
 }

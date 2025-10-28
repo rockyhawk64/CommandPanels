@@ -4,7 +4,9 @@ import me.rockyhawk.commandpanels.session.CommandActions;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.ClickType;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public record PanelItem(
         String id,
@@ -17,10 +19,16 @@ public record PanelItem(
         String animate,
         String conditions,
         CommandActions actions,
+        CommandActions mouseActions,
+        CommandActions keyActions,
         CommandActions leftClick,
         CommandActions rightClick,
         CommandActions shiftLeftClick,
         CommandActions shiftRightClick,
+        CommandActions drop,
+        CommandActions ctrlDrop,
+        CommandActions swapOffhand,
+        Map<Integer, CommandActions> numberKeys,
         String damage,
         String itemModel,
         String customModelData,
@@ -43,10 +51,16 @@ public record PanelItem(
             String animate,
             String conditions,
             CommandActions actions,
+            CommandActions mouseActions,
+            CommandActions keyActions,
             CommandActions leftClick,
             CommandActions rightClick,
             CommandActions shiftLeftClick,
             CommandActions shiftRightClick,
+            CommandActions drop,
+            CommandActions ctrlDrop,
+            CommandActions swapOffhand,
+            Map<Integer, CommandActions> numberKeys,
             String damage,
             String itemModel,
             String customModelData,
@@ -68,10 +82,16 @@ public record PanelItem(
         this.animate = animate;
         this.conditions = conditions;
         this.actions = actions;
+        this.mouseActions = mouseActions;
+        this.keyActions = keyActions;
         this.leftClick = leftClick;
         this.rightClick = rightClick;
         this.shiftLeftClick = shiftLeftClick;
         this.shiftRightClick = shiftRightClick;
+        this.drop = drop;
+        this.ctrlDrop = ctrlDrop;
+        this.swapOffhand = swapOffhand;
+        this.numberKeys = numberKeys;
         this.damage = damage;
         this.itemModel = itemModel;
         this.customModelData = customModelData;
@@ -95,10 +115,23 @@ public record PanelItem(
         String conditions = section.getString("conditions", "");
 
         CommandActions actions = CommandActions.fromSection(section.getConfigurationSection("actions"));
+        CommandActions mouseActions = CommandActions.fromSection(section.getConfigurationSection("mouse-actions"));
+        CommandActions keyActions = CommandActions.fromSection(section.getConfigurationSection("key-actions"));
         CommandActions leftClick = CommandActions.fromSection(section.getConfigurationSection("left-click"));
         CommandActions rightClick = CommandActions.fromSection(section.getConfigurationSection("right-click"));
         CommandActions shiftLeftClick = CommandActions.fromSection(section.getConfigurationSection("shift-left-click"));
         CommandActions shiftRightClick = CommandActions.fromSection(section.getConfigurationSection("shift-right-click"));
+        CommandActions drop = CommandActions.fromSection(section.getConfigurationSection("drop"));
+        CommandActions ctrlDrop = CommandActions.fromSection(section.getConfigurationSection("ctrl-drop"));
+        CommandActions swapOffhand = CommandActions.fromSection(section.getConfigurationSection("swap-offhand"));
+
+        Map<Integer, CommandActions> numberKeys = new HashMap<>();
+        for (int i = 1; i <= 9; i++) {
+            ConfigurationSection keySection = section.getConfigurationSection("key-" + i);
+            if (keySection != null) {
+                numberKeys.put(i, CommandActions.fromSection(keySection));
+            }
+        }
 
         String damage = section.getString("damage", "0");
         String itemModel = section.getString("item-model", null);
@@ -123,10 +156,16 @@ public record PanelItem(
                 animate,
                 conditions,
                 actions,
+                mouseActions,
+                keyActions,
                 leftClick,
                 rightClick,
                 shiftLeftClick,
                 shiftRightClick,
+                drop,
+                ctrlDrop,
+                swapOffhand,
+                numberKeys,
                 damage,
                 itemModel,
                 customModelData,
@@ -141,13 +180,38 @@ public record PanelItem(
     }
 
     public CommandActions getClickActions(ClickType clickType) {
-        if(!actions.requirements().isEmpty() || !actions.commands().isEmpty()) return actions;
+        if (!actions.requirements().isEmpty() || !actions.commands().isEmpty()) return actions;
+
+        boolean isMouseClick =
+                clickType == ClickType.LEFT ||
+                clickType == ClickType.RIGHT ||
+                clickType == ClickType.SHIFT_LEFT ||
+                clickType == ClickType.SHIFT_RIGHT;
+        if (isMouseClick && (!mouseActions.requirements().isEmpty() || !mouseActions.commands().isEmpty())) return mouseActions;
+
+        // Check keyboard actions
+        // Excluding number keys, which are handled separately
+        boolean isKeyClick =
+                clickType == ClickType.DROP ||
+                clickType == ClickType.CONTROL_DROP ||
+                clickType == ClickType.SWAP_OFFHAND;
+        if (isKeyClick && (!keyActions.requirements().isEmpty() || !keyActions.commands().isEmpty())) return keyActions;
+
         // LEFT case defaults
         return switch (clickType) {
             case RIGHT -> rightClick;
             case SHIFT_LEFT -> shiftLeftClick;
             case SHIFT_RIGHT -> shiftRightClick;
+            case DROP -> drop;
+            case CONTROL_DROP -> ctrlDrop;
+            case SWAP_OFFHAND -> swapOffhand;
             default -> leftClick;
         };
+    }
+
+    public CommandActions getNumberKeyAction(int number) {
+        if (!actions.requirements().isEmpty() || !actions.commands().isEmpty()) return actions;
+        if (!keyActions.requirements().isEmpty() || !keyActions.commands().isEmpty()) return keyActions;
+        return numberKeys.getOrDefault(number, new CommandActions(List.of(), List.of(), List.of()));
     }
 }

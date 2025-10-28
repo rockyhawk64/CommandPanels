@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.session.inventory.listeners;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
 import me.rockyhawk.commandpanels.session.CommandActions;
@@ -40,9 +41,8 @@ public class ClickEvents implements Listener {
 
         // Cancel player inventory click if locked
         if (e.getClickedInventory() != null) {
-            boolean isLocked = Boolean.parseBoolean(
-                    ctx.text.parseTextToString(player,panel.getInventoryLock()));
-            if(isLocked) e.setCancelled(true);
+            boolean isLocked = Boolean.parseBoolean(ctx.text.parseTextToString(player, panel.getInventoryLock()));
+            if (isLocked) e.setCancelled(true);
         }
     }
 
@@ -54,7 +54,7 @@ public class ClickEvents implements Listener {
 
         // Run outside command actions
         CommandActions actions = panel.getOutsideCommands();
-        if(!requirements.processRequirements(panel, player, actions.requirements())){
+        if (!requirements.processRequirements(panel, player, actions.requirements())) {
             commands.runCommands(panel, player, actions.fail());
             return;
         }
@@ -92,12 +92,30 @@ public class ClickEvents implements Listener {
         player.getPersistentDataContainer().set(lastClick, PersistentDataType.LONG, currentMillis);
         String itemId = container.get(baseIdKey, PersistentDataType.STRING);
 
+        PanelItem panelItem = panel.getItems().get(itemId);
+        if (isItemOnCooldown(player, panel)) {
+            int remainingTicks = getRemainingCooldownTicks(player, panel);
+            if (remainingTicks > 0) {
+                double remainingSeconds = remainingTicks / 20.0;
+                ctx.text.sendError(player, Message.ITEM_COOLDOWN, String.format("%.1f", remainingSeconds));
+            }
+            return;
+        }
+
         // Check valid interaction types
         switch (e.getClick()) {
-            case LEFT, RIGHT, SHIFT_LEFT, SHIFT_RIGHT -> {
-                PanelItem panelItem = panel.getItems().get(itemId);
+            case LEFT, RIGHT, SHIFT_LEFT, SHIFT_RIGHT, DROP, CONTROL_DROP, SWAP_OFFHAND -> {
                 CommandActions actions = panelItem.getClickActions(e.getClick());
-                if(!requirements.processRequirements(panel, player, actions.requirements())){
+                if (!requirements.processRequirements(panel, player, actions.requirements())) {
+                    commands.runCommands(panel, player, actions.fail());
+                    return;
+                }
+                commands.runCommands(panel, player, actions.commands());
+            }
+            case NUMBER_KEY -> {
+                int numberKey = e.getHotbarButton() + 1;
+                CommandActions actions = panelItem.getNumberKeyAction(numberKey);
+                if (!requirements.processRequirements(panel, player, actions.requirements())) {
                     commands.runCommands(panel, player, actions.fail());
                     return;
                 }
@@ -112,19 +130,16 @@ public class ClickEvents implements Listener {
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {
         Inventory topInventory = event.getView().getTopInventory();
-        if(!(topInventory.getHolder() instanceof InventoryPanel)) return;
+        if (!(topInventory.getHolder() instanceof InventoryPanel)) return;
 
         // Only care about drag targets in the top inventory
         int topSize = topInventory.getSize();
-        boolean draggingOverPanelItem = event.getRawSlots().stream()
-                .filter(slot -> slot < topSize) // only slots in the top inventory
+        boolean draggingOverPanelItem = event.getRawSlots().stream().filter(slot -> slot < topSize) // only slots in the top inventory
                 .anyMatch(slot -> {
                     var item = topInventory.getItem(slot);
                     if (item == null || !item.hasItemMeta()) return false;
                     var meta = item.getItemMeta();
-                    return meta.getPersistentDataContainer().has(
-                            new NamespacedKey(ctx.plugin, "item_id"), PersistentDataType.STRING
-                    );
+                    return meta.getPersistentDataContainer().has(new NamespacedKey(ctx.plugin, "item_id"), PersistentDataType.STRING);
                 });
 
         if (draggingOverPanelItem) {
@@ -132,5 +147,55 @@ public class ClickEvents implements Listener {
         }
     }
 
+    public boolean isItemOnCooldown(Player player, InventoryPanel panel) {
+        int cooldownTicks = getItemCooldownTicks(player, panel);
+        if (cooldownTicks <= 0) return false;
 
+        NamespacedKey cooldownKey = new NamespacedKey(ctx.plugin, "item_cooldown");
+        PersistentDataContainer container = player.getPersistentDataContainer();
+
+        Long lastUseTime = container.get(cooldownKey, PersistentDataType.LONG);
+        long currentTime = System.currentTimeMillis();
+
+        if (lastUseTime != null) {
+            long elapsedTicks = (currentTime - lastUseTime) / 50;
+            if (elapsedTicks < cooldownTicks) return true;
+        }
+
+        container.set(cooldownKey, PersistentDataType.LONG, currentTime);
+        return false;
+    }
+
+    public int getRemainingCooldownTicks(Player player, InventoryPanel panel) {
+        NamespacedKey cooldownKey = new NamespacedKey(ctx.plugin, "item_cooldown");
+        PersistentDataContainer container = player.getPersistentDataContainer();
+
+        Long lastUseTime = container.get(cooldownKey, PersistentDataType.LONG);
+        if (lastUseTime == null) {
+            return 0;
+        }
+
+        long currentTime = System.currentTimeMillis();
+        long elapsedTicks = (currentTime - lastUseTime) / 50;
+        int cooldownTicks = getItemCooldownTicks(player, panel);
+
+        return Math.max(0, cooldownTicks - (int) elapsedTicks);
+    }
+
+    public int getItemCooldownTicks(Player player, InventoryPanel panel) {
+        if (panel == null) {
+            return 0;
+        }
+
+        String panelCooldownStr = ctx.text.parseTextToString(player, panel.getItemCooldown());
+
+        if (panelCooldownStr.trim().isEmpty()) {
+            return 0;
+        }
+        try {
+            return Math.max(0, Integer.parseInt(panelCooldownStr.trim()));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
 }
