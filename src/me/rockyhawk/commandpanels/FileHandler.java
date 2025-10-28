@@ -12,6 +12,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FileHandler {
     private final Context ctx;
@@ -54,6 +56,9 @@ public class FileHandler {
             ctx.plugin.panels.putAll(panels);
             ctx.panelCommand.populateCommands();
         });
+
+        // load lang
+        createLangFile();
     }
 
     private HashMap<String, Panel> loadYamlFilesRecursively(File directory) {
@@ -89,7 +94,7 @@ public class FileHandler {
     // Code for config files
     //this reads the encrypted resource files in the jar file
     private Reader getReaderFromStream(InputStream initialStream) throws IOException {
-        if(initialStream == null) return new StringReader("Missing resource for this file!");
+        if (initialStream == null) return new StringReader("Missing resource for this file!");
         // Read all bytes from the input stream
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         byte[] data = new byte[8192];
@@ -127,25 +132,59 @@ public class FileHandler {
     // if lang file is missing add it back
     private void createLangFile() {
         File messagesFile = new File(ctx.plugin.getDataFolder(), "lang.yml");
+        YamlConfiguration messagesYaml = Message.toYaml();
         if (messagesFile.exists()) {
             // Return, lang file already exists
+            updateLangFile(messagesFile, messagesYaml);
             return;
         }
 
-        YamlConfiguration messagesYaml = Message.toYaml();
         try {
             messagesYaml.save(messagesFile);
         } catch (IOException ex) {
-            Bukkit.getGlobalRegionScheduler().run(ctx.plugin,
-                    task -> ctx.text.sendError(
-                            ctx.plugin.getServer().getConsoleSender(),
-                            Message.FILE_CREATE_LANG_FAIL
-                    )
-            );
+            Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task -> ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_CREATE_LANG_FAIL));
         }
     }
 
-    public void updateConfigFiles(){
+    public void updateLangFile(File langFile, YamlConfiguration defaultLang) {
+        YamlConfiguration existingLang = YamlConfiguration.loadConfiguration(langFile);
+
+        boolean hasChanges = false;
+        Set<String> defaultKeys = defaultLang.getKeys(false);
+        Set<String> existingKeys = existingLang.getKeys(false);
+
+        // find missing key
+        Set<String> missingKeys = new HashSet<>(defaultKeys);
+        missingKeys.removeAll(existingKeys);
+
+        // find extra key
+        Set<String> extraKeys = new HashSet<>(existingKeys);
+        extraKeys.removeAll(defaultKeys);
+
+        // add missing key
+        for (String missingKey : missingKeys) {
+            String defaultValue = defaultLang.getString(missingKey);
+            existingLang.set(missingKey, defaultValue);
+            hasChanges = true;
+        }
+
+        // remove extra key
+        for (String extraKey : extraKeys) {
+            existingLang.set(extraKey, null);
+            hasChanges = true;
+        }
+
+        // If file changes, save it
+        if (hasChanges) {
+            try {
+                existingLang.save(langFile);
+            } catch (IOException e) {
+                Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task -> ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_UPDATE_LANG_FAIL));
+            }
+        }
+    }
+
+    public void updateConfigFiles() {
         // Register config files
         config = YamlConfiguration.loadConfiguration(new File(ctx.plugin.getDataFolder(), "config.yml"));
 
@@ -160,7 +199,7 @@ public class FileHandler {
             } catch (IOException var11) {
                 Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task -> ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_CREATE_CONFIG_FAIL));
             }
-        }else{
+        } else {
             // Check if the config file has any missing elements
             try {
                 YamlConfiguration configFileConfiguration = YamlConfiguration.loadConfiguration(getReaderFromStream(ctx.plugin.getResource("config.yml")));
