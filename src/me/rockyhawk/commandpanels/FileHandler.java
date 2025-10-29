@@ -173,10 +173,6 @@ public class FileHandler {
                         writer.write(key + ": \"" + defaultValue.replace("\"", "\\\"") + "\"\n");
                     }
                 }
-//                for (String missingKey : missingKeys) {
-//                    String defaultValue = defaultLang.getString(missingKey);
-//                    writer.write(missingKey + ": \"" + defaultValue + "\"\n");
-//                }
             } catch (IOException e) {
                 Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task ->
                         ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_UPDATE_LANG_FAIL));
