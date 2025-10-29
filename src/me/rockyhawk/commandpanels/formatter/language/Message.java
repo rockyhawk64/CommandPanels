@@ -13,9 +13,10 @@ public enum Message {
     // FileHandler / DataLoader / GenerateManager
     FILE_CREATE_PANELS_FAIL("Failed to create panels folder!"),
     FILE_CREATE_EXAMPLE_FAIL("Could not create example panels!"),
-    FILE_CREATE_LANG_FAIL("Failed to create language file!"),
     FILE_CREATE_CONFIG_FAIL("Could not create the config file!"),
     FILE_UPDATE_CONFIG_FAIL("Could not update the config file!"),
+    FILE_CREATE_LANG_FAIL("Failed to create language file!"),
+    FILE_UPDATE_LANG_FAIL("Failed to update language file!"),
     FILE_SAVE_DATA_FAIL("Could not save data file."),
     FILE_SAVE_PANEL_FAIL("Could not save new panel file."),
 
@@ -113,7 +114,7 @@ public enum Message {
     DIALOG_NO_BUTTONS("Dialog needs at least one button"),
     COOLDOWN_ERROR("You're opening panels too quickly"),
     TELEPORT_ERROR("Error with teleport tag"),
-    REQUIRE_HEADDATABASE("Download the HeadDatabase plugin to use this feature!");
+    REQUIRE_HEAD_DATABASE("Download the HeadDatabase plugin to use this feature!");
 
     private final String message;
 
