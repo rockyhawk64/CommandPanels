@@ -20,7 +20,7 @@ public class Placeholders extends PlaceholderExpansion {
         loadPlaceholders();
     }
 
-    private void loadPlaceholders(){
+    private void loadPlaceholders() {
         resolvers.add(new SessionDataPlaceholder());
         resolvers.add(new DataPlaceholder());
         resolvers.add(new RandomPlaceholder());
@@ -43,7 +43,7 @@ public class Placeholders extends PlaceholderExpansion {
 
     @Override
     public String getVersion() {
-        return ctx.plugin.getDescription().getVersion();
+        return ctx.plugin.getPluginMeta().getVersion();
     }
 
     @Override
@@ -54,7 +54,7 @@ public class Placeholders extends PlaceholderExpansion {
         for (PlaceholderResolver resolver : resolvers) {
             try {
                 String value = resolver.resolve(player, params, ctx);
-                if(value != null){
+                if (value != null) {
                     return value;
                 }
             } catch (Exception e) {
