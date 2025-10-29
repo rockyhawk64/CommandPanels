@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.formatter.language;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.FileHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -13,9 +14,11 @@ import java.util.Map;
 public class LanguageManager {
     private final Map<String, String> translations = new HashMap<>();
     private final Context ctx;
+    private final FileHandler fileHandler;
 
     public LanguageManager(Context ctx) {
         this.ctx = ctx;
+        this.fileHandler = ctx.filehandler;
         reloadTranslations();
     }
 
@@ -23,6 +26,8 @@ public class LanguageManager {
     // Keys or the English side of translations should have periods omitted as it breaks YAML
     // The plugin will ensure they are still detected without it
     public void reloadTranslations() {
+        fileHandler.reloadLangFile();
+
         translations.clear();
         try {
             YamlConfiguration langFile = YamlConfiguration.loadConfiguration(new File(ctx.plugin.getDataFolder(), "lang.yml"));

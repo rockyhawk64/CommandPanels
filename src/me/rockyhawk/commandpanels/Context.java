@@ -20,6 +20,7 @@ public class Context {
     public DataLoader dataLoader;
     public GenerateManager generator;
     public CustomHeads customHeads;
+    public FileHandler filehandler;
 
     public Context(CommandPanels pl) {
         plugin = pl;
