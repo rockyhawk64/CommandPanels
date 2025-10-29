@@ -30,5 +30,4 @@ public class ReloadCommand implements SubCommand {
         });
         return true;
     }
-
 }
