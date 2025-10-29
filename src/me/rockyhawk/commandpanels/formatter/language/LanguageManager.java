@@ -24,15 +24,9 @@ public class LanguageManager {
     // The plugin will ensure they are still detected without it
     public void reloadTranslations() {
         translations.clear();
-        try {
-            YamlConfiguration langFile = YamlConfiguration.loadConfiguration(new File(ctx.plugin.getDataFolder(), "lang.yml"));
-            for (String key : langFile.getKeys(false)) {
-                translations.put(key.toLowerCase(), langFile.getString(key));
-            }
-        } catch (IllegalArgumentException e) {
-            // Send raw message as text class will not be initialised here
-            Bukkit.getConsoleSender().sendMessage(Component.text(
-                    "[CommandPanels] Language file could not be loaded, periods should not be in language keys.", NamedTextColor.RED));
+        YamlConfiguration langFile = YamlConfiguration.loadConfiguration(new File(ctx.plugin.getDataFolder(), "lang.yml"));
+        for (String key : langFile.getKeys(false)) {
+            translations.put(key.toLowerCase(), langFile.getString(key));
         }
     }
 

@@ -133,57 +133,14 @@ public class FileHandler {
     // if lang file is missing add it back
     private void createLangFile() {
         File messagesFile = new File(ctx.plugin.getDataFolder(), "lang.yml");
-        YamlConfiguration messagesYaml = Message.toYaml();
-        if (messagesFile.exists()) {
-            // Update, lang file already exists
-            updateLangFile(messagesFile, messagesYaml);
-            return;
-        }
+        if (messagesFile.exists()) return;
 
+        YamlConfiguration messagesYaml = Message.toYaml();
         try {
             messagesYaml.save(messagesFile);
         } catch (IOException ex) {
             Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task ->
                     ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_CREATE_LANG_FAIL));
-        }
-    }
-
-    public void updateLangFile(File langFile, YamlConfiguration defaultLang) {
-        YamlConfiguration existingLang = YamlConfiguration.loadConfiguration(langFile);
-
-        boolean hasChanges = false;
-        Set<String> defaultKeys = defaultLang.getKeys(false);
-        Set<String> existingKeys = existingLang.getKeys(false);
-
-        // find missing key
-        Set<String> missingKeys = new HashSet<>(defaultKeys);
-        missingKeys.removeAll(existingKeys);
-
-        // find extra key
-        Set<String> extraKeys = new HashSet<>(existingKeys);
-        extraKeys.removeAll(defaultKeys);
-
-        // add missing key
-        for (String missingKey : missingKeys) {
-            String defaultValue = defaultLang.getString(missingKey);
-            existingLang.set(missingKey, defaultValue);
-            hasChanges = true;
-        }
-
-        // remove extra key
-        for (String extraKey : extraKeys) {
-            existingLang.set(extraKey, null);
-            hasChanges = true;
-        }
-
-        // If file changes, save it
-        if (hasChanges) {
-            try {
-                existingLang.save(langFile);
-            } catch (IOException e) {
-                Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task ->
-                        ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_UPDATE_LANG_FAIL));
-            }
         }
     }
 
