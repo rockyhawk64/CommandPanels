@@ -22,8 +22,8 @@ public class FileHandler {
     public FileHandler(Context ctx) {
         this.ctx = ctx;
         updateConfigFiles();
-        reloadPanels();
         createLangFile();
+        reloadPanels();
     }
 
 
@@ -57,10 +57,6 @@ public class FileHandler {
             ctx.plugin.panels.putAll(panels);
             ctx.panelCommand.populateCommands();
         });
-    }
-
-    public void reloadLangFile() {
-        createLangFile();
     }
 
     private HashMap<String, Panel> loadYamlFilesRecursively(File directory) {
@@ -133,17 +129,24 @@ public class FileHandler {
     }
 
     // if lang file is missing add it back
-    private void createLangFile() {
+    public void createLangFile() {
         File messagesFile = new File(ctx.plugin.getDataFolder(), "lang.yml");
         YamlConfiguration messagesYaml = Message.toYaml();
+
         if (messagesFile.exists()) {
             // Update, lang file already exists
             updateLangFile(messagesFile, messagesYaml);
             return;
         }
 
-        try {
-            messagesYaml.save(messagesFile);
+        try (FileWriter writer = new FileWriter(messagesFile)) {
+            for (Message message : Message.values()) {
+                String key = message.name().toLowerCase();
+                String value = message.getMessage();
+
+                value = value.replace("\"", "\\\"");
+                writer.write(key + ": \"" + value + "\"\n");
+            }
         } catch (IOException ex) {
             Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task ->
                     ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_CREATE_LANG_FAIL));
@@ -153,7 +156,6 @@ public class FileHandler {
     public void updateLangFile(File langFile, YamlConfiguration defaultLang) {
         YamlConfiguration existingLang = YamlConfiguration.loadConfiguration(langFile);
 
-        boolean hasChanges = false;
         Set<String> defaultKeys = defaultLang.getKeys(false);
         Set<String> existingKeys = existingLang.getKeys(false);
 
@@ -161,27 +163,20 @@ public class FileHandler {
         Set<String> missingKeys = new HashSet<>(defaultKeys);
         missingKeys.removeAll(existingKeys);
 
-        // find extra key
-        Set<String> extraKeys = new HashSet<>(existingKeys);
-        extraKeys.removeAll(defaultKeys);
-
         // add missing key
-        for (String missingKey : missingKeys) {
-            String defaultValue = defaultLang.getString(missingKey);
-            existingLang.set(missingKey, defaultValue);
-            hasChanges = true;
-        }
-
-        // remove extra key
-        for (String extraKey : extraKeys) {
-            existingLang.set(extraKey, null);
-            hasChanges = true;
-        }
-
-        // If file changes, save it
-        if (hasChanges) {
-            try {
-                existingLang.save(langFile);
+        if (!missingKeys.isEmpty()) {
+            try (FileWriter writer = new FileWriter(langFile, true)) {
+                for (Message message : Message.values()) {
+                    String key = message.name().toLowerCase();
+                    if (missingKeys.contains(key)) {
+                        String defaultValue = message.getMessage();
+                        writer.write(key + ": \"" + defaultValue.replace("\"", "\\\"") + "\"\n");
+                    }
+                }
+//                for (String missingKey : missingKeys) {
+//                    String defaultValue = defaultLang.getString(missingKey);
+//                    writer.write(missingKey + ": \"" + defaultValue + "\"\n");
+//                }
             } catch (IOException e) {
                 Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task ->
                         ctx.text.sendError(ctx.plugin.getServer().getConsoleSender(), Message.FILE_UPDATE_LANG_FAIL));

@@ -3,8 +3,8 @@ package me.rockyhawk.commandpanels;
 import me.rockyhawk.commandpanels.builder.inventory.items.utils.CustomHeads;
 import me.rockyhawk.commandpanels.commands.MainCommand;
 import me.rockyhawk.commandpanels.formatter.Placeholders;
-import me.rockyhawk.commandpanels.formatter.language.TextFormatter;
 import me.rockyhawk.commandpanels.formatter.data.DataLoader;
+import me.rockyhawk.commandpanels.formatter.language.TextFormatter;
 import me.rockyhawk.commandpanels.interaction.openpanel.PanelOpenCommand;
 import me.rockyhawk.commandpanels.session.SessionDataUtils;
 import me.rockyhawk.commandpanels.session.inventory.generator.GenerateManager;
@@ -14,22 +14,21 @@ import org.bukkit.Bukkit;
 
 public class Context {
     public CommandPanels plugin;
-    public TextFormatter text;
     public FileHandler fileHandler;
+    public TextFormatter text;
     public PanelOpenCommand panelCommand;
     public DataLoader dataLoader;
     public GenerateManager generator;
     public CustomHeads customHeads;
-    public FileHandler filehandler;
 
     public Context(CommandPanels pl) {
         plugin = pl;
         init();
     }
 
-    private void init(){
-        text = new TextFormatter(this);
+    private void init() {
         fileHandler = new FileHandler(this);
+        text = new TextFormatter(this);
         panelCommand = new PanelOpenCommand(this);
         dataLoader = new DataLoader(this);
         generator = new GenerateManager(this);
