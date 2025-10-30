@@ -26,6 +26,8 @@ From shops and quests to custom tools and admin panels, you can design powerful 
 The online editor includes support for **all three panel types**.  
 It’s not just a basic form builder, it’s a **live YAML editor** with structure checks and visual previews, helping you work faster and avoid YAML errors.
 
+See a showcase of the editor [here](https://youtu.be/6m4KRHe1jkA?si=sDNiFU3PsJzPBKbB)!
+
 ![ExampleScreenshot](https://commandpanels.net/resource_images/example_editor.png)
 
 - ⚡ Visual layout builder with slot highlighting
