@@ -104,6 +104,9 @@ public class ItemTag implements RequirementTagResolver {
     }
 
     private boolean hasMatchingItems(Context ctx, Player player, ParsedItemRequirement req) {
+        // If zero items are required, always pass
+        if (req.amount <= 0) return true;
+
         Inventory inv = req.source.equals("panel")
                 ? player.getOpenInventory().getTopInventory()
                 : player.getInventory();
