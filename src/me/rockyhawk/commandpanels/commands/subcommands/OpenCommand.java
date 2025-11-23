@@ -8,6 +8,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class OpenCommand implements SubCommand {
 
     @Override
@@ -22,6 +26,10 @@ public class OpenCommand implements SubCommand {
 
     @Override
     public boolean execute(Context ctx, CommandSender sender, String[] args) {
+        List<String> mutableArgs = new ArrayList<>(Arrays.asList(args));
+        boolean isSilent = mutableArgs.removeIf(arg -> arg.equals("-s"));
+        args = mutableArgs.toArray(new String[0]);
+
         if (args.length < 1 || args.length > 2) {
             ctx.text.sendError(sender, Message.PANEL_OPEN_USAGE);
             return true;
@@ -57,7 +65,7 @@ public class OpenCommand implements SubCommand {
         }
 
         if(sender != target){
-            ctx.text.sendInfo(sender, Message.PANEL_OPEN_TRIGGERED);
+            if (!isSilent) ctx.text.sendInfo(sender, Message.PANEL_OPEN_TRIGGERED);
         }
 
         panel.open(ctx, target, true);
