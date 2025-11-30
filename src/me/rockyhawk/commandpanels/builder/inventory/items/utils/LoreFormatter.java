@@ -17,8 +17,18 @@ public class LoreFormatter {
 
     public List<Component> format(List<String> lore, Player player) {
         List<Component> output = new ArrayList<>();
-        for(String line : lore){
-            output.add(ctx.text.parseTextToComponent(player, line));
+
+        for (String entry : lore) {
+            // Split on actual newlines from placeholders + minimessage <newline> tags
+            String[] lines = ctx.text.applyPlaceholders(player, entry)
+                    .replace("\\n", "\n")
+                    .replace("<br>", "\n")
+                    .replace("<newline>", "\n")
+                    .split("\n");
+
+            for (String line : lines) {
+                output.add(ctx.text.parseTextToComponent(player, line));
+            }
         }
         return output;
     }
