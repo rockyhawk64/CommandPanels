@@ -56,7 +56,7 @@ public class Placeholders {
         // Escape the start/end symbols for regex
         String start = Pattern.quote(HOLDERS[0]);
         String end = Pattern.quote(HOLDERS[1]);
-        Pattern pattern = Pattern.compile(start + "cp-([a-zA-Z0-9_\\-]+)" + end);
+        Pattern pattern = Pattern.compile(start + "cp-([a-zA-Z0-9_\\\:\,-]+)" + end);
 
         int maxPasses = 255;
         int count = 0;
