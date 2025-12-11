@@ -104,6 +104,12 @@
             <url>https://jitpack.io</url>
         </repository>
 
+        <!-- Aurora -->
+        <repository>
+            <id>auroramc</id>
+            <url>https://repo.auroramc.gg/releases/</url>
+        </repository>
+
     </repositories>
 
     <dependencies>
@@ -182,6 +188,14 @@
             <groupId>com.github.MilkBowl</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.7.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Aurora -->
+        <dependency>
+            <groupId>gg.auroramc</groupId>
+            <artifactId>Aurora</artifactId>
+            <version>2.5.0</version>
             <scope>provided</scope>
         </dependency>
 
