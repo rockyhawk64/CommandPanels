@@ -98,6 +98,12 @@
             <url>https://nexus.phoenixdevt.fr/repository/maven-public/</url>
         </repository>
 
+        <!-- CraftEngine -->
+        <repository>
+            <id>momirealms</id>
+            <url>https://repo.momirealms.net/releases/</url>
+        </repository>
+
         <!-- Vault API -->
         <repository>
             <id>jitpack.io</id>
@@ -175,6 +181,20 @@
                     <artifactId>libby-bukkit</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- CraftEngine -->
+        <dependency>
+            <groupId>net.momirealms</groupId>
+            <artifactId>craft-engine-core</artifactId>
+            <version>0.0.66</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.momirealms</groupId>
+            <artifactId>craft-engine-bukkit</artifactId>
+            <version>0.0.66</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Vault API -->

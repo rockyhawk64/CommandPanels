@@ -103,6 +103,7 @@ public class ItemBuilder {
         this.materialComponents.add(new ItemsAdderComponent());
         this.materialComponents.add(new MMOItemsComponent());
         this.materialComponents.add(new HeadDatabaseComponent());
+        this.materialComponents.add(new CraftEngineComponent());
 
         // Add Item Components
         this.itemComponents.add(new EnchantedComponent());

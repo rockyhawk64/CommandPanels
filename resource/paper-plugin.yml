@@ -13,6 +13,8 @@ dependencies:
          required: false
       Nexo:
          required: false
+      CraftEngine:
+         required: false
       HeadDatabase:
          required: false
       floodgate:
