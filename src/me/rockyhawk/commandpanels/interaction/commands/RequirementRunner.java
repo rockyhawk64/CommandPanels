@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.api.Registry;
 import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.requirements.*;
 import me.rockyhawk.commandpanels.session.Panel;
@@ -11,19 +12,9 @@ import java.util.List;
 
 public class RequirementRunner {
     private final Context ctx;
-    private final List<RequirementTagResolver> resolvers = new ArrayList<>();
 
     public RequirementRunner(Context ctx) {
         this.ctx = ctx;
-        registerResolvers();
-    }
-
-    private void registerResolvers() {
-        resolvers.add(new ConditionTag());
-        resolvers.add(new VaultTag());
-        resolvers.add(new ItemTag());
-        resolvers.add(new DataTag());
-        resolvers.add(new XpTag());
     }
 
     // True if the requirements passed and payments taken successfully
@@ -42,7 +33,7 @@ public class RequirementRunner {
             String argsParsed = ctx.text.parseTextToString(player, args);
 
             boolean matched = false;
-            for (RequirementTagResolver resolver : resolvers) {
+            for (RequirementTagResolver resolver : Registry.REQUIREMENT_TAG_RESOLVERS) {
                 if (resolver.isCorrectTag(tag)) {
                     matched = true;
                     if (!resolver.check(ctx, panel, player, args, argsParsed)) {
