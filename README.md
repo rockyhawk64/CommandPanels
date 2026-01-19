@@ -91,13 +91,9 @@ CommandPanels provides a **streamlined YAML scripting format** designed to make 
 
 ---
 
-## Server Compatibility
+## Trusted by Servers Worldwide
 
 CommandPanels is fully compatible with **Paper** and **Folia** servers.
-
----
-
-## Trusted by Servers Worldwide
 
 For over 6 years, CommandPanels has powered **thousands of Minecraft servers**.
 Whether you're running survival, MMO, minigames, or custom networks, it can handle it.
