@@ -89,24 +89,11 @@ CommandPanels provides a **streamlined YAML scripting format** designed to make 
 - Full PlaceholderAPI support
 - Modern, clean codebase
 
-Developed in Australia 🇦🇺
-
 ---
 
 ## Server Compatibility
 
 CommandPanels is fully compatible with **Paper** and **Folia** servers.
-
----
-
-## Our Partner
-
-![ParterLogo](https://commandpanels.net/resource_images/partner_logo.png)
-
-We have proudly partnered with [ReviveNode](http://billing.revivenode.com/aff.php?aff=379)!  
-CommandPanels users get **15% off their first month** with the promo code: **PANELS**
-
-ReviveNode provides high-performance, reliable Minecraft hosting, making them the perfect partner for CommandPanels.
 
 ---
 
