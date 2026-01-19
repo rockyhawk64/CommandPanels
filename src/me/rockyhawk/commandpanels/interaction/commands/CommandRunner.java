@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.interaction.commands;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.api.Registry;
 import me.rockyhawk.commandpanels.interaction.commands.tags.*;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.Bukkit;
@@ -11,31 +12,9 @@ import java.util.List;
 
 public class CommandRunner {
     private final Context ctx;
-    private final List<CommandTagResolver> resolvers = new ArrayList<>();
 
     public CommandRunner(Context pl) {
         this.ctx = pl;
-        registerResolvers();
-    }
-
-    private void registerResolvers() {
-        resolvers.add(new OpenPanelTag());
-        resolvers.add(new RefreshPanelTag());
-        resolvers.add(new PreviousPanelTag());
-        resolvers.add(new ClosePanelTag());
-        resolvers.add(new ConsoleCmdTag());
-        resolvers.add(new SessionTag());
-        resolvers.add(new DataTag());
-        resolvers.add(new ChatTag());
-        resolvers.add(new GrantTag());
-        resolvers.add(new ServerTag());
-        resolvers.add(new MessageTag());
-        resolvers.add(new GiveTag());
-        resolvers.add(new ItemActionTag());
-        resolvers.add(new SoundTag());
-        resolvers.add(new StopSoundTag());
-        resolvers.add(new TeleportTag());
-
     }
 
     public void runCommands(Panel panel, Player player, List<String> commands) {
@@ -77,7 +56,7 @@ public class CommandRunner {
 
 
     public void runCommand(Panel panel, Player player, String command) {
-        for (CommandTagResolver resolver : resolvers) {
+        for (CommandTagResolver resolver : Registry.COMMAND_TAG_RESOLVERS) {
             if (command.isEmpty()) return;
 
             String[] parts = command.split("\\s+", 2); // Split into 2 parts: tag and rest

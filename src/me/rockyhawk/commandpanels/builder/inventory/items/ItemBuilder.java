@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.builder.inventory.items;
 
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.api.Registry;
 import me.rockyhawk.commandpanels.builder.PanelBuilder;
 import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.*;
 import me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents.*;
@@ -20,8 +21,6 @@ import java.util.List;
 
 public class ItemBuilder {
     private final Context ctx;
-    private final List<MaterialComponent> materialComponents = new ArrayList<>();
-    private final List<ItemComponent> itemComponents = new ArrayList<>();
     private final PanelBuilder panelBuilder;
     private final NameHandler name;
 
@@ -29,7 +28,6 @@ public class ItemBuilder {
         this.ctx = ctx;
         this.name = new NameHandler(ctx);
         this.panelBuilder = panelBuilder;
-        initialiseComponents();
     }
 
     @NotNull
@@ -65,7 +63,7 @@ public class ItemBuilder {
         String[] parts = material.split("\\s+", 2); // Split into 2 parts: tag and rest
         String tag = parts[0];
         String args = (parts.length > 1) ? parts[1].trim() : "";
-        for (MaterialComponent mc : materialComponents) {
+        for (MaterialComponent mc : Registry.MATERIAL_COMPONENTS) {
             if (mc.isCorrectTag(tag)) {
                 try {
                     baseItem = mc.createItem(ctx, args, player, item);
@@ -83,7 +81,7 @@ public class ItemBuilder {
         }
 
         // Complete item with its details and data
-        for (ItemComponent ic : itemComponents) {
+        for (ItemComponent ic : Registry.ITEM_COMPONENTS) {
             try {
                 baseItem = ic.apply(ctx, baseItem, player, item);
             } catch (Exception e) {
@@ -93,28 +91,5 @@ public class ItemBuilder {
 
         baseItem = name.setName(baseItem, item, player);
         return baseItem;
-    }
-
-    private void initialiseComponents() {
-        // Add Material Components
-        this.materialComponents.add(new MinecraftComponent());
-        this.materialComponents.add(new HeadComponent());
-        this.materialComponents.add(new NexoComponent());
-        this.materialComponents.add(new ItemsAdderComponent());
-        this.materialComponents.add(new MMOItemsComponent());
-        this.materialComponents.add(new HeadDatabaseComponent());
-
-        // Add Item Components
-        this.itemComponents.add(new EnchantedComponent());
-        this.itemComponents.add(new ItemModelComponent());
-        this.itemComponents.add(new CustomModelDataComponent());
-        this.itemComponents.add(new TooltipComponent());
-        this.itemComponents.add(new BannerComponent());
-        this.itemComponents.add(new LeatherColorComponent());
-        this.itemComponents.add(new PotionComponent());
-        this.itemComponents.add(new PotionColorComponent());
-        this.itemComponents.add(new DamageComponent());
-        this.itemComponents.add(new TrimComponent());
-        this.itemComponents.add(new StackComponent());
     }
 }
