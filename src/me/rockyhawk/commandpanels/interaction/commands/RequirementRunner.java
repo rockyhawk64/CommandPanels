@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.interaction.commands;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Registry;
 import me.rockyhawk.commandpanels.formatter.language.Message;
-import me.rockyhawk.commandpanels.interaction.commands.requirements.*;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.entity.Player;
 

@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.builder.inventory.items;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Registry;
 import me.rockyhawk.commandpanels.builder.PanelBuilder;
-import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.*;
 import me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents.*;
 import me.rockyhawk.commandpanels.builder.inventory.items.utils.NameHandler;
 import me.rockyhawk.commandpanels.formatter.language.Message;
@@ -15,9 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ItemBuilder {
     private final Context ctx;

@@ -2,12 +2,10 @@ package me.rockyhawk.commandpanels.interaction.commands;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.api.Registry;
-import me.rockyhawk.commandpanels.interaction.commands.tags.*;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CommandRunner {
