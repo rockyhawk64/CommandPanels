@@ -1,6 +1,7 @@
 package me.rockyhawk.commandpanels.builder.dialog;
 
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
+import io.papermc.paper.registry.data.dialog.body.PlainMessageDialogBody;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.session.dialog.DialogPanel;
 import me.rockyhawk.commandpanels.session.dialog.components.DialogItem;
@@ -16,11 +17,13 @@ public class BodyBuilder {
     }
 
     public DialogBody createItem(DialogItem item, DialogPanel panel) {
+        String text = item.getText();
+        PlainMessageDialogBody description = text == null || text.isEmpty() ? null : DialogBody.plainMessage(
+                ctx.text.parseTextToComponent(builder.getPlayer(), text)
+        );
         return DialogBody
                 .item(item.getItemStack(ctx, panel, builder.getPlayer()))
-                .description(DialogBody.plainMessage(
-                        ctx.text.parseTextToComponent(builder.getPlayer(), item.getText())
-                ))
+                .description(description)
                 .width(item.getWidth())
                 .height(item.getHeight())
                 .build();
