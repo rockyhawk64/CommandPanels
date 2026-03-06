@@ -2,6 +2,10 @@ package me.rockyhawk.commandpanels.formatter.language;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.rockyhawk.commandpanels.Context;
+import me.rockyhawk.commandpanels.formatter.PlaceholderResolver;
+import me.rockyhawk.commandpanels.formatter.placeholders.DataPlaceholder;
+import me.rockyhawk.commandpanels.formatter.placeholders.RandomPlaceholder;
+import me.rockyhawk.commandpanels.formatter.placeholders.SessionDataPlaceholder;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -9,22 +13,37 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TextFormatter {
+    private static final int MAX_PLACEHOLDER_PASSES = 3;
+    private static final Pattern COMMANDPANELS_PLACEHOLDER = Pattern.compile("%commandpanels_([^%]+)%");
+    private static final Pattern PLACEHOLDER_SYNTAX = Pattern.compile("%[^%]+%|\\{[^{}]+}");
+
     public final LanguageManager lang;
+    private final Context ctx;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
+    private final List<PlaceholderResolver> internalResolvers = new ArrayList<>();
 
     public TextFormatter(Context ctx) {
+        this.ctx = ctx;
         this.lang = new LanguageManager(ctx);
+        loadInternalResolvers();
+    }
+
+    private void loadInternalResolvers() {
+        internalResolvers.add(new SessionDataPlaceholder());
+        internalResolvers.add(new DataPlaceholder());
+        internalResolvers.add(new RandomPlaceholder());
     }
 
     public TextComponent getPrefix() {
@@ -110,11 +129,66 @@ public class TextFormatter {
     }
 
     public String applyPlaceholders(Player player, String input) {
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player.getUniqueId());
-            return PlaceholderAPI.setPlaceholders(offlinePlayer, input);
+        if (input == null || input.isEmpty() || player == null) return input;
+
+        return parseNestedPlaceholdersInternal(player, input);
+    }
+
+    public String parseNestedPlaceholders(Player player, String input) {
+        if (input == null || input.isEmpty() || player == null) return input;
+        return parseNestedPlaceholdersInternal(player, input);
+    }
+
+    private String parseNestedPlaceholdersInternal(OfflinePlayer player, String input) {
+        String current = input;
+
+        for (int pass = 0; pass < MAX_PLACEHOLDER_PASSES; pass++) {
+            if (!containsPlaceholderSyntax(current)) break;
+
+            String previous = current;
+            current = resolveCommandPanelsPlaceholders(player, current);
+            current = PlaceholderAPI.setPlaceholders(player, current);
+
+            if (current.equals(previous)) break;
         }
-        return input;
+
+        return current;
+    }
+
+    // Resolve CommandPanels-owned placeholders before PlaceholderAPI processes outer placeholders.
+    private String resolveCommandPanelsPlaceholders(OfflinePlayer player, String input) {
+        Matcher matcher = COMMANDPANELS_PLACEHOLDER.matcher(input);
+        StringBuilder output = new StringBuilder();
+
+        while (matcher.find()) {
+            String identifier = matcher.group(1);
+            String replacement = resolveCommandPanelsIdentifier(player, identifier);
+            matcher.appendReplacement(output, Matcher.quoteReplacement(replacement));
+        }
+
+        matcher.appendTail(output);
+        return output.toString();
+    }
+
+    private String resolveCommandPanelsIdentifier(OfflinePlayer player, String identifier) {
+        String parsedIdentifier = PlaceholderAPI.setBracketPlaceholders(player, identifier);
+
+        for (PlaceholderResolver resolver : internalResolvers) {
+            try {
+                String value = resolver.resolve(player, parsedIdentifier, ctx);
+                if (value != null) {
+                    return value;
+                }
+            } catch (Exception ignored) {
+                return "unknown";
+            }
+        }
+
+        return "unknown";
+    }
+
+    private boolean containsPlaceholderSyntax(String input) {
+        return PLACEHOLDER_SYNTAX.matcher(input).find();
     }
 
     private Component deserializeAppropriately(String input) {
