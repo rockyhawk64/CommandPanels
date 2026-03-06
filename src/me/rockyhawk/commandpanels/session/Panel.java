@@ -21,8 +21,7 @@ public abstract class Panel {
     private final String conditions;
 
     private final List<String> observedPerms; // List of permissions used in conditions for a panel
-    private final String command; // Command used to open the panel
-    private final List<String> aliases; // Aliases for command that opens the panel
+    private final PanelCommandSettings commandSettings;
     private final CommandActions open; // Commands that run when panel is opened
     private final String type;
 
@@ -30,10 +29,9 @@ public abstract class Panel {
         this.name = name;
         this.conditions = config.getString("conditions", "");
         this.title = config.getString("title", "Panel");
-        this.command = config.getString("command", "");
-        this.aliases = config.getStringList("aliases");
         this.type = config.getString("type", "inventory");
         this.observedPerms = new ArrayList<>();
+        this.commandSettings = new PanelCommandSettings(config);
 
         open = new CommandActions(
                 config.getStringList("open.requirements"),
@@ -102,10 +100,22 @@ public abstract class Panel {
     }
 
     public String getCommand() {
-        return command;
+        return commandSettings.getCommand();
     }
     public List<String> getAliases() {
-        return aliases;
+        return commandSettings.getAliases();
+    }
+
+    public PanelCommandSettings getCommandSettings() {
+        return commandSettings;
+    }
+
+    public boolean requiresOnlinePlayer() {
+        return commandSettings.requiresOnlinePlayer();
+    }
+
+    public String getNoArgDefault() {
+        return commandSettings.getNoArgDefault();
     }
 
     public CommandActions getOpenCommands() {

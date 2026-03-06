@@ -10,7 +10,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 public class PanelOpenCommand implements Listener {
     Context ctx;
@@ -28,7 +34,8 @@ public class PanelOpenCommand implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e) {
         String raw = e.getMessage().substring(1); // remove leading slash
-        String[] parts = raw.split("\\s+");
+        String[] parts = splitCommand(raw);
+        if (parts.length == 0) return;
 
         String label = parts[0].toLowerCase(Locale.ROOT); // Just the command (e.g. "shop")
         String[] args = Arrays.copyOfRange(parts, 1, parts.length); // just the arguments
@@ -42,17 +49,27 @@ public class PanelOpenCommand implements Listener {
         for(Panel panel : panels) {
             if (panel == null) continue;
 
+            CommandMatch match = resolveMatch(panel, e.getPlayer(), label, args);
+            if (match == null) continue;
+
             // Get panel command args
-            String[] pnlParts = panel.getCommand().split("\\s+");
+            String[] pnlParts = splitCommand(panel.getCommand());
             String[] pnlCmdArgs = Arrays.copyOfRange(pnlParts, 1, pnlParts.length); // arguments for the panel command
-            if (args.length != pnlCmdArgs.length) continue;
             hadMatch = true;
+
+            if (panel.requiresOnlinePlayer()) {
+                if (match.args().length < 1 || Bukkit.getPlayerExact(match.args()[0]) == null) {
+                    ctx.text.sendError(e.getPlayer(), Message.PANEL_OPEN_PLAYER_OFFLINE);
+                    e.setCancelled(true);
+                    return;
+                }
+            }
 
             // If there are any args add the data
             // Check and add before checking conditions
-            for (int i = 0; i < args.length; i++) {
+            for (int i = 0; i < match.args().length; i++) {
                 String key = pnlCmdArgs[i];
-                String value = args[i];
+                String value = match.args()[i];
                 e.getPlayer().getPersistentDataContainer()
                         .set(new NamespacedKey(ctx.plugin, key),
                                 PersistentDataType.STRING, value);
@@ -75,12 +92,78 @@ public class PanelOpenCommand implements Listener {
         }
     }
 
+    private CommandMatch resolveMatch(Panel panel, org.bukkit.entity.Player player, String label, String[] args) {
+        String effectiveRaw = buildEffectiveRawCommand(panel, player, label, args);
+        if (effectiveRaw == null) return null;
+
+        String[] effectiveParts = splitCommand(effectiveRaw);
+        if (effectiveParts.length == 0) return null;
+
+        String effectiveLabel = effectiveParts[0].toLowerCase(Locale.ROOT);
+        if (!getCommandBases(panel).contains(effectiveLabel)) return null;
+
+        String[] panelParts = splitCommand(panel.getCommand());
+        if (panelParts.length == 0) return null;
+
+        String[] effectiveArgs = Arrays.copyOfRange(effectiveParts, 1, effectiveParts.length);
+        String[] panelArgs = Arrays.copyOfRange(panelParts, 1, panelParts.length);
+        if (effectiveArgs.length != panelArgs.length) return null;
+
+        return new CommandMatch(effectiveArgs);
+    }
+
+    private String buildEffectiveRawCommand(Panel panel, org.bukkit.entity.Player player, String label, String[] args) {
+        if (args.length != 0) {
+            return joinCommand(label, args);
+        }
+
+        String noArgDefault = panel.getNoArgDefault().trim();
+        if (noArgDefault.isEmpty()) {
+            return joinCommand(label, args);
+        }
+
+        return ctx.text.applyPlaceholders(player, noArgDefault).trim();
+    }
+
+    private Set<String> getCommandBases(Panel panel) {
+        Set<String> bases = new HashSet<>();
+
+        String[] mainParts = splitCommand(panel.getCommand());
+        if (mainParts.length > 0) {
+            bases.add(mainParts[0].toLowerCase(Locale.ROOT));
+        }
+
+        for (String alias : panel.getAliases()) {
+            String[] aliasParts = splitCommand(alias);
+            if (aliasParts.length > 0) {
+                bases.add(aliasParts[0].toLowerCase(Locale.ROOT));
+            }
+        }
+
+        return bases;
+    }
+
+    private String joinCommand(String label, String[] args) {
+        if (args.length == 0) return label;
+        return label + " " + String.join(" ", args);
+    }
+
+    private String[] splitCommand(String command) {
+        String trimmed = command == null ? "" : command.trim();
+        if (trimmed.isEmpty()) return new String[0];
+        return trimmed.split("\\s+");
+    }
+
+    private record CommandMatch(String[] args) {}
+
     public void populateCommands() {
         // Populate the base commands list with new commands e.g. punish player -> punish
         commands.clear();
         for (Panel panel : ctx.plugin.panels.values()){
             // Add the panel command
-            String command = panel.getCommand().split("\\s+")[0].toLowerCase(Locale.ROOT);
+            String[] commandParts = splitCommand(panel.getCommand());
+            if(commandParts.length == 0) continue;
+            String command = commandParts[0].toLowerCase(Locale.ROOT);
             if(command.isEmpty()) continue;
             commands.computeIfAbsent(command, k -> new ArrayList<>()).add(panel);
 
@@ -91,7 +174,9 @@ public class PanelOpenCommand implements Listener {
             // Add aliases, the aliases use the same args as main command (strip any extra words)
             if(!panel.getAliases().isEmpty()){
                 for(String alias : panel.getAliases()){
-                    alias = alias.split("\\s+")[0].toLowerCase(Locale.ROOT);
+                    String[] aliasParts = splitCommand(alias);
+                    if (aliasParts.length == 0) continue;
+                    alias = aliasParts[0].toLowerCase(Locale.ROOT);
                     commands.computeIfAbsent(alias, k -> new ArrayList<>()).add(panel);
                     // Do not register if registration is disabled in config
                     if(ctx.fileHandler.config.getBoolean("custom-commands"))
