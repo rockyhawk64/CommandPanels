@@ -79,6 +79,7 @@ public enum Message {
     REQUIREMENT_XP_TYPE_INVALID("Invalid XP type."),
     REQUIREMENT_ITEM_INVALID("Invalid item."),
     REQUIREMENT_SOURCE_INVALID("Invalid source. Must be player or panel."),
+    REQUIREMENT_PANEL_SOURCE_UNSUPPORTED("source=panel is not supported for packet-backed inventory panels."),
 
     // SoundTag / StopSoundTag
     SOUND_NO_ARGS("No sound arguments provided."),

@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -144,6 +145,56 @@ public class InventoryPanelService {
         return packetBackend.hasSession(player);
     }
 
+    public ItemStack getRenderedTopItem(Player player, InventoryPanel panel, int slot) {
+        PacketPanelSession session = packetBackend.getSession(player);
+        if (session == null
+                || !session.getPanelName().equals(panel.getName())
+                || slot < 0
+                || slot >= session.getSnapshot().size()) {
+            return null;
+        }
+
+        ItemStack item = session.getSnapshot().itemAt(slot);
+        return item == null ? null : item.clone();
+    }
+
+    public boolean updateRenderedTopItem(Player player,
+                                         InventoryPanel panel,
+                                         int slot,
+                                         ItemStack updatedItem) {
+        PacketPanelSession session = packetBackend.getSession(player);
+        if (session == null
+                || !session.getPanelName().equals(panel.getName())
+                || slot < 0
+                || slot >= session.getSnapshot().size()) {
+            return false;
+        }
+
+        ItemStack normalizedItem = normalizeSnapshotItem(updatedItem);
+        ItemStack currentItem = session.getSnapshot().itemAt(slot);
+        Map<Integer, String> actionSlots = new HashMap<>(session.getSnapshot().actionSlots());
+
+        if (normalizedItem == null) {
+            actionSlots.remove(slot);
+        }
+
+        if (Objects.equals(currentItem, normalizedItem)
+                && Objects.equals(actionSlots, session.getSnapshot().actionSlots())) {
+            return true;
+        }
+
+        List<ItemStack> items = new ArrayList<>(session.getSnapshot().topItems());
+        items.set(slot, normalizedItem);
+
+        packetBackend.applySnapshot(player, panel, new InventoryRenderSnapshot(
+                session.getSnapshot().title(),
+                session.getSnapshot().size(),
+                items,
+                actionSlots
+        ));
+        return true;
+    }
+
     public void handlePacketClick(Player player,
                                   int windowId,
                                   Integer stateId,
@@ -180,15 +231,16 @@ public class InventoryPanelService {
                 return;
             }
 
-            ClickType resolvedClick = resolveClick(clickType, button);
-            if (resolvedClick == null) {
-                handleInvalidPacket(player, session, "unsupported click type " + clickType + " button " + button);
+            String itemId = session.getSnapshot().actionSlots().get(slot);
+            if (itemId == null) {
+                session.resetInvalidClickCount();
+                resyncIfSessionUnchanged(player, session);
                 return;
             }
 
-            String itemId = session.getSnapshot().actionSlots().get(slot);
-            if (itemId == null) {
-                handleInvalidPacket(player, session, "slot " + slot + " is not bound to a panel item");
+            ClickType resolvedClick = resolveClick(clickType, button);
+            if (resolvedClick == null) {
+                handleInvalidPacket(player, session, "unsupported click type " + clickType + " button " + button);
                 return;
             }
 
@@ -222,6 +274,28 @@ public class InventoryPanelService {
             }
 
             closePacketSession(player, InventoryCloseReason.CLIENT_CLOSE, false);
+        }, null);
+    }
+
+    public void handleServerOpenWindow(Player player, int windowId) {
+        player.getScheduler().run(ctx.plugin, task -> {
+            PacketPanelSession session = packetBackend.getSession(player);
+            if (session == null || windowId == session.getWindowId()) {
+                return;
+            }
+
+            closePacketSession(player, InventoryCloseReason.REPLACED, false);
+        }, null);
+    }
+
+    public void handleServerCloseWindow(Player player, int windowId) {
+        player.getScheduler().run(ctx.plugin, task -> {
+            PacketPanelSession session = packetBackend.getSession(player);
+            if (session == null || windowId != session.getWindowId()) {
+                return;
+            }
+
+            closePacketSession(player, InventoryCloseReason.REPLACED, false);
         }, null);
     }
 
@@ -436,6 +510,14 @@ public class InventoryPanelService {
     private List<ItemStack> getCurrentRenderedItems(Player player) {
         PacketPanelSession session = packetBackend.getSession(player);
         return session == null ? List.of() : session.getSnapshot().topItems();
+    }
+
+    private ItemStack normalizeSnapshotItem(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            return null;
+        }
+
+        return item.clone();
     }
 
     private record ActiveInventoryView(String panelName, long token) {

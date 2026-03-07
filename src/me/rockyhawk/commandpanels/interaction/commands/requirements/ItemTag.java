@@ -5,6 +5,7 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
+import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -29,6 +30,10 @@ public class ItemTag implements RequirementTagResolver {
     public boolean check(Context ctx, Panel panel, Player player, String raw, String args) {
         ParsedItemRequirement req = parseArgs(ctx, player, args);
         if (req == null) return false;
+        if (isUnsupportedPacketPanelSource(ctx, panel, player, req)) {
+            ctx.text.sendError(player, Message.REQUIREMENT_PANEL_SOURCE_UNSUPPORTED);
+            return false;
+        }
         return hasMatchingItems(ctx, player, req);
     }
 
@@ -36,6 +41,7 @@ public class ItemTag implements RequirementTagResolver {
     public void execute(Context ctx, Panel panel, Player player, String raw, String args) {
         ParsedItemRequirement req = parseArgs(ctx, player, args);
         if (req == null) return;
+        if (isUnsupportedPacketPanelSource(ctx, panel, player, req)) return;
         if(req.remove) removeMatchingItems(ctx, player, req);
     }
 
@@ -205,6 +211,15 @@ public class ItemTag implements RequirementTagResolver {
 
             if (toRemove <= 0) break;
         }
+    }
+
+    private boolean isUnsupportedPacketPanelSource(Context ctx,
+                                                   Panel panel,
+                                                   Player player,
+                                                   ParsedItemRequirement req) {
+        return req.source.equals("panel")
+                && panel instanceof InventoryPanel inventoryPanel
+                && ctx.inventoryPanels.isViewingPanel(player, inventoryPanel);
     }
 
     private Map<String, String> parseArgumentMap(String args) {

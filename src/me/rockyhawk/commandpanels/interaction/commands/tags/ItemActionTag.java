@@ -34,28 +34,59 @@ public class ItemActionTag implements CommandTagResolver {
             int slot = Integer.parseInt(args[1]);
             String action = args[0].toLowerCase();
 
+            if (!(panel instanceof InventoryPanel inventoryPanel)) {
+                return;
+            }
+
+            if (ctx.inventoryPanels.isViewingPanel(player, inventoryPanel)) {
+                ItemStack item = ctx.inventoryPanels.getRenderedTopItem(player, inventoryPanel, slot);
+                if (item == null || item.getType() == Material.AIR) {
+                    return;
+                }
+
+                ItemStack updatedItem = applyAction(item, args, ctx, player, action);
+                ctx.inventoryPanels.updateRenderedTopItem(player, inventoryPanel, slot, updatedItem);
+                return;
+            }
+
             Inventory gui = player.getOpenInventory().getTopInventory();
             ItemStack item = gui.getItem(slot);
 
-            if (item == null || item.getType() == Material.AIR || !(panel instanceof InventoryPanel)) {
+            if (item == null || item.getType() == Material.AIR) {
                 // No item in slot
                 return;
             }
 
-            switch (action) {
-                case "enchant" -> handleEnchant(item, args, ctx, player);
-                case "repair" -> repairItem(item);
-                case "amount" -> item.setAmount(Integer.parseInt(args[2]));
-                case "remove" -> gui.setItem(slot, null);
-                default -> ctx.text.sendError(player, Message.ITEM_ACTION_UNKNOWN);
-            }
+            ItemStack updatedItem = applyAction(item, args, ctx, player, action);
 
             // Update the item with changes unless item was removed
-            if (!action.equals("remove")) gui.setItem(slot, item);
+            gui.setItem(slot, updatedItem);
 
         } catch (Exception e) {
             ctx.text.sendError(player, Message.ITEM_ACTION_EXECUTE_FAIL);
         }
+    }
+
+    private ItemStack applyAction(ItemStack item, String[] args, Context ctx, Player player, String action) {
+        return switch (action) {
+            case "enchant" -> {
+                handleEnchant(item, args, ctx, player);
+                yield item;
+            }
+            case "repair" -> {
+                repairItem(item);
+                yield item;
+            }
+            case "amount" -> {
+                item.setAmount(Integer.parseInt(args[2]));
+                yield item;
+            }
+            case "remove" -> null;
+            default -> {
+                ctx.text.sendError(player, Message.ITEM_ACTION_UNKNOWN);
+                yield item;
+            }
+        };
     }
 
     private void handleEnchant(ItemStack item, String[] args, Context ctx, Player player) {
