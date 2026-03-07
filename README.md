@@ -97,3 +97,11 @@ CommandPanels is fully compatible with **Paper** and **Folia** servers.
 
 For over 6 years, CommandPanels has powered **thousands of Minecraft servers**.
 Whether you're running survival, MMO, minigames, or custom networks, it can handle it.
+
+---
+
+## Local Developer Notes
+
+Repository-local implementation docs live in [docs/README.md](docs/README.md).
+
+For the new fake-window backend, see [docs/packet-inventory.md](docs/packet-inventory.md).

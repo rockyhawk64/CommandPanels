@@ -5,8 +5,10 @@ import me.rockyhawk.commandpanels.commands.MainCommand;
 import me.rockyhawk.commandpanels.formatter.Placeholders;
 import me.rockyhawk.commandpanels.formatter.language.TextFormatter;
 import me.rockyhawk.commandpanels.formatter.data.DataLoader;
+import me.rockyhawk.commandpanels.interaction.openpanel.PanelOpenService;
 import me.rockyhawk.commandpanels.interaction.openpanel.PanelOpenCommand;
 import me.rockyhawk.commandpanels.session.SessionDataUtils;
+import me.rockyhawk.commandpanels.session.inventory.InventoryPanelService;
 import me.rockyhawk.commandpanels.session.inventory.generator.GenerateManager;
 import me.rockyhawk.commandpanels.session.inventory.listeners.ClickEvents;
 import me.rockyhawk.commandpanels.session.inventory.listeners.InventoryEvents;
@@ -17,9 +19,11 @@ public class Context {
     public TextFormatter text;
     public FileHandler fileHandler;
     public PanelOpenCommand panelCommand;
+    public PanelOpenService panelOpenService;
     public DataLoader dataLoader;
     public GenerateManager generator;
     public CustomHeads customHeads;
+    public InventoryPanelService inventoryPanels;
 
     public Context(CommandPanels pl) {
         plugin = pl;
@@ -28,6 +32,8 @@ public class Context {
 
     private void init(){
         text = new TextFormatter(this);
+        inventoryPanels = new InventoryPanelService(this);
+        panelOpenService = new PanelOpenService(this);
         fileHandler = new FileHandler(this);
         panelCommand = new PanelOpenCommand(this);
         dataLoader = new DataLoader(this);
@@ -44,6 +50,7 @@ public class Context {
         Bukkit.getServer().getPluginManager().registerEvents(new ClickEvents(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new SessionDataUtils(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(generator, plugin);
+        inventoryPanels.registerPacketListener();
 
         // Register proxy channels
         Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");

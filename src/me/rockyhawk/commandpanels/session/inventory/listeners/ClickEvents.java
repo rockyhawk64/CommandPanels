@@ -1,8 +1,6 @@
 package me.rockyhawk.commandpanels.session.inventory.listeners;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
-import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
 import me.rockyhawk.commandpanels.session.CommandActions;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import me.rockyhawk.commandpanels.session.inventory.PanelItem;
@@ -22,13 +20,9 @@ import org.bukkit.persistence.PersistentDataType;
 public class ClickEvents implements Listener {
 
     private final Context ctx;
-    public CommandRunner commands;
-    public RequirementRunner requirements;
 
     public ClickEvents(Context ctx) {
         this.ctx = ctx;
-        commands = new CommandRunner(ctx);
-        requirements = new RequirementRunner(ctx);
     }
 
     @EventHandler
@@ -54,11 +48,10 @@ public class ClickEvents implements Listener {
 
         // Run outside command actions
         CommandActions actions = panel.getOutsideCommands();
-        if(!requirements.processRequirements(panel, player, actions.requirements())){
-            commands.runCommands(panel, player, actions.fail());
+        if (!ctx.inventoryPanels.tryConsumeClick(player)) {
             return;
         }
-        commands.runCommands(panel, player, actions.commands());
+        ctx.inventoryPanels.runActions(panel, player, actions);
     }
 
     @EventHandler
@@ -81,15 +74,9 @@ public class ClickEvents implements Listener {
         e.setCancelled(true);
         e.setResult(Event.Result.DENY);
 
-        // Do not run commands if user is in cooldown (item click cooldown should match heartbeat updater speed)
-        NamespacedKey lastClick = new NamespacedKey(ctx.plugin, "last_click_time");
-        Long lastOpenMillis = player.getPersistentDataContainer().get(lastClick, PersistentDataType.LONG);
-        long currentMillis = System.currentTimeMillis();
-        if (lastOpenMillis != null && currentMillis - lastOpenMillis < 100L) {
+        if (!ctx.inventoryPanels.tryConsumeClick(player)) {
             return;
         }
-
-        player.getPersistentDataContainer().set(lastClick, PersistentDataType.LONG, currentMillis);
         String itemId = container.get(baseIdKey, PersistentDataType.STRING);
 
         // Check valid interaction types
@@ -97,11 +84,7 @@ public class ClickEvents implements Listener {
             case LEFT, RIGHT, SHIFT_LEFT, SHIFT_RIGHT -> {
                 PanelItem panelItem = panel.getItems().get(itemId);
                 CommandActions actions = panelItem.getClickActions(e.getClick());
-                if(!requirements.processRequirements(panel, player, actions.requirements())){
-                    commands.runCommands(panel, player, actions.fail());
-                    return;
-                }
-                commands.runCommands(panel, player, actions.commands());
+                ctx.inventoryPanels.runActions(panel, player, actions);
             }
             default -> {
                 // Ignore others

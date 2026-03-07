@@ -6,6 +6,7 @@ import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
 import me.rockyhawk.commandpanels.session.CommandActions;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
+import me.rockyhawk.commandpanels.session.inventory.backend.InventoryCloseReason;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -55,14 +56,8 @@ public class InventoryEvents implements Listener {
                 }
 
                 // Run close commands
-                RequirementRunner requirements = new RequirementRunner(ctx);
-                CommandRunner commands = new CommandRunner(ctx);
-                CommandActions actions = panel.getCloseCommands();
-                if (!requirements.processRequirements(panel, player, actions.requirements())) {
-                    commands.runCommands(panel, player, actions.fail());
-                    return;
-                }
-                commands.runCommands(panel, player, actions.commands());
+                ctx.inventoryPanels.runActions(panel, player, panel.getCloseCommands());
+                ctx.inventoryPanels.onLegacyInventoryClosed(player, panel);
             }
 
         },null);
@@ -70,16 +65,19 @@ public class InventoryEvents implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        ctx.inventoryPanels.closePacketSession(event.getPlayer(), InventoryCloseReason.QUIT, false);
         closePanels(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
+        ctx.inventoryPanels.closePacketSession(event.getPlayer(), InventoryCloseReason.DEATH, true);
         closePanels(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerTeleport(PlayerTeleportEvent event) {
+        ctx.inventoryPanels.closePacketSession(event.getPlayer(), InventoryCloseReason.TELEPORT, true);
         closePanels(event.getPlayer());
     }
 

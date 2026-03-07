@@ -75,13 +75,12 @@ public class PanelOpenCommand implements Listener {
                                 PersistentDataType.STRING, value);
             }
 
-            // Stop and do not open panel if conditions are false
             if (!panel.passesConditions(e.getPlayer(), ctx)) {
                 continue;
             }
 
             e.setCancelled(true);
-            Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task -> panel.open(ctx, e.getPlayer(), true));
+            ctx.panelOpenService.scheduleOpenPanel(panel, e.getPlayer(), true, false);
             return;
         }
 

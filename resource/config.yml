@@ -17,3 +17,14 @@ panel-snooper: false
 # When enabled, panels will automatically refresh if any observed permissions change.
 # Permissions used in HASPERM conditions are considered observed permissions.
 permission-observer: true
+
+# Default backend for chest-style inventory panels.
+# Supported values: packet, legacy
+inventory-backend-default: packet
+
+# Logs invalid packet-backed inventory interactions and resyncs.
+packet-inventory-debug: false
+
+# Number of invalid packet interactions before a packet-backed menu is closed.
+# Set to 0 to disable automatic closure.
+packet-close-on-invalid-click-threshold: 5

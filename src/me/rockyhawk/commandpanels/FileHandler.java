@@ -56,6 +56,7 @@ public class FileHandler {
             ctx.plugin.panels.clear();
             ctx.plugin.panels.putAll(panels);
             ctx.panelCommand.populateCommands();
+            ctx.inventoryPanels.logMigrationWarnings(panels.values());
         });
 
         createLangFile();

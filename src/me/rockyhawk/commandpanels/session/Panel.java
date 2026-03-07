@@ -63,6 +63,10 @@ public abstract class Panel {
             return false;
         }
 
+        if (this instanceof InventoryPanel inventoryPanel) {
+            return !ctx.inventoryPanels.isViewingPanel(p, inventoryPanel);
+        }
+
         // Do not allow the same panel to be opened again if already open
         return !(p.getOpenInventory().getTopInventory().getHolder() instanceof InventoryPanel panel)
                 || !panel.getName().equals(getName());

@@ -104,6 +104,12 @@
             <url>https://jitpack.io</url>
         </repository>
 
+        <!-- PacketEvents -->
+        <repository>
+            <id>codemc-releases</id>
+            <url>https://repo.codemc.io/repository/maven-releases/</url>
+        </repository>
+
     </repositories>
 
     <dependencies>
@@ -183,6 +189,14 @@
             <artifactId>VaultAPI</artifactId>
             <version>1.7.1</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- PacketEvents -->
+        <dependency>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-spigot</artifactId>
+            <version>2.11.2</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- bstats -->

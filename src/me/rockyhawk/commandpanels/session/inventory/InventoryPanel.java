@@ -1,8 +1,6 @@
 package me.rockyhawk.commandpanels.session.inventory;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.builder.PanelBuilder;
-import me.rockyhawk.commandpanels.builder.inventory.InventoryPanelBuilder;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
 import me.rockyhawk.commandpanels.session.CommandActions;
@@ -29,6 +27,7 @@ public class InventoryPanel extends Panel implements InventoryHolder {
     private final String floodgate;
     private final String inventoryLock;
     private final String updateDelay;
+    private final String inventoryBackend;
 
     public InventoryPanel(String name, YamlConfiguration config) {
         super(name, config);
@@ -37,6 +36,7 @@ public class InventoryPanel extends Panel implements InventoryHolder {
         this.floodgate = config.getString("floodgate", "");
         this.updateDelay = config.getString("update-delay", "20");
         this.inventoryLock = config.getString("inventory-lock", "false");
+        this.inventoryBackend = config.getString("inventory-backend", "auto");
 
         outside = new CommandActions(
                 config.getStringList("outside.requirements"),
@@ -100,9 +100,9 @@ public class InventoryPanel extends Panel implements InventoryHolder {
             commands.runCommands(this, player, actions.commands());
         }
 
-        // Build and open the panel
-        PanelBuilder builder = new InventoryPanelBuilder(ctx, player);
-        builder.open(this);
+        if (!ctx.inventoryPanels.open(this, player, isNewPanelSession)) {
+            return;
+        }
 
         if(isNewPanelSession) {
             // Start a panel updater
@@ -137,6 +137,10 @@ public class InventoryPanel extends Panel implements InventoryHolder {
 
     public String getInventoryLock() {
         return inventoryLock;
+    }
+
+    public String getInventoryBackend() {
+        return inventoryBackend;
     }
 
     // For InventoryHolder implementation

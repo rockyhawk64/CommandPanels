@@ -20,7 +20,7 @@ public class OpenPanelTag implements CommandTagResolver {
 
         // Open panel tag will gracefully move from one panel to the next within the same session
         Panel openPanel = ctx.plugin.panels.get(command);
-        openPanel.open(ctx, player, true);
+        ctx.panelOpenService.scheduleOpenPanel(openPanel, player, true, false);
     }
 }
 

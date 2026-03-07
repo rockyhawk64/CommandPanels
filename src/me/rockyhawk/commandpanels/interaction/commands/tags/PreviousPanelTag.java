@@ -22,8 +22,10 @@ public class PreviousPanelTag implements CommandTagResolver {
                         PersistentDataType.STRING);
 
         if(previousPanel != null){
-            ctx.plugin.panels.get(previousPanel)
-                    .open(ctx, player, true);
+            Panel panelToOpen = ctx.plugin.panels.get(previousPanel);
+            if (panelToOpen != null) {
+                ctx.panelOpenService.scheduleOpenPanel(panelToOpen, player, true, false);
+            }
         }
     }
 }

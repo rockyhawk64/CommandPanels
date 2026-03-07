@@ -1,5 +1,8 @@
 package me.rockyhawk.commandpanels;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.settings.PacketEventsSettings;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
@@ -21,6 +24,18 @@ public class CommandPanels extends JavaPlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandPanels.class);
 
+    @Override
+    public void onLoad() {
+        try {
+            PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this, new PacketEventsSettings()
+                    .checkForUpdates(false)
+                    .bStats(false)));
+            PacketEvents.getAPI().load();
+        } catch (Exception e) {
+            logger.error("PacketEvents failed to load during onLoad()", e);
+        }
+    }
+
     public void onEnable() {
         Bukkit.getConsoleSender().sendMessage("[CommandPanels] RockyHawk's CommandPanels v" + this.getPluginMeta().getVersion() + " Plugin Loading...");
 
@@ -30,6 +45,10 @@ public class CommandPanels extends JavaPlugin {
 
             //Initialise plugin context
             ctx = new Context(this);
+            if (PacketEvents.getAPI() == null || !PacketEvents.getAPI().isLoaded()) {
+                throw new IllegalStateException("PacketEvents API was not loaded in onLoad()");
+            }
+            PacketEvents.getAPI().init();
 
             //add custom charts bStats
             Metrics metrics = new Metrics(this, 5097);
@@ -56,7 +75,11 @@ public class CommandPanels extends JavaPlugin {
 
         try {
             // Code on plugin disable
+            ctx.inventoryPanels.shutdown();
             ctx.dataLoader.saveDataFileSync();
+            if (PacketEvents.getAPI() != null && !PacketEvents.getAPI().isTerminated()) {
+                PacketEvents.getAPI().terminate();
+            }
         } catch (Exception e) {
             Bukkit.getConsoleSender().sendMessage("[CommandPanels] Error during CommandPanels disable: " + e.getMessage());
         }
