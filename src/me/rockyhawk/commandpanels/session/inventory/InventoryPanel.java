@@ -36,7 +36,7 @@ public class InventoryPanel extends Panel implements InventoryHolder {
         this.floodgate = config.getString("floodgate", "");
         this.updateDelay = config.getString("update-delay", "20");
         this.inventoryLock = config.getString("inventory-lock", "false");
-        this.inventoryBackend = config.getString("inventory-backend", "auto");
+        this.inventoryBackend = config.getString("inventory-backend", "packet");
 
         outside = new CommandActions(
                 config.getStringList("outside.requirements"),

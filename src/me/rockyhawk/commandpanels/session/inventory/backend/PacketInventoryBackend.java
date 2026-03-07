@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PacketInventoryBackend implements InventoryBackend {
+public class PacketInventoryBackend {
     private final Context ctx;
     private final ConcurrentMap<UUID, PacketPanelSession> sessions = new ConcurrentHashMap<>();
     private final ConcurrentMap<Integer, Integer> chestTypeIds = new ConcurrentHashMap<>();
@@ -34,11 +34,6 @@ public class PacketInventoryBackend implements InventoryBackend {
 
     public PacketInventoryBackend(Context ctx) {
         this.ctx = ctx;
-    }
-
-    @Override
-    public InventoryBackendType type() {
-        return InventoryBackendType.PACKET;
     }
 
     public void open(Player player, InventoryPanel panel, InventoryRenderSnapshot snapshot, boolean isRefresh) {
@@ -91,7 +86,6 @@ public class PacketInventoryBackend implements InventoryBackend {
         }, null);
     }
 
-    @Override
     public void applySnapshot(Player player, InventoryPanel panel, InventoryRenderSnapshot snapshot) {
         PacketPanelSession session = sessions.get(player.getUniqueId());
         if (session == null || !session.getPanelName().equals(panel.getName())) {
@@ -136,7 +130,6 @@ public class PacketInventoryBackend implements InventoryBackend {
         session.commitSnapshot();
     }
 
-    @Override
     public boolean isViewing(Player player, InventoryPanel panel) {
         PacketPanelSession session = sessions.get(player.getUniqueId());
         return session != null && session.getPanelName().equals(panel.getName());

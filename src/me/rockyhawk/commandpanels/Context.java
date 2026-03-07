@@ -10,7 +10,6 @@ import me.rockyhawk.commandpanels.interaction.openpanel.PanelOpenCommand;
 import me.rockyhawk.commandpanels.session.SessionDataUtils;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanelService;
 import me.rockyhawk.commandpanels.session.inventory.generator.GenerateManager;
-import me.rockyhawk.commandpanels.session.inventory.listeners.ClickEvents;
 import me.rockyhawk.commandpanels.session.inventory.listeners.InventoryEvents;
 import org.bukkit.Bukkit;
 
@@ -47,7 +46,6 @@ public class Context {
         // Register events
         Bukkit.getServer().getPluginManager().registerEvents(new InventoryEvents(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(panelCommand, plugin);
-        Bukkit.getServer().getPluginManager().registerEvents(new ClickEvents(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new SessionDataUtils(this), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(generator, plugin);
         inventoryPanels.registerPacketListener();

@@ -9,7 +9,8 @@ import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
 import me.rockyhawk.commandpanels.session.CommandActions;
 import me.rockyhawk.commandpanels.session.Panel;
-import me.rockyhawk.commandpanels.session.inventory.backend.*;
+import me.rockyhawk.commandpanels.session.inventory.backend.InventoryCloseReason;
+import me.rockyhawk.commandpanels.session.inventory.backend.PacketInventoryBackend;
 import me.rockyhawk.commandpanels.session.inventory.packet.PacketInventoryDebugListener;
 import me.rockyhawk.commandpanels.session.inventory.packet.PacketInventoryListener;
 import me.rockyhawk.commandpanels.session.inventory.packet.PacketPanelSession;
@@ -35,18 +36,14 @@ public class InventoryPanelService {
     private static final long CLICK_COOLDOWN_MILLIS = 100L;
 
     private final Context ctx;
-    private final InventoryBackendResolver resolver;
     private final InventoryPanelRenderer renderer;
-    private final LegacyInventoryBackend legacyBackend;
     private final PacketInventoryBackend packetBackend;
     private final AtomicLong nextViewToken = new AtomicLong(1L);
     private final Map<UUID, ActiveInventoryView> activeViews = new ConcurrentHashMap<>();
 
     public InventoryPanelService(Context ctx) {
         this.ctx = ctx;
-        this.resolver = new InventoryBackendResolver(ctx);
         this.renderer = new InventoryPanelRenderer(ctx);
-        this.legacyBackend = new LegacyInventoryBackend(ctx);
         this.packetBackend = new PacketInventoryBackend(ctx);
     }
 
@@ -56,36 +53,23 @@ public class InventoryPanelService {
     }
 
     public boolean open(InventoryPanel panel, Player player, boolean isNewPanelSession) {
-        ResolvedInventoryBackend resolved = resolver.resolve(player, panel);
-        if (resolved == null) {
+        if (resolvePacketRows(player, panel, true) == null) {
             return false;
         }
 
         ActiveInventoryView currentView = activeViews.get(player.getUniqueId());
         boolean preserveToken = !isNewPanelSession
                 && currentView != null
-                && currentView.panelName().equals(panel.getName());
-        boolean sameBackend = preserveToken && currentView != null && currentView.backendType() == resolved.type();
+                && currentView.panelName().equals(panel.getName())
+                && packetBackend.isViewing(player, panel);
 
-        if (resolved.type() == InventoryBackendType.PACKET) {
-            if (packetBackend.hasSession(player) && !sameBackend) {
-                closePacketSession(player, InventoryCloseReason.REPLACED, false);
-            }
-
-            if (!sameBackend && player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryPanel) {
-                player.closeInventory();
-            }
-
-            InventoryRenderSnapshot snapshot = renderer.render(player, panel);
-            packetBackend.open(player, panel, snapshot, sameBackend);
-        } else {
-            if (packetBackend.hasSession(player)) {
-                closePacketSession(player, preserveToken ? InventoryCloseReason.REFRESH : InventoryCloseReason.REPLACED, false);
-            }
-            legacyBackend.open(player, panel);
+        if (packetBackend.hasSession(player) && !preserveToken) {
+            closePacketSession(player, InventoryCloseReason.REPLACED, false);
         }
 
-        registerActiveView(player, panel, resolved.type(), preserveToken);
+        InventoryRenderSnapshot snapshot = renderer.render(player, panel);
+        packetBackend.open(player, panel, snapshot, preserveToken);
+        registerActiveView(player, panel, preserveToken);
         return true;
     }
 
@@ -96,12 +80,8 @@ public class InventoryPanelService {
         }
 
         InventoryRenderSnapshot snapshot = renderer.render(player, panel);
-        snapshot = applyAnimationState(player, panel, currentView, snapshot);
-        if (currentView.backendType() == InventoryBackendType.PACKET) {
-            packetBackend.applySnapshot(player, panel, snapshot);
-        } else {
-            legacyBackend.applySnapshot(player, panel, snapshot);
-        }
+        snapshot = applyAnimationState(player, panel, snapshot);
+        packetBackend.applySnapshot(player, panel, snapshot);
     }
 
     public boolean isViewingPanel(Player player, InventoryPanel panel) {
@@ -110,9 +90,7 @@ public class InventoryPanelService {
             return false;
         }
 
-        return currentView.backendType() == InventoryBackendType.PACKET
-                ? packetBackend.isViewing(player, panel)
-                : legacyBackend.isViewing(player, panel);
+        return packetBackend.isViewing(player, panel);
     }
 
     public boolean matchesViewToken(Player player, InventoryPanel panel, Object token) {
@@ -139,11 +117,6 @@ public class InventoryPanelService {
     public void closeActiveView(Player player, InventoryCloseReason reason, boolean sendClientClosePacket) {
         if (packetBackend.hasSession(player)) {
             closePacketSession(player, reason, sendClientClosePacket);
-            return;
-        }
-
-        if (player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryPanel) {
-            player.closeInventory();
         }
     }
 
@@ -157,10 +130,6 @@ public class InventoryPanelService {
         if (reason.shouldRunCloseCommands()) {
             runActions(session.getPanel(), player, session.getPanel().getCloseCommands());
         }
-    }
-
-    public void onLegacyInventoryClosed(Player player, InventoryPanel panel) {
-        clearActiveView(player.getUniqueId(), panel.getName());
     }
 
     public void shutdown() {
@@ -293,19 +262,36 @@ public class InventoryPanelService {
     }
 
     public void logMigrationWarnings(Collection<Panel> panels) {
-        resolver.logMigrationWarnings(panels);
+        for (Panel panel : panels) {
+            if (!(panel instanceof InventoryPanel inventoryPanel)) {
+                continue;
+            }
+
+            String configuredBackend = inventoryPanel.getInventoryBackend().trim();
+            if (configuredBackend.equalsIgnoreCase("legacy")) {
+                ctx.plugin.getLogger().warning("Panel '" + inventoryPanel.getName()
+                        + "' still declares inventory-backend: legacy, but the Bukkit inventory backend"
+                        + " has been removed. The panel now requires a packet-compatible chest row layout.");
+            }
+
+            String configuredRows = inventoryPanel.getRows().trim();
+            boolean packetCapable = parsePacketRows(configuredRows) != null;
+            boolean looksDynamic = configuredRows.contains("%") || configuredRows.contains("{");
+            if (!packetCapable && !looksDynamic) {
+                ctx.plugin.getLogger().warning("Panel '" + inventoryPanel.getName()
+                        + "' uses unsupported rows '" + configuredRows
+                        + "' for the packet-only inventory backend and will fail closed.");
+            }
+        }
     }
 
-    private void registerActiveView(Player player,
-                                    InventoryPanel panel,
-                                    InventoryBackendType backendType,
-                                    boolean preserveToken) {
+    private void registerActiveView(Player player, InventoryPanel panel, boolean preserveToken) {
         UUID playerId = player.getUniqueId();
         ActiveInventoryView currentView = activeViews.get(playerId);
         long token = preserveToken && currentView != null
                 ? currentView.token()
                 : nextViewToken.getAndIncrement();
-        activeViews.put(playerId, new ActiveInventoryView(panel.getName(), backendType, token));
+        activeViews.put(playerId, new ActiveInventoryView(panel.getName(), token));
     }
 
     private void clearActiveView(UUID playerId, String panelName) {
@@ -357,11 +343,34 @@ public class InventoryPanelService {
         packetBackend.resync(player);
     }
 
+    private Integer resolvePacketRows(Player player, InventoryPanel panel, boolean logFailure) {
+        String parsedRows = ctx.text.parseTextToString(player, panel.getRows()).trim();
+        Integer packetRows = parsePacketRows(parsedRows);
+        if (packetRows != null) {
+            return packetRows;
+        }
+
+        if (logFailure) {
+            ctx.plugin.getLogger().severe("Panel '" + panel.getName()
+                    + "' cannot open because rows '" + parsedRows
+                    + "' are not supported by the packet-only inventory backend.");
+        }
+        return null;
+    }
+
+    private Integer parsePacketRows(String rowsValue) {
+        if (rowsValue == null || !rowsValue.matches("\\d+")) {
+            return null;
+        }
+
+        int rows = Integer.parseInt(rowsValue);
+        return rows >= 1 && rows <= 6 ? rows : null;
+    }
+
     private InventoryRenderSnapshot applyAnimationState(Player player,
                                                         InventoryPanel panel,
-                                                        ActiveInventoryView currentView,
                                                         InventoryRenderSnapshot snapshot) {
-        List<ItemStack> currentItems = getCurrentRenderedItems(player, panel, currentView);
+        List<ItemStack> currentItems = getCurrentRenderedItems(player);
         if (currentItems.isEmpty()) {
             return snapshot;
         }
@@ -424,23 +433,11 @@ public class InventoryPanelService {
         return new InventoryRenderSnapshot(snapshot.title(), snapshot.size(), updatedItems, actionSlots);
     }
 
-    private List<ItemStack> getCurrentRenderedItems(Player player, InventoryPanel panel, ActiveInventoryView currentView) {
-        if (currentView.backendType() == InventoryBackendType.PACKET) {
-            PacketPanelSession session = packetBackend.getSession(player);
-            return session == null ? List.of() : session.getSnapshot().topItems();
-        }
-
-        if (!legacyBackend.isViewing(player, panel)) {
-            return List.of();
-        }
-
-        List<ItemStack> items = new ArrayList<>(player.getOpenInventory().getTopInventory().getSize());
-        for (ItemStack item : player.getOpenInventory().getTopInventory().getContents()) {
-            items.add(item == null ? null : item.clone());
-        }
-        return items;
+    private List<ItemStack> getCurrentRenderedItems(Player player) {
+        PacketPanelSession session = packetBackend.getSession(player);
+        return session == null ? List.of() : session.getSnapshot().topItems();
     }
 
-    private record ActiveInventoryView(String panelName, InventoryBackendType backendType, long token) {
+    private record ActiveInventoryView(String panelName, long token) {
     }
 }

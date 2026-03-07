@@ -18,10 +18,6 @@ panel-snooper: false
 # Permissions used in HASPERM conditions are considered observed permissions.
 permission-observer: true
 
-# Default backend for chest-style inventory panels.
-# Supported values: packet, legacy
-inventory-backend-default: packet
-
 # Logs invalid packet-backed inventory interactions and resyncs.
 packet-inventory-debug: false
 
