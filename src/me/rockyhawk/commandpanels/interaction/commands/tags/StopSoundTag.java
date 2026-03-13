@@ -5,8 +5,6 @@ import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.session.Panel;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 public class StopSoundTag implements CommandTagResolver {
@@ -27,12 +25,7 @@ public class StopSoundTag implements CommandTagResolver {
 
         try {
             NamespacedKey key = parseKey(args[0].toLowerCase());
-            Sound sound = Registry.SOUNDS.get(key);
-            if (sound != null) {
-                player.stopSound(sound);
-            } else {
-                player.stopSound(key.getKey());
-            }
+            player.stopSound(key.toString());
         } catch (Exception e) {
             ctx.text.sendError(player, Message.SOUND_STOP_FAIL);
         }
