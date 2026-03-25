@@ -13,12 +13,7 @@ import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.PotionC
 import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.StackComponent;
 import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.TooltipComponent;
 import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.TrimComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents.HeadComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents.HeadDatabaseComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents.ItemsAdderComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents.MMOItemsComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents.MinecraftComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents.NexoComponent;
+import me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents.*;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementTagResolver;
 import me.rockyhawk.commandpanels.interaction.commands.requirements.ConditionTag;
@@ -120,6 +115,7 @@ public final class Registry<T extends Registrable> implements Iterable<T> {
             new MinecraftComponent(),
             new HeadComponent(),
             new NexoComponent(),
+            new CraftEngineComponent(),
             new ItemsAdderComponent(),
             new MMOItemsComponent(),
             new HeadDatabaseComponent()

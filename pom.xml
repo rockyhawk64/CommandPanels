@@ -79,6 +79,12 @@
             <url>https://repo.opencollab.dev/main/</url>
         </repository>
 
+        <!-- CraftEngine -->
+        <repository>
+            <id>momirealms-repo</id>
+            <url>https://repo.momirealms.net/releases/</url>
+        </repository>
+
         <!-- Nexo -->
         <repository>
             <id>reposilite-repository-releases</id>
@@ -128,6 +134,20 @@
             <groupId>org.geysermc.floodgate</groupId>
             <artifactId>api</artifactId>
             <version>2.2.4-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- CraftEngine -->
+        <dependency>
+            <groupId>net.momirealms</groupId>
+            <artifactId>craft-engine-core</artifactId>
+            <version>0.0.67</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.momirealms</groupId>
+            <artifactId>craft-engine-bukkit</artifactId>
+            <version>0.0.67</version>
             <scope>provided</scope>
         </dependency>
 

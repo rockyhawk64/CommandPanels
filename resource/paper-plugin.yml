@@ -23,3 +23,7 @@ dependencies:
          required: false
       Vault:
          required: false
+      CraftEngine:
+         load: BEFORE
+         required: false
+         join-classpath: true
