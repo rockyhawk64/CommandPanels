@@ -205,6 +205,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- TokenManager API -->
+        <dependency>
+            <groupId>com.github.Realizedd</groupId>
+            <artifactId>TokenManager</artifactId>
+            <version>3.2.3</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- bstats -->
         <dependency>
             <groupId>org.bstats</groupId>

@@ -23,6 +23,8 @@ dependencies:
          required: false
       Vault:
          required: false
+      TokenManager:
+         required: false
       CraftEngine:
          load: BEFORE
          required: false

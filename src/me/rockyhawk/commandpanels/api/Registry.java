@@ -18,6 +18,7 @@ import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementTagResolver;
 import me.rockyhawk.commandpanels.interaction.commands.requirements.ConditionTag;
 import me.rockyhawk.commandpanels.interaction.commands.requirements.ItemTag;
+import me.rockyhawk.commandpanels.interaction.commands.requirements.TokenManagerTag;
 import me.rockyhawk.commandpanels.interaction.commands.requirements.VaultTag;
 import me.rockyhawk.commandpanels.interaction.commands.requirements.XpTag;
 import me.rockyhawk.commandpanels.interaction.commands.tags.ChatTag;
@@ -145,6 +146,7 @@ public final class Registry<T extends Registrable> implements Iterable<T> {
     public static final @NonNull Registry<RequirementTagResolver> REQUIREMENT_TAG_RESOLVERS = new Registry<>(List.of(
             new ConditionTag(),
             new VaultTag(),
+            new TokenManagerTag(),
             new ItemTag(),
             new me.rockyhawk.commandpanels.interaction.commands.requirements.DataTag(),
             new XpTag()
