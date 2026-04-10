@@ -2,38 +2,30 @@
 
 ## 🏆 Trusted GUI Plugin since 2019
 
-CommandPanels isn't like other menu plugins it's a **GUI framework**. it gives you true dynamic control through **logic**, **data**, and **panel variety**.
-From shops and quests to custom tools and admin panels, you can design powerful GUIs using YAML or the online editor.
+CommandPanels is built for the admin who demands lean, total control over the player experience. It’s a high-performance interface builder that puts logic and data at the forefront.
 
-- ✅ Actively maintained for 6+ years
-- 🖼️ Online editor for rapid menu building
-- 🧠 Advanced logic and data support
-- 🌍 Cross-platform (Java + Bedrock)
-- 📘 Full documentation and community Discord
+By stripping away the bloat of traditional menu plugins, it allows you to design ultra stable, logic driven GUIs from simple kits to complex, data-heavy systems using a streamlined architecture that respects your server's resources.
 
 ---
 
 ## Useful Links
 
-- [📘 **Documentation**](https://docs.commandpanels.net)
-- [🛠️ **Online Editor**](https://commandpanels.net/editor)
-- [💬 **Discord**](https://discord.gg/WFQMTZxa53)
+[**Documentation**](https://docs.commandpanels.net)
+
+[**Online Editor**](https://commandpanels.net/editor)
+
+[**Discord**](https://discord.gg/WFQMTZxa53)
 
 ---
 
 ## Online Editor
 
-The online editor includes support for **all three panel types**.  
-It’s not just a basic form builder, it’s a **live YAML editor** with structure checks and visual previews, helping you work faster and avoid YAML errors.
+The online editor includes support for **every panel type available**.  
+It’s not just a basic GUI builder, it’s a **live YAML editor** with structure checks and visual previews, helping you work faster and avoid YAML errors.
 
 See a showcase of the editor [here](https://youtu.be/6m4KRHe1jkA?si=sDNiFU3PsJzPBKbB)!
 
 ![ExampleScreenshot](https://commandpanels.net/resource_images/example_editor.png)
-
-- ⚡ Visual layout builder with slot highlighting
-- 🧹 Automatic indentation & structure checks
-- ✅ Works with Inventory, Dialog, and Floodgate panels
-- 🧠 Supports complex panels, not just simple menus
 
 ---
 
@@ -41,9 +33,7 @@ See a showcase of the editor [here](https://youtu.be/6m4KRHe1jkA?si=sDNiFU3PsJzP
 
 CommandPanels lets you build menus that **react to players**, not just display static items.
 
-- Inline `$AND`, `$OR`, `$NOT` operators and grouping
-- Multiple items in a single slot with logical fallbacks
-- **Persistent** or **session-based data** usable anywhere, even in other plugins via PlaceholderAPI
+Inline `$AND`, `$OR`, `$NOT` operators and grouping. Multiple items in a single slot with logical fallbacks. **Persistent** or **session-based data** usable anywhere, even in other plugins via PlaceholderAPI
 
 **Example Condition:**
 ~~~
