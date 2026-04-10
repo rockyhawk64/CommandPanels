@@ -10,11 +10,11 @@ By stripping away the bloat of traditional menu plugins, it allows you to design
 
 ## Useful Links
 
-[**Documentation**](https://docs.commandpanels.net)
+### [**Documentation**](https://docs.commandpanels.net)
 
-[**Online Editor**](https://commandpanels.net/editor)
+### [**Online Editor**](https://commandpanels.net/editor)
 
-[**Discord**](https://discord.gg/WFQMTZxa53)
+### [**Discord**](https://discord.gg/WFQMTZxa53)
 
 ---
 
