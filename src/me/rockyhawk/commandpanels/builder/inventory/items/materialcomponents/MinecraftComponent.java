@@ -32,10 +32,8 @@ public class MinecraftComponent implements MaterialComponent {
 
         // If the material contains components, add them to the item
         if (components != null) {
-            String vanillaString = material.key().asString() + components;
-
             // Returns original stack if malformed
-            stack = Bukkit.getUnsafe().modifyItemStack(stack, vanillaString);
+            stack = Bukkit.getUnsafe().modifyItemStack(stack, components);
         }
 
         return stack;
