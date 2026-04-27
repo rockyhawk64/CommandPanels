@@ -2,9 +2,9 @@
 
 # 🏆 Trusted GUI Plugin since 2019
 
-CommandPanels is built for the admin who demands lean, total control over the player experience. It’s a high-performance interface builder that puts logic and data at the forefront.
+CommandPanels is a menu plugin built for server owners who want full control over the player experience. It is lightweight and focused on the newest Minecraft versions, keeping the plugin clean and avoiding the complexity that comes from supporting outdated game versions.
 
-By stripping away the bloat of traditional menu plugins, it allows you to design ultra stable, logic driven GUIs from simple kits to complex, data-heavy systems using a streamlined architecture that respects your server's resources.
+The idea behind it is simple: focus only on what matters and do it well. By keeping a tight scope, it stays fast, stable, and easy to maintain, while still including the advanced features you need to build anything from a basic kit menu to a complex system that tracks player data.
 
 # Useful Links
 
