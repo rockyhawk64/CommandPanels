@@ -115,7 +115,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>26.1.2.build.49-beta</version>
+            <version>26.1.2.build.53-stable</version>
             <scope>provided</scope>
         </dependency>
 
