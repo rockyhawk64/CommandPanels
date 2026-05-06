@@ -1,12 +1,12 @@
 ![TitleLogo](https://commandpanels.net/resource_images/main_logo.png)
 
 <h2 align="center">
-  <a href="https://commandpanels.net/wiki">Docs</a> |
-  <a href="https://commandpanels.net/editor">Editor</a> |
+  <a href="https://v3.commandpanels.net/wiki">Docs</a> |
+  <a href="https://v3.commandpanels.net/editor">Editor</a> |
   <a href="https://discord.gg/WFQMTZxa53">Discord</a>
 </h2>
 
-## About
+## About v3
 Minecraft Servers use GUIs for many different tasks from lobbies to shops. Command Panels takes a simple approach to YAML scripting to create a powerful yet simple design. Use variables, data, placeholders and other powerful tools to fully customize your GUIs.
 
 Command Panels treats the inventory as three different sections, you have the Top, Middle and Bottom. Which are the Chest, Player and Hotbar locations. You can have three GUIs running simultaneously, by simply choosing which location you want a panel to open!
@@ -25,4 +25,4 @@ Making a plugin? You can use Command Panels as a library to make your own GUIs f
 
 ## Server Compatibility
 
-**Spigot & Paper** Full compatibility with Spigot servers and Paper servers, with enhanced performance on Paper. 1.8-1.21.5(Latest usually works
+**Spigot & Paper** Full compatibility with Spigot servers and Paper servers, with enhanced performance on Paper. 1.8-1.21.5 (Latest usually works)
