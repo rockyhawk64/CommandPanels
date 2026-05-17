@@ -4,7 +4,6 @@ import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.inventory.items.MaterialComponent;
 import me.rockyhawk.commandpanels.session.inventory.PanelItem;
 import net.momirealms.craftengine.bukkit.api.CraftEngineItems;
-import net.momirealms.craftengine.core.util.Key;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,13 +15,16 @@ public class CraftEngineComponent implements MaterialComponent {
 
     @Override
     public ItemStack createItem(Context ctx, String itemID, Player player, PanelItem item) {
-        Key key = Key.from(itemID);
-        var customItem = CraftEngineItems.byId(key);
+        var definition = CraftEngineItems.byId(itemID);
 
-        if (customItem == null) {
+        if (definition == null) {
             return null;
         }
 
-        return customItem.buildItemStack();
+        if (player != null) {
+            return definition.buildBukkitItem(player);
+        } else {
+            return definition.buildBukkitItem();
+        }
     }
 }
