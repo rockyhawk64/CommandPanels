@@ -139,13 +139,13 @@
         <dependency>
             <groupId>net.momirealms</groupId>
             <artifactId>craft-engine-core</artifactId>
-            <version>26.5</version>
+            <version>26.5.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.momirealms</groupId>
             <artifactId>craft-engine-bukkit</artifactId>
-            <version>26.5</version>
+            <version>26.5.1</version>
             <scope>provided</scope>
         </dependency>
 

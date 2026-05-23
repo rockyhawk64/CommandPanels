@@ -21,10 +21,6 @@ public class CraftEngineComponent implements MaterialComponent {
             return null;
         }
 
-        if (player != null) {
-            return definition.buildBukkitItem(player);
-        } else {
-            return definition.buildBukkitItem();
-        }
+        return definition.buildBukkitItem(player);
     }
 }
