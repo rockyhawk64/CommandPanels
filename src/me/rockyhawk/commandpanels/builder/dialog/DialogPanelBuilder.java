@@ -107,7 +107,8 @@ public class DialogPanelBuilder extends PanelBuilder {
         }
 
         // Getting the after action with fallback to "close" (paper / vanilla behavior)
-        final DialogBase.DialogAfterAction afterAction = DialogBase.DialogAfterAction.NAMES.valueOr(panel.getAfterAction(), DialogBase.DialogAfterAction.CLOSE);
+        final DialogBase.DialogAfterAction afterAction = DialogBase.DialogAfterAction.NAMES.valueOr(
+                panel.getAfterAction(), DialogBase.DialogAfterAction.CLOSE);
 
         // Make sure there is at least one button
         if (buttons.isEmpty()) {

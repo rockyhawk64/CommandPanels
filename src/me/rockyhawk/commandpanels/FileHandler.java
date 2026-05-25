@@ -12,8 +12,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 public class FileHandler {
     private final Context ctx;
