@@ -48,7 +48,7 @@ Build structured, custom interfaces that can be used to request custom input.
 
 # Floodgate Panels
 Bring **full GUI support to Bedrock players** using Geyser and Floodgate.
-CommandPanels is one of the only plugins that natively supports this.
+CommandPanels is one of the few plugins that natively supports this.
 
 ![RawFloodgate](https://commandpanels.net/resource_images/raw_floodgate.webp)
 
