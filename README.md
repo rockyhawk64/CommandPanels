@@ -54,18 +54,23 @@ CommandPanels is one of the only plugins that natively supports this.
 
 # About
 
-Minecraft servers rely on GUIs for everything from shops and lobbies to quests and server tools.  
-CommandPanels provides a **streamlined YAML scripting format** designed to make GUI creation both **accessible** and **deeply customizable**.
+CommandPanels is the industry-standard GUI framework for modern Minecraft server administrators.
+Designed specifically for Paper and Folia, it enables you to create custom menus, interactive shops,
+and advanced GUI dialogs with a streamlined, high-performance YAML scripting engine.
 
-- Inline logic & conditions
-- Dynamic placeholders
-- Persistent & session data
-- Full PlaceholderAPI support
-- Modern, clean codebase
+Why Server Owners Choose CommandPanels:
+- Native Bedrock Integration: One of the few solutions offering full Floodgate GUI support and full dialog support,
+bridging the gap between Java and Bedrock players seamlessly.
+- Advanced Logic Engine: Build dynamic, reactive interfaces using $AND,
+$OR, and $NOT operators. No complex scripting required.
+- Workflow Efficiency: Reduce setup time with our integrated
+Online GUI Editor—the most advanced visual menu builder for modern servers. 
+- Data-Driven Performance: Native support for persistent player data, session variables,
+and deep integration with PlaceholderAPI.
+- Modern Architecture: Built for the future of Minecraft, ensuring stability
+on the latest versions without legacy bloat.
 
-# Trusted by Servers Worldwide
+Whether you are managing a Survival, MMO, or Custom Network,
+CommandPanels provides the tools to build a professional, responsive server interface.
 
 CommandPanels is fully compatible with **Paper** and **Folia** servers.
-
-For over 6 years, CommandPanels has powered **thousands of Minecraft servers**.
-Whether you're running survival, MMO, minigames, or custom networks, it can handle it.
