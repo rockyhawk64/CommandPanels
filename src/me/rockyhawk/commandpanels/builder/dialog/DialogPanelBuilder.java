@@ -106,6 +106,9 @@ public class DialogPanelBuilder extends PanelBuilder {
             exitAction = null;
         }
 
+        // Getting the after action with fallback to "close" (paper / vanilla behavior)
+        final DialogBase.DialogAfterAction afterAction = DialogBase.DialogAfterAction.NAMES.valueOr(panel.getAfterAction(), DialogBase.DialogAfterAction.CLOSE);
+
         // Make sure there is at least one button
         if (buttons.isEmpty()) {
             ctx.text.sendError(player, Message.DIALOG_NO_BUTTONS);
@@ -120,6 +123,8 @@ public class DialogPanelBuilder extends PanelBuilder {
                         .canCloseWithEscape(Boolean.parseBoolean(
                                 ctx.text.parseTextToString(player, panel.getEscapable())))
                         .body(bodies)
+                        .pause(false) // pause must be disabled to allow setting non-default afterAction
+                        .afterAction(afterAction)
                         .inputs(inputs)
                         .build())
                 .type(DialogType.multiAction(

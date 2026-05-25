@@ -21,6 +21,7 @@ public class DialogPanel extends Panel {
     private final String escapable;
     private final String exitButton;
     private final String floodgate;
+    private final String afterAction;
     private final Map<String, DialogComponent> components = new HashMap<>();
     private final Map<String, List<String>> order = new HashMap<>();
 
@@ -31,6 +32,7 @@ public class DialogPanel extends Panel {
         this.columns = config.getString("columns", "1");
         this.escapable = config.getString("escapable", "true");
         this.exitButton = config.getString("has-exit-button", "false");
+        this.afterAction = config.getString("after-action", "close");
 
         ConfigurationSection order = config.getConfigurationSection("layout");
         if (order != null) {
@@ -101,5 +103,9 @@ public class DialogPanel extends Panel {
 
     public String getExitButton() {
         return exitButton;
+    }
+
+    public String getAfterAction() {
+        return afterAction;
     }
 }
