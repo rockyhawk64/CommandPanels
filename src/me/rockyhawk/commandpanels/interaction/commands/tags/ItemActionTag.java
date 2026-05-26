@@ -15,6 +15,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
+import java.util.Map;
+
 public class ItemActionTag implements CommandTagResolver {
 
     @Override
@@ -37,12 +39,28 @@ public class ItemActionTag implements CommandTagResolver {
             Inventory gui = player.getOpenInventory().getTopInventory();
             ItemStack item = gui.getItem(slot);
 
+            if (action.equalsIgnoreCase("set")) {
+                Material material = Material.matchMaterial(args[2].toUpperCase());
+                if (material == null || !material.isItem()) {
+                    ctx.text.sendError(player, Message.REQUIREMENT_ITEM_INVALID);
+                    return;
+                }
+
+                int amount = 1;
+                if (args.length >= 4) {
+                    amount = Math.max(1, Integer.parseInt(args[3]));
+                }
+
+                item = new ItemStack(material, amount);
+            }
+
             if (item == null || item.getType() == Material.AIR || !(panel instanceof InventoryPanel)) {
                 // No item in slot
                 return;
             }
 
             switch (action) {
+                case "set" -> {}
                 case "enchant" -> handleEnchant(item, args, ctx, player);
                 case "repair" -> repairItem(item);
                 case "amount" -> item.setAmount(Integer.parseInt(args[2]));
