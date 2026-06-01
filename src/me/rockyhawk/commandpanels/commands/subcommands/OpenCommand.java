@@ -68,7 +68,9 @@ public class OpenCommand implements SubCommand {
             if (!isSilent) ctx.text.sendInfo(sender, Message.PANEL_OPEN_TRIGGERED);
         }
 
-        panel.open(ctx, target, true);
+        // Run panel open on target thread
+        target.getScheduler().run(ctx.plugin, (task) ->
+                panel.open(ctx, target, true), null);
         return true;
     }
 }
