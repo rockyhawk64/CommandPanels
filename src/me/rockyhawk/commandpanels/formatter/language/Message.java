@@ -88,7 +88,7 @@ public enum Message {
     // GenerateManager
     GENERATE_MODE_ENABLED("Generate mode enabled."),
     GENERATE_MODE_EXPIRED("Generate mode expired."),
-    GENERATE_PANEL_CREATED("Generated a new panel file."),
+    GENERATE_PANEL_CREATED("Generated panel saved to {0}"),
 
     // HelpCommand / ReloadCommand
     PLUGIN_COMMANDS("Plugin Commands:"),

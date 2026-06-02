@@ -110,9 +110,11 @@ public class GenerateManager implements Listener {
 
         // Save YAML to file
         try {
-            yamlData.save(new File(ctx.plugin.folder, panelName + ".yml"));
+            String fileName = panelName + ".yml";
+            yamlData.save(new File(ctx.plugin.folder, fileName));
+            
             ctx.fileHandler.reloadPanels();
-            ctx.text.sendInfo(player, Message.GENERATE_PANEL_CREATED);
+            ctx.text.sendInfo(player, Message.GENERATE_PANEL_CREATED, fileName);
         } catch (IOException e) {
             ctx.text.sendError(player, Message.FILE_SAVE_PANEL_FAIL);
         }
