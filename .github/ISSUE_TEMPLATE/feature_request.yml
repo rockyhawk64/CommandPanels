@@ -1,24 +1,26 @@
-name: Feature request
+name: Feature Request
 description: Suggest an idea for this project
 labels: ["enhancement"]
 body:
   - type: checkboxes
     id: searched
     attributes:
-      label: Terms
+      label: Before you submit
       options:
-        - label: "Have you checked the wiki page to see if the solution for your problem is there?"
+        - label: "I have checked the wiki to make sure this feature does not already exist."
           required: true
-        - label: "Have you asked for help in the Discord server? (Or got redirected to a Github issue here)"
+        - label: "I have asked in the Discord server to see if others have found a workaround."
           required: true
+
   - type: textarea
-    id: what-happened
+    id: problem
     attributes:
-      label: Is your feature request related to a problem? Please describe.
+      label: Is your feature request related to a problem?
       description: A clear and concise description of what the problem is.
-      placeholder: "Example: I'm always frustrated when [...]"
+      placeholder: "Example: There is no way to run a command when a panel is closed."
     validations:
       required: true
+
   - type: textarea
     id: solution
     attributes:
@@ -26,19 +28,20 @@ body:
       description: A clear and concise description of what you want to happen.
     validations:
       required: true
+
   - type: textarea
     id: alternatives
     attributes:
-      label: Describe alternatives you've considered
-      description: A clear and concise description of any alternative solutions or features you've considered.
-    validations:
-      required: true
+      label: Alternatives you have considered (optional)
+      description: Any alternative solutions or workarounds you have already tried or thought about.
+
   - type: textarea
     id: screenshots
     attributes:
-      label: Screenshots/Videos (you can drag and drop files or paste links)
-      description: Add any other context or screenshots about the feature request here.
+      label: Screenshots or videos (optional)
+      description: Drag and drop files or paste links if applicable.
+
   - type: markdown
     attributes:
       value: |
-        ## Thanks for taking the time to fill out this feature request!
+        ## Thanks for taking the time to submit a feature request!
