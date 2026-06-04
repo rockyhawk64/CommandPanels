@@ -25,7 +25,7 @@ public class PanelOpenCommand implements Listener {
     }
 
     // For custom commands that are used to open panels
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent e) {
         String raw = e.getMessage().substring(1); // remove leading slash
         String[] parts = raw.split("\\s+");
