@@ -57,6 +57,7 @@ updates, the panel refreshes automatically. If nothing changes, nothing refreshe
 - Animation System: Fully capable for total control
 - PlaceholderAPI and MiniMessage: supported everywhere on all panels
 - Compatibility: Native Bedrock and Dialog support via Geyser and Floodgate
+- Developer API: Add hooks for custom Command Tags, Material Tags and more
 - Data System: Persistent and session-based player data
 
 From simple kit menus to full MMO experiences with shops,
