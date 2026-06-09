@@ -23,7 +23,7 @@ Compatible with **Paper** and **Folia** servers.
 
 # Online Editor
 
-Never edit YAML again with the Online Editor, it is a fully interactive visual builder with
+Prefer building visually over editing YAML? The Online Editor is a fully interactive visual builder with
 every plugin feature included. The Editor sets itself apart from every other GUI plugin.
 It is a core part of CommandPanels, not a feature bolted on as an afterthought.
 
