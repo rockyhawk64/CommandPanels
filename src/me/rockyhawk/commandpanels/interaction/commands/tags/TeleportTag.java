@@ -18,7 +18,7 @@ public class TeleportTag implements CommandTagResolver {
 
     @Override
     public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
-        String[] args = ctx.text.parseTextToString(player, command).split("\\s+");
+        String[] args = command.split("\\s+");
 
         float x, y, z, yaw = 0, pitch = 0;
         Player teleportedPlayer = player;

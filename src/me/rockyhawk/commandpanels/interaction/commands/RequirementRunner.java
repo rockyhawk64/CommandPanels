@@ -29,7 +29,7 @@ public class RequirementRunner {
             String tag = parts[0];
 
             String args = (parts.length > 1) ? parts[1].trim() : "";
-            String argsParsed = ctx.text.parseTextToString(player, args);
+            String argsParsed = ctx.text.applyPlaceholders(player, args);
 
             boolean matched = false;
             for (RequirementTagResolver resolver : Registry.REQUIREMENT_TAG_RESOLVERS) {

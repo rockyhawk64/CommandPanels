@@ -16,13 +16,10 @@ public class ServerTag implements CommandTagResolver {
 
     @Override
     public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
-        // Remove the tag prefix and parse placeholders
-        String parsedCmd = ctx.text.parseTextToString(player, command);
-
         // Prepare and send plugin message to proxy without permission checks
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Connect");
-        out.writeUTF(parsedCmd);
+        out.writeUTF(command);
 
         // Velocity and BungeeCord both can use this message
         String channel = "BungeeCord";

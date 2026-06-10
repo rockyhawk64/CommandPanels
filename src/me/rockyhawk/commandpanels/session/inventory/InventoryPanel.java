@@ -25,6 +25,7 @@ public class InventoryPanel extends Panel implements InventoryHolder {
     private final Map<String, PanelItem> items = new HashMap<>();
     private final Map<String, List<String>> slots = new HashMap<>();
     private final CommandActions outside;
+    private final CommandActions refresh;
     private final CommandActions close;
     private final String floodgate;
     private final String inventoryLock;
@@ -42,6 +43,11 @@ public class InventoryPanel extends Panel implements InventoryHolder {
                 config.getStringList("outside.requirements"),
                 config.getStringList("outside.commands"),
                 config.getStringList("outside.fail")
+        );
+        refresh = new CommandActions(
+                config.getStringList("refresh.requirements"),
+                config.getStringList("refresh.commands"),
+                config.getStringList("refresh.fail")
         );
         close = new CommandActions(
                 config.getStringList("close.requirements"),
@@ -81,6 +87,9 @@ public class InventoryPanel extends Panel implements InventoryHolder {
             }
         }
 
+        // Init command runner
+        RequirementRunner requirements = new RequirementRunner(ctx);
+        CommandRunner commands = new CommandRunner(ctx);
 
         if(isNewPanelSession) {
             // Don't open same panel if its already open
@@ -89,16 +98,22 @@ public class InventoryPanel extends Panel implements InventoryHolder {
             }
             updatePanelData(ctx, player);
 
-            // Run panel commands
-            RequirementRunner requirements = new RequirementRunner(ctx);
-            CommandRunner commands = new CommandRunner(ctx);
-            CommandActions actions = this.getOpenCommands();
-            if(!requirements.processRequirements(this, player, actions.requirements())){
-                commands.runCommands(this, player, actions.fail());
+            // Run panel open commands, only runs on open
+            CommandActions openActions = this.getOpenCommands();
+            if(!requirements.processRequirements(this, player, openActions.requirements())){
+                commands.runCommands(this, player, openActions.fail());
                 return;
             }
-            commands.runCommands(this, player, actions.commands());
+            commands.runCommands(this, player, openActions.commands());
         }
+
+        // Run panel refresh commands these will run after open commands, and on refresh
+        CommandActions refreshActions = this.getRefreshCommands();
+        if(!requirements.processRequirements(this, player, refreshActions.requirements())){
+            commands.runCommands(this, player, refreshActions.fail());
+            return;
+        }
+        commands.runCommands(this, player, refreshActions.commands());
 
         // Build and open the panel
         PanelBuilder builder = new InventoryPanelBuilder(ctx, player);
@@ -129,6 +144,10 @@ public class InventoryPanel extends Panel implements InventoryHolder {
 
     public CommandActions getOutsideCommands() {
         return outside;
+    }
+
+    public CommandActions getRefreshCommands() {
+        return refresh;
     }
 
     public CommandActions getCloseCommands() {

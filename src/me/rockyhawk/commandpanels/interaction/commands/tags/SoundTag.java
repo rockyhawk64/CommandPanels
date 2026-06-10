@@ -17,7 +17,7 @@ public class SoundTag implements CommandTagResolver {
 
     @Override
     public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
-        String[] args = ctx.text.parseTextToString(player, command).split("\\s+");
+        String[] args = command.split("\\s+");
 
         if (args.length == 0) {
             ctx.text.sendError(player, Message.SOUND_NO_ARGS);

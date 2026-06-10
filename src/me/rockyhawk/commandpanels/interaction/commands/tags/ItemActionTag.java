@@ -25,7 +25,7 @@ public class ItemActionTag implements CommandTagResolver {
     @Override
     public void handle(Context ctx, Panel panel, Player player, String raw, String command) {
         try {
-            String[] args = ctx.text.parseTextToString(player, command).split("\\s+");
+            String[] args = command.split("\\s+");
             if (args.length < 2) {
                 ctx.text.sendError(player, Message.ITEM_ACTION_SYNTAX_INVALID);
                 return;

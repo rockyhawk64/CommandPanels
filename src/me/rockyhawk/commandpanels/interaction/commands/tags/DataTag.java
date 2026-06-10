@@ -17,7 +17,7 @@ public class DataTag implements CommandTagResolver {
         String playerName = player.getName();
 
         // Use raw placeholder parsing
-        String[] args = ctx.text.applyPlaceholders(player, raw).split("\\s");
+        String[] args = command.split("\\s");
 
         if (args.length < 1) return;
 
