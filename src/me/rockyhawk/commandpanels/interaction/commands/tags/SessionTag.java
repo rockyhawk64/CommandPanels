@@ -59,7 +59,7 @@ public class SessionTag implements CommandTagResolver {
                 String valueIfTrue = parts[2];
                 String valueIfFalse = parts[3];
 
-                // Execute your existing condition-checking engine
+                // Execute condition checks and return final result
                 ConditionNode conditionNode = new ConditionParser().parse(conditions);
                 boolean result = conditionNode.evaluate(player, panel, ctx);
 
