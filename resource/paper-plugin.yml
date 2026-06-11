@@ -1,5 +1,5 @@
 name: CommandPanels
-version: '4.1.8'
+version: '4.2.0'
 api-version: '26.1.2'
 
 main: me.rockyhawk.commandpanels.CommandPanels
