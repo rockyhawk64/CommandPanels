@@ -64,7 +64,7 @@ public class PanelOpenCommand implements Listener {
             }
 
             e.setCancelled(true);
-            Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task -> panel.open(ctx, e.getPlayer(), true));
+            e.getPlayer().getScheduler().run(ctx.plugin, task -> panel.open(ctx, e.getPlayer(), true), null);
             return;
         }
 
