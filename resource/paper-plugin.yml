@@ -1,6 +1,6 @@
 name: CommandPanels
 version: '4.2.0'
-api-version: '26.1.2'
+api-version: '26.2'
 
 main: me.rockyhawk.commandpanels.CommandPanels
 description: Fully Custom Interactive GUIs with Animations and Logic.

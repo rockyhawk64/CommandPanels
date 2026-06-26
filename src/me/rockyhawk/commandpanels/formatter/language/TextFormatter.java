@@ -4,7 +4,6 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.rockyhawk.commandpanels.Context;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -23,70 +22,51 @@ public class TextFormatter {
     public final LanguageManager lang;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
 
+    private static final String DEFAULT_PREFIX = "<gold>[<yellow>CommandPanels<gold>] ";
+
     public TextFormatter(Context ctx) {
         this.lang = new LanguageManager(ctx);
     }
 
-    public TextComponent getPrefix() {
+    public Component getPrefix() {
         String translatedPrefix = lang.translate(Message.PREFIX) + " ";
         if (Objects.equals(translatedPrefix, "[CommandPanels] ")) {
-            return Component.text("[", NamedTextColor.GOLD)
-                    .append(Component.text("CommandPanels", NamedTextColor.YELLOW))
-                    .append(Component.text("] ", NamedTextColor.GOLD));
+            return deserializeAppropriately(DEFAULT_PREFIX);
         } else {
-            return (TextComponent) deserializeAppropriately(translatedPrefix);
+            return deserializeAppropriately(translatedPrefix);
         }
     }
 
     private Component buildLocalizedComponent(String translatedMessage, NamedTextColor defaultColor) {
         if (translatedMessage == null || translatedMessage.isEmpty()) return Component.empty();
-
-        Component parsed = deserializeAppropriately(translatedMessage);
-
-        return Component.text()
-                .color(defaultColor)
-                .append(parsed)
-                .build();
+        return deserializeAppropriately("<" + defaultColor + ">" + translatedMessage);
     }
 
     // Will not send messages if the message is empty
     public void sendInfo(Audience audience, Message message, Object... args) {
         String translated = lang.translate(message, args);
         if(translated.isBlank()) return;
-        Component comp = buildLocalizedComponent(translated, NamedTextColor.WHITE);
-        audience.sendMessage(getPrefix().append(comp));
+        audience.sendMessage(getPrefix().append(buildLocalizedComponent(translated, NamedTextColor.WHITE)));
     }
 
     public void sendWarn(Audience audience, Message message, Object... args) {
         String translated = lang.translate(message, args);
         if(translated.isBlank()) return;
-        Component comp = buildLocalizedComponent(translated, NamedTextColor.YELLOW);
-        audience.sendMessage(getPrefix().append(comp));
+        audience.sendMessage(getPrefix().append(buildLocalizedComponent(translated, NamedTextColor.YELLOW)));
     }
 
     public void sendError(Audience audience, Message message, Object... args) {
         String translated = lang.translate(message, args);
         if(translated.isBlank()) return;
-        Component comp = buildLocalizedComponent(translated, NamedTextColor.RED);
-        audience.sendMessage(getPrefix().append(comp));
+        audience.sendMessage(getPrefix().append(buildLocalizedComponent(translated, NamedTextColor.RED)));
     }
 
     public void sendHelp(Audience audience, Message command, Message description, Object... args) {
         String translatedCommand = lang.translate(command, args);
         String translatedDescription = lang.translate(description, args);
-
-        Component cmdComp = buildLocalizedComponent(translatedCommand, NamedTextColor.GOLD);
-        Component descComp = buildLocalizedComponent(translatedDescription, NamedTextColor.WHITE);
-
-        Component space = Component.text(" ").color(NamedTextColor.WHITE);
-
-        Component helpComp = Component.text()
-                .append(cmdComp)
-                .append(space)
-                .append(descComp)
-                .build();
-
-        audience.sendMessage(helpComp);
+        audience.sendMessage(deserializeAppropriately(
+                "<gold>" + translatedCommand + " <white>" + translatedDescription
+        ));
     }
 
     @NotNull

@@ -3,12 +3,12 @@ package me.rockyhawk.commandpanels.commands.subcommands;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.commands.SubCommand;
 import me.rockyhawk.commandpanels.formatter.language.Message;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 
 public class VersionCommand implements SubCommand {
+
+    private final MiniMessage miniMessage = MiniMessage.miniMessage();
 
     @Override
     public String getName() {
@@ -22,28 +22,18 @@ public class VersionCommand implements SubCommand {
 
     @Override
     public boolean execute(Context ctx, CommandSender sender, String[] args) {
-        sender.sendMessage(ctx.text.getPrefix());
+        String devTemplate = ensurePlaceholder(ctx.text.lang.translate(Message.PLUGIN_DEVELOPER));
+        String verTemplate = ensurePlaceholder(ctx.text.lang.translate(Message.PLUGIN_VERSION));
 
-        String translatedDeveloper = ensurePlaceholder(ctx.text.lang.translate(Message.PLUGIN_DEVELOPER));
-        String translatedVersion = ensurePlaceholder(ctx.text.lang.translate(Message.PLUGIN_VERSION));
-        sender.sendMessage(Component.text()
-                .color(NamedTextColor.DARK_AQUA)
-                .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedDeveloper))
-                .build()
-                .replaceText(builder -> builder
-                        .match("\\{0\\}")
-                        .replacement(Component.text("RockyHawk", NamedTextColor.WHITE))));
-        sender.sendMessage(Component.text()
-                .color(NamedTextColor.DARK_AQUA)
-                .append(LegacyComponentSerializer.legacyAmpersand().deserialize(translatedVersion))
-                .build()
-                .replaceText(builder -> builder
-                        .match("\\{0\\}")
-                        .replacement(Component.text(ctx.plugin.getPluginMeta().getVersion(), NamedTextColor.WHITE))));
+        sender.sendMessage(ctx.text.getPrefix());
+        sender.sendMessage(miniMessage.deserialize(
+                "<dark_aqua>" + devTemplate.replace("{0}", "<white>RockyHawk")));
+        sender.sendMessage(miniMessage.deserialize(
+                "<dark_aqua>" + verTemplate.replace("{0}", "<white>" + ctx.plugin.getPluginMeta().getVersion())));
+
         return true;
     }
 
-    // Add version number and credits back if removed from language message
     private String ensurePlaceholder(String text) {
         return text.contains("{0}") ? text : text + " {0}";
     }
