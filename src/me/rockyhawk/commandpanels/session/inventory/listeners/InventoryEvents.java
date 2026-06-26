@@ -1,12 +1,10 @@
 package me.rockyhawk.commandpanels.session.inventory.listeners;
 
 import me.rockyhawk.commandpanels.Context;
-import me.rockyhawk.commandpanels.formatter.Placeholders;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
 import me.rockyhawk.commandpanels.session.CommandActions;
 import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
