@@ -1,5 +1,6 @@
 package me.rockyhawk.commandpanels.session.inventory.listeners;
 
+import io.papermc.paper.persistence.PersistentDataContainerView;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
@@ -15,7 +16,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -76,7 +76,13 @@ public class ClickEvents implements Listener {
         if (!(e.getClickedInventory().getHolder() instanceof InventoryPanel panel)) return;
 
         ItemStack item = e.getCurrentItem();
-        if (item == null || !item.hasItemMeta()) return;
+        if (item == null) return;
+
+        // Check if item has commandpanels data attached
+        PersistentDataContainerView container = item.getPersistentDataContainer();
+
+        String itemId = container.getOrDefault(baseIdKey, PersistentDataType.STRING, null);
+        if (itemId == null) return;
 
         // Cancel interaction and prevent taking the item
         e.setCancelled(true);
@@ -91,13 +97,6 @@ public class ClickEvents implements Listener {
             return;
         }
         playerData.set(lastClickKey, PersistentDataType.LONG, currentMillis);
-
-        // Check if item has commandpanels data attached
-        ItemMeta meta = item.getItemMeta();
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-
-        if (!container.has(baseIdKey, PersistentDataType.STRING)) return;
-        String itemId = container.get(baseIdKey, PersistentDataType.STRING);
 
         // Check valid interaction types
         switch (e.getClick()) {
@@ -127,9 +126,9 @@ public class ClickEvents implements Listener {
                 .filter(slot -> slot < topSize) // only slots in the top inventory
                 .anyMatch(slot -> {
                     var item = topInventory.getItem(slot);
-                    if (item == null || !item.hasItemMeta()) return false;
-                    var meta = item.getItemMeta();
-                    return meta.getPersistentDataContainer().has(itemIdKey, PersistentDataType.STRING);
+                    if (item == null) return false;
+                    var cont = item.getPersistentDataContainer();
+                    return cont.has(itemIdKey, PersistentDataType.STRING);
                 });
 
         if (draggingOverPanelItem) {
