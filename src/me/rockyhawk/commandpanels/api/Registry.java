@@ -2,17 +2,7 @@ package me.rockyhawk.commandpanels.api;
 
 import me.rockyhawk.commandpanels.builder.inventory.items.ItemComponent;
 import me.rockyhawk.commandpanels.builder.inventory.items.MaterialComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.BannerComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.CustomModelDataComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.DamageComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.EnchantedComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.ItemModelComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.LeatherColorComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.PotionColorComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.PotionComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.StackComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.TooltipComponent;
-import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.TrimComponent;
+import me.rockyhawk.commandpanels.builder.inventory.items.itemcomponents.*;
 import me.rockyhawk.commandpanels.builder.inventory.items.materialcomponents.*;
 import me.rockyhawk.commandpanels.interaction.commands.CommandTagResolver;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementTagResolver;
@@ -98,6 +88,7 @@ public final class Registry<T extends Registrable> implements Iterable<T> {
 
     public static final @NonNull Registry<ItemComponent> ITEM_COMPONENTS = new Registry<>(List.of(
             new EnchantedComponent(),
+            new GlintComponent(),
             new ItemModelComponent(),
             new CustomModelDataComponent(),
             new TooltipComponent(),

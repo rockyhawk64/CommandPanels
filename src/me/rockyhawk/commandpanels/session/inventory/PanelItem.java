@@ -13,6 +13,7 @@ public record PanelItem(
         String displayName,
         List<String> lore,
         String attributes,
+        String glintOverride,
         String tooltip,
         String animate,
         String conditions,
@@ -39,6 +40,7 @@ public record PanelItem(
             String displayName,
             List<String> lore,
             String attributes,
+            String glintOverride,
             String tooltip,
             String animate,
             String conditions,
@@ -64,6 +66,7 @@ public record PanelItem(
         this.displayName = displayName;
         this.lore = List.copyOf(lore);
         this.attributes = attributes;
+        this.glintOverride = glintOverride;
         this.tooltip = tooltip;
         this.animate = animate;
         this.conditions = conditions;
@@ -90,6 +93,7 @@ public record PanelItem(
         String name = section.getString("name", "");
         List<String> lore = section.getStringList("lore");
         String attributes = section.getString("attributes", "false");
+        String glintOverride = section.getString("glint-override", null);
         String tooltip = section.getString("tooltip", "true");
         String animate = section.getString("animate", "");
         String conditions = section.getString("conditions", "");
@@ -119,6 +123,7 @@ public record PanelItem(
                 name,
                 lore,
                 attributes,
+                glintOverride,
                 tooltip,
                 animate,
                 conditions,
