@@ -5,14 +5,14 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public class DialogBodyText extends DialogComponent {
 
-    private final int width;
+    private final String width;
 
     public DialogBodyText(String id, ConfigurationSection section) {
         super(id, section);
-        this.width = section.getInt("width", 200);
+        this.width = section.getString("width", "200");
     }
 
-    public int getWidth() {
+    public String getWidth() {
         return width;
     }
 

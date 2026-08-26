@@ -24,15 +24,15 @@ public class BodyBuilder {
         return DialogBody
                 .item(item.getItemStack(ctx, panel, builder.getPlayer()))
                 .description(description)
-                .width(item.getWidth())
-                .height(item.getHeight())
+                .width(Integer.parseInt(item.getWidth()))
+                .height(Integer.parseInt(item.getHeight()))
                 .build();
     }
 
     public DialogBody createText(DialogBodyText text, DialogPanel panel) {
         return DialogBody.plainMessage(
                 ctx.text.parseTextToComponent(builder.getPlayer(), text.getName()),
-                text.getWidth()
+                Integer.parseInt(text.getWidth())
         );
     }
 }
