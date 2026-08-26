@@ -19,6 +19,8 @@ body:
       options:
         - 1.21.x
         - 26.1.x
+        - 26.2.x
+        - 26.3.x
         - Other
     validations:
       required: true
@@ -30,6 +32,7 @@ body:
       options:
         - 4.0.x
         - 4.1.x
+        - 4.2.x
         - Other
     validations:
       required: true
