@@ -17,13 +17,13 @@ Compatible with **Paper** and **Folia** servers.
 
 ### [**Documentation**](https://docs.commandpanels.net)
 
-### [**Online Editor**](https://commandpanels.net/editor)
+### [**Web Editor**](https://commandpanels.net/editor)
 
 ### [**Discord**](https://discord.gg/WFQMTZxa53)
 
-# Online Editor
+# Companion Web Editor
 
-Prefer building visually over editing YAML? The Online Editor is a fully interactive visual builder with
+Prefer building visually over editing YAML? The Web Editor is a fully interactive visual builder with
 every plugin feature included. It's actively maintained alongside the plugin as a separate tool
 for easy Panel creation.
 
@@ -53,7 +53,7 @@ updates, the panel refreshes automatically. If nothing changes, nothing refreshe
 
 - Advanced Logic: Custom engine with condition grouping and logical fallbacks
 - Permission Observer: For dynamic, event-driven panel refreshes with no polling
-- Online Editor: Actively maintained visual builder with full feature parity
+- Web Editor: Actively maintained visual builder with full feature parity
 - Animation System: Fully capable for total control
 - PlaceholderAPI and MiniMessage: supported everywhere on all panels
 - Compatibility: Native Bedrock and Dialog support via Geyser and Floodgate
@@ -63,7 +63,3 @@ updates, the panel refreshes automatically. If nothing changes, nothing refreshe
 From simple kit menus to full MMO experiences with shops,
 quests, and navigation, CommandPanels provides the tools to build a professional,
 responsive server interface.
-
-### License & Use
-CommandPanels (the plugin) is open source under GPL-3.0.
-This website, including the editor and docs, is a separate closed-source project.
