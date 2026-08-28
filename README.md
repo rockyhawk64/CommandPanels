@@ -21,11 +21,11 @@ Compatible with **Paper** and **Folia** servers.
 
 ### [**Discord**](https://discord.gg/WFQMTZxa53)
 
-# Companion Web Editor
+# Web Editor
 
-Prefer building visually over editing YAML? The Web Editor is a fully interactive visual builder with
-every plugin feature included. It's actively maintained alongside the plugin as a separate tool
-for easy Panel creation.
+Prefer building visually over editing YAML? A standalone companion visual builder with full feature
+parity for designing panels in your browser.
+It's actively maintained alongside the plugin as a separate tool for easy panel creation.
 
 - Full Feature Parity: Everything the plugin can do, the editor supports
 - All Panel Types: Inventory menus, Dialogs, and Bedrock/Floodgate menus
