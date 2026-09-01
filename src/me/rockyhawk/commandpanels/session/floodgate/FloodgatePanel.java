@@ -62,15 +62,15 @@ public class FloodgatePanel extends Panel {
             }
             updatePanelData(ctx, player);
 
-            // Run panel commands
+            // Run open commands, only runs on open
             RequirementRunner requirements = new RequirementRunner(ctx);
             CommandRunner commands = new CommandRunner(ctx);
-            CommandActions actions = this.getOpenCommands();
-            if(!requirements.processRequirements(this, player, actions.requirements())){
-                commands.runCommands(this, player, actions.fail());
-                return;
+            CommandActions openActions = this.getOpenCommands();
+            if(requirements.processRequirements(this, player, openActions.requirements())){
+                commands.runCommands(this, player, openActions.commands());
+            }else{
+                commands.runCommands(this, player, openActions.fail());
             }
-            commands.runCommands(this, player, actions.commands());
         }
 
         // Build and open panel

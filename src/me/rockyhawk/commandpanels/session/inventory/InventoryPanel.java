@@ -100,20 +100,20 @@ public class InventoryPanel extends Panel implements InventoryHolder {
 
             // Run panel open commands, only runs on open
             CommandActions openActions = this.getOpenCommands();
-            if(!requirements.processRequirements(this, player, openActions.requirements())){
+            if(requirements.processRequirements(this, player, openActions.requirements())){
+                commands.runCommands(this, player, openActions.commands());
+            }else{
                 commands.runCommands(this, player, openActions.fail());
-                return;
             }
-            commands.runCommands(this, player, openActions.commands());
         }
 
         // Run panel refresh commands these will run after open commands, and on refresh
         CommandActions refreshActions = this.getRefreshCommands();
-        if(!requirements.processRequirements(this, player, refreshActions.requirements())){
+        if(requirements.processRequirements(this, player, refreshActions.requirements())){
+            commands.runCommands(this, player, refreshActions.commands());
+        }else{
             commands.runCommands(this, player, refreshActions.fail());
-            return;
         }
-        commands.runCommands(this, player, refreshActions.commands());
 
         // Build and open the panel
         PanelBuilder builder = new InventoryPanelBuilder(ctx, player);
