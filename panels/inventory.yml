@@ -4,7 +4,6 @@
 # | https://www.spigotmc.org/resources/command-panels-custom-guis.67788/
 # |------------------------------------------------------------------------
 
-conditions: "%player_name% $HASPERM example.permission"
 title: '&3&lServer Selector'
 type: inventory
 
