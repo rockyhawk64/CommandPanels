@@ -22,6 +22,7 @@ public class DialogPanel extends Panel {
     private final String exitButton;
     private final String floodgate;
     private final String afterAction;
+    private final CommandActions refresh;
     private final Map<String, DialogComponent> components = new HashMap<>();
     private final Map<String, List<String>> order = new HashMap<>();
 
@@ -33,6 +34,12 @@ public class DialogPanel extends Panel {
         this.escapable = config.getString("escapable", "true");
         this.exitButton = config.getString("has-exit-button", "false");
         this.afterAction = config.getString("after-action", "close");
+
+        refresh = new CommandActions(
+                config.getStringList("refresh.requirements"),
+                config.getStringList("refresh.commands"),
+                config.getStringList("refresh.fail")
+        );
 
         ConfigurationSection order = config.getConfigurationSection("layout");
         if (order != null) {
@@ -67,6 +74,10 @@ public class DialogPanel extends Panel {
             }
         }
 
+        // Init command runner
+        RequirementRunner requirements = new RequirementRunner(ctx);
+        CommandRunner commands = new CommandRunner(ctx);
+
         if(isNewPanelSession) {
             // Don't open same panel if its already open
             if(!canOpen(player, ctx)){
@@ -75,14 +86,20 @@ public class DialogPanel extends Panel {
             updatePanelData(ctx, player);
 
             // Run open commands, only runs on open
-            RequirementRunner requirements = new RequirementRunner(ctx);
-            CommandRunner commands = new CommandRunner(ctx);
             CommandActions openActions = this.getOpenCommands();
             if(requirements.processRequirements(this, player, openActions.requirements())){
                 commands.runCommands(this, player, openActions.commands());
             }else{
                 commands.runCommands(this, player, openActions.fail());
             }
+        }
+
+        // Run panel refresh commands these will run after open commands, and on refresh
+        CommandActions refreshActions = this.getRefreshCommands();
+        if(requirements.processRequirements(this, player, refreshActions.requirements())){
+            commands.runCommands(this, player, refreshActions.commands());
+        }else{
+            commands.runCommands(this, player, refreshActions.fail());
         }
 
         // Build and open panel
@@ -107,5 +124,9 @@ public class DialogPanel extends Panel {
 
     public String getAfterAction() {
         return afterAction;
+    }
+
+    public CommandActions getRefreshCommands() {
+        return refresh;
     }
 }
