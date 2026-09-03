@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.interaction.openpanel;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.session.Panel;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
