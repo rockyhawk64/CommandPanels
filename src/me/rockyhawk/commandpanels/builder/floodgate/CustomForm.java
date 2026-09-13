@@ -86,10 +86,10 @@ public class CustomForm {
                         fields.add(FormField.of(slider));
                     }
                     case FloodgateDropdown dropdown -> {
-                        List<String> parsedOptions = new ArrayList<>();
-                        for (String opt : dropdown.getOptions()) {
-                            parsedOptions.add(parseText(opt));
-                        }
+                        List<String> parsedOptions = dropdown.getOptions().stream()
+                                .map(opt -> parseText(opt).trim())
+                                .filter(opt -> !opt.isEmpty())
+                                .toList();
                         form.dropdown(
                                 parseText(dropdown.getName()),
                                 parsedOptions,
