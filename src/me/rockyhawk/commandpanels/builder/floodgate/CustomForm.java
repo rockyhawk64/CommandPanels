@@ -28,12 +28,18 @@ public class CustomForm {
         this.builder = builder;
     }
 
+    private record FormField(FloodgateComponent component, List<String> options) {
+        private static FormField of(FloodgateComponent component) {
+            return new FormField(component, null);
+        }
+    }
+
     public void sendForm(FloodgatePanel panel) {
         Player player = builder.getPlayer();
         org.geysermc.cumulus.form.CustomForm.Builder form = org.geysermc.cumulus.form.CustomForm.builder()
                 .title(ctx.text.parseTextToString(player, panel.getTitle()));
 
-        List<FloodgateComponent> inputOrder = new ArrayList<>();
+        List<FormField> fields = new ArrayList<>();
 
         // Build the form inputs in order
         for (int i = 0; i < panel.getOrder().size(); i++) {
@@ -60,7 +66,6 @@ public class CustomForm {
                                 ctx.text.applyPlaceholders(player,
                                         input.getName().replaceAll("\\\\n", "\n"))
                         );
-                        inputOrder.add(input);
                     }
                     case FloodgateInput input -> {
                         form.input(
@@ -68,7 +73,7 @@ public class CustomForm {
                                 parseText(input.getPlaceholder()),
                                 parseText(input.getDefault())
                         );
-                        inputOrder.add(input);
+                        fields.add(FormField.of(input));
                     }
                     case FloodgateSlider slider -> {
                         form.slider(
@@ -78,7 +83,7 @@ public class CustomForm {
                                 parseInt(slider.getStep()),
                                 parseFloat(slider.getDefault())
                         );
-                        inputOrder.add(slider);
+                        fields.add(FormField.of(slider));
                     }
                     case FloodgateDropdown dropdown -> {
                         List<String> parsedOptions = new ArrayList<>();
@@ -90,14 +95,14 @@ public class CustomForm {
                                 parsedOptions,
                                 parseInt(dropdown.getDefault())
                         );
-                        inputOrder.add(dropdown);
+                        fields.add(new FormField(dropdown, parsedOptions));
                     }
                     case FloodgateToggle toggle -> {
                         form.toggle(
                                 parseText(toggle.getName()),
                                 parseBoolean(toggle.getDefault())
                         );
-                        inputOrder.add(toggle);
+                        fields.add(FormField.of(toggle));
                     }
                     case FloodgateStepSlider stepSlider -> {
                         List<String> parsedSteps = new ArrayList<>();
@@ -109,7 +114,7 @@ public class CustomForm {
                                 parsedSteps,
                                 parseInt(stepSlider.getDefault())
                         );
-                        inputOrder.add(stepSlider);
+                        fields.add(new FormField(stepSlider, parsedSteps));
                     }
                     // unknown component, skip
                     default -> {}
@@ -121,26 +126,25 @@ public class CustomForm {
         }
 
         form.validResultHandler((CustomFormResponse response) -> {
-            int index = 0;
-            while (response.hasNext()) {
+            for (FormField field : fields) {
+                if (!response.hasNext()) break;
                 Object rawValue = response.next();
-                FloodgateComponent comp = inputOrder.get(index);
 
-                String value = String.valueOf(rawValue);
-
-                // Convert specific floodgate components to raw strings from index values
-                if (comp instanceof FloodgateDropdown dropdown && rawValue instanceof Integer) {
-                    value = dropdown.getOptions().get((int) rawValue);
-                } else if (comp instanceof FloodgateStepSlider slider && rawValue instanceof Integer) {
-                    value = slider.getSteps().get((int) rawValue);
+                // options snapshot taken at build time.
+                String value;
+                if (field.options() != null && rawValue instanceof Integer selected
+                        && selected >= 0 && selected < field.options().size()) {
+                    value = field.options().get(selected);
+                } else {
+                    value = String.valueOf(rawValue);
                 }
 
-                // Create the session data
-                createSessionData(comp.getId(), value);
-                index++;
+                createSessionData(field.component().getId(), value);
             }
+
             // Run actions
-            for (FloodgateComponent comp : inputOrder) {
+            for (FormField field : fields) {
+                FloodgateComponent comp = field.component();
                 CommandRunner commands = new CommandRunner(ctx);
                 RequirementRunner requirements = new RequirementRunner(ctx);
 
