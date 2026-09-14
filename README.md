@@ -33,7 +33,7 @@ It's actively maintained alongside the plugin as a separate tool for easy panel 
 - Always up to Date: New features ship in the editor alongside the plugin
 - No Account Required: Open it and start building
 
-See a showcase of the editor [here](https://youtu.be/6m4KRHe1jkA?si=sDNiFU3PsJzPBKbB)!
+See a showcase of the editor [here](https://youtu.be/EEzUbkN9eig)!
 
 ![ExampleScreenshot](https://commandpanels.net/resource_images/example_editor.webp)
 
