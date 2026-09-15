@@ -61,12 +61,10 @@ public class CustomForm {
 
                 // Create the component
                 switch (comp) {
-                    case FloodgateLabel input -> {
-                        form.label(
-                                ctx.text.applyPlaceholders(player,
-                                        input.getName().replaceAll("\\\\n", "\n"))
-                        );
-                    }
+                    case FloodgateLabel input -> form.label(
+                            parseText(
+                                    input.getName().replaceAll("\\\\n", "\n"))
+                    );
                     case FloodgateInput input -> {
                         form.input(
                                 parseText(input.getName()),
