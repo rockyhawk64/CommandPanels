@@ -12,18 +12,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.HashSet;
 import java.util.List;
 
 public abstract class Panel {
     private final String name;
     private final String title;
     private final String conditions;
-
-    private final HashSet<String> observedPerms; // List of permissions used in conditions for a panel
     private final String command; // Command used to open the panel
     private final List<String> aliases; // Aliases for command that opens the panel
     private final CommandActions open; // Commands that run when panel is opened
+    private final PanelObserver observer; // Values observed on the panel
     private final String type;
 
     public Panel(String name, YamlConfiguration config) {
@@ -33,7 +31,8 @@ public abstract class Panel {
         this.command = config.getString("command", "");
         this.aliases = config.getStringList("aliases");
         this.type = config.getString("type", "inventory");
-        this.observedPerms = new HashSet<>();
+
+        observer = new PanelObserver(config);
 
         open = new CommandActions(
                 config.getStringList("open.requirements"),
@@ -112,18 +111,11 @@ public abstract class Panel {
         return open;
     }
 
-    public String getTitle() {
-        return title;
+    public PanelObserver getObserver() {
+        return observer;
     }
 
-    /**
-     * Observed permissions are permissions that are found from HASPERM in panels
-     * They will allow panels to auto refresh if their state ever changes
-     */
-    public HashSet<String> getObservedPerms() {
-        return observedPerms;
-    }
-    public void addObservedPerm(String node) {
-        observedPerms.add(node);
+    public String getTitle() {
+        return title;
     }
 }

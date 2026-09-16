@@ -13,137 +13,151 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.function.Function;
 
 public class InventoryPanelUpdater {
 
     private ScheduledTask heartbeatTask;
-    private ScheduledTask updateTask;
+    private ScheduledTask animationTask;
 
+    // The observer values
     private final Map<String, Boolean> lastObservedPermStates = new HashMap<>();
+    private final Map<String, String> lastObservedDataStates = new HashMap<>();
+    private final Map<String, Map<String, String>> lastObservedVisualValues = new HashMap<>();
+
+    // shared, built once per panel-open in start()
+    private NamespacedKey itemIdKey;
+    private NamespacedKey baseIdKey;
+    private NamespacedKey fillItemKey;
+    private ItemBuilder itemBuilder;
 
     public void start(Context ctx, Player p, InventoryPanel panel) {
         stop(); // always clean slate
 
+        itemIdKey = new NamespacedKey(ctx.plugin, "item_id");
+        baseIdKey = new NamespacedKey(ctx.plugin, "base_item_id");
+        fillItemKey = new NamespacedKey(ctx.plugin, "fill_item");
+        itemBuilder = new ItemBuilder(ctx, new InventoryPanelBuilder(ctx, p));
+
         startHeartbeat(ctx, p, panel);
 
-        int updateDelay = parseUpdateDelay(panel.getUpdateDelay());
-        if (updateDelay > 0) {
-            startUpdater(ctx, p, panel, updateDelay);
+        int updateInterval = parseDelay(panel.getUpdateInterval());
+        if (updateInterval > 0) {
+            startBase(ctx, p, panel, updateInterval);
         }
     }
 
+    // Check the panel instance is still open
+    private boolean stillOpen(Player p, InventoryPanel panel) {
+        InventoryHolder holder = p.getOpenInventory().getTopInventory().getHolder();
+        return holder instanceof InventoryPanel && holder == panel;
+    }
+
+    // permission observer, runs fast since it is cheap to run
     private void startHeartbeat(Context ctx, Player p, InventoryPanel panel) {
-        final boolean isUsingPermObserver = ctx.fileHandler.config.getBoolean("permission-observer");
+        heartbeatTask = p.getScheduler().runAtFixedRate(ctx.plugin, (task) -> {
+            if (!stillOpen(p, panel)) { stop(); return; }
+            if (!ctx.fileHandler.config.getBoolean("panel-observer")) return;
 
-        heartbeatTask = p.getScheduler().runAtFixedRate(
-                ctx.plugin,
-                (task) -> {
-                    Inventory inv = p.getOpenInventory().getTopInventory();
-                    InventoryHolder holder = inv.getHolder();
-
-                    // Stop everything if the panel is closed
-                    if (!(holder instanceof InventoryPanel) || holder != panel) {
-                        stop();
-                        return;
-                    }
-
-                    // Handle permission observer
-                    if (!isUsingPermObserver) return;
-                    for (String node : panel.getObservedPerms()) {
-                        boolean current = p.hasPermission(node);
-                        Boolean previous = lastObservedPermStates.put(node, current);
-                        if (previous != null && previous != current) {
-                            panel.open(ctx, p, false);
-                            return;
-                        }
-                    }
-                },
-                null,
-                2,
-                2
-        );
+            if (checkSet(panel.getObserver().getPerms(), lastObservedPermStates, p::hasPermission)) {
+                panel.open(ctx, p, false);
+            }
+            if (checkSet(panel.getObserver().getDataKeys(), lastObservedDataStates,
+                    key -> ctx.dataLoader.getUserData(p.getName(), key))) {
+                panel.open(ctx, p, false);
+            }
+        }, null, 2, 2);
     }
 
-    private void startUpdater(Context ctx, Player p, InventoryPanel panel, int updateDelay) {
-        InventoryPanelBuilder panelBuilder = new InventoryPanelBuilder(ctx, p);
-        ItemBuilder builder = new ItemBuilder(ctx, panelBuilder);
-
-        NamespacedKey itemIdKey = new NamespacedKey(ctx.plugin, "item_id");
-        NamespacedKey baseIdKey = new NamespacedKey(ctx.plugin, "base_item_id");
-        NamespacedKey fillItem = new NamespacedKey(ctx.plugin, "fill_item");
-
-        updateTask = p.getScheduler().runAtFixedRate(
-                ctx.plugin,
-                (task) -> {
-                    Inventory inv = p.getOpenInventory().getTopInventory();
-                    InventoryHolder holder = inv.getHolder();
-                    if (!(holder instanceof InventoryPanel) || holder != panel) {
-                        stopUpdater(); // only stop this task, heartbeat may continue
-                        return;
-                    }
-
-                    for (int slot = 0; slot < inv.getSize(); slot++) {
-                        ItemStack item = inv.getItem(slot);
-                        if (item == null || item.getType().isAir()) continue;
-
-                        PersistentDataContainerView container = item.getPersistentDataContainer();
-                        if (!container.has(itemIdKey, PersistentDataType.STRING) ||
-                                container.has(fillItem, PersistentDataType.STRING)) continue;
-
-                        String itemId = container.get(itemIdKey, PersistentDataType.STRING);
-                        String baseItemId = container.get(baseIdKey, PersistentDataType.STRING);
-
-                        PanelItem panelItem = panel.getItems().get(itemId);
-                        if (!panelItem.animate().isEmpty()) {
-                            // If there is an animation
-                            PanelItem animateItem = panel.getItems().get(panelItem.animate());
-                            if (animateItem != null) panelItem = animateItem;
-
-                        } else if (!baseItemId.equals(itemId)) {
-                            // If baseItemId is different from itemId with no animation, change back to base item
-                            panelItem = panel.getItems().get(baseItemId);
-                        }
-
-                        // Build the new item
-                        ItemStack newItem = builder.buildItem(panel, panelItem);
-
-                        // Update base item to original base item
-                        newItem.editPersistentDataContainer(c ->
-                                c.set(baseIdKey, PersistentDataType.STRING, baseItemId));
-
-                        inv.setItem(slot, newItem);
-                    }
-                },
-                null,
-                updateDelay,
-                updateDelay
-        );
+    // For checking if observed placeholders have changed or not
+    private <T> boolean checkSet(HashSet<String> keys, Map<String, T> cache, Function<String, T> resolver) {
+        for (String key : keys) {
+            T current = resolver.apply(key);
+            T previous = cache.put(key, current);
+            if (previous == null && current != null) return true;
+            if (previous != null && !previous.equals(current)) return true;
+        }
+        return false;
     }
 
-    private int parseUpdateDelay(String delayStr) {
+    // The logic that actually changes items for base updater
+    private void applyItem(Inventory inv, int slot, InventoryPanel panel, PanelItem panelItem, String baseItemId) {
+        ItemStack newItem = itemBuilder.buildItem(panel, panelItem);
+        newItem.editPersistentDataContainer(c -> c.set(baseIdKey, PersistentDataType.STRING, baseItemId));
+        inv.setItem(slot, newItem);
+    }
+
+    private int parseDelay(String delayStr) {
         if (delayStr != null && delayStr.matches("\\d+")) {
             return Integer.parseInt(delayStr);
         }
         return 20; // default
     }
 
+    // Iterator for the items in the base updater
+    private void forEachManagedItem(Inventory inv, InventoryPanel panel, SlotVisitor visitor) {
+        for (int slot = 0; slot < inv.getSize(); slot++) {
+            ItemStack item = inv.getItem(slot);
+            if (item == null || item.getType().isAir()) continue;
+
+            PersistentDataContainerView container = item.getPersistentDataContainer();
+            if (!container.has(itemIdKey, PersistentDataType.STRING) ||
+                    container.has(fillItemKey, PersistentDataType.STRING)) continue;
+
+            String itemId = container.get(itemIdKey, PersistentDataType.STRING);
+            String baseItemId = container.get(baseIdKey, PersistentDataType.STRING);
+            PanelItem panelItem = panel.getItems().get(itemId);
+
+            visitor.visit(slot, itemId, baseItemId, panelItem);
+        }
+    }
+    @FunctionalInterface
+    private interface SlotVisitor {
+        void visit(int slot, String itemId, String baseItemId, PanelItem panelItem);
+    }
+
+    // the general updater for placeholder changes which also handles animations
+    private void startBase(Context ctx, Player p, InventoryPanel panel, int updateInterval) {
+        animationTask = p.getScheduler().runAtFixedRate(ctx.plugin, (task) -> {
+            if (!stillOpen(p, panel)) { stopAnimation(); return; }
+
+            Inventory inv = p.getOpenInventory().getTopInventory();
+
+            forEachManagedItem(inv, panel, (slot, itemId, baseItemId, panelItem) -> {
+                PanelItem toApply = null;
+                if (!panelItem.animate().isEmpty()) {
+                    // there is an animation frame configured
+                    PanelItem animateItem = panel.getItems().get(panelItem.animate());
+                    toApply = (animateItem != null) ? animateItem : panelItem;
+                } else if (!baseItemId.equals(itemId)) {
+                    // no animation, but currently showing a non-base frame, revert to base
+                    toApply = panel.getItems().get(baseItemId);
+                } else {
+                    // no animation, check for any placeholder changes on item
+                    Map<String, String> itemCache = lastObservedVisualValues.computeIfAbsent(itemId, k -> new HashMap<>());
+                    if (checkSet(panel.getObserver().getVisualPlaceholders(itemId), itemCache,
+                            node -> ctx.text.applyPlaceholders(p, node))) {
+                        toApply = panelItem;
+                    }
+                }
+
+                if(toApply != null) applyItem(inv, slot, panel, toApply, baseItemId);
+            });
+        }, null, updateInterval, updateInterval);
+    }
+
     public void stop() {
         stopHeartbeat();
-        stopUpdater();
+        stopAnimation();
     }
 
     private void stopHeartbeat() {
-        if (heartbeatTask != null) {
-            heartbeatTask.cancel();
-            heartbeatTask = null;
-        }
+        if (heartbeatTask != null) { heartbeatTask.cancel(); heartbeatTask = null; }
     }
 
-    private void stopUpdater() {
-        if (updateTask != null) {
-            updateTask.cancel();
-            updateTask = null;
-        }
+    private void stopAnimation() {
+        if (animationTask != null) { animationTask.cancel(); animationTask = null; }
     }
 }

@@ -23,7 +23,6 @@ public class ReloadCommand implements SubCommand {
         Bukkit.getAsyncScheduler().runNow(ctx.plugin, task -> {
             ctx.fileHandler.updateConfigFiles();
             ctx.fileHandler.reloadPanels();
-            ctx.panelCommand.populateCommands();
             ctx.text.lang.reloadTranslations();
             Bukkit.getGlobalRegionScheduler().run(ctx.plugin, t ->
                     ctx.text.sendInfo(sender, Message.PLUGIN_RELOADED));

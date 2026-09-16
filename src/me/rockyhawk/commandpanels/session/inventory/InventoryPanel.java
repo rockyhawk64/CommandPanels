@@ -29,14 +29,14 @@ public class InventoryPanel extends Panel implements InventoryHolder {
     private final CommandActions close;
     private final String floodgate;
     private final String inventoryLock;
-    private final String updateDelay;
+    private final String updateInterval;
 
     public InventoryPanel(String name, YamlConfiguration config) {
         super(name, config);
 
         this.rows = config.getString("rows", "1");
         this.floodgate = config.getString("floodgate", "");
-        this.updateDelay = config.getString("update-delay", "20");
+        this.updateInterval = config.getString("update-interval", "20");
         this.inventoryLock = config.getString("inventory-lock", "false");
 
         outside = new CommandActions(
@@ -138,8 +138,8 @@ public class InventoryPanel extends Panel implements InventoryHolder {
         return slots;
     }
 
-    public String getUpdateDelay() {
-        return updateDelay;
+    public String getUpdateInterval() {
+        return updateInterval;
     }
 
     public CommandActions getOutsideCommands() {

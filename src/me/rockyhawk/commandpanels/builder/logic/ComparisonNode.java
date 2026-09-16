@@ -45,7 +45,7 @@ public class ComparisonNode implements ConditionNode {
                 return leftValue >= rightValue;
             case "$HASPERM":
                 Player p = Bukkit.getPlayer(parsedLeft);
-                panel.addObservedPerm(parsedRight);
+                panel.getObserver().addPerm(parsedRight);
                 if (p == null) return false;
                 return p.hasPermission(parsedRight);
             default:

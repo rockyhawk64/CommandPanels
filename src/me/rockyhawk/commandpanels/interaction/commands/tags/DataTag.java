@@ -25,8 +25,8 @@ public class DataTag implements CommandTagResolver {
 
         switch (action) {
 
-            case "set": {
-                // [data] set key value with spaces
+            case "add": {
+                // [data] add key value with spaces
                 if (args.length < 3) return;
                 String key = args[1];
                 String value = joinArgs(args, 2);
@@ -34,8 +34,8 @@ public class DataTag implements CommandTagResolver {
                 break;
             }
 
-            case "overwrite": {
-                // [data] overwrite key value with spaces
+            case "set": {
+                // [data] set key value with spaces
                 if (args.length < 3) return;
                 String key = args[1];
                 String value = joinArgs(args, 2);
@@ -63,6 +63,20 @@ public class DataTag implements CommandTagResolver {
             case "clear": {
                 // [data] clear
                 ctx.dataLoader.clearData(playerName);
+                break;
+            }
+
+            case "overwrite": {
+                // TO BE REMOVED this is a warning for the data tag changes
+                if (player.hasPermission("commandpanels.command.reload")){
+                    player.sendMessage("WARNING: The CommandPanels [data] tag has undergone changes:");
+                    player.sendMessage("- set is now named add");
+                    player.sendMessage("- overwrite is now named set");
+                }
+                if (args.length < 3) return;
+                String key = args[1];
+                String value = joinArgs(args, 2);
+                ctx.dataLoader.setUserData(playerName, key, value, true); // always overwrite
                 break;
             }
 
