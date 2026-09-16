@@ -20,7 +20,7 @@ import java.util.function.Function;
 public class InventoryPanelUpdater {
 
     private ScheduledTask heartbeatTask;
-    private ScheduledTask animationTask;
+    private ScheduledTask baseTask;
 
     // The observer values
     private final Map<String, Boolean> lastObservedPermStates = new HashMap<>();
@@ -120,8 +120,8 @@ public class InventoryPanelUpdater {
 
     // the general updater for placeholder changes which also handles animations
     private void startBase(Context ctx, Player p, InventoryPanel panel, int updateInterval) {
-        animationTask = p.getScheduler().runAtFixedRate(ctx.plugin, (task) -> {
-            if (!stillOpen(p, panel)) { stopAnimation(); return; }
+        baseTask = p.getScheduler().runAtFixedRate(ctx.plugin, (task) -> {
+            if (!stillOpen(p, panel)) { stopBase(); return; }
 
             Inventory inv = p.getOpenInventory().getTopInventory();
 
@@ -150,14 +150,14 @@ public class InventoryPanelUpdater {
 
     public void stop() {
         stopHeartbeat();
-        stopAnimation();
+        stopBase();
     }
 
     private void stopHeartbeat() {
         if (heartbeatTask != null) { heartbeatTask.cancel(); heartbeatTask = null; }
     }
 
-    private void stopAnimation() {
-        if (animationTask != null) { animationTask.cancel(); animationTask = null; }
+    private void stopBase() {
+        if (baseTask != null) { baseTask.cancel(); baseTask = null; }
     }
 }
