@@ -3,7 +3,6 @@ package me.rockyhawk.commandpanels.builder.floodgate;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.logic.ConditionNode;
 import me.rockyhawk.commandpanels.builder.logic.ConditionParser;
-import me.rockyhawk.commandpanels.formatter.language.Message;
 import me.rockyhawk.commandpanels.interaction.commands.CommandRunner;
 import me.rockyhawk.commandpanels.interaction.commands.RequirementRunner;
 import me.rockyhawk.commandpanels.session.CommandActions;
