@@ -21,7 +21,6 @@ public enum Message {
     FILE_SAVE_PANEL_FAIL("Could not save new panel file."),
 
     // PanelBuilder / PanelFactory / OpenCommand
-    PANEL_LAYOUT_NUMBER_MISSING("Panel layout is missing/skipping a number."),
     PANEL_INVALID_TYPE("Invalid inventory type."),
     PANEL_NOT_FOUND("Panel not found."),
     PANEL_OPEN_TRIGGERED("Panel open triggered for player."),

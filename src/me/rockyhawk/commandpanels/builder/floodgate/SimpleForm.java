@@ -15,6 +15,7 @@ import org.geysermc.cumulus.util.FormImage;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class SimpleForm {
@@ -34,15 +35,13 @@ public class SimpleForm {
 
         // Go through all the order sections
         List<FloodgateButton> buttonList = new ArrayList<>();
-        for (int i = 0; i < panel.getOrder().size(); i++) {
-            if(!panel.getOrder().containsKey(String.valueOf(i))){
-                ctx.text.sendError(p, Message.PANEL_LAYOUT_NUMBER_MISSING);
-                return;
-            }
+        List<String> sortedKeys = panel.getOrder().keySet().stream()
+                .sorted(Comparator.comparingInt(Integer::parseInt))
+                .toList();
 
-            // Go through the buttons in the one order section
-            List<String> componentIds = panel.getOrder().get(String.valueOf(i));
-            for(String key : componentIds){
+        for (String orderKey : sortedKeys) {
+            List<String> componentIds = panel.getOrder().get(orderKey);
+            for (String key : componentIds) {
                 if(!(panel.getComponents().get(key) instanceof FloodgateButton button)) continue;
 
                 // Check conditions for which button to use in the slot

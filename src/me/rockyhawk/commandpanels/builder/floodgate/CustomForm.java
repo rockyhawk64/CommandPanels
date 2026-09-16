@@ -16,6 +16,7 @@ import org.geysermc.cumulus.response.CustomFormResponse;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -42,13 +43,12 @@ public class CustomForm {
         List<FormField> fields = new ArrayList<>();
 
         // Build the form inputs in order
-        for (int i = 0; i < panel.getOrder().size(); i++) {
-            if (!panel.getOrder().containsKey(String.valueOf(i))) {
-                ctx.text.sendError(player, Message.PANEL_LAYOUT_NUMBER_MISSING);
-                return;
-            }
+        List<String> sortedKeys = panel.getOrder().keySet().stream()
+                .sorted(Comparator.comparingInt(Integer::parseInt))
+                .toList();
 
-            List<String> componentIds = panel.getOrder().get(String.valueOf(i));
+        for (String orderKey : sortedKeys) {
+            List<String> componentIds = panel.getOrder().get(orderKey);
             for (String key : componentIds) {
                 FloodgateComponent comp = panel.getComponents().get(key);
                 if (comp == null) continue;
