@@ -13,6 +13,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
+import java.util.logging.Level;
 
 public abstract class Panel {
     private final String name;
@@ -39,6 +40,24 @@ public abstract class Panel {
                 config.getStringList("open.commands"),
                 config.getStringList("open.fail")
         );
+
+        // Run warnings for 4.3.0
+        boolean dataWarning = false;
+        boolean delayWarning = false;
+        for (String key : config.getKeys(true)) {
+            // For [data] overwrite
+            if (!dataWarning && config.isList(key) && config.getStringList(key).stream()
+                    .anyMatch(line -> line.contains("[data] overwrite"))){
+                Bukkit.getLogger().log(Level.WARNING, "[CommandPanels] Change data tags to '[data] add', and '[data] set' in " + name + ".yml");
+                dataWarning = true;
+            }
+            // For update-delay
+            if(!delayWarning && key.endsWith("update-delay")) {
+                Bukkit.getLogger().log(Level.WARNING, "[CommandPanels] Change update-delay to update-interval in " + name + ".yml");
+                delayWarning = true;
+            }
+            if(dataWarning && delayWarning) break;
+        }
     }
 
     // Check run for permission checks with commands

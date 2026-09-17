@@ -66,20 +66,6 @@ public class DataTag implements CommandTagResolver {
                 break;
             }
 
-            case "overwrite": {
-                // TO BE REMOVED this is a warning for the data tag changes
-                if (player.hasPermission("commandpanels.command.reload")){
-                    player.sendMessage("WARNING: The CommandPanels [data] tag has undergone changes:");
-                    player.sendMessage("- set is now named add");
-                    player.sendMessage("- overwrite is now named set");
-                }
-                if (args.length < 3) return;
-                String key = args[1];
-                String value = joinArgs(args, 2);
-                ctx.dataLoader.setUserData(playerName, key, value, true); // always overwrite
-                break;
-            }
-
             default:
                 // Unknown action
                 break;
