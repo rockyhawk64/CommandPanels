@@ -19,6 +19,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PanelFactory {
     protected final Context ctx;
     protected final InventoryPanelBuilder panelBuilder;
@@ -51,6 +54,8 @@ public class PanelFactory {
         // Place all the items in the inventory
         ItemStack fill = null;
         ItemBuilder itemBuilder = new ItemBuilder(ctx, panelBuilder);
+        Map<String, ItemStack> builtItemsCache = new HashMap<>();
+
         for(String slot : panel.getSlots().keySet()){
             String parsedSlot = ctx.text.parseTextToString(p, slot);
             ItemStack itemStack = new ItemStack(Material.AIR);
@@ -67,7 +72,14 @@ public class PanelFactory {
                     if (!result) continue;
                 }
 
-                itemStack = itemBuilder.buildItem(panel, item);
+                // Reuse a previously built item for this name if it is already built
+                ItemStack cached = builtItemsCache.get(name);
+                if (cached != null) {
+                    itemStack = cached.clone();
+                } else {
+                    itemStack = itemBuilder.buildItem(panel, item);
+                    builtItemsCache.put(name, itemStack);
+                }
                 break;
             }
 
