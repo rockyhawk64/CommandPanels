@@ -8,10 +8,9 @@ public class ConditionParser {
     private int index;
 
     public ConditionNode parse(String input) {
-        ConditionParser parser = new ConditionParser();
-        parser.tokens = Tokenizer.tokenize(input);
-        parser.index = 0;
-        return parser.parseOr(); // Start with OR (lowest precedence)
+        this.tokens = Tokenizer.tokenize(input);
+        this.index = 0;
+        return parseOr();
     }
 
     // OR is the lowest precedence

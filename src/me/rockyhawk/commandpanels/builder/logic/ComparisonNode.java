@@ -2,10 +2,6 @@ package me.rockyhawk.commandpanels.builder.logic;
 
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.session.Panel;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -17,6 +13,11 @@ public class ComparisonNode implements ConditionNode {
     private final String operator;
     private final String right;
 
+    // Legacy section-symbol codes, incl. each nibble of a hex color (§x§7§5§4...)
+    private static final Pattern LEGACY_CODE = Pattern.compile("§[0-9A-FK-ORX]", Pattern.CASE_INSENSITIVE);
+
+    private static final Pattern NUMBER = Pattern.compile("-?\\d+(\\.\\d+)?");
+
     public ComparisonNode(String left, String operator, String right) {
         this.left = left;
         this.operator = operator;
@@ -25,15 +26,8 @@ public class ComparisonNode implements ConditionNode {
 
     @Override
     public boolean evaluate(Player player, Panel panel, Context ctx) {
-        String parsedLeftRaw = ctx.text.parseTextToString(player, left);  // e.g., %player_balance% → "600"
-        String parsedRightRaw = ctx.text.parseTextToString(player, right);
-
-        /*
-        parseTextToString will parse colour and placeholders
-        After parsing strip colour, parsing and stripping will remove colour formatting
-        */
-        String parsedLeft = toPlainText(parsedLeftRaw);
-        String parsedRight = toPlainText(parsedRightRaw);
+        String parsedLeft = stripColor(ctx.text.parseTextToString(player, left));
+        String parsedRight = stripColor(ctx.text.parseTextToString(player, right));
 
         switch (operator) {
             case "$EQUALS":
@@ -53,27 +47,23 @@ public class ComparisonNode implements ConditionNode {
         }
     }
 
-    public static String toPlainText(String input) {
-        try {
-            if (input.contains("§")) {
-                Component legacyComp = LegacyComponentSerializer.legacySection().deserialize(input);
-                return PlainTextComponentSerializer.plainText().serialize(legacyComp);
-            } else {
-                Component miniComp = MiniMessage.miniMessage().deserialize(input);
-                return PlainTextComponentSerializer.plainText().serialize(miniComp);
-            }
-        } catch (Exception ignored) {}
-
-        return input; // Fallback: return raw
+    /**
+     * parseTextToString always resolves color to legacy §-codes before returning,
+     * so this only needs to strip that one representation.
+     */
+    public static String stripColor(String input) {
+        if (input == null || input.indexOf('§') == -1) {
+            return input; // fast path: no color codes present, skip regex entirely
+        }
+        return LEGACY_CODE.matcher(input).replaceAll("");
     }
 
     private Double extractNumber(String input) {
         if (input == null) return null;
-        Matcher matcher = Pattern.compile("-?\\d+(\\.\\d+)?").matcher(input);
+        Matcher matcher = NUMBER.matcher(input);
         if (matcher.find()) {
             return Double.parseDouble(matcher.group());
         }
         return null;
     }
 }
-
