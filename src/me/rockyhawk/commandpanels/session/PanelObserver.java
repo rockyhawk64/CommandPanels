@@ -9,12 +9,10 @@ import java.util.regex.Pattern;
 public class PanelObserver {
 
     private final HashSet<String> permissions;
-    private final HashSet<String> dataKeys;
     private final Map<String, HashSet<String>> visualPlaceholders;
 
     public PanelObserver(YamlConfiguration config){
         permissions = new HashSet<>();
-        dataKeys = new HashSet<>();
         visualPlaceholders = new HashMap<>();
 
         for (String key : config.getKeys(true)) {
@@ -34,15 +32,11 @@ public class PanelObserver {
     }
     private void placeholderSearch(String key, String itemId, String value) {
         if (value == null || value.isEmpty()) return;
-        if (key.endsWith("conditions")) {
-            DATA_PATTERN.matcher(value).results().map(mr -> mr.group(1)).forEach(dataKeys::add);
-        } else {
+        if (!key.endsWith("conditions"))
             extractInto(value, visualPlaceholders.computeIfAbsent(itemId, k -> new HashSet<>()));
-        }
     }
 
     private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("%[^%]+%");
-    private final Pattern DATA_PATTERN = Pattern.compile("%commandpanels_data_(.+?)%");
     private void extractInto(String text, Set<String> target) {
         if (text == null || text.isEmpty()) return;
         Matcher matcher = PLACEHOLDER_PATTERN.matcher(text);
@@ -60,9 +54,5 @@ public class PanelObserver {
 
     public HashSet<String> getVisualPlaceholders(String itemId) {
         return visualPlaceholders.getOrDefault(itemId, new HashSet<>());
-    }
-
-    public HashSet<String> getDataKeys() {
-        return dataKeys;
     }
 }

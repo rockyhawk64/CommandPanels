@@ -24,7 +24,6 @@ public class InventoryPanelUpdater {
 
     // The observer values
     private final Map<String, Boolean> lastObservedPermStates = new HashMap<>();
-    private final Map<String, String> lastObservedDataStates = new HashMap<>();
     private final Map<String, Map<String, String>> lastObservedVisualValues = new HashMap<>();
 
     // shared, built once per panel-open in start()
@@ -62,10 +61,6 @@ public class InventoryPanelUpdater {
             if (!ctx.fileHandler.config.getBoolean("panel-observer")) return;
 
             if (checkSet(panel.getObserver().getPerms(), lastObservedPermStates, p::hasPermission)) {
-                panel.open(ctx, p, false);
-            }
-            if (checkSet(panel.getObserver().getDataKeys(), lastObservedDataStates,
-                    key -> ctx.dataLoader.getUserData(p.getName(), key))) {
                 panel.open(ctx, p, false);
             }
         }, null, 2, 2);

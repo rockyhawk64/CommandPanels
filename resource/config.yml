@@ -14,5 +14,6 @@ cooldown-ticks: 5
 # Logs to console whenever a panel is opened
 panel-snooper: false
 
-# When enabled, panels will automatically refresh if any observed permissions or data changes.
-panel-observer: true
+# When enabled, panels will automatically refresh if any observed permissions change.
+# An observed permission is a permission used in conditions with $HASPERM
+permission-observer: true
