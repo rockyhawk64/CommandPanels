@@ -76,7 +76,6 @@ public class InventoryPanelUpdater {
         for (String key : keys) {
             T current = resolver.apply(key);
             T previous = cache.put(key, current);
-            if (previous == null && current != null) return true;
             if (previous != null && !previous.equals(current)) return true;
         }
         return false;
