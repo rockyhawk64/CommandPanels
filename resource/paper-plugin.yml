@@ -1,6 +1,6 @@
 name: CommandPanels
 version: ${project.version}
-api-version: '26.2'
+api-version: '26.3'
 
 main: me.rockyhawk.commandpanels.CommandPanels
 description: Fully Custom Interactive GUIs with Animations and Logic.
