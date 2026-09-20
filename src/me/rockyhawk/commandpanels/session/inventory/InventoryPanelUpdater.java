@@ -58,7 +58,7 @@ public class InventoryPanelUpdater {
     private void startHeartbeat(Context ctx, Player p, InventoryPanel panel) {
         heartbeatTask = p.getScheduler().runAtFixedRate(ctx.plugin, (task) -> {
             if (!stillOpen(p, panel)) { stop(); return; }
-            if (!ctx.fileHandler.config.getBoolean("panel-observer")) return;
+            if (!ctx.fileHandler.config.getBoolean("permission-observer")) return;
 
             if (checkSet(panel.getObserver().getPerms(), lastObservedPermStates, p::hasPermission)) {
                 panel.open(ctx, p, false);
