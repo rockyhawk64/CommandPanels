@@ -98,10 +98,7 @@ public class InventoryEvents implements Listener {
         for (ItemStack item : inv.getContents()) {
             if (item == null) continue;
 
-            ItemMeta meta = item.getItemMeta();
-            if (meta == null) continue;
-
-            String itemName = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+            String itemName = item.getPersistentDataContainer().get(key, PersistentDataType.STRING);
             if (itemName != null) {
                 toRemove.add(item);
             }
@@ -116,26 +113,36 @@ public class InventoryEvents implements Listener {
     private void itemDropper(Player player, Inventory inventory) {
         NamespacedKey key = new NamespacedKey(ctx.plugin, "item_id");
         PlayerInventory playerInv = player.getInventory();
+        Inventory newTop = player.getOpenInventory().getTopInventory();
+
+        // If it's a refresh, items are returned to the panel not the player
+        boolean isRefreshOfSamePanel = inventory.getHolder() instanceof InventoryPanel oldPanel
+                && newTop.getHolder() instanceof InventoryPanel newPanel
+                && oldPanel == newPanel;
 
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack item = inventory.getItem(i);
             if (item == null || item.getType().isAir()) continue;
 
-            ItemMeta meta = item.getItemMeta();
-            boolean isPanelItem = meta != null && meta.getPersistentDataContainer().has(key, PersistentDataType.STRING);
+            boolean isPanelItem = item.getPersistentDataContainer().has(key, PersistentDataType.STRING);
+            if (isPanelItem) continue;
 
-            if (!isPanelItem) {
-                // Try to add item to player's inventory
-                Map<Integer, ItemStack> leftovers = playerInv.addItem(item);
+            if (isRefreshOfSamePanel) {
+                ItemStack newSlotItem = newTop.getItem(i);
+                boolean slotIsClaimedByPanel = newSlotItem != null && newSlotItem.getPersistentDataContainer().has(key, PersistentDataType.STRING);
 
-                // If some items didn't fit, drop those on the ground
-                for (ItemStack leftover : leftovers.values()) {
-                    player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+                if (!slotIsClaimedByPanel) {
+                    newTop.setItem(i, item);
+                    continue;
                 }
+            }
+
+            Map<Integer, ItemStack> leftovers = playerInv.addItem(item);
+            for (ItemStack leftover : leftovers.values()) {
+                player.getWorld().dropItemNaturally(player.getLocation(), leftover);
             }
         }
 
-        // Clear the original inventory to avoid duplication
         inventory.clear();
     }
 
