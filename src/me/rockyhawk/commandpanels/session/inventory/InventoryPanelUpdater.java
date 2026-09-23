@@ -5,6 +5,7 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.rockyhawk.commandpanels.Context;
 import me.rockyhawk.commandpanels.builder.inventory.InventoryPanelBuilder;
 import me.rockyhawk.commandpanels.builder.inventory.items.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -65,8 +66,6 @@ public class InventoryPanelUpdater {
     // permission and condition observer, runs fast since it is cheap to run
     private void startHeartbeat(Context ctx, Player p, InventoryPanel panel) {
         heartbeatTask = p.getScheduler().runAtFixedRate(ctx.plugin, (task) -> {
-            if (!stillOpen(p, panel)) { stop(); return; }
-
             boolean refresh = false;
 
             if (ctx.fileHandler.config.getBoolean("permission-observer")) {
@@ -82,6 +81,7 @@ public class InventoryPanelUpdater {
                 refresh = previous != null && !previous.equals(current);
             }
 
+            if (!stillOpen(p, panel)) { stop(); return; }
             if (refresh) panel.open(ctx, p, false);
         }, null, 2, 2);
     }
