@@ -17,3 +17,7 @@ panel-snooper: false
 # When enabled, panels will automatically refresh if any observed permissions change.
 # An observed permission is a permission used in conditions with $HASPERM
 permission-observer: true
+
+# When enabled, panels will automatically refresh if any observed placeholders change.
+# Avoid if you have placeholders in conditions that constantly change (eg RNG placeholders).
+condition-observer: false

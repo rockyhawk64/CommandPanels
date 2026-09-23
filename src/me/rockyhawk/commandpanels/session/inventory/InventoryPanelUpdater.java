@@ -25,6 +25,11 @@ public class InventoryPanelUpdater {
     // The observer values
     private final Map<String, Boolean> lastObservedPermStates = new HashMap<>();
     private final Map<String, Map<String, String>> lastObservedVisualValues = new HashMap<>();
+    private final Map<String, String> lastObservedConditionValues = new HashMap<>();
+
+    // Condition observer checks one placeholder per heartbeat run, cycling through the list
+    private String[] conditionNodes = new String[0];
+    private int conditionIndex = 0;
 
     // shared, built once per panel-open in start()
     private NamespacedKey itemIdKey;
@@ -40,6 +45,9 @@ public class InventoryPanelUpdater {
         fillItemKey = new NamespacedKey(ctx.plugin, "fill_item");
         itemBuilder = new ItemBuilder(ctx, new InventoryPanelBuilder(ctx, p));
 
+        conditionNodes = panel.getObserver().getConditionPlaceholders().toArray(new String[0]);
+        conditionIndex = 0;
+
         startHeartbeat(ctx, p, panel);
 
         int updateInterval = parseDelay(panel.getUpdateInterval());
@@ -54,15 +62,27 @@ public class InventoryPanelUpdater {
         return holder instanceof InventoryPanel && holder == panel;
     }
 
-    // permission observer, runs fast since it is cheap to run
+    // permission and condition observer, runs fast since it is cheap to run
     private void startHeartbeat(Context ctx, Player p, InventoryPanel panel) {
         heartbeatTask = p.getScheduler().runAtFixedRate(ctx.plugin, (task) -> {
             if (!stillOpen(p, panel)) { stop(); return; }
-            if (!ctx.fileHandler.config.getBoolean("permission-observer")) return;
 
-            if (checkSet(panel.getObserver().getPerms(), lastObservedPermStates, p::hasPermission)) {
-                panel.open(ctx, p, false);
+            boolean refresh = false;
+
+            if (ctx.fileHandler.config.getBoolean("permission-observer")) {
+                refresh = checkSet(panel.getObserver().getPerms(), lastObservedPermStates, p::hasPermission);
             }
+
+            if (!refresh && conditionNodes.length > 0 && ctx.fileHandler.config.getBoolean("condition-observer")) {
+                String node = conditionNodes[conditionIndex];
+                conditionIndex = (conditionIndex + 1) % conditionNodes.length;
+
+                String current = ctx.text.applyPlaceholders(p, node);
+                String previous = lastObservedConditionValues.put(node, current);
+                refresh = previous != null && !previous.equals(current);
+            }
+
+            if (refresh) panel.open(ctx, p, false);
         }, null, 2, 2);
     }
 

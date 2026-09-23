@@ -11,9 +11,12 @@ public class PanelObserver {
     private final HashSet<String> permissions;
     private final Map<String, HashSet<String>> visualPlaceholders;
 
+    private final HashSet<String> conditionPlaceholders;
+
     public PanelObserver(YamlConfiguration config){
         permissions = new HashSet<>();
         visualPlaceholders = new HashMap<>();
+        conditionPlaceholders = new HashSet<>();
 
         for (String key : config.getKeys(true)) {
             boolean isItemField = key.startsWith("items.") && key.split("\\.").length == 3;
@@ -32,8 +35,11 @@ public class PanelObserver {
     }
     private void placeholderSearch(String key, String itemId, String value) {
         if (value == null || value.isEmpty()) return;
-        if (!key.endsWith("conditions"))
+        if (key.endsWith("conditions")) {
+            extractInto(value, conditionPlaceholders);
+        } else {
             extractInto(value, visualPlaceholders.computeIfAbsent(itemId, k -> new HashSet<>()));
+        }
     }
 
     private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("%[^%]+%");
@@ -54,5 +60,8 @@ public class PanelObserver {
 
     public HashSet<String> getVisualPlaceholders(String itemId) {
         return visualPlaceholders.getOrDefault(itemId, new HashSet<>());
+    }
+    public HashSet<String> getConditionPlaceholders() {
+        return conditionPlaceholders;
     }
 }
