@@ -19,6 +19,8 @@ public enum Message {
     FILE_UPDATE_LANG_FAIL("Failed to update language file!"),
     FILE_SAVE_DATA_FAIL("Could not save data file."),
     FILE_SAVE_PANEL_FAIL("Could not save new panel file."),
+    FILE_PANEL_DUPE_KEY("Duplicate key in {0} at line {1}."),
+    FILE_PANEL_DUPLICATE("Duplicate panel name {0}."),
 
     // PanelBuilder / PanelFactory / OpenCommand
     PANEL_INVALID_TYPE("Invalid inventory type."),

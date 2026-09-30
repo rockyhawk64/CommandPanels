@@ -8,9 +8,13 @@ import me.rockyhawk.commandpanels.session.inventory.InventoryPanel;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.yaml.snakeyaml.LoaderOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 
 public class FileHandler {
@@ -26,7 +30,7 @@ public class FileHandler {
 
 
     public String fileToName(File file) {
-        String fileName = file.getName();
+        String fileName = file.getName().replaceAll("\\s+", "_");
         int dotIndex = fileName.lastIndexOf('.');
         if (dotIndex > 0) {
             fileName = fileName.substring(0, dotIndex);
@@ -49,7 +53,8 @@ public class FileHandler {
         }
 
         // Load panels
-        HashMap<String, Panel> panels = loadYamlFilesRecursively(ctx.plugin.folder);
+        HashMap<String, Panel> panels = new HashMap<>();
+        loadYamlFilesRecursively(ctx.plugin.folder, panels);
         Bukkit.getGlobalRegionScheduler().run(ctx.plugin, task -> {
             ctx.plugin.panels.clear();
             ctx.plugin.panels.putAll(panels);
@@ -59,34 +64,44 @@ public class FileHandler {
         createLangFile();
     }
 
-    private HashMap<String, Panel> loadYamlFilesRecursively(File directory) {
+    private void loadYamlFilesRecursively(File directory, HashMap<String, Panel> loaded) {
         File[] files = directory.listFiles();
-        if (files == null) return new HashMap<>();
+        if (files == null) return;
 
-        HashMap<String, Panel> loaded = new HashMap<>();
         for (File file : files) {
             if (file.isDirectory()) {
-                // Recursively enter subfolder
-                loaded.putAll(loadYamlFilesRecursively(file));
+                // Recursively enter subfolder, sharing the same map
+                loadYamlFilesRecursively(file, loaded);
             } else if (file.isFile() && (file.getName().endsWith(".yml") || file.getName().endsWith(".yaml"))) {
                 // Load YAML config and put into panels map
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                String panelName = fileToName(file);
+
+                // Log any duplicate errors
+                logDuplicateKey(file);
+                if (loaded.containsKey(panelName)) {
+                    ctx.text.sendError(Bukkit.getConsoleSender(), Message.FILE_PANEL_DUPLICATE, panelName);
+                    continue;
+                }
+
                 String panelType = config.getString("type", "inventory").toLowerCase();
-                if (panelType.equals("inventory")) {
-                    String panelName = fileToName(file);
-                    loaded.put(panelName, new InventoryPanel(panelName, config));
-                }
-                if (panelType.equals("dialog")) {
-                    String panelName = fileToName(file);
-                    loaded.put(panelName, new DialogPanel(panelName, config));
-                }
-                if (panelType.equals("floodgate")) {
-                    String panelName = fileToName(file);
-                    loaded.put(panelName, new FloodgatePanel(panelName, config));
-                }
+                Panel panel = switch (panelType) {
+                    case "dialog" -> new DialogPanel(panelName, config);
+                    case "floodgate" -> new FloodgatePanel(panelName, config);
+                    default -> new InventoryPanel(panelName, config);
+                };
+                loaded.put(panelName, panel);
             }
         }
-        return loaded;
+    }
+    private void logDuplicateKey(File file){
+        try (Reader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
+            LoaderOptions options = new LoaderOptions();
+            options.setAllowDuplicateKeys(false);
+            new Yaml(options).load(reader);
+        } catch (DuplicateKeyException e) {
+            ctx.text.sendError(Bukkit.getConsoleSender(), Message.FILE_PANEL_DUPE_KEY, file.getName(), e.getProblemMark().getLine());
+        } catch (Exception ignored) {}
     }
 
     // Code for config files
